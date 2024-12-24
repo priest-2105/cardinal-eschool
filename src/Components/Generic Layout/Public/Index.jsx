@@ -7,7 +7,9 @@ function PublicRootLayout() {
   return (
     <>
         <Navbar/>
-        <Outlet/>
+        <main className="min-h-[60vh]">
+            <Outlet/>
+        </main>
         <Footer/>
     </>
   )

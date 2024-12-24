@@ -3,7 +3,7 @@ import React from 'react'
 function Navbar() {
   return (
     <>
-        student dashboard navbar
+        Admin dashboard navbar
     </>
   )
 }
