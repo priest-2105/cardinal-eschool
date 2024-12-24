@@ -1,52 +1,68 @@
-import { useState } from 'react' 
-import './App.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Home from './pages/Public/Home'
+import { useState, useEffect } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Home from './pages/Public/Home';
+import PublicRootLayout from './Components/Generic Layout/Public/Index';
+import AuthRootLayout from './Components/Generic Layout/Public/Auth/Index';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-    <BrowserRouter>
-    <Routes>
-
-       {/* Student Dashboard Route  */}
-       <Route index element={<Home />} />
-     
-      {/* Tutor Dashboard Route  */}
-       {/* <Route path="tutor" element={<Settings />} /> */}
+async function getAllRoutes() {
   
-      {/* Admin Dashboard Route  */}
-      {/* <Route path="admin" element={<Settings />} /> */}
-  
-      {/* Auth Routes  */}
-    {/* <Route element={<AuthLayout />}>
-    
-        <Route path="login" element={<Login />} />
-    
-        <Route path="register" element={<Register />} />
-    
-    </Route> */}
-    
-    {/* Dashboard Route  */}
-    {/* <Route path="dashboard" element={<Dashboard />}> */}
-    
-       {/* Student Dashboard Route  */}
-       {/* <Route path="student" element={<Home />} /> */}
-     
-      {/* Tutor Dashboard Route  */}
-       {/* <Route path="tutor" element={<Settings />} /> */}
-  
-      {/* Admin Dashboard Route  */}
-      {/* <Route path="admin" element={<Settings />} /> */}
-  
-    {/* </Route> */}
-
-    </Routes>
-    </BrowserRouter>
-    </>
-  )
+  return [
+    {
+      path: '/',
+      element: <PublicRootLayout />,
+      children: [
+        { index: true, element: <Home /> }, 
+      ],
+    },
+    {
+      path: '/auth',
+      element: <AuthRootLayout />,
+      children: [
+        { index: true, element: <Home /> }, 
+      ],
+    },
+    {
+      path: '/dashboard/student',
+      element: <AuthRootLayout />,
+      children: [
+        { index: true, element: <Home /> }, 
+      ],
+    },
+    {
+      path: '/dashboard/tutor',
+      element: <AuthRootLayout />,
+      children: [
+        { index: true, element: <Home /> }, 
+      ],
+    },
+    {
+      path: '/dashboard/admin',
+      element: <AuthRootLayout />,
+      children: [
+        { index: true, element: <Home /> }, 
+      ],
+    },
+  ];
 }
 
-export default App
+function App() {
+  const [router, setRouter] = useState(null);
+
+  useEffect(() => {
+    async function setupRouter() {
+      const moduleRoutes = await getAllRoutes();
+      const routerInstance = createBrowserRouter(moduleRoutes);
+      setRouter(routerInstance);
+    }
+
+    setupRouter();
+  }, []);
+ 
+  if (!router) {
+    return <div>Loading...</div>;
+  }
+
+  return <RouterProvider router={router} />;
+}
+
+export default App;
