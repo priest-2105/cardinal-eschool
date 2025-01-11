@@ -8,7 +8,7 @@ function PublicFooter() {
 
   return (
     <footer className="bg-[#1BC2C2] text-white">
-          <div className="max-w-screen-xl px-4 pt-32 pb-8 mx-auto sm:px-6 lg:px-8">
+          <div className="max-w-screen-2xl px-4 pt-32 pb-8 mx-auto sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               <div>
               <h3 className='text-4xl font-bold'>Ready To Get Started ? </h3>
