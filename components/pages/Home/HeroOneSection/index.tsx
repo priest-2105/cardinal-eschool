@@ -1,5 +1,12 @@
 import Image from 'next/image'
 import {  CheckCircle2 } from 'lucide-react';  
+import { motion } from "framer-motion";
+
+const popInAnimation = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1 },
+};
+
 
 export default function HeroSection() {
   const features = [
@@ -10,8 +17,8 @@ export default function HeroSection() {
   ]
 
   return (
-    <section className="bg-[#C9F4F4] min-h-screen relative overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-4 py-28 md:py-12 sm:py-12 sm:px-6 lg:px-8">
+    <section className=" bg-[#C9F4F4] min-h-screen relative overflow-hidden">
+      <div className="max-w-screen-2xl mx-auto px-4  xl:py-36 lg:py-32  md:py-24 sm:py-16 py-16 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">

@@ -27,7 +27,7 @@ function PublicFooter() {
                     </a> 
                 </div>
               </div>
-              <div className="grid ms-auto grid-cols-1 gap-8 lg:col-span-2 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid xl:ms-auto lg:ms-autp grid-cols-1 gap-8 lg:col-span-2 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="font-bold text-xl">
                     Company

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "cardinal-eschool": "file:",
+    "framer-motion": "^11.17.0",
     "lucide-react": "^0.465.0",
     "next": "15.1.4",
     "react": "^19.0.0",
