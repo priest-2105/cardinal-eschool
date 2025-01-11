@@ -9,7 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-config.js
+# config.js
 
 # testing
 /coverage
