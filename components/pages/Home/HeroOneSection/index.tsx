@@ -11,7 +11,7 @@ export default function HeroSection() {
 
   return (
     <section className="bg-[#C9F4F4] min-h-screen relative overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 py-28 md:py-12 sm:py-12 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Text Content */}
           <div className="space-y-8">
@@ -44,7 +44,19 @@ export default function HeroSection() {
           <div className="relative lg:block">
             <div className="grid gap-2 items-end grid-cols-2">
               {/* Top Image */}
-              <div className="relative ms-auto rounded-3xl ">
+          
+                <div className="relative ms-auto rounded-3xl ">
+            
+                <div className="absolute -bottom-0 -left-12 rounded-full p-2">        
+                <Image
+                  src="/assets/img/pages/homepage/stars.png"
+                  alt="Star"  
+                  width={30}
+                  height={30}
+                  className="object-cover"
+                />
+                </div>
+
                 <Image
                   src="/assets/img/pages/homepage/Rectangle 1452.png"
                   alt="Student using tablet"
@@ -64,7 +76,18 @@ export default function HeroSection() {
                 </div>
 
               {/* Top Right Image */}
-              <div className="relative -mb-4 rounded-3xl">
+              <div className="relative w-fit -mb-4 rounded-3xl">
+                
+              <div className="absolute -top-16 right-16 rounded-full p-2">        
+                <Image
+                  src="/assets/img/pages/homepage/Ellipse 1866.png"
+                  alt="Star"  
+                  width={30}
+                  height={30}
+                  className="object-cover ms-auto"
+                />
+                </div>
+                
                 <Image
                   src="/assets/img/pages/homepage/Rectangle 1454.png"
                   alt="Student learning"
@@ -82,7 +105,7 @@ export default function HeroSection() {
               </div>
 
               {/* Bottom Image */}
-              <div className="relative rounded-3xl  w-fit col-span-2 mt-2 ml-12">
+              <div className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12">
                 <Image
                   src="/assets/img/pages/homepage/Rectangle 1453.png"
                   alt="Student with megaphone"
@@ -90,6 +113,17 @@ export default function HeroSection() {
                   height={400}
                   className="object-cover"
                 />
+
+                <div className="absolute top-8 -right-16 rounded-full p-2">
+                <Image
+                  src="/assets/img/pages/homepage/stars (1).png"
+                  alt="Student with megaphone"
+                  width={30}
+                  height={30}
+                  className="object-cover"
+                />
+                </div>
+
                 <div className="absolute -top-4 -right-4"> 
                 <Image
                   src="/assets/img/pages/homepage/group199.png"
@@ -100,13 +134,7 @@ export default function HeroSection() {
                 /> 
                 </div>
               </div>
-            </div>
-            {/* Decorative Elements */}
-            <div className="absolute top-0 right-0 -z-10">
-              <div className="w-4 h-4 rounded-full bg-purple-300/50" />
-            </div>
-            <div className="absolute bottom-12 left-8 -z-10">
-              <div className="w-3 h-3 rounded-full bg-[#1BC2C2]/30" />
+
             </div>
           </div>
         </div>

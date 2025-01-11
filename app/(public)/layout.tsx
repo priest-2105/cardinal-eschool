@@ -17,7 +17,7 @@ export default function RootLayout({
         className={`antialiased`}
       >
         <PublicNavbar/>
-      <div className="min-h-screen">
+        <div className="min-h-screen">
         {children}
         </div>
         <PublicFooter/>
