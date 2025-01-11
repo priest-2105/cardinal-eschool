@@ -1,6 +1,12 @@
 import React from 'react'
 import Image from 'next/image';
 import logo from '@/public/assets/img/logo.png';
+import { Phone, Mail, Youtube } from 'lucide-react'; 
+import XIcon from '@/public/assets/icons/x.png';
+import TiktokIcon from '@/public/assets/icons/tiktok.png';
+import WhatsappIcon from '@/public/assets/icons/whatsapp.png';
+import cardinalConfig from '@/config';
+
 
 function PublicFooter() {
 
@@ -23,35 +29,41 @@ function PublicFooter() {
               </div>
               <div className="grid ms-auto grid-cols-1 gap-8 lg:col-span-2 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <p className="font-bold text-lg">
+                  <p className="font-bold text-xl">
                     Company
                   </p>
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Home </a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> About Us</a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Courses</a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Our Mentors</a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.home}`}> <span>Home</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.aboutUs}`}> <span>About Us</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.courses}`}> <span>Courses</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.mentors}`}> <span>Our Mentors</span> </a>
                   </nav>
                 </div> 
                 <div>
-                  <p className="font-bold text-lg">
+                  <p className="font-bold text-xl">
                     Useful Links
                   </p>
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Contact Careers</a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Contact Us</a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> FAQs </a> 
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.careers}`}> <span>Careers</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.contactUs}`}> <span>Contact Us</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.faq}`}> <span>FAQs</span> </a>
+                
                   </nav>
                 </div>
                 <div>
-                  <p className="font-bold text-lg">
+                  <p className="font-bold text-xl">
                     Support
                   </p>
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Privacy Policy </a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> +234 01 2345 6789 </a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Online@Cardinalschools.com </a>
-                    <a className="hover:opacity-75 font-medium py-2" href=""> Accessibility </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.privacyPolicy}`}>  <span>Privacy Policy</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`tel: ${cardinalConfig.contactInfo.phone}`}><Phone /> <span>+234 01 2345 6789</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`mailto: ${cardinalConfig.contactInfo.email}`}><Mail /> <span>Online@Cardinalschools.com</span> </a> 
+                    <div className='flex items-center space-x-2 py-2'>
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  <Image src={WhatsappIcon} alt="whatsapp cion" /> </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  <Image src={TiktokIcon} alt="tiktok Icon" />  </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.youtube}`}>  <Youtube/>  </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.X}`}>  <Image src={XIcon} alt="X-cion" /> </a> 
+                     </div>
                   </nav>
                 </div>
               </div>
