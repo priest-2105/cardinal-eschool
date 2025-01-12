@@ -22,9 +22,9 @@ export default function LearningToday() {
 return (
     <section
       ref={sectionRef}
-      className="bg-[#DAFAFA] min-h-screen relative overflow-hidden"
+      className="bg-[#DAFAFA] min-h-screen relative overflow-hidden px-4 xl:py-36 lg:py-32 md:py-24 sm:py-16 py-16 sm:px-6 lg:px-8"
     >
-      <div className="max-w-screen-2xl bg-[#1BC2C2] mx-auto px-4 xl:py-36 lg:py-32 md:py-24 sm:py-16 py-16 sm:px-6 lg:px-8">
+      <div className="max-w-screen-xl bg-[#1BC2C2] mx-auto px-4 rounded-3xl xl:py-36 lg:py-32 md:py-24 sm:py-16 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
@@ -34,24 +34,24 @@ return (
           }}
           className="items-center"
         >
-          <motion.div className="space-y-8" variants={popInAnimation}>
+          <motion.div className="space-y-8 text-center" variants={popInAnimation}>
             <motion.h3
               className="text-4xl md:text-2xl lg:text-3xl font-bold text-white leading-tight"
               variants={popInAnimation}
             >
-              Connect, Learn, Thrive: Personalized Education without Borders
-            </motion.h3>
+          What are you Learning today?  
+          </motion.h3>
 
             <motion.p
-              className="text-lg text-white font-semibold max-w-2xl"
+              className="text-lg text-white mx-auto font-semibold max-w-4xl"
               variants={popInAnimation}
             >
-              Cardinal E-School is here for you with expert online learning,
-              tailored to your needs.
+            Our platform offers a variety of courses designed to give you the knowledge and skills to start, change, or advance your career. We’ve made the learning experience seamless and accessible, featuring live classes, practical curricula, expert instructors, and peer-to-peer training sessions. Learn from top professionals, no matter where you are.
+            Ready to embark on your career journey?
             </motion.p>
 
             <motion.button
-              className="bg-[#1BC2C2] text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
+              className="bg-white text-[#1BC2C2] px-8 py-4 border-2 rounded-full text-lg font-semibold hover:bg-[#1BC2C2] hover:border-white hover:text-white transition-colors"
               variants={popInAnimation}
             >
               Start learning now

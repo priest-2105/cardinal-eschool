@@ -24,16 +24,16 @@ export default function HeadedSection() {
     className="bg-[#C9F4F4] min-h-screen relative overflow-hidden items-start"
   >
 
-    <div className="relative max-w-screen-2xl ms-auto me-auto h-screen overflow-hidden">
+    {/* <div className="relative max-w-screen-2xl ms-auto me-auto h-screen overflow-hidden">
       <Image
         src="/assets/img/pages/about/Rectangle 1501.png" 
         alt="Full-Screen Rounded Image"
         fill
         className="object-cover rounded-[30px]"  
       />
-    </div>
+    </div> */}
 
-    <div className="max-w-screen-2xl mx-auto px-4 xl:py-36 lg:py-32 md:py-24 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
+    <div className="max-w-screen-2xl mx-auto px-4 xl:py-26 lg:py-12 md:py-12 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
       <motion.div
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
@@ -41,33 +41,13 @@ export default function HeadedSection() {
           hidden: { opacity: 0 },
           visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
         }}
-        className="grid lg:grid-cols-2 gap-12 items-start"
+        className="grid lg:grid-cols-2 gap-12 items-center"
       >
         {/* Left Column - Text Content */}
 
-        
-      
-        <div className="relative lg:block">
-      
-            <motion.div 
-                drag={true} 
-                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
-                variants={popInAnimation} 
-                className="relative ms-auto rounded-3xl ">
-
-            <motion.h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold py-8 text-[#242424] leading-tight"
-            variants={popInAnimation}
-          >
-            Where We Are Headed</motion.h1>
-        
-            
-                </motion.div>
-            </div>
-
+       
      
 
-       {/* Right Column - Images */}
        <motion.div className="space-y-8" variants={popInAnimation}>
  
           <motion.p
@@ -88,9 +68,33 @@ export default function HeadedSection() {
          variants={popInAnimation}>      
         By the year 2030, Cardinal E-School aims to equip over five million global citizens with essential skills that pave the way for personal growth and a prosperous future for the entire African continent.
         </motion.p>
-
-        
         </motion.div>
+ 
+
+   {/* Right Column - Images */}      
+        <div className="relative lg:block">
+      
+            <motion.div 
+                drag={true} 
+                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
+                variants={popInAnimation} 
+                className="relative ms-auto rounded-3xl ">
+
+            <motion.h1
+            className="text-4xl md:text-6xl lg:text-7xl font-bold py-8 text-[#242424] leading-tight"
+            variants={popInAnimation}
+          >
+            Where We Are Headed</motion.h1>
+        
+            <Image
+            src="/assets/img/pages/about/Rectangle 1501.png" 
+            alt="Full-Screen Rounded Image"
+            height={500}
+            width={700}
+            className="rounded-[30px] bottom-0"  
+          />
+            </motion.div>
+            </div>
 
 
       </motion.div>
