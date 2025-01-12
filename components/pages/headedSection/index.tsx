@@ -2,7 +2,6 @@
 
 
 import Image from "next/image";
-import { CheckCircle2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -13,12 +12,6 @@ const popInAnimation = {
 };
 
 export default function HeadedSection() {
-  const features = [
-    { name: "Accessibility" },
-    { name: "Flexibility" },
-    { name: "Personalization" },
-    { name: "Community" },
-  ];
 
   // Ref for scroll animations
   const sectionRef = useRef(null);
@@ -28,7 +21,7 @@ export default function HeadedSection() {
   return (
     <section
     ref={sectionRef}
-    className="bg-[#C9F4F4] min-h-screen relative overflow-hidden"
+    className="bg-[#C9F4F4] min-h-screen relative overflow-hidden items-start"
   >
 
     <div className="relative max-w-screen-2xl ms-auto me-auto h-screen overflow-hidden">
@@ -48,7 +41,7 @@ export default function HeadedSection() {
           hidden: { opacity: 0 },
           visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
         }}
-        className="grid lg:grid-cols-2 gap-12 items-center"
+        className="grid lg:grid-cols-2 gap-12 items-start"
       >
         {/* Left Column - Text Content */}
 

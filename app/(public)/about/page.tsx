@@ -1,6 +1,7 @@
 import FoundersQuote from '@/components/pages/About/FounderQuote';
 import OurJourney from '@/components/pages/About/ourJourney'; 
 import HeadedSection from '@/components/pages/headedSection';
+import LearningToday from '@/components/pages/learningToday';
 import React from 'react'
 
 function AboutUs() {
@@ -9,6 +10,7 @@ function AboutUs() {
     <OurJourney/>
     <HeadedSection/>
     <FoundersQuote/>
+    <LearningToday/>
     </>
   )
 }

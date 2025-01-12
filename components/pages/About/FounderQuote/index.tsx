@@ -2,7 +2,6 @@
 
 
 import Image from "next/image";
-import { CheckCircle2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -13,12 +12,7 @@ const popInAnimation = {
 };
 
 export default function FoundersQuote() {
-  const features = [
-    { name: "Accessibility" },
-    { name: "Flexibility" },
-    { name: "Personalization" },
-    { name: "Community" },
-  ];
+ 
 
   // Ref for scroll animations
   const sectionRef = useRef(null);
@@ -28,9 +22,9 @@ export default function FoundersQuote() {
   return (
     <section
     ref={sectionRef}
-    className="bg-[#1BC2C2] min-h-screen relative overflow-hidden"
+    className="bg-[#1BC2C2] relative overflow-hidden"
   >
-    <div className="max-w-screen-2xl mx-auto px-4 xl:py-36 lg:py-32 md:py-24 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
+    <div className="max-w-screen-2xl mx-auto  px-4 xl:py-36 lg:py-32 md:py-24 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
       <motion.div
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
@@ -38,17 +32,23 @@ export default function FoundersQuote() {
           hidden: { opacity: 0 },
           visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
         }}
-        className="grid lg:grid-cols-2 gap-12 items-center"
+        className="mx-auto items-center"
       >
     
-       <motion.div className="space-y-8" variants={popInAnimation}>
+       <motion.div className="space-y-8  mx-auto" variants={popInAnimation}>
  
           <motion.p
-            className="text-2xl text-white font-semibold max-w-2xl"
+            className="text-3xl text-white  mx-auto font-semibold"
             variants={popInAnimation}
           >
         “Education is the cornerstone of empowerment, and every individual deserves access to quality learning, regardless of geographical boundaries. 
         At Cardinal E-School, we are committed to bridging the gap between traditional classroom learning and innovative online education, fostering a community of curious minds and lifelong learners.”
+         </motion.p>
+
+         <motion.p
+            className="text-3xl text-white  font-semibold  max-w-4xl"
+            variants={popInAnimation}
+          >
         -Olalekan Okewole, Founder
          </motion.p>
 
