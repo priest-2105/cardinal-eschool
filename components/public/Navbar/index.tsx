@@ -51,7 +51,7 @@ function PublicNavbar() {
       <div className="max-w-screen-2xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Image onDragStart={(event) => event.preventDefault()} src={logo} alt="Cardinal Logo" width={180} height={90} />
+            <Image onDragStart={(event) => event.preventDefault()}  src={logo} alt="Cardinal Logo" width={180} height={90} />
           </div>
           
           {/* Desktop menu */}
@@ -111,7 +111,7 @@ function PublicNavbar() {
       >
         <div className="px-4 py-6">
           <div className="flex items-center justify-between mb-6">
-            <Image onDragStart={(event) => event.preventDefault()} src={logo} alt="Cardinal Logo" width={120} height={60} />
+            <Image  onDragStart={(event) => event.preventDefault()} src={logo} alt="Cardinal Logo" width={120} height={60} />
             <button onClick={toggleMenu} className="text-gray-500 hover:text-gray-600">
               <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
