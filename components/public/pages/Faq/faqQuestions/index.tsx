@@ -27,16 +27,16 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, animationDelay }) =
       animate="visible"
       variants={popInAnimation}
       transition={{ delay: animationDelay }}
-      className="bg-white rounded-lg shadow-md p-6"
+      className="bg-white"
     >
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between cursor-pointer"
+        className="flex bg-[#1BC2C2] items-center rounded-lg shadow-md p-6 justify-between cursor-pointer"
       >
-        <h2 className="text-lg font-medium text-gray-800">{question}</h2>
+        <h2 className="text-lg font-medium text-white">{question}</h2>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          className="text-gray-600"
+          className="text-white"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, animationDelay }) =
           initial="hidden"
           animate="visible"
           variants={popInAnimation}
-          className="mt-4 text-gray-600"
+          className="mt-4 text-[#1BC2C2] rounded-lg shadow-md p-6"
         >
           {answer}
         </motion.div>
