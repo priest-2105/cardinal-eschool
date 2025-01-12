@@ -5,7 +5,7 @@ import LearningToday from '@/components/public/pages/About/learningToday';
 import React from 'react'
 import FaqQuestions from '@/components/public/pages/Faq/faqQuestions';
 
-function AboutUs() {
+function Team() {
   return (
     <>
     <OurJourney/>
@@ -17,4 +17,4 @@ function AboutUs() {
   )
 }
 
-export default AboutUs;
+export default Team;
