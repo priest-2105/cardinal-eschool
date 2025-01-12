@@ -28,6 +28,3 @@ const PopularCourses = () => {
     </section>
   );
 };
-
-
-export default PopularCourses;
