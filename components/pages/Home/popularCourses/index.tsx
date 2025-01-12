@@ -17,7 +17,7 @@ const PopularCourses = () => {
       <div className="flex flex-wrap justify-center space-x-8 mt-8">
         {courses.map((course, index) => (
           <div key={index}>
-            <Image  className="text-white rounded-lg  w-96 h-80" height={96} width={96} src={course.img} alt={course.name}/>
+            <Image  className="rounded-lg  w-96 h-80" height={96} width={96} src={course.img} alt={course.name}/>
             <div className="py-2 text-center"> 
               <h1 className="text-2xl font-extrabold text-gray-800">{course.name}</h1>
               <p className="max-w-60 text-center font-semibold ms-auto me-auto py-2">Get on your studies and track your study progress now. <span className="text-blue-700 font-bold"> Get Started</span></p>

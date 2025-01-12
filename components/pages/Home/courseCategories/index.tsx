@@ -29,11 +29,11 @@ const CourseCategories = () => {
       <h1 className="text-4xl font-extrabold text-gray-800">Browse Course by Categories</h1>
       <p className="text-gray-600 font-medium mt-4">Expert-led online courses for students and professionals</p>
 
-      <div className="flex items-center mt-8">
+      <div className="flex ms-auto me-auto items-center mt-8">
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="bg-[#1BC2C2] text-white rounded-full p-3 shadow-md mr-4"
+          className="bg-[#1BC2C2] text-white rounded-full p-3 xl:ms-24 lg:ms-16 md:ms-6 shadow-md mr-4"
         >
           <svg
             className="w-6 h-6 text-white"
@@ -50,13 +50,13 @@ const CourseCategories = () => {
         {/* Category Cards */}
         <div
           ref={scrollRef}
-          className="flex space-x-4 overflow-x-auto no-scrollbar"
+          className="flex space-x-4  ms-auto me-auto  overflow-x-auto no-scrollbar"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {categories.map((category, index) => (
             <div
               key={index}
-              className="bg-white shadow-lg rounded-3xl p-6 w-60 py-14 text-center flex-shrink-0"
+              className="bg-white rounded-3xl p-6 w-60 py-14 text-center flex-shrink-0"
               style={{ scrollSnapAlign: "center" }}
             >
               <Image
@@ -74,7 +74,7 @@ const CourseCategories = () => {
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="bg-[#1BC2C2] text-white rounded-full p-3 shadow-md ml-4"
+          className="bg-[#1BC2C2] text-white rounded-full p-3 shadow-md ml-4 xl:me-24 lg:me-16 md:me-6 "
         >
           <svg
             className="w-6 h-6 text-white"
