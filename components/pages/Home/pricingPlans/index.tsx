@@ -94,6 +94,8 @@ const PricingPlans: React.FC = () => {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => (
             <motion.div
+              drag="y"
+              dragConstraints={{ top: -10, bottom: 10 }}
               key={index}
               custom={index} // Pass the index to the variant
               variants={cardVariants}
@@ -112,7 +114,7 @@ const PricingPlans: React.FC = () => {
                   <li key={i}>{feature}</li>
                 ))}
               </ul>
-              <button className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg hover:bg-teal-600 w-full">
+              <button className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg group-hover:bg-white group-hover:text-[#1BC2C2] w-full">
                 Get Started
               </button>
             </motion.div>
