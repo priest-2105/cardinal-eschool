@@ -38,7 +38,7 @@ function PublicFooter() {
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.home}`}> <span>Home</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.aboutUs}`}> <span>About Us</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.courses}`}> <span>Courses</span> </a>
-                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.mentors}`}> <span>Our Mentors</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.members}`}> <span>Our Members</span> </a>
                   </nav>
                 </div> 
                 <div>
