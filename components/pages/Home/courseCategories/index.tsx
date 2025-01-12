@@ -101,6 +101,7 @@ const CourseCategories = () => {
               style={{ scrollSnapAlign: "center" }}
             >
               <Image
+                 onDragStart={(event) => event.preventDefault()}
                 className="mx-auto"
                 src={category.icon}
                 width={50}

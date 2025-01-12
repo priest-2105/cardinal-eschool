@@ -50,6 +50,7 @@ const SkilledExpert = () => {
                 className="relative rounded-3xl ms-4 w-fit col-span-2 mt-2 ml-12"
               >
                 <Image
+                 onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/bb5b3d32-e25f-47fe-8a20-8f83a1e5ef9e 1.png"
                   alt="Student with megaphone"
                   width={600}

@@ -81,6 +81,7 @@ const PopularCourses = () => {
             whileHover={{ scale: 1.05 }} 
           >
             <Image
+              onDragStart={(event) => event.preventDefault()}
               className="rounded-lg w-96 h-80"
               height={320}
               width={320}

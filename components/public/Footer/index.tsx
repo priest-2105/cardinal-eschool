@@ -59,10 +59,10 @@ function PublicFooter() {
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`tel: ${cardinalConfig.contactInfo.phone}`}><Phone /> <span>+234 01 2345 6789</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`mailto: ${cardinalConfig.contactInfo.email}`}><Mail /> <span>Online@Cardinalschools.com</span> </a> 
                     <div className='flex items-center space-x-2 py-2'>
-                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  <Image src={WhatsappIcon} alt="whatsapp cion" /> </a> 
-                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  <Image src={TiktokIcon} alt="tiktok Icon" />  </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  <Image onDragStart={(event) => event.preventDefault()} src={WhatsappIcon} alt="whatsapp cion" /> </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  <Image onDragStart={(event) => event.preventDefault()} src={TiktokIcon} alt="tiktok Icon" />  </a> 
                     <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.youtube}`}>  <Youtube/>  </a> 
-                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.X}`}>  <Image src={XIcon} alt="X-cion" /> </a> 
+                    <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.X}`}>  <Image onDragStart={(event) => event.preventDefault()} src={XIcon} alt="X-cion" /> </a> 
                      </div>
                   </nav>
                 </div>

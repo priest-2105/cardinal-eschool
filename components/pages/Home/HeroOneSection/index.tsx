@@ -90,10 +90,15 @@ export default function HeroSection() {
              <div className="grid gap-2 items-end grid-cols-2">
                {/* Top Image */}
           
-               <motion.div variants={popInAnimation} className="relative ms-auto rounded-3xl ">
+               <motion.div 
+                drag={true} 
+                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
+               variants={popInAnimation} 
+               className="relative ms-auto rounded-3xl ">
             
                  <div className="absolute -bottom-0 -left-12 rounded-full p-2">        
                  <Image
+                 onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/stars.png"
                   alt="Star"  
                   width={30}
@@ -103,6 +108,7 @@ export default function HeroSection() {
                 </div>
 
                 <Image
+                  onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/Rectangle 1452.png"
                   alt="Student using tablet"
                   width={280}
@@ -121,10 +127,15 @@ export default function HeroSection() {
                 </motion.div>
 
               {/* Top Right Image */}
-              <motion.div variants={popInAnimation} className="relative w-fit -mb-4 rounded-3xl">
+              <motion.div 
+              drag={true} 
+              dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
+              variants={popInAnimation} 
+              className="relative w-fit -mb-4 rounded-3xl">
                 
               <div className="absolute -top-16 right-16 rounded-full p-2">        
                 <Image
+                  onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/Ellipse 1866.png"
                   alt="Star"  
                   width={30}
@@ -134,6 +145,7 @@ export default function HeroSection() {
                 </div>
                 
                 <Image
+                 onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/Rectangle 1454.png"
                   alt="Student learning"
                   width={280}
@@ -150,9 +162,14 @@ export default function HeroSection() {
               </motion.div>
 
               {/* Bottom Image */}
-              <motion.div variants={popInAnimation} className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12">
+              <motion.div 
+              drag={true} 
+              dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
+              variants={popInAnimation} 
+              className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12">
                 <Image
                   src="/assets/img/pages/homepage/Rectangle 1453.png"
+                 onDragStart={(event) => event.preventDefault()}
                   alt="Student with megaphone"
                   width={400}
                   height={400}
@@ -163,6 +180,7 @@ export default function HeroSection() {
                 <Image
                   src="/assets/img/pages/homepage/stars (1).png"
                   alt="Student with megaphone"
+                  onDragStart={(event) => event.preventDefault()}
                   width={30}
                   height={30}
                   className="object-cover"
@@ -170,7 +188,8 @@ export default function HeroSection() {
                 </div>
 
                 <div className="absolute -top-4 -right-4"> 
-                <Image
+                <Image                  
+                  onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/group199.png"
                   alt="Student using tablet circles"
                   width={180}
