@@ -41,14 +41,14 @@ export default function HeadedSection() {
           hidden: { opacity: 0 },
           visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
         }}
-        className="grid lg:grid-cols-2 gap-12 items-center"
+        className="grid lg:grid-cols-2 gap-12 items-center max-md:grid-rows-2 max-md:[grid-template-rows:auto auto]"
       >
         {/* Left Column - Text Content */}
-
+ 
        
      
 
-       <motion.div className="space-y-8" variants={popInAnimation}>
+       <motion.div className="order-2 md:order-1 space-y-8" variants={popInAnimation}>
  
           <motion.p
             className="text-lg text-gray-900 font-semibold max-w-2xl"
@@ -72,7 +72,7 @@ export default function HeadedSection() {
  
 
    {/* Right Column - Images */}      
-        <div className="relative lg:block">
+        <div className="order-1 md:order-2 relative lg:block">
       
             <motion.div 
                 drag={true} 
