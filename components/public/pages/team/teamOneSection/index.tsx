@@ -21,7 +21,7 @@ export default function TeamOneSection() {
   return (
     <section
     ref={sectionRef}
-    className="bg-[#C9F4F4] min-h-screen relative overflow-hidden items-start"
+    className="bg-[#C9F4F4] min-h-screen pt-12  relative overflow-hidden items-start"
   >
 
     <div className="max-w-screen-2xl mx-auto px-4 xl:py-26 lg:py-12 md:py-12 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
