@@ -1,0 +1,63 @@
+"use client";
+
+
+import Image from "next/image";
+import { CheckCircle2 } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+
+const popInAnimation = {
+  hidden: { opacity: 0, scale: 0.9, y: 50 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.5 } },
+  exit: { opacity: 0, scale: 0.9, y: 50, transition: { duration: 0.5 } },
+};
+
+export default function FoundersQuote() {
+  const features = [
+    { name: "Accessibility" },
+    { name: "Flexibility" },
+    { name: "Personalization" },
+    { name: "Community" },
+  ];
+
+  // Ref for scroll animations
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, margin: "-100px" });
+
+
+  return (
+    <section
+    ref={sectionRef}
+    className="bg-[#1BC2C2] min-h-screen relative overflow-hidden"
+  >
+    <div className="max-w-screen-2xl mx-auto px-4 xl:py-36 lg:py-32 md:py-24 items-start sm:py-16 py-16 sm:px-6 lg:px-8">
+      <motion.div
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
+        }}
+        className="grid lg:grid-cols-2 gap-12 items-center"
+      >
+    
+       <motion.div className="space-y-8" variants={popInAnimation}>
+ 
+          <motion.p
+            className="text-2xl text-white font-semibold max-w-2xl"
+            variants={popInAnimation}
+          >
+        “Education is the cornerstone of empowerment, and every individual deserves access to quality learning, regardless of geographical boundaries. 
+        At Cardinal E-School, we are committed to bridging the gap between traditional classroom learning and innovative online education, fostering a community of curious minds and lifelong learners.”
+        -Olalekan Okewole, Founder
+         </motion.p>
+
+        
+        </motion.div>
+      </motion.div>
+    </div>
+  </section>
+  );
+};
+
+

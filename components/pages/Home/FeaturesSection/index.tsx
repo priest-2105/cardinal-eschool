@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Clock, DollarSign, BookOpen, Users, BarChart } from "lucide-react";
+import Image from "next/image";
 
 const cardAnimation = {
   hidden: { opacity: 0, y: 50 },
@@ -15,35 +16,36 @@ export default function FeaturesSection() {
       title: "Experienced Mentors",
       description:
         "Experienced mentors are invaluable guides who bring a wealth of knowledge and insights from years of practice in their field. They provide essential guidance, support, and feedback, helping mentees navigate challenges, avoid common pitfalls, and achieve their goals.",
-      icon: Users,
+      icon: "/assets/img/pages/homepage/Group 203.png",
+
       iconBg: "bg-[#4A90E2]",
     },
     {
       title: "Personalized Teaching",
       description:
         "Personalized teaching tailors learning experiences to meet each student's unique needs, abilities, and goals. Rather than a one-size-fits-all approach, personalized teaching recognizes that students have diverse backgrounds, learning styles, and paces.",
-      icon: BookOpen,
+      icon: "/assets/img/pages/homepage/Group 200.png",
       iconBg: "bg-[#9BC53D]",
     },
     {
       title: "Track Your Progress",
       description:
         "Through tools like assessments, progress reports, and visual dashboards, students can see their advancement in real-time and understand where they are on their learning journey. This transparency not only helps in keeping students motivated but also enables targeted instruction to meet individual needs.",
-      icon: BarChart,
+      icon: "/assets/img/pages/homepage/Group 205.png",
       iconBg: "bg-[#4A90E2]",
     },
     {
       title: "Flexible Learning",
       description:
         "Learn at your own pace. By providing multiple pathways to reach learning goals, flexible learning empowers students to customize their educational journey, making education more accessible, inclusive, and aligned with individual lifestyles.",
-      icon: Clock,
+      icon:"/assets/img/pages/homepage/Group 202.png",
       iconBg: "bg-[#FF69B4]",
     },
     {
       title: "Affordable prices",
       description:
         "Our affordable pricing makes education accessible to a wider range of learners, ensuring that quality education and growth are not limited by financial constraints. By providing cost-effective access to all resources rates, our platforms can reach more students and support those who might otherwise miss out due to cost barriers.",
-      icon: DollarSign,
+      icon: "/assets/img/pages/homepage/Group 204.png",
       iconBg: "bg-[#FF5733]",
     },
   ];
@@ -88,11 +90,11 @@ export default function FeaturesSection() {
               className="bg-white rounded-2xl shadow-lg p-8 transition-transform hover:scale-105"
               variants={cardAnimation}
             >
-              <div
-                className={`${feature.iconBg} text-white w-12 h-12 rounded-xl flex items-center justify-center mb-6`}
-              >
-                <feature.icon className="w-6 h-6" />
-              </div>
+                <Image
+                  src={feature.icon}
+                  alt={feature.title}
+                  width={80}
+                  height={80}/>
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {feature.title}
               </h3>
