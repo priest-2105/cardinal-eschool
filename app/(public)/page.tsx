@@ -1,10 +1,10 @@
-import CourseCategories from "@/components/pages/Home/courseCategories";
-import FeaturesSection from "@/components/pages/Home/FeaturesSection";
-import HeroOneSection from "@/components/pages/Home/HeroOneSection";
-import PopularCourses from "@/components/pages/Home/popularCourses";
-import PricingPlans from "@/components/pages/Home/pricingPlans";
-import SkilledExpert from "@/components/pages/Home/skilledExpert";
-import Testimonials from "@/components/pages/Home/testimonials";
+import CourseCategories from "@/components/public/pages/Home/courseCategories";
+import FeaturesSection from "@/components/public/pages/Home/FeaturesSection";
+import HeroOneSection from "@/components/public/pages/Home/HeroOneSection";
+import PopularCourses from "@/components/public/pages/Home/popularCourses";
+import PricingPlans from "@/components/public/pages/Home/pricingPlans";
+import SkilledExpert from "@/components/public/pages/Home/skilledExpert";
+import Testimonials from "@/components/public/pages/Home/testimonials";
 
 
 export default function Home() {

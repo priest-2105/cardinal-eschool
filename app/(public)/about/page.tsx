@@ -1,7 +1,7 @@
-import FoundersQuote from '@/components/pages/About/FounderQuote';
-import OurJourney from '@/components/pages/About/ourJourney'; 
-import HeadedSection from '@/components/pages/headedSection';
-import LearningToday from '@/components/pages/learningToday';
+import FoundersQuote from '@/components/public/pages/About/FounderQuote';
+import OurJourney from '@/components/public/pages/About/ourJourney'; 
+import HeadedSection from '@/components/public/pages/About/headedSection';
+import LearningToday from '@/components/public/pages/About/learningToday';
 import React from 'react'
 
 function AboutUs() {

@@ -38,7 +38,7 @@ export default function FoundersQuote() {
        <motion.div className="space-y-8  mx-auto" variants={popInAnimation}>
  
           <motion.p
-            className="text-3xl text-white  mx-auto font-semibold"
+            className="text-2xl text-white mx-auto font-medium"
             variants={popInAnimation}
           >
         “Education is the cornerstone of empowerment, and every individual deserves access to quality learning, regardless of geographical boundaries. 
@@ -46,7 +46,7 @@ export default function FoundersQuote() {
          </motion.p>
 
          <motion.p
-            className="text-3xl text-white  font-semibold  max-w-4xl"
+            className="text-3xl text-white  font-semibold max-w-4xl"
             variants={popInAnimation}
           >
         -Olalekan Okewole, Founder
