@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
+import cardinalConfig from "@/config"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -57,17 +58,17 @@ export default function SignupPage() {
         </div>
 
         {/* Right Column */}
-        <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-md mx-auto">
-            <div className="text-right mb-8">
-              <span className="text-sm text-gray-600">
+        <div className="w-full  lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-right mb-8  items-start align-top self-start">
+             <span className="text-sm text-gray-600">
                 Already a Cardinal?{" "}
-                <Link href="/login" className="text-[#1BC2C2] hover:underline font-semibold">
+                <Link href={cardinalConfig.routes.login} className="text-[#1BC2C2] hover:underline font-semibold">
                   Sign in!
                 </Link>
               </span>
             </div>
-
+            
+            <div className="max-w-md mx-auto">
             <h2 className="text-3xl font-bold mb-2">Sign up</h2>
             <p className="text-gray-600 mb-8">Take the next steps to apply to Cardinal E-School</p>
 

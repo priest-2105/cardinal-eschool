@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button" 
+import cardinalConfig from "@/config"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ 
@@ -22,7 +23,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white">
       <div className="flex min-h-screen items-center">
         {/* Left Column - Hidden on mobile and tablet */}
-        <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
+        <div className="hidden  min-h-screen lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
             <Image
               onDragStart={(event) => event.preventDefault()}
@@ -51,17 +52,16 @@ export default function LoginPage() {
         </div>
 
         {/* Right Column */}
-        <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-md mx-auto">
-            <div className="text-right mb-8">
+        <div className="w-full  lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-right mb-8  items-start align-top self-start">
               <span className="text-sm text-gray-600">
                 Already a Cardinal?{" "}
-                <Link href="/login" className="text-[#1BC2C2] hover:underline font-semibold">
+                <Link href={cardinalConfig.routes.signup} className="text-[#1BC2C2] hover:underline font-semibold">
                   Sign Up!
                 </Link>
               </span>
             </div>
-
+          <div className="max-w-md mx-auto items-center align-middle self-center">
             <h2 className="text-3xl font-bold mb-2">Login In</h2>
             <p className="text-gray-600 mb-8">Continue to Cardinal E-School</p>
 
