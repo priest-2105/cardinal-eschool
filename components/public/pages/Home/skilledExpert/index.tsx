@@ -1,17 +1,23 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import cardinalConfig from "@/config";
 
 const SkilledExpert = () => {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, {
-    triggerOnce: false,
-    margin: "-100px",  // Adjust margin as needed to trigger earlier
-  });
-
+ 
+   const sectionRef = useRef(null);
+    const [triggerOnce, setTriggerOnce] = useState(false);
+    const isInView = useInView(sectionRef, { margin: "-100px" });
+  
+    useEffect(() => {
+      if (isInView && !triggerOnce) {
+        setTriggerOnce(true);  
+      }
+    }, [isInView, triggerOnce]);
+  
+  
   const imageAnimation = {
     hidden: { opacity: 0, scale: 0.8 },  // Start smaller and invisible
     visible: { 

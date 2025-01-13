@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 
@@ -144,11 +144,15 @@ const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
 };
 
 const CourseList: React.FC = () => {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, {
-    triggerOnce: false,
-    margin: "-100px",
-  });
+ const sectionRef = useRef(null);
+  const [triggerOnce, setTriggerOnce] = useState(false);
+  const isInView = useInView(sectionRef, { margin: "-100px" });
+
+  useEffect(() => {
+    if (isInView && !triggerOnce) {
+      setTriggerOnce(true);  
+    }
+  }, [isInView, triggerOnce]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

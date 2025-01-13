@@ -55,7 +55,7 @@ export default function FeaturesSection() {
 
   useEffect(() => {
     if (isInView && !triggerOnce) {
-      setTriggerOnce(true); // Set to true once it's in view
+      setTriggerOnce(true);  
     }
   }, [isInView, triggerOnce]);
 
