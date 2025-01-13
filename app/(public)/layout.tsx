@@ -1,4 +1,4 @@
-import "./globals.css";
+import "../globals.css";
 import PublicNavbar from "@/components/public/Navbar";
 import PublicFooter from "@/components/public/Footer"; 
 

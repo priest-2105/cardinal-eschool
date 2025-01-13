@@ -24,7 +24,7 @@ function PublicFooter() {
                 Cardinal E-School, where education knows no borders. Our innovative platform connects learners worldwide, providing personalized education for a brighter future. 
                 </p>
                 <div className="flex mt-8 space-x-6">
-                  <a className="bg-white px-16 py-3 text-[#1BC2C2] rounded-3xl font-bold hover:shadow-xl" href="" target="_blank" rel="noreferrer">
+                  <a className="bg-white px-16 py-3 text-[#1BC2C2] rounded-3xl font-bold hover:shadow-xl" href={cardinalConfig.routes.login} target="_blank" rel="noreferrer">
                     Get Started
                     </a> 
                 </div>

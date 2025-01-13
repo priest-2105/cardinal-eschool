@@ -31,7 +31,8 @@ export default function LoginPage() {
         <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
             <Image
-              src="/assets/img/signup-illustration.svg"
+              onDragStart={(event) => event.preventDefault()}
+              src="/assets/img/pages/login/6955b465-50b7-4e9f-bdf9-d1e67efa258f-removebg-preview 1.png"
               alt="Learning Illustration"
               width={500}
               height={400}

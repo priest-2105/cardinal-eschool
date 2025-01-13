@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import cardinalConfig from "@/config";
 
 const SkilledExpert = () => {
   const sectionRef = useRef(null);
@@ -34,9 +35,15 @@ const SkilledExpert = () => {
               At Cardinal E-School, our innovative platform connects learners worldwide, providing personalized education for a brighter future. <br />
               We believe education should be accessible (Learn anywhere, at anytime), Flexible (Choose your pace, your path), Personalized (Expert teachers, tailored lessons).
             </p>
-            <button className="bg-[#1BC2C2] text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors">
+            <motion.div className="mt-8">
+            <motion.a
+              className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
+               href={cardinalConfig.routes.login}
+            >
               Start learning now
-            </button>
+            </motion.a>
+            </motion.div>
+
           </div>
 
           {/* Right Column - Images */}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import cardinalConfig from "@/config";
 
 const popInAnimation = {
   hidden: { opacity: 0, scale: 0.9, y: 50 },
@@ -75,12 +76,16 @@ export default function HeroSection() {
               ))}
             </motion.div>
 
-            <motion.button
-              className="bg-[#1BC2C2] text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
+            <motion.div>
+            <motion.a
+              className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
               variants={popInAnimation}
+              href={cardinalConfig.routes.login}
             >
               Start learning now
-            </motion.button>
+            </motion.a>
+            </motion.div>
+
           </motion.div>
 
 

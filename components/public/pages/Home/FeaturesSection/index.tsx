@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Clock, DollarSign, BookOpen, Users, BarChart } from "lucide-react";
 import Image from "next/image";
+import cardinalConfig from "@/config";
 
 const cardAnimation = {
   hidden: { opacity: 0, y: 50 },
@@ -69,9 +70,15 @@ export default function FeaturesSection() {
             innovative platform connects learners worldwide, providing
             personalized education for a brighter future.
           </p>
-          <button className="mt-8 bg-[#1BC2C2] text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors">
-            Start learning now
-          </button>
+          <motion.div className="mt-8">
+            <motion.a
+              className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
+              href={cardinalConfig.routes.login}
+            >
+              Start learning now
+            </motion.a>
+            </motion.div>
+
         </div>
 
         {/* Feature Cards */}

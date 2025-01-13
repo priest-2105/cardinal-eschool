@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
+import cardinalConfig from "@/config";
 
 const PopularCourses = () => {
   const courses = [
@@ -92,7 +93,8 @@ const PopularCourses = () => {
               <h1 className="text-2xl font-extrabold text-gray-800">{course.name}</h1>
               <p className="max-w-60 text-center font-semibold ms-auto me-auto py-2">
                 Get on your studies and track your study progress now.{" "}
-                <span className="text-blue-700 font-bold">Get Started</span>
+                <span className="text-blue-700 font-bold"><a  href={cardinalConfig.routes.login}>Get Started</a></span>
+            
               </p>
             </div>
           </motion.div>
