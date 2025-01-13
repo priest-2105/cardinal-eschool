@@ -36,7 +36,7 @@ const PopularCourses = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
     triggerOnce: false, 
-    margin: "-100px",  // Adjust trigger margin as needed
+    margin: "-100px",   
   });
 
   return (
