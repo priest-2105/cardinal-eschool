@@ -1,5 +1,6 @@
 "use client";
 
+import cardinalConfig from "@/config";
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 
@@ -17,11 +18,7 @@ const staggerContainer = {
 const JobOpenings = () => {
   const contactSectionRef = useRef<HTMLDivElement | null>(null);
   const [viewAll, setViewAll] = useState(false); // State to manage view toggle
-
-  const scrollToContact = () => {
-    contactSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+ 
   const jobPositions = [
     { title: "Mathematics Tutor", location: "Remote" },
     { title: "Music Instructor", location: "Remote" },
@@ -34,7 +31,7 @@ const JobOpenings = () => {
   const displayedPositions = viewAll ? jobPositions : jobPositions.slice(0, 3);
 
   return (
-    <section className="bg-gray-50 py-16 px-6 md:px-16 relative">
+    <section className="bg-gray-50 py-16 px-6 md:px-16 relative" id="">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.h1
@@ -66,9 +63,9 @@ const JobOpenings = () => {
         </motion.div>
 
         {/* Opacity Gradient */}
-        {!viewAll && (
+        {/* {!viewAll && (
           <div className="absolute bottom-[0px] w-full h-16 bg-gradient-to-t from-gray-50 via-gray-50 to-transparent pointer-events-none"></div>
-        )}
+        )} */}
 
         {/* View More / Less Button */}
         <div className="text-center mt-6">
@@ -99,13 +96,14 @@ const JobOpenings = () => {
               Use the subject you'll be teaching as the subject of the email.
             </p>
           </div>
-
-          <button
-            onClick={scrollToContact}
-            className="mt-6 bg-[#17A1A1] text-white px-6 py-2 rounded-3xl hover:bg-[#1BC2C2]  transition-all"
+          <div className="mt-4">
+          <a
+            href={cardinalConfig.routes.contactUs} 
+            className="mt-8 bg-[#17A1A1] text-white px-6 py-2 rounded-3xl hover:bg-[#1BC2C2]  transition-all"
           >
             Contact Us
-          </button>
+          </a>
+          </div>
         </motion.div>
       </div>
     </section>
