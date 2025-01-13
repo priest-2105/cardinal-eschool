@@ -8,14 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    gender: "",
-    email: "",
-    referralChannel: "",
-    password: "",
-    confirmPassword: "",
+  const [formData, setFormData] = useState({ 
+    email: "", 
+    password: "", 
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,7 +21,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen items-center">
         {/* Left Column - Hidden on mobile and tablet */}
         <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
@@ -63,69 +58,30 @@ export default function LoginPage() {
               <span className="text-sm text-gray-600">
                 Already a Cardinal?{" "}
                 <Link href="/login" className="text-[#1BC2C2] hover:underline font-semibold">
-                  Sign in!
+                  Sign Up!
                 </Link>
               </span>
             </div>
 
-            <h2 className="text-3xl font-bold mb-2">Sign up</h2>
-            <p className="text-gray-600 mb-8">Take the next steps to apply to Cardinal E-School</p>
+            <h2 className="text-3xl font-bold mb-2">Login In</h2>
+            <p className="text-gray-600 mb-8">Continue to Cardinal E-School</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Enter first name"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                />
-                <Input
-                  placeholder="Enter last name"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                />
-              </div>
-
-              <Select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </Select>
-
+            
               <Input
                 type="email"
                 placeholder="Enter email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
-
-              <Select
-                value={formData.referralChannel}
-                onChange={(e) => setFormData({ ...formData, referralChannel: e.target.value })}
-              >
-                <option value="">How did you hear about us?</option>
-                <option value="social">Social Media</option>
-                <option value="friend">Friend/Family</option>
-                <option value="search">Search Engine</option>
-                <option value="other">Other</option>
-              </Select>
-
+ 
               <Input
                 type="password"
                 placeholder="Enter password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
-
-              <Input
-                type="password"
-                placeholder="Enter password again"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
+ 
 
               <div className="text-sm text-gray-600">
                 By clicking continue, I agree to{" "}

@@ -50,7 +50,7 @@ const PricingPlans: React.FC = () => {
     },
     {
       title: "Group Sessions",
-      price: "$30",
+      price: "$40",
       duration: "/ Session",
       features: [
         "For interactive and collaborative learning",

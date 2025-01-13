@@ -132,8 +132,8 @@ const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
           {course.description}
         </p>
         <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
-          <span><b>Instructor:</b> {course.instructor}</span>
-          <span>{course.students} students</span>
+          {/* <span><b>Instructor:</b> {course.instructor}</span> */}
+          {/* <span>{course.students} students</span> */}
         </div>
         <div className="text-right text-sm font-semibold text-[#1BC2C2]">
           Available in: {course.plan}
