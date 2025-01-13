@@ -28,6 +28,7 @@ const cardinalConfig = {
     routes: {
         home: "/",
         login: "/login",
+        signup: "/signup",
         aboutUs: "/about",
         contactUs: "/contact",
         testPrep: "/text-prep",
