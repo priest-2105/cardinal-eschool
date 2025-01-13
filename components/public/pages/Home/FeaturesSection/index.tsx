@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react"; 
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import cardinalConfig from "@/config";
 
@@ -37,7 +37,7 @@ export default function FeaturesSection() {
       title: "Flexible Learning",
       description:
         "Learn at your own pace. By providing multiple pathways to reach learning goals, flexible learning empowers students to customize their educational journey, making education more accessible, inclusive, and aligned with individual lifestyles.",
-      icon:"/assets/img/pages/homepage/Group 202.png",
+      icon: "/assets/img/pages/homepage/Group 202.png",
       iconBg: "bg-[#FF69B4]",
     },
     {
@@ -50,10 +50,14 @@ export default function FeaturesSection() {
   ];
 
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, {
-    triggerOnce: false, 
-    margin: "-100px",  
-  });
+  const [triggerOnce, setTriggerOnce] = useState(false);
+  const isInView = useInView(sectionRef, { margin: "-100px" });
+
+  useEffect(() => {
+    if (isInView && !triggerOnce) {
+      setTriggerOnce(true); // Set to true once it's in view
+    }
+  }, [isInView, triggerOnce]);
 
   return (
     <section ref={sectionRef} className="py-16 bg-white">
@@ -75,14 +79,13 @@ export default function FeaturesSection() {
             >
               Start learning now
             </motion.a>
-            </motion.div>
-
+          </motion.div>
         </div>
 
         {/* Feature Cards */}
         <motion.div
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          animate={triggerOnce ? "visible" : "hidden"} // Trigger animation only once
           variants={{
             hidden: { opacity: 0 },
             visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
@@ -95,11 +98,12 @@ export default function FeaturesSection() {
               className="bg-white rounded-2xl shadow-lg p-8 transition-transform hover:scale-105"
               variants={cardAnimation}
             >
-                <Image
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={80}
-                  height={80}/>
+              <Image
+                src={feature.icon}
+                alt={feature.title}
+                width={80}
+                height={80}
+              />
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 {feature.title}
               </h3>
