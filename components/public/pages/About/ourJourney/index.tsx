@@ -2,7 +2,6 @@
 
 
 import Image from "next/image";
-import { CheckCircle2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -13,12 +12,7 @@ const popInAnimation = {
 };
 
 export default function OurJourney() {
-  const features = [
-    { name: "Accessibility" },
-    { name: "Flexibility" },
-    { name: "Personalization" },
-    { name: "Community" },
-  ];
+  
 
   // Ref for scroll animations
   const sectionRef = useRef(null);

@@ -93,7 +93,7 @@ const JobOpenings = () => {
               </span>
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Use the subject you'll be teaching as the subject of the email.
+              Use the subject you&apos;ll be teaching as the subject of the email.
             </p>
           </div>
           <div className="mt-4">

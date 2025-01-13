@@ -1,8 +1,7 @@
 "use client";
 
 import React from 'react'
-import Image from 'next/image';
-import logo from '@/public/assets/img/logo.png';
+import Image from 'next/image'; 
 import { Phone, Mail, Youtube } from 'lucide-react'; 
 import XIcon from '@/public/assets/icons/x.png';
 import TiktokIcon from '@/public/assets/icons/tiktok.png';
@@ -24,7 +23,7 @@ function PublicFooter() {
                 Cardinal E-School, where education knows no borders. Our innovative platform connects learners worldwide, providing personalized education for a brighter future. 
                 </p>
                 <div className="flex mt-8 space-x-6">
-                  <a className="bg-white px-16 py-3 text-[#1BC2C2] rounded-3xl font-bold hover:shadow-xl" href={cardinalConfig.routes.login} target="_blank" rel="noreferrer">
+                  <a className="bg-white px-16 py-3 text-[#1BC2C2] rounded-3xl font-bold hover:shadow-xl" href={cardinalConfig.routes.login} >
                     Get Started
                     </a> 
                 </div>

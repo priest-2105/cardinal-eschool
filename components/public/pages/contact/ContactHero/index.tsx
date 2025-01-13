@@ -1,10 +1,6 @@
 "use client";
 
 
-import { useState } from 'react'
-import cardinalConfig from '@/config'
-import { FaFacebook, FaTwitter, FaTiktok, FaYoutube, FaWhatsapp } from 'react-icons/fa'
-
 export default function ContactHero() {
 
 

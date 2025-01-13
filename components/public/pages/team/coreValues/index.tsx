@@ -2,7 +2,6 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Clock, DollarSign, BookOpen, Users, BarChart } from "lucide-react";
 import Image from "next/image";
 
 const cardAnimation = {

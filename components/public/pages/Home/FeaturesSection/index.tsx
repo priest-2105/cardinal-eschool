@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Clock, DollarSign, BookOpen, Users, BarChart } from "lucide-react";
+import { useRef } from "react"; 
 import Image from "next/image";
 import cardinalConfig from "@/config";
 
@@ -18,7 +17,6 @@ export default function FeaturesSection() {
       description:
         "Experienced mentors are invaluable guides who bring a wealth of knowledge and insights from years of practice in their field. They provide essential guidance, support, and feedback, helping mentees navigate challenges, avoid common pitfalls, and achieve their goals.",
       icon: "/assets/img/pages/homepage/Group 203.png",
-
       iconBg: "bg-[#4A90E2]",
     },
     {
