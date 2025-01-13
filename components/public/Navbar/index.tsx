@@ -41,7 +41,7 @@ function PublicNavbar() {
     { menuItem: 'Home', Link: `${cardinalConfig.routes.home}`},
     { menuItem: 'About Us', Link: `${cardinalConfig.routes.aboutUs}`},
     { menuItem: 'Courses', Link: `${cardinalConfig.routes.courses}`},
-    { menuItem: 'Test Prep', Link: `${cardinalConfig.routes.testPrep}`},
+    // { menuItem: 'Test Prep', Link: `${cardinalConfig.routes.testPrep}`},
     { menuItem: 'Contact Us', Link: `${cardinalConfig.routes.contactUs}`},
     { menuItem: 'Career', Link: `${cardinalConfig.routes.careers}`},
   ]

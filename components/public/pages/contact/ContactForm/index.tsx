@@ -29,8 +29,6 @@ export default function ContactForm() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#C9F4F4]">
-      {/* Form Section */}
       <div className="max-w-4xl mx-auto px-4 py-12 -mt-20 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-500 hover:shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -114,7 +112,6 @@ export default function ContactForm() {
             ))}
           </div>
         </div>
-      </div>
-    </div>
+      </div> 
   )
 }
