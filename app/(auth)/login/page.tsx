@@ -62,7 +62,7 @@ export default function LoginPage() {
               </span>
             </div>
           <div className="max-w-md mx-auto items-center align-middle self-center">
-            <h2 className="text-3xl font-bold mb-2">Login In</h2>
+            <h2 className="text-3xl font-bold mb-2">LogIn</h2>
             <p className="text-gray-600 mb-8">Continue to Cardinal E-School</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
