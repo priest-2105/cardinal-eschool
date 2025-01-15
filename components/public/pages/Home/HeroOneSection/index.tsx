@@ -13,6 +13,8 @@ const popInAnimation = {
   exit: { opacity: 0, scale: 0.9, y: 50, transition: { duration: 0.5 } },
 };
 
+const isDesktop = window.innerWidth >= 1024;  
+
 export default function HeroSection() {
   const features = [
     { name: "Accessibility" },
@@ -96,7 +98,7 @@ export default function HeroSection() {
                {/* Top Image */}
           
                <motion.div 
-                drag={true} 
+                drag={isDesktop} 
                 dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
                variants={popInAnimation} 
                className="relative ms-auto rounded-3xl ">
@@ -133,7 +135,7 @@ export default function HeroSection() {
 
               {/* Top Right Image */}
               <motion.div 
-              drag={true} 
+              drag={isDesktop} 
               dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
               variants={popInAnimation} 
               className="relative w-fit -mb-4 rounded-3xl">
@@ -168,7 +170,7 @@ export default function HeroSection() {
 
               {/* Bottom Image */}
               <motion.div 
-              drag={true} 
+              drag={isDesktop} 
               dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
               variants={popInAnimation} 
               className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12">

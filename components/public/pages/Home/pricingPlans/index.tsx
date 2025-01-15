@@ -121,6 +121,39 @@ const PricingPlans: React.FC = () => {
           ))}
         </div>
       </div>
+
+
+      <div className="lg:-mt-48 h-fit py-12 px-5">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+          {pricingPlans.map((plan, index) => (
+            <motion.div
+              drag="y"
+              dragConstraints={{ top: -10, bottom: 10 }}
+              key={index}
+              custom={index} // Pass the index to the variant
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: false, amount: 0.3 }} // Repeat animation on scroll
+              className="bg-white group rounded-3xl shadow-lg min-w-[250px] p-6 border-2 hover:border-white-2 hover:bg-[#1BC2C2] hover:text-white transition"
+            >
+              <h2 className="text-xl font-bold mb-4">{plan.title}</h2>
+              <p className="text-3xl font-bold text-[#1BC2C2] group-hover:text-white mb-2">
+                {plan.price}
+              </p>
+              <p className="text-sm mb-4 font-bold">{plan.duration}</p>
+              <ul className="text-sm list-disk space-y-2 mb-6 font-semibold">
+                {plan.features.map((feature, i) => (
+                  <li key={i}>{feature}</li>
+                ))}
+              </ul>
+              <button className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg group-hover:bg-white group-hover:text-[#1BC2C2] w-full">
+                Get Started
+              </button>
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
