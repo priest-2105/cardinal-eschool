@@ -135,7 +135,7 @@ const PricingPlans: React.FC = () => {
 
 
       <div className="pt-16 h-fit ms-auto me-auto py-12 px-5">
-        <div className="flex  justify-center justify-self-center gap-8 max-w-7xl max-sm:block mx-auto">
+        <div className="flex  justify-center gap-8 max-w-7xl max-sm:block mx-auto">
           {pricingDiscounts.map((plan, index) => (
             <motion.div
               drag="y"
@@ -146,7 +146,7 @@ const PricingPlans: React.FC = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: false, amount: 0.3 } }
-              className="bg-transparent items-center max-w-72 w-72  text-center text-[#1BC2C2] group rounded-3xl shadow-lg min-w-[250px] p-6 border-2 border-[#1BC2C2] hover:border-white-2 hover:bg-[#1BC2C2] hover:text-[#fff] transition"
+              className="bg-transparent items-center max-w-72 w-72 max-sm:my-3 text-center  max-sm:mx-auto text-[#1BC2C2] group rounded-3xl shadow-lg min-w-[250px] p-6 border-2 border-[#1BC2C2] hover:border-white-2 hover:bg-[#1BC2C2] hover:text-[#fff] transition"
             >
               <h2 className="text-3xl py-2 font-bold mb-4">{plan.title}</h2>
               <p className="text-3xl font-bold text-[#1BC2C2] group-hover:text-white mb-2">
