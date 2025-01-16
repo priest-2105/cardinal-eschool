@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import AssessmentForm from "@/components/public/pages/assessment/asessmentForm"
 import Image from "next/image"
+import { ArrowLeft } from "lucide-react";
 
 export default function AssessmentPage() {
   const router = useRouter();
@@ -32,9 +33,8 @@ export default function AssessmentPage() {
           <div className="mx-auto">
             <button
               onClick={() => router.push('/signup')}
-              className="text-blue-500 hover:underline mb-4"
-            >
-              &larr; Back to Signup
+              className="text-[#1BC2C2]  hover:underline mb-4"
+            >  <ArrowLeft/> 
             </button>
             <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
             <p className="text-gray-600 mb-8">
