@@ -32,19 +32,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <StudentDashboardSideBar/>  
-
-      {/* Main Content */}
-      <main className="flex-1 p-6">
-
-        {/* Header */}
-        <StudentDashboardHeader/>
+      <div className="min-h-screen bg-gray-50">
+        <StudentDashboardSideBar/>  
+          <div className="pl-64">
+            <StudentDashboardHeader/>
+        <main className="pt-[104px] px-8 pb-8">
         {children}
-      </main>
-    </div>
+        </main>
+      </div>
+      </div>  
       </body>
     </html>
   );
