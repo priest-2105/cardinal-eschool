@@ -38,13 +38,13 @@ const StudentDashboardSideBar: React.FC = () => {
             key={item.name}
             href={item.href}
             className={cn(
-              "flex items-center gap-x-3 rounded-lg px-3 py-6 my-3 text-sm font-medium",
+              "flex items-center gap-x-3 rounded-lg px-3 py-3 my-9 text-sm font-medium",
               isActive
                 ? "bg-[#1BC2C2] text-[#E9FFFF]"
-                : "text-gray-700 font-bold hover:bg-gray-50"
+                : "text-gray-700 font-bold hover:bg-[#1BC2C2]  hover:text-white"
             )}
           >
-            <item.icon className={cn("h-5 w-5", isActive ? "text-[#1BC2C2]" : "text-gray-700 font-bold")} />
+            <item.icon className={cn("h-5 w-5 hover:text-white", isActive ? "text-[#1BC2C2]" : "text-gray-700   hover:text-white font-bold")} />
             {item.name}
           </Link>
         )
