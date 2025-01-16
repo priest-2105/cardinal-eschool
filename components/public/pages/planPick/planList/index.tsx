@@ -93,10 +93,10 @@ const PlanList: React.FC<{ onPlanSelect: (plan: any) => void }> = ({ onPlanSelec
       {/* Header Section */}
       <div className="bg-[#1BC2C2] py-16 px-4 sm:px-8 lg:min-h-96 xlg:min-h-96 md:min-h-fit sm:min-h-fit lg:px-16">
         <h1 className="text-5xl sm:text-4xl font-bold text-center text-white mb-4">
-          Ready to Join Us?
+          Choose Your Plan
         </h1>
         <p className="text-center font-semibold text-white mb-12">
-          Choose a payment plan that suits you.
+          {/* Choose a payment plan that suits you. */}
         </p>
       </div>
 

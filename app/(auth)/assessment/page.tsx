@@ -8,6 +8,13 @@ import { ArrowLeft } from "lucide-react";
 export default function AssessmentPage() {
   const router = useRouter();
 
+  const handleSubmit = (formData: any) => {
+    const signupData = JSON.parse(localStorage.getItem("signupData") || "{}")
+    const combinedData = { ...signupData, ...formData }
+    localStorage.setItem("signupData", JSON.stringify(combinedData))
+    router.push("/planPick")
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <div className="flex min-h-screen">
@@ -40,7 +47,7 @@ export default function AssessmentPage() {
             <p className="text-gray-600 mb-8">
               Help us understand your learning needs better
             </p>
-            <AssessmentForm />
+            <AssessmentForm onSubmit={handleSubmit} />
           </div>
         </div>
       </div>

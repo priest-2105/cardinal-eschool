@@ -36,7 +36,7 @@ const testPrep = [
   { value: "PTE", label: "PTE" },
 ]
 
-export default function AssessmentForm() {
+export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: any) => void }) {
   const [formData, setFormData] = useState({
     gender: "",
     educationLevel: "",
@@ -52,8 +52,7 @@ export default function AssessmentForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formData)
-    // Handle form submission
+    onSubmit(formData)
   }
 
   return (
@@ -171,23 +170,6 @@ export default function AssessmentForm() {
               />
             </div>
           )}
-        </div>
-
-        {/* Plan Selection */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            What plan are you choosing?
-          </label>
-          <Select
-            value={formData.selectedPlan}
-            onChange={(e) => setFormData({ ...formData, selectedPlan: e.target.value })}
-          >
-            <option value="">Select Plan</option>
-            <option value="basic">Basic Plan</option>
-            <option value="standard">Standard Plan</option>
-            <option value="premium">Premium Plan</option>
-            <option value="group">Group Sessions</option>
-          </Select>
         </div>
 
         {/* Specific Goals */}
