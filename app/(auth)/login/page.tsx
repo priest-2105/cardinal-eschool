@@ -55,17 +55,16 @@ export default function LoginPage() {
         </div>
 
         {/* Right Column */}
-        {/* <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12"> */}
-        <div className="max-w-md py-6 items-center mx-auto">
+        <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-right mb-8">
-            <span className="text-sm text-gray-600">
-              Already a Cardinal?{" "}
+            <span className="text-sm text-gray-600  absolute top-10 right-10 h-max">
+              Not a Cardinal?{" "}
               <Link href={cardinalConfig.routes.signup} className="text-[#1BC2C2] hover:underline font-semibold">
                 Sign Up!
               </Link>
             </span>
           </div>
-          <div className="max-w-md flex min-h-screen mx-auto items-center align-middle self-center">
+          <div className="max-w-lg flex mx-auto items-center align-middle self-center">
            <div></div>
            <div>
            <h2 className="text-3xl font-bold mb-2">Sign In</h2>
