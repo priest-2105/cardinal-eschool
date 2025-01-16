@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/router"
 import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -19,10 +20,13 @@ export default function SignupPage() {
     confirmPassword: "",
   })
 
+  const router = useRouter()
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log(formData)
     // Handle form submission
+    router.push("/assessmentform")
   }
 
   return (
