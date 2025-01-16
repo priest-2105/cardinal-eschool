@@ -1,18 +1,57 @@
-import React from "react";
+"use client"
+
+import Link from "next/link"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
+import { LayoutDashboard, Home, User, GraduationCap, CreditCard, HeadphonesIcon } from 'lucide-react'
+
+const navigation = [
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Home", href: "/home", icon: Home },
+  { name: "Profile", href: "/profile", icon: User },
+  { name: "My Courses", href: "/courses", icon: GraduationCap },
+  { name: "Payments", href: "/payments", icon: CreditCard },
+  { name: "Admin Support", href: "/support", icon: HeadphonesIcon },
+]
+
 
 const StudentDashboardSideBar: React.FC = () => {
-  return (
-      <aside className="w-64 bg-white shadow-md p-4">
-        <div className="text-2xl font-bold text-blue-600 mb-6">Cardinal E-school</div>
-        <nav className="space-y-4">
-          <a href="#" className="block py-2 px-4 text-blue-500 bg-blue-100 rounded-md">Home</a>
-          <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded-md">Profile</a>
-          <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded-md">My Courses</a>
-          <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded-md">Payments</a>
-          <a href="#" className="block py-2 px-4 text-gray-700 hover:bg-gray-200 rounded-md">Admin Support</a>
-        </nav>
-      </aside>
 
+  const pathname = usePathname()
+
+  return (
+    <div className="flex h-full w-64 flex-col fixed left-0 top-0 border-r bg-white">
+    <div className="flex h-16 shrink-0 items-center px-6">
+      <Image
+        src="/assets/logo.png"
+        alt="Cardinal E-School"
+        width={150}
+        height={40}
+        className="h-8 w-auto"
+      />
+    </div>
+    <div className="flex flex-1 flex-col px-4 py-4 space-y-1">
+      {navigation.map((item) => {
+        const isActive = pathname === item.href
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium",
+              isActive
+                ? "bg-[#E9FFFF] text-[#1BC2C2]"
+                : "text-gray-700 hover:bg-gray-50"
+            )}
+          >
+            <item.icon className={cn("h-5 w-5", isActive ? "text-[#1BC2C2]" : "text-gray-400")} />
+            {item.name}
+          </Link>
+        )
+      })}
+    </div>
+  </div>
   );
 };
 
