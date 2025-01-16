@@ -11,6 +11,8 @@ const popInAnimation = {
   exit: { opacity: 0, scale: 0.9, y: 50, transition: { duration: 0.5 } },
 };
 
+const isDesktop = window.innerWidth >= 1024; // Check if the device is desktop
+
 export default function HeadedSection() {
 
   // Ref for scroll animations
@@ -75,10 +77,10 @@ export default function HeadedSection() {
         <div className="order-1 md:order-2 relative lg:block">
       
             <motion.div 
-                drag={true} 
-                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
-                variants={popInAnimation} 
-                className="relative ms-auto rounded-3xl ">
+              drag={isDesktop} 
+              dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
+              variants={popInAnimation} 
+              className="relative ms-auto rounded-3xl ">
 
             <motion.h1
             className="text-4xl md:text-6xl lg:text-7xl font-bold py-8 text-[#242424] leading-tight"

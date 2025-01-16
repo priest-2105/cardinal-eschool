@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-const PricingPlans: React.FC = () => {
+const PlanList: React.FC<{ onPlanSelect: (plan: any) => void }> = ({ onPlanSelect }) => {
   const pricingPlans = [
     {
       title: "Basic Plan",
@@ -93,10 +93,10 @@ const PricingPlans: React.FC = () => {
       {/* Header Section */}
       <div className="bg-[#1BC2C2] py-16 px-4 sm:px-8 lg:min-h-96 xlg:min-h-96 md:min-h-fit sm:min-h-fit lg:px-16">
         <h1 className="text-5xl sm:text-4xl font-bold text-center text-white mb-4">
-          Ready to Join Us?
+          Choose Your Plan
         </h1>
         <p className="text-center font-semibold text-white mb-12">
-          Choose a payment plan that suits you.
+          {/* Choose a payment plan that suits you. */}
         </p>
       </div>
 
@@ -125,43 +125,19 @@ const PricingPlans: React.FC = () => {
                   <li key={i}>{feature}</li>
                 ))}
               </ul>
-              <button className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg group-hover:bg-white group-hover:text-[#1BC2C2] w-full">
-                Get Started
+              <button
+                className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg group-hover:bg-white group-hover:text-[#1BC2C2] w-full"
+                onClick={() => onPlanSelect(plan)}
+              >
+                Choose Plan
               </button>
             </motion.div>
           ))}
         </div>
       </div>
 
-
-      <div className="pt-16 h-fit ms-auto me-auto py-12 px-5">
-        <div className="flex  justify-center gap-8 max-w-7xl max-sm:block mx-auto">
-          {pricingDiscounts.map((plan, index) => (
-            <motion.div
-              drag="y"
-              dragConstraints={{ top: -10, bottom: 10 }}
-              key={index}
-              custom={index} 
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.3 } }
-              className="bg-transparent items-center max-w-72 w-72 max-sm:my-3 text-center  max-sm:mx-auto text-[#1BC2C2] group rounded-3xl shadow-lg min-w-[250px] p-6 border-2 border-[#1BC2C2] hover:border-white-2 hover:bg-[#1BC2C2] hover:text-[#fff] transition"
-            >
-              <h2 className="text-3xl py-2 font-bold mb-4">{plan.title}</h2>
-              <p className="text-3xl font-bold text-[#1BC2C2] group-hover:text-white mb-2">
-                {/* {plan.price} */}
-              </p>
-              <p className="text-sm py-2 mb-4 font-bold">{plan.duration}</p>           
-            <button className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg group-hover:bg-white group-hover:text-[#1BC2C2] w-full">
-                Get Started
-              </button>
-            </motion.div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
 
-export default PricingPlans;
+export default PlanList;

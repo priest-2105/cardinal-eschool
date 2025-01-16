@@ -44,7 +44,7 @@ const SkilledExpert = () => {
             <motion.div className="mt-8">
             <motion.a
               className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
-               href={cardinalConfig.routes.login}
+               href={cardinalConfig.routes.signup}
             >
               Start learning now
             </motion.a>

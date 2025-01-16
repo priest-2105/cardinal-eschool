@@ -1,34 +1,139 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
+import {
+  Select,
+  SelectGroup,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator
+} from "@/components/ui/select"
+import { Eye, EyeOff, Youtube } from 'lucide-react'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
+import { motion, AnimatePresence } from "framer-motion"
+import Popup from "@/components/ui/Popup"
+import XIcon from '@/public/assets/icons/x-dark.png'
+import TiktokIcon from '@/public/assets/icons/tiktok-dark.png'
+import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png'
+import cardinalConfig from "@/config"
+
+interface FormErrors {
+  [key: string]: string;
+}
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     gender: "",
+    age: "",
     email: "",
+    phone: "",
+    guardianName: "",
+    guardianEmail: "",
+    guardianPhone: "",
+    guardianRelationship: "",
     referralChannel: "",
     password: "",
     confirmPassword: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [popupMessage, setPopupMessage] = useState("")
+  const [passwordStrength, setPasswordStrength] = useState(0)
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  const router = useRouter()
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("signupData")
+    if (savedData) {
+      setFormData(JSON.parse(savedData))
+    }
+  }, [])
+
+  const validateForm = () => {
+    const newErrors: FormErrors = {}
+
+    if (!formData.firstName) newErrors.firstName = "First name is required"
+    if (!formData.lastName) newErrors.lastName = "Last name is required"
+    if (!formData.gender) newErrors.gender = "Gender is required"
+    if (!formData.age) newErrors.age = "Age is required"
+    if (!formData.password) newErrors.password = "Password is required"
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password"
+
+    if (parseInt(formData.age) < 18) {
+      if (!formData.guardianName) newErrors.guardianName = "Guardian's name is required"
+      if (!formData.guardianEmail) newErrors.guardianEmail = "Guardian's email is required"
+      if (!formData.guardianPhone) newErrors.guardianPhone = "Guardian's phone is required"
+      if (formData.guardianPhone && formData.guardianPhone.length < 11) newErrors.guardianPhone = "Guardian's phone number should be at least 11 digits"
+      if (!formData.guardianRelationship) newErrors.guardianRelationship = "Guardian's relationship is required"
+    } else {
+      if (!formData.email) newErrors.email = "Email is required"
+      if (!formData.phone) newErrors.phone = "Phone number is required"
+      if (formData.phone && formData.phone.length < 11) newErrors.phone = "Phone number should be at least 11 digits"
+    }
+
+    if (formData.email && !formData.email.includes("@")) newErrors.email = "Invalid email format"
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match"
+    
+    // Check password strength
+    if (passwordStrength < 3) newErrors.password = "Password is too weak. Please use a stronger password."
+
+    setErrors(newErrors)
+
+    if (Object.keys(newErrors).length > 0) {
+      setPopupMessage("Please correct the highlighted fields.")
+      return false
+    }
+
+    return true
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setFormData({ ...formData, password: value })
+
+    let strength = 0
+    if (value.length > 5) strength++
+    if (value.length > 8) strength++
+    if (/[A-Z]/.test(value)) strength++
+    if (/[0-9]/.test(value)) strength++
+    if (/[^A-Za-z0-9]/.test(value)) strength++
+
+    setPasswordStrength(strength)
+  }
+
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value.length <= 2) {
+      setFormData({ ...formData, age: value })
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formData)
-    // Handle form submission
+    if (validateForm()) {
+      localStorage.setItem("signupData", JSON.stringify(formData))
+      router.push("/assessment")
+    }
   }
 
   return (
     <div className="min-h-screen bg-white">
+      {popupMessage && <Popup message={popupMessage} onClose={() => setPopupMessage("")} />}
       <div className="flex min-h-screen">
         {/* Left Column - Hidden on mobile and tablet */}
-        <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
+        <div className="hidden min-h-screen lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
             <Image
               onDragStart={(event) => event.preventDefault()}
@@ -41,108 +146,253 @@ export default function SignupPage() {
             <h1 className="text-3xl font-bold text-center mt-8 mb-4">
               Learn From Highly Skilled Experts & Experienced Tutors
             </h1>
-            <div className="flex justify-center space-x-4 mt-8">
-              <Link href="#" className="text-gray-600 hover:text-[#1BC2C2]">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                </svg>
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-[#1BC2C2]">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-                </svg>
-              </Link>
+            <div className='flex justify-center items-center mx-auto text-dark space-x-2 py-2'>
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={WhatsappIcon || "/placeholder.svg"} alt="whatsapp icon" width={24} height={24} /> </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={TiktokIcon || "/placeholder.svg"} alt="tiktok Icon" width={24} height={24} />  </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.youtube}`}>  <Youtube size={24} />  </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.X}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={XIcon || "/placeholder.svg"} alt="X-icon" width={24} height={24} /> </a> 
             </div>
           </div>
         </div>
 
         {/* Right Column */}
         <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-md mx-auto">
-            <div className="text-right mb-8">
-              <span className="text-sm text-gray-600">
-                Already a Cardinal?{" "}
-                <Link href="/login" className="text-[#1BC2C2] hover:underline font-semibold">
-                  Sign in!
-                </Link>
-              </span>
+          <div className="text-right mb-8">
+            <span className="text-sm text-gray-600 absolute top-10 right-10 h-max">
+              Already a Cardinal?{" "}
+              <Link href={cardinalConfig.routes.login} className="text-[#1BC2C2] hover:underline font-semibold">
+                Sign in!
+              </Link>
+            </span>
+          </div>
+          <div className="max-w-lg flex mx-auto items-center pt-10 align-middle self-center">
+            <div></div>
+            <div>
+              <h2 className="text-3xl font-bold mb-2">Sign up</h2>
+              <p className="text-gray-600 font-semibold mb-8">Take the next steps to apply to Cardinal E-School</p>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Input
+                      placeholder="Enter first name"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      className={errors.firstName ? "border-red-500" : ""}
+                    />
+                    {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
+                  </div>
+                  <div>
+                    <Input
+                      placeholder="Enter last name"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      className={errors.lastName ? "border-red-500" : ""}
+                    />
+                    {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <Select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className={errors.gender ? "border-red-500" : ""}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </Select>
+                  {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+                </div>
+
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="Enter age"
+                    value={formData.age}
+                    onChange={handleAgeChange}
+                    className={errors.age ? "border-red-500" : ""}
+                  />
+                  {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+                </div>
+
+                <AnimatePresence>
+                  {formData.age && parseInt(formData.age) >= 10 && (
+                    <>
+                      {parseInt(formData.age) < 18 ? (
+                        <motion.div
+                          key="guardianInfo"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <Input
+                                placeholder="Guardian's Name"
+                                value={formData.guardianName}
+                                onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                                className={errors.guardianName ? "border-red-500" : ""}
+                              />
+                              {errors.guardianName && <p className="text-red-500 text-sm mt-1">{errors.guardianName}</p>}
+                            </div>
+                            <div>
+                              <Input
+                                type="email"
+                                placeholder="Guardian's Email"
+                                value={formData.guardianEmail}
+                                onChange={(e) => setFormData({ ...formData, guardianEmail: e.target.value })}
+                                className={errors.guardianEmail ? "border-red-500" : ""}
+                              />
+                              {errors.guardianEmail && <p className="text-red-500 text-sm mt-1">{errors.guardianEmail}</p>}
+                            </div>
+                            <div>
+                              <PhoneInput      
+                                country={'us'}
+                                value={formData.guardianPhone}
+                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })}
+                                containerClass={errors.guardianPhone ? "border-red-500" : ""}
+                              />
+                              {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
+                            </div>
+                            <div>
+                              <Input
+                                placeholder="Guardian's Relationship"
+                                value={formData.guardianRelationship}
+                                onChange={(e) => setFormData({ ...formData, guardianRelationship: e.target.value })}
+                                className={errors.guardianRelationship ? "border-red-500" : ""}
+                              />
+                              {errors.guardianRelationship && <p className="text-red-500 text-sm mt-1">{errors.guardianRelationship}</p>}
+                            </div>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="studentInfo"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <Input
+                                type="email"
+                                placeholder="Student's Email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className={errors.email ? "border-red-500" : ""}
+                              />
+                              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                            </div>
+                            <div>
+                              <PhoneInput
+                                country={'us'}
+                                value={formData.phone}
+                                onChange={(phone) => setFormData({ ...formData, phone: phone })}
+                                containerClass={errors.phone ? "border-red-500" : ""}
+                              />
+                              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </>
+                  )}
+                </AnimatePresence>
+
+                <Select
+                  value={formData.referralChannel}
+                  onChange={(e) => setFormData({ ...formData, referralChannel: e.target.value })}
+                >
+                  <option value="">How did you hear about us?</option>
+                  <option value="social">Social Media</option>
+                  <option value="friend">Friend/Family</option>
+                  <option value="search">Search Engine</option>
+                  <option value="other">Other</option>
+                </Select>
+
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={handlePasswordChange}
+                    className={errors.password ? "border-red-500" : ""}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                <div className="mt-2 flex space-x-1">
+                  {[1, 2, 3, 4, 5].map((index) => (
+                    <div
+                      key={index}
+                      className={`h-2 rounded w-8 ${
+                        index <= passwordStrength
+                          ? passwordStrength <= 1
+                            ? 'bg-red-500'
+                            : passwordStrength <= 2
+                            ? 'bg-yellow-500'
+                            : passwordStrength <= 3
+                            ? 'bg-blue-500'
+                            : passwordStrength <= 4
+                            ? 'bg-green-500'
+                            : 'bg-teal-500'
+                          : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Enter password again"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className={errors.confirmPassword ? "border-red-500" : ""}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
+
+                <div className="text-sm text-gray-600">
+                  By clicking continue, I agree to{" "}
+                  <Link href="/terms" className="text-[#1BC2C2] hover:underline">
+                    Terms of Use
+                  </Link>{" "}
+                  and acknowledge that I have read the{" "}
+                  <Link href="/privacy" className="text-[#1BC2C2] hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </div>
+
+                <div className="flex justify-between">
+                 <Button className="w-full" type="submit" size="lg">
+                    Submit
+                  </Button>
+                </div>
+              </form>
             </div>
-
-            <h2 className="text-3xl font-bold mb-2">Sign up</h2>
-            <p className="text-gray-600 mb-8">Take the next steps to apply to Cardinal E-School</p>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Enter first name"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                />
-                <Input
-                  placeholder="Enter last name"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                />
-              </div>
-
-              <Select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </Select>
-
-              <Input
-                type="email"
-                placeholder="Enter email address"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-
-              <Select
-                value={formData.referralChannel}
-                onChange={(e) => setFormData({ ...formData, referralChannel: e.target.value })}
-              >
-                <option value="">How did you hear about us?</option>
-                <option value="social">Social Media</option>
-                <option value="friend">Friend/Family</option>
-                <option value="search">Search Engine</option>
-                <option value="other">Other</option>
-              </Select>
-
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
-
-              <Input
-                type="password"
-                placeholder="Enter password again"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
-
-              <div className="text-sm text-gray-600">
-                By clicking continue, I agree to{" "}
-                <Link href="/terms" className="text-[#1BC2C2] hover:underline">
-                  Terms of Use
-                </Link>{" "}
-                and acknowledge that I have read the{" "}
-                <Link href="/privacy" className="text-[#1BC2C2] hover:underline">
-                  Privacy Policy
-                </Link>
-                .
-              </div>
-
-              <Button type="submit" fullWidth size="lg">
-                Submit
-              </Button>
-            </form>
           </div>
         </div>
       </div>

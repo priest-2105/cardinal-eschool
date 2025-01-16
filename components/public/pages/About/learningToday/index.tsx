@@ -54,7 +54,7 @@ return (
             <motion.a
               className="bg-white text-[#1BC2C2] px-8 py-4 border-2 rounded-full text-lg font-semibold hover:bg-[#1BC2C2] hover:border-white hover:text-white transition-colors"
               variants={popInAnimation}
-              href={cardinalConfig.routes.login}
+              href={cardinalConfig.routes.signup}
             >
               Start learning now
             </motion.a>

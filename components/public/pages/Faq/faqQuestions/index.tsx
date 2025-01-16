@@ -73,20 +73,44 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, animationDelay }) =
 const FaqQuestions = () => {
   const faqItems = [
     {
-      question: "What is the return policy?",
-      answer: "You can return any item within 30 days of purchase for a full refund.",
+      question: "What is Cardinal E-School?",
+      answer: "Cardinal E-School is an online educational platform offering courses, tutoring, and resources for students worldwide.",
     },
     {
-      question: "How long does shipping take?",
-      answer: "Shipping typically takes 5-7 business days for standard delivery.",
+      question: "What ages/grades do you serve?",
+      answer: "We cater to students for all grades, including primary school pupils, high school students, and professional test-takers.",
     },
     {
-      question: "Is customer support available 24/7?",
-      answer: "Yes, our customer support is available 24/7 to assist you.",
+      question: "How do I contact Cardinal E-School?",
+      answer: "Email: admin@cardinale-school.com WhatsApp: +234-811-181-1995, or Live Chat on any of our social media channels.",
     },
     {
-      question: "Can I change my order after placing it?",
-      answer: "You can modify your order within 24 hours of placing it.",
+      question: "How do I enroll in Cardinal E-School?",
+      answer: "Sign up on our website, fill out the assessment form, and follow the simple registration guide.",
+    },
+    {
+      question: "What courses do you offer?",
+      answer: "We offer school subjects (English, Math, Science), African Languages (Yoruba, Hausa, Igbo), Foreign Languages (French, Spanish), and Test Preparation Courses (SAT, IELTS, TOEFL, GRE).",
+    },
+    {
+      question: "Are courses self-paced or instructor-led?",
+      answer: "Both options are available.",
+    },
+    {
+      question: "Can I customize my course schedule?",
+      answer: "Yes, you can. You only need to speak with our academic advisors.",
+    },
+    {
+      question: "How do I join the live class?",
+      answer: "Log in to your student dashboard to join the live class.",
+    },
+    {
+      question: "Can I cancel or refund my enrollment?",
+      answer: "Speak to our admin representative for our refund policy.",
+    },
+    {
+      question: "Are there resources available for test-takers?",
+      answer: "Yes, test-takers are provided with prep materials suitable for their needs.",
     },
   ];
 
@@ -114,7 +138,7 @@ const FaqQuestions = () => {
           variants={popInAnimation}
         >
           Got Questions? <br/>
-          We’ve got answers!
+          We've got answers!
         </motion.h1>
 
         {/* FAQ Items */}
@@ -138,5 +162,6 @@ const FaqQuestions = () => {
     </section>
   );
 };
+
 
 export default FaqQuestions;

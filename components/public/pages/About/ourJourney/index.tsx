@@ -41,8 +41,6 @@ export default function OurJourney() {
         <div className="relative lg:block">
       
             <motion.div 
-                drag={true} 
-                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
                 variants={popInAnimation} 
                 className="relative ms-auto rounded-3xl ">
 
