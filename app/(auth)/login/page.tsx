@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button" 
-import { Youtube } from 'lucide-react'; 
+import { Youtube, Eye, EyeOff, EyeClosed } from 'lucide-react'; 
 import XIcon from '@/public/assets/icons/x-dark.png';
 import TiktokIcon from '@/public/assets/icons/tiktok-dark.png';
 import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png';
@@ -17,6 +17,7 @@ export default function LoginPage() {
     email: "", 
     password: "", 
   })
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,7 +29,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white">
       <div className="flex min-h-screen items-center">
         {/* Left Column - Hidden on mobile and tablet */}
-        <div className="hidden  min-h-screen lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
+        <div className="hidden min-h-screen lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
             <Image
               onDragStart={(event) => event.preventDefault()}
@@ -41,7 +42,7 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold text-center mt-8 mb-4">
               Learn From Highly Skilled Experts & Experienced Tutors
             </h1>
-            <div className='flex items-center mx-auto text-dark space-x-2 py-2'>
+            <div className='flex justify-center items-center mx-auto text-dark space-x-2 py-2'>
                 <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  
                   <Image onDragStart={(event) => event.preventDefault()} src={WhatsappIcon} alt="whatsapp cion" /> </a> 
                 <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  
@@ -54,36 +55,46 @@ export default function LoginPage() {
         </div>
 
         {/* Right Column */}
-        <div className="w-full  lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12">
-            <div className="text-right mb-8  items-start align-top self-start">
-              <span className="text-sm text-gray-600">
-                Already a Cardinal?{" "}
-                <Link href={cardinalConfig.routes.signup} className="text-[#1BC2C2] hover:underline font-semibold">
-                  Sign Up!
-                </Link>
-              </span>
-            </div>
-          <div className="max-w-md mx-auto items-center align-middle self-center">
-            <h2 className="text-3xl font-bold mb-2">LogIn</h2>
-            <p className="text-gray-600 mb-8">Continue to Cardinal E-School</p>
-
+        {/* <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-8 py-12"> */}
+        <div className="max-w-md py-6 items-center mx-auto">
+          <div className="text-right mb-8">
+            <span className="text-sm text-gray-600">
+              Already a Cardinal?{" "}
+              <Link href={cardinalConfig.routes.signup} className="text-[#1BC2C2] hover:underline font-semibold">
+                Sign Up!
+              </Link>
+            </span>
+          </div>
+          <div className="max-w-md flex min-h-screen mx-auto items-center align-middle self-center">
+           <div></div>
+           <div>
+           <h2 className="text-3xl font-bold mb-2">Sign In</h2>
+            <p className="text-gray-600 font-semibold mb-8">
+              Enter Your email address and password to securely log in to 
+              Cardinal E-School portal
+            </p>
             <form onSubmit={handleSubmit} className="space-y-6">
-            
               <Input
                 type="email"
                 placeholder="Enter email address"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
- 
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
- 
-
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeClosed/>: <Eye />}
+                </button>
+              </div>
               <div className="text-sm text-gray-600">
                 By clicking continue, I agree to{" "}
                 <Link href="/terms" className="text-[#1BC2C2] hover:underline">
@@ -95,11 +106,11 @@ export default function LoginPage() {
                 </Link>
                 .
               </div>
-
               <Button type="submit" fullWidth size="lg">
                 Submit
               </Button>
             </form>
+            </div> 
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
+import { Eye, EyeClosed, EyeOff } from 'lucide-react';
 import cardinalConfig from "@/config"
 
 export default function SignupPage() {
@@ -19,6 +20,8 @@ export default function SignupPage() {
     password: "",
     confirmPassword: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const router = useRouter()
 
@@ -72,7 +75,7 @@ export default function SignupPage() {
               </span>
             </div>
             
-            <div className="max-w-md mx-auto">
+            <div className="max-w-md min-h-screen mx-auto">
             <h2 className="text-3xl font-bold mb-2">Sign up</h2>
             <p className="text-gray-600 mb-8">Take the next steps to apply to Cardinal E-School</p>
 
@@ -118,19 +121,37 @@ export default function SignupPage() {
                 <option value="other">Other</option>
               </Select>
 
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                 {showPassword ? <EyeClosed/>: <Eye />}
+                </button>
+              </div>
 
-              <Input
-                type="password"
-                placeholder="Enter password again"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Enter password again"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
 
               <div className="text-sm text-gray-600">
                 By clicking continue, I agree to{" "}
