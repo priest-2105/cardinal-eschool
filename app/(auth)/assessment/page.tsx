@@ -1,6 +1,6 @@
 "use client"
 
-import AssessmentForm from "@/components/public/pages/assessmentForm/asessmentForm"
+import AssessmentForm from "@/components/public/pages/assessment/asessmentForm"
 import Image from "next/image"
 
 export default function AssessmentPage() {
