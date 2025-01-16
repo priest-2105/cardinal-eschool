@@ -39,9 +39,7 @@ export default function RootLayout({
 
         {/* Header */}
         <StudentDashboardHeader/>
-
         {children}
-
       </main>
     </div>
       </body>
