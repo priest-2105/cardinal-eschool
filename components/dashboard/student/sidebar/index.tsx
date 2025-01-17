@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -25,8 +25,7 @@ const navigation = [
   { name: "Admin Support", href: "/student/support", icon: AdminSupportIcon, iconLight: AdminSupportLightIcon },
 ]
 
-const StudentDashboardSideBar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false)
+const StudentDashboardSideBar: React.FC<{ isOpen: boolean, setIsOpen: (isOpen: boolean) => void }> = ({ isOpen, setIsOpen }) => {
   const pathname = usePathname()
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const StudentDashboardSideBar: React.FC = () => {
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  }, [setIsOpen])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -50,9 +49,17 @@ const StudentDashboardSideBar: React.FC = () => {
 
   return (
     <div className={`flex h-full ${isOpen ? 'w-64' : 'w-20'} flex-col fixed left-0 top-0 border-r bg-[#E9FFFF] transition-all ease-in-out duration-300`}>
-      <div className="flex h-26 py-12 shrink-0 items-center px-6 relative">
-        <button onClick={toggleSidebar} className=" lg:hidden">
-          {isOpen ? <ArrowLeft size={24} /> : <ArrowRight size={24} />}
+      <div className="block h-26 py-12 shrink-0 items-center text-end px-6 relative">
+        <button onClick={toggleSidebar} className="ml-auto mr-2 mb-0 lg:hidden">
+          {isOpen ? 
+            <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          :       
+          <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+         }
         </button>
         {isOpen ? 
         <Image
