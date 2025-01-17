@@ -8,10 +8,10 @@ import {Home, User, GraduationCap, CreditCard, HeadphonesIcon } from 'lucide-rea
 
 const navigation = [ 
   { name: "Home", href: "/home", icon: Home },
-  { name: "Profile", href: "/profile", icon: User },
-  { name: "My Courses", href: "/courses", icon: GraduationCap },
-  { name: "Payments", href: "/payments", icon: CreditCard },
-  { name: "Admin Support", href: "/support", icon: HeadphonesIcon },
+  { name: "Profile", href: "/student/profile", icon: User },
+  { name: "My Courses", href: "/student/courses", icon: GraduationCap },
+  { name: "Payments", href: "/student/payments", icon: CreditCard },
+  { name: "Admin Support", href: "/student/support", icon: HeadphonesIcon },
 ]
 
 
