@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
-import { Home, User, GraduationCap, CreditCard, HeadphonesIcon, Menu, X } from 'lucide-react'
+import { Home, User, GraduationCap, CreditCard, HeadphonesIcon, Menu, X, ArrowLeft, ArrowRight } from 'lucide-react'
 
 const navigation = [ 
   { name: "Home", href: "/", icon: Home },
@@ -19,13 +19,31 @@ const StudentDashboardSideBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsOpen(false)
+      } else {
+        setIsOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
   }
 
   return (
     <div className={`flex h-full ${isOpen ? 'w-64' : 'w-20'} flex-col fixed left-0 top-0 border-r bg-[#E9FFFF] transition-all ease-in-out duration-300`}>
-      <div className="flex h-26 py-12 shrink-0 items-center px-6">
+      <div className="flex h-26 py-12 shrink-0 items-center px-6 relative">
+        <button onClick={toggleSidebar} className="absolute left-4 top-4 lg:hidden">
+          {isOpen ? <ArrowLeft size={24} /> : <ArrowRight size={24} />}
+        </button>
         <Image
           src="/assets/img/logo.png"
           alt="Cardinal E-School"
@@ -33,9 +51,6 @@ const StudentDashboardSideBar: React.FC = () => {
           height={40}
           className="h-12 w-auto"
         />
-        <button onClick={toggleSidebar} className="ml-auto lg:hidden">
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
       </div>
       <div className="flex flex-1 flex-col px-4 py-4 space-y-1">
         {navigation.map((item) => {
