@@ -6,14 +6,21 @@ import { motion } from "framer-motion"
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton"
 import { X } from 'lucide-react'
 
-const ChosenPlanDetails: React.FC<{ plan: any, onDeselect: () => void }> = ({ plan, onDeselect }) => {
+interface Plan {
+  title: string;
+  price: string;
+  duration: string;
+  features: string[];
+}
+
+const ChosenPlanDetails: React.FC<{ plan: Plan, onDeselect: () => void }> = ({ plan, onDeselect }) => {
   const userDetails = JSON.parse(localStorage.getItem("signupData") || "{}")
   const [months, setMonths] = useState(1)
   const [coupon, setCoupon] = useState("")
   const router = useRouter()
 
   const handleCheckout = () => {
-    // Handle checkout logic
+    
     console.log("Checkout with plan:", plan)
     console.log("User details:", userDetails)
     router.push("/dashboard/student")

@@ -70,16 +70,6 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
     },
   ];
 
-  const pricingDiscounts = [
-    {
-      title: "SAVE 10%",
-      duration: "When you Subscribe with us for 3-6 months",
-    },
-    {
-      title: "SAVE 10%",
-      duration: "When you refer your friends and family (Existing Clients Only)",
-    },
-  ];
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },  
