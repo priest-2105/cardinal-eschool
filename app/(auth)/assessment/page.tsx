@@ -35,7 +35,7 @@ export default function AssessmentPage() {
         <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8 fixed h-full">
           <div className="max-w-md">
             <Image
-              onDragStart={(event) => event.preventDefault()})
+              onDragStart={(event) => event.preventDefault()}
               src="/assets/img/pages/login/6955b465-50b7-4e9f-bdf9-d1e67efa258f-removebg-preview 1.png"
               alt="Learning Illustration"
               width={500}
