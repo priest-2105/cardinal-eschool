@@ -1,13 +1,11 @@
 "use client"
 
-import { Bell, X } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { Avatar } from "@/components/dashboard/student/ui/avatar"
 import { Button } from "@/components/dashboard/student/ui/button"
 import { useState } from "react"
 import { FaAngleDown } from 'react-icons/fa6'
-import Image from "next/image"
 import Link from "next/link"
-import { User } from 'lucide-react'
 
 const notifications = [
   { message: "New assignment available", time: "2 hours ago" },
@@ -21,7 +19,17 @@ const profileOptions = [
   { name: "Support", href: "/student/support" },
 ]
 
-const Dropdown: React.FC<{ items: any[], icon: React.ReactNode }> = ({ items, icon }) => {
+interface Notification {
+  message: string;
+  time: string;
+}
+
+interface ProfileOption {
+  name: string;
+  href: string;
+}
+
+const Dropdown: React.FC<{ items: Notification[] | ProfileOption[], icon: React.ReactNode }> = ({ items, icon }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
@@ -38,7 +46,7 @@ const Dropdown: React.FC<{ items: any[], icon: React.ReactNode }> = ({ items, ic
           <ul className="py-1">
             {items.map((item, index) => (
               <li key={index} className="px-4 py-2 hover:bg-gray-100">
-                {item.href ? (
+                {'href' in item ? (
                   <Link href={item.href}>
                     {item.name}
                   </Link>
@@ -57,10 +65,7 @@ const Dropdown: React.FC<{ items: any[], icon: React.ReactNode }> = ({ items, ic
   )
 }
 
-
-
 const StudentDashboardHeader: React.FC = () => {
-  
   const [showNotification, setShowNotification] = useState(true)
 
   return (
@@ -71,7 +76,7 @@ const StudentDashboardHeader: React.FC = () => {
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-700">
               <span className="font-semibold">Great effort so far Temilade!</span>{" "}
-              Keep up the tenacity, and with a bit more focus on your attendance, you're sure to reach your full potential!
+              Keep up the tenacity, and with a bit more focus on your attendance, you&apos;re sure to reach your full potential!
             </p>
             <Button
               variant="ghost"

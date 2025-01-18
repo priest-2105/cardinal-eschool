@@ -2,8 +2,15 @@
 
 import { motion } from "framer-motion";
 
-const PlanList: React.FC<{ onPlanSelect: (plan: any) => void }> = ({ onPlanSelect }) => {
-  const pricingPlans = [
+interface Plan {
+  title: string;
+  price: string;
+  duration: string;
+  features: string[];
+}
+
+const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSelect }) => {
+  const pricingPlans: Plan[] = [
     {
       title: "Basic Plan",
       price: "$60",

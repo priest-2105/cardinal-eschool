@@ -36,13 +36,26 @@ const testPrep = [
   { value: "PTE", label: "PTE" },
 ]
 
-export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: any) => void }) {
-  const [formData, setFormData] = useState({
+interface FormData {
+  gender: string;
+  educationLevel: string;
+  dateOfBirth: string;
+  subjects: string[];
+  testPrep: string[];
+  expectations: string;
+  hasLearningDifficulties: string;
+  learningDifficultiesDetails: string;
+  selectedPlan: string;
+  specificGoals: string;
+}
+
+export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: FormData) => void }) {
+  const [formData, setFormData] = useState<FormData>({
     gender: "",
     educationLevel: "",
     dateOfBirth: "",
-    subjects: [] as string[],
-    testPrep: [] as string[],
+    subjects: [],
+    testPrep: [],
     expectations: "",
     hasLearningDifficulties: "",
     learningDifficultiesDetails: "",
@@ -62,7 +75,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: any)
           {/* Gender */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Learner's Gender
+              Learner&apos;s Gender
             </label>
             <Select
               value={formData.gender}
@@ -78,7 +91,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: any)
           {/* Education Level */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Learner's Level of Education
+              Learner&apos;s Level of Education
             </label>
             <Select
               value={formData.educationLevel}
@@ -94,7 +107,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: any)
           {/* Date of Birth */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Learner's Date of Birth
+              Learner&apos;s Date of Birth
             </label>
             <Input
               type="date"

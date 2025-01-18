@@ -3,12 +3,18 @@
 import { useState } from "react"
 import PlanList from "@/components/public/pages/planPick/planList"
 import ChosenPlanDetails from "@/components/public/pages/planPick/planDetails"
-import CheckoutButton from "@/components/public/pages/planPick/checkoutButton"
+
+interface Plan {
+  title: string;
+  price: string;
+  duration: string;
+  features: string[];
+}
 
 export default function PlanPick() {
-  const [chosenPlan, setChosenPlan] = useState(null)
+  const [chosenPlan, setChosenPlan] = useState<Plan | null>(null)
 
-  const handlePlanSelect = (plan: any) => {
+  const handlePlanSelect = (plan: Plan) => {
     setChosenPlan(plan)
   }
 

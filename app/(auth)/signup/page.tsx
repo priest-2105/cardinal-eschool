@@ -7,14 +7,7 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  Select,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator
+  Select
 } from "@/components/ui/select"
 import { Eye, EyeOff, Youtube } from 'lucide-react'
 import PhoneInput from 'react-phone-input-2'

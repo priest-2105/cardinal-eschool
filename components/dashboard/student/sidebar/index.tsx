@@ -5,7 +5,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
-import { ArrowLeft, ArrowRight } from 'lucide-react'
 import HomeIcon from '@/public/assets/icons/home-01.png'
 import HomeLightIcon from '@/public/assets/icons/home-01-light.png'
 import ProfileIcon from '@/public/assets/icons/user.png'
