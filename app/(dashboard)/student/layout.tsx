@@ -38,6 +38,10 @@ export default function RootLayout({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <html lang="en">
       <head>
@@ -46,9 +50,9 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <div className="min-h-screen bg-gray-50 flex">
           <StudentDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-          <div className={`flex-1 transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-            <StudentDashboardHeader />
-            <main className="pt-[104px] px-8 pb-8">
+          <div className={`flex-1 transition-all ease-in-out duration-300`}>
+            <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+            <main className="pt-[104px] px-4 pb-8">
               {children}
             </main>
           </div>
