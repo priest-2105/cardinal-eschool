@@ -29,7 +29,7 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean, setIsOpen: (isOpen: b
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)

@@ -1,10 +1,9 @@
 "use client";
 
-
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import cardinalConfig from "@/config";
 
 const popInAnimation = {
@@ -13,8 +12,6 @@ const popInAnimation = {
   exit: { opacity: 0, scale: 0.9, y: 50, transition: { duration: 0.5 } },
 };
 
-const isDesktop = window.innerWidth >= 1024;  
-
 export default function HeroSection() {
   const features = [
     { name: "Accessibility" },
@@ -22,6 +19,14 @@ export default function HeroSection() {
     { name: "Personalization" },
     { name: "Community" },
   ];
+
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDesktop(window.innerWidth >= 1024);
+    }
+  }, []);
 
   // Ref for scroll animations
   const sectionRef = useRef(null);
@@ -79,39 +84,35 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.div>
-            <motion.a
-              className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
-              variants={popInAnimation}
-              href={cardinalConfig.routes.signup}
-            >
-              Start learning now
-            </motion.a>
+              <motion.a
+                className="bg-[#1BC2C2] cursor-pointer text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-[#19a8a8] transition-colors"
+                variants={popInAnimation}
+                href={cardinalConfig.routes.signup}
+              >
+                Start learning now
+              </motion.a>
             </motion.div>
-
           </motion.div>
 
-
-
-         {/* Right Column - Images */}
-            <div className="relative lg:block">
-             <div className="grid gap-2 items-end grid-cols-2">
-               {/* Top Image */}
-          
-               <motion.div 
-                drag={isDesktop} 
-                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}   
-               variants={popInAnimation} 
-               className="relative ms-auto rounded-3xl ">
-            
-                 <div className="absolute -bottom-0 -left-12 rounded-full p-2">        
-                 <Image
-                 onDragStart={(event) => event.preventDefault()}
-                  src="/assets/img/pages/homepage/stars.png"
-                  alt="Star"  
-                  width={30}
-                  height={30}
-                  className="object-cover"
-                />
+          {/* Right Column - Images */}
+          <div className="relative lg:block">
+            <div className="grid gap-2 items-end grid-cols-2">
+              {/* Top Image */}
+              <motion.div
+                drag={isDesktop}
+                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
+                variants={popInAnimation}
+                className="relative ms-auto rounded-3xl "
+              >
+                <div className="absolute -bottom-0 -left-12 rounded-full p-2">
+                  <Image
+                    onDragStart={(event) => event.preventDefault()}
+                    src="/assets/img/pages/homepage/stars.png"
+                    alt="Star"
+                    width={30}
+                    height={30}
+                    className="object-cover"
+                  />
                 </div>
 
                 <Image
@@ -123,36 +124,36 @@ export default function HeroSection() {
                   className="object-cover"
                 />
                 <div className="absolute -top-6 -right-6 rounded-full p-2">
-                <Image
-                  src="/assets/icons/checkmark-circle-02.png"
-                  alt="Student using tablet"
-                  width={80}
-                  height={80}
-                  className="object-cover"
-                />
+                  <Image
+                    src="/assets/icons/checkmark-circle-02.png"
+                    alt="Student using tablet"
+                    width={80}
+                    height={80}
+                    className="object-cover"
+                  />
                 </div>
-                </motion.div>
+              </motion.div>
 
               {/* Top Right Image */}
-              <motion.div 
-              drag={isDesktop} 
-              dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
-              variants={popInAnimation} 
-              className="relative w-fit -mb-4 rounded-3xl">
-                
-              <div className="absolute -top-16 right-16 rounded-full p-2">        
+              <motion.div
+                drag={isDesktop}
+                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
+                variants={popInAnimation}
+                className="relative w-fit -mb-4 rounded-3xl"
+              >
+                <div className="absolute -top-16 right-16 rounded-full p-2">
+                  <Image
+                    onDragStart={(event) => event.preventDefault()}
+                    src="/assets/img/pages/homepage/Ellipse 1866.png"
+                    alt="Star"
+                    width={30}
+                    height={30}
+                    className="object-cover ms-auto"
+                  />
+                </div>
+
                 <Image
                   onDragStart={(event) => event.preventDefault()}
-                  src="/assets/img/pages/homepage/Ellipse 1866.png"
-                  alt="Star"  
-                  width={30}
-                  height={30}
-                  className="object-cover ms-auto"
-                />
-                </div>
-                
-                <Image
-                 onDragStart={(event) => event.preventDefault()}
                   src="/assets/img/pages/homepage/Rectangle 1454.png"
                   alt="Student learning"
                   width={280}
@@ -169,14 +170,15 @@ export default function HeroSection() {
               </motion.div>
 
               {/* Bottom Image */}
-              <motion.div 
-              drag={isDesktop} 
-              dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
-              variants={popInAnimation} 
-              className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12">
+              <motion.div
+                drag={isDesktop}
+                dragConstraints={{ left: -5, right: 5, top: -5, bottom: 5 }}
+                variants={popInAnimation}
+                className="relative rounded-3xl  ms-4  w-fit col-span-2 mt-2 ml-12"
+              >
                 <Image
                   src="/assets/img/pages/homepage/Rectangle 1453.png"
-                 onDragStart={(event) => event.preventDefault()}
+                  onDragStart={(event) => event.preventDefault()}
                   alt="Student with megaphone"
                   width={400}
                   height={400}
@@ -184,31 +186,29 @@ export default function HeroSection() {
                 />
 
                 <div className="absolute top-8 -right-16 rounded-full p-2">
-                <Image
-                  src="/assets/img/pages/homepage/stars (1).png"
-                  alt="Student with megaphone"
-                  onDragStart={(event) => event.preventDefault()}
-                  width={30}
-                  height={30}
-                  className="object-cover"
-                />
+                  <Image
+                    src="/assets/img/pages/homepage/stars (1).png"
+                    alt="Student with megaphone"
+                    onDragStart={(event) => event.preventDefault()}
+                    width={30}
+                    height={30}
+                    className="object-cover"
+                  />
                 </div>
 
-                <div className="absolute -top-4 -right-4"> 
-                <Image                  
-                  onDragStart={(event) => event.preventDefault()}
-                  src="/assets/img/pages/homepage/group199.png"
-                  alt="Student using tablet circles"
-                  width={180}
-                  height={280}
-                  className="object-cover"
-                /> 
+                <div className="absolute -top-4 -right-4">
+                  <Image
+                    onDragStart={(event) => event.preventDefault()}
+                    src="/assets/img/pages/homepage/group199.png"
+                    alt="Student using tablet circles"
+                    width={180}
+                    height={280}
+                    className="object-cover"
+                  />
                 </div>
               </motion.div>
-
             </div>
-            </div>
- 
+          </div>
         </motion.div>
       </div>
     </section>
