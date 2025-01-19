@@ -17,7 +17,7 @@ import AdminSupportIcon from '@/public/assets/icons/message-01.png'
 import AdminSupportLightIcon from '@/public/assets/icons/message-01-light.png'
 
 const navigation = [ 
-  { name: "Home", href: "/", icon: HomeIcon, iconLight: HomeLightIcon },
+  { name: "Home", href: "/student", icon: HomeIcon, iconLight: HomeLightIcon },
   { name: "Profile", href: "/student/profile", icon: ProfileIcon, iconLight: ProfileLightIcon },
   { name: "My Courses", href: "/student/courses", icon: CoursesIcon, iconLight: CoursesLightIcon },
   { name: "Payments", href: "/student/payments", icon: PaymentIcon, iconLight: PaymentLightIcon },

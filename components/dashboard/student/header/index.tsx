@@ -3,7 +3,7 @@
 import { Bell } from 'lucide-react'
 import { Avatar } from "@/components/dashboard/student/ui/avatar"
 import { Button } from "@/components/dashboard/student/ui/button"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from 'react-icons/fa6'
 import Link from "next/link"
 
@@ -17,6 +17,7 @@ const profileOptions = [
   { name: "Profile", href: "/student/profile" },
   { name: "Settings", href: "/student/settings" },
   { name: "Support", href: "/student/support" },
+  { name: "Logout", href: "/student/logout" },
 ]
 
 interface Notification {
@@ -31,13 +32,27 @@ interface ProfileOption {
 
 const Dropdown: React.FC<{ items: Notification[] | ProfileOption[], icon: React.ReactNode }> = ({ items, icon }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button onClick={toggleDropdown} className="flex items-center">
         {icon}
       </button>
@@ -70,26 +85,6 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void, isSidebarOpe
 
   return (
     <div className="fixed top-0 left-64 max-lg:-left-2 right-0 z-2 bg-white">
-      {/* <div className="relative">
-        {showNotification && (
-          <div className="bg-[#E9FFFF] px-6 py-3">
-            <div className="flex items-center">
-              <p className="text-sm text-gray-700">
-                <span className="font-semibold">Great effort so far Temilade!</span>{" "}
-                Keep up the tenacity, and with a bit more focus on your attendance, you&apos;re sure to reach your full potential!
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-gray-500 hover:text-gray-700"
-                onClick={() => setShowNotification(false)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-              </Button>
-            </div>
-          </div>
-        )}
-      </div> */}
       <div className="border-b">
         <div className="flex h-16 items-center max-lg:justify-between justify-end gap-x-4 px-6">
           <button onClick={toggleSidebar} className="ml-28 mr-2 mb-0 lg:hidden">
