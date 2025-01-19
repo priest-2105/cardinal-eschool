@@ -8,20 +8,20 @@ import { cn } from "@/lib/utils"
 const tabs = [
   {
     title: 'Personal Information',
-    href: '/student/profile',
+    href: '/student/studentinformation',
     exact: true
   },
   {
     title: 'Guardian Information',
-    href: '/student/profile/guardian',
+    href: '/student/guardianinformation',
   },
   {
     title: 'Reports',
-    href: '/student/profile/reports',
+    href: '/student/reports',
   },
   {
     title: 'Settings',
-    href: '/student/profile/settings',
+    href: '/student/settings',
   },
 ]
 

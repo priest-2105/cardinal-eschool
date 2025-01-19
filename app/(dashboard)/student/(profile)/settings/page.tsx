@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/dashboard/student/ui/select"
 
-export default function GuardianInformationForm() {
+export default function StudentSettings() {
   return (
     <Card className="p-6">
       <div className="space-y-8">

@@ -1,7 +1,7 @@
 "use client"
 
-import GuardianInformation from "@/components/dashboard/student/profile/guardianInformation";
-import ProfileLayout from "@/components/dashboard/student/profile/layout/profileLayout";
+import ProfileLayout from "@/components/dashboard/student/profile/layout/profileLayout"; 
+import PersonalInformation from "@/components/dashboard/student/profile/studentinformation/PersonalInformation";
 import { useEffect, useState } from "react"
 
 export default function StudentProfile() {
@@ -28,7 +28,7 @@ export default function StudentProfile() {
     <>
       <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
         <ProfileLayout>
-        <GuardianInformation/>
+        <PersonalInformation/>
         </ProfileLayout>
       </div>
     </>
