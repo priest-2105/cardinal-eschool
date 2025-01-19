@@ -4,24 +4,25 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils"
+import cardinalConfig from '@/config'
 
 const tabs = [
   {
     title: 'Personal Information',
-    href: '/student/studentinformation',
+    href: cardinalConfig.routes.dashboard.student.studentinformation,
     exact: true
   },
   {
     title: 'Guardian Information',
-    href: '/student/guardianinformation',
+    href: cardinalConfig.routes.dashboard.student.guardianinformation,
   },
-  {
-    title: 'Reports',
-    href: '/student/reports',
-  },
+  // {
+  //   title: 'Reports',
+  //   href: '/student/reports',
+  // },
   {
     title: 'Settings',
-    href: '/student/settings',
+    href: cardinalConfig.routes.dashboard.student.studentprofilesettings,
   },
 ]
 

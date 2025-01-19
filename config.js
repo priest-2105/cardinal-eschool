@@ -39,6 +39,31 @@ const cardinalConfig = {
         faq: "/faq", 
         dashboard: "/dashboard",
         privacyPolicy: "/privacy-policy", 
+        dashboard: {
+          student: {
+            home: "/dashboard/student",
+            courses: "/dashboard/student/courses",
+            assignments: "/dashboard/student/assignments",
+            notifications: "/dashboard/student/notifications",
+            studentinformation: "/dashboard/student/studentinformation",
+            guardianinformation : "/dashboard/student/guardianinformation",
+            studentprofilesettings: "/dashboard/student/settings",
+          },
+          tutor: {
+            home: "/dashboard/tutor",
+            courses: "/dashboard/tutor/courses",
+            assignments: "/dashboard/tutor/assignments",
+            notifications: "/dashboard/tutor/notifications",
+            profile: "/dashboard/tutor/profile",
+          },
+          admin: {
+            home: "/dashboard/admin",
+            courses: "/dashboard/admin/courses",
+            assignments: "/dashboard/admin/assignments",
+            notifications: "/dashboard/admin/notifications",
+            profile: "/dashboard/admin/profile",
+          },
+        }
       },
   };
   
