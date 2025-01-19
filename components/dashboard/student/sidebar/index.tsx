@@ -15,13 +15,51 @@ import PaymentIcon from '@/public/assets/icons/credit-card-validation.png'
 import PaymentLightIcon from '@/public/assets/icons/credit-card-validation-light.png'
 import AdminSupportIcon from '@/public/assets/icons/message-01.png'
 import AdminSupportLightIcon from '@/public/assets/icons/message-01-light.png'
+import cardinalConfig from "@/config"
 
 const navigation = [ 
-  { name: "Home", href: "/student", icon: HomeIcon, iconLight: HomeLightIcon },
-  { name: "Profile", href: "/student/profile", icon: ProfileIcon, iconLight: ProfileLightIcon },
-  { name: "My Courses", href: "/student/courses", icon: CoursesIcon, iconLight: CoursesLightIcon },
-  { name: "Payments", href: "/student/payments", icon: PaymentIcon, iconLight: PaymentLightIcon },
-  { name: "Admin Support", href: "/student/support", icon: AdminSupportIcon, iconLight: AdminSupportLightIcon },
+  { 
+    name: "Home", 
+    href: cardinalConfig.routes.dashboard.student.home,
+    icon: HomeIcon, 
+    iconLight: HomeLightIcon, 
+    activePaths: [
+      cardinalConfig.routes.dashboard.student.home, 
+    ] },
+  { 
+    name: "Profile", 
+    href: cardinalConfig.routes.dashboard.student.studentinformation, 
+    icon: ProfileIcon, 
+    iconLight: ProfileLightIcon, 
+    activePaths: [
+      cardinalConfig.routes.dashboard.student.guardianinformation, 
+      cardinalConfig.routes.dashboard.student.studentinformation, 
+      cardinalConfig.routes.dashboard.student.studentprofilesettings, 
+    ] },
+  { 
+    name: "My Courses", 
+    href: cardinalConfig.routes.dashboard.student.courses, 
+    icon: CoursesIcon, 
+    iconLight: CoursesLightIcon, 
+    activePaths: [
+      cardinalConfig.routes.dashboard.student.courses, 
+    ] },
+  { name: "Payments", 
+    href: "/student/payments", 
+    icon: PaymentIcon, 
+    iconLight: PaymentLightIcon, 
+    activePaths: [
+      "/student/payments", 
+      "/student/payment-history"
+    ] },
+  { name: "Admin Support", 
+    href: "/student/support", 
+    icon: AdminSupportIcon, 
+    iconLight: AdminSupportLightIcon, 
+    activePaths: [
+      "/student/support", 
+      "/student/contact-support"
+    ] },
 ]
 
 const StudentDashboardSideBar: React.FC<{ isOpen: boolean, setIsOpen: (isOpen: boolean) => void }> = ({ isOpen, setIsOpen }) => {
@@ -75,7 +113,7 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean, setIsOpen: (isOpen: b
       </div>
       <div className="flex flex-1 flex-col px-4 py-4 space-y-1">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
+          const isActive = item.activePaths.includes(pathname)
           return (
             <Link
               key={item.name}
