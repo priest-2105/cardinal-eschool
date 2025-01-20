@@ -1,5 +1,6 @@
 "use client"
 
+import { CourseList } from "@/components/dashboard/student/pages/courses/courselist"
 import { useState, useEffect } from "react"
 
 
@@ -24,6 +25,7 @@ export default function Courses() {
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     Courses
+    <CourseList/>
     </div>
   )
 }

@@ -1,31 +1,21 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { FilterValues } from './types'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react"
+import type { FilterValues } from "../types"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/dashboard/student/ui/dialog"
+import { Button } from "@/components/dashboard/student/ui/button"
+import { Label } from "@/components/dashboard/student/ui/label"
+import { Calendar } from "@/components/dashboard/student/ui/calender"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/dashboard/student/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/student/ui/popover"
+import { Badge } from "@/components/dashboard/student/ui/badge"
 import { cn } from "@/lib/utils"
-import { Check, ChevronsUpDown, Filter } from 'lucide-react'
+import { Check, ChevronsUpDown, Filter } from "lucide-react"
 
 interface FilterModalProps {
-  courses: { id: number; name: string }[];
-  tutors: { id: number; name: string }[];
-  onFilterChange: (filters: FilterValues) => void;
+  courses: { id: number; name: string }[]
+  tutors: { id: number; name: string }[]
+  onFilterChange: (filters: FilterValues) => void
 }
 
 export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProps) {
@@ -33,8 +23,8 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
   const [selectedCourses, setSelectedCourses] = useState<string[]>([])
   const [selectedTutors, setSelectedTutors] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
+    from: Date | undefined
+    to: Date | undefined
   }>({
     from: undefined,
     to: undefined,
@@ -75,14 +65,8 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
             <Label>Courses</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between"
-                >
-                  {selectedCourses.length === 0
-                    ? "Select courses..."
-                    : `${selectedCourses.length} selected`}
+                <Button variant="outline" role="combobox" className="w-full justify-between">
+                  {selectedCourses.length === 0 ? "Select courses..." : `${selectedCourses.length} selected`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -98,16 +82,14 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                           setSelectedCourses((prev) =>
                             prev.includes(course.name)
                               ? prev.filter((name) => name !== course.name)
-                              : [...prev, course.name]
+                              : [...prev, course.name],
                           )
                         }}
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            selectedCourses.includes(course.name)
-                              ? "opacity-100"
-                              : "opacity-0"
+                            selectedCourses.includes(course.name) ? "opacity-100" : "opacity-0",
                           )}
                         />
                         {course.name}
@@ -123,14 +105,8 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
             <Label>Tutors</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between"
-                >
-                  {selectedTutors.length === 0
-                    ? "Select tutors..."
-                    : `${selectedTutors.length} selected`}
+                <Button variant="outline" role="combobox" className="w-full justify-between">
+                  {selectedTutors.length === 0 ? "Select tutors..." : `${selectedTutors.length} selected`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -146,16 +122,14 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                           setSelectedTutors((prev) =>
                             prev.includes(tutor.name)
                               ? prev.filter((name) => name !== tutor.name)
-                              : [...prev, tutor.name]
+                              : [...prev, tutor.name],
                           )
                         }}
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            selectedTutors.includes(tutor.name)
-                              ? "opacity-100"
-                              : "opacity-0"
+                            selectedTutors.includes(tutor.name) ? "opacity-100" : "opacity-0",
                           )}
                         />
                         {tutor.name}
@@ -176,23 +150,17 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !dateRange.from && "text-muted-foreground"
+                      !dateRange.from && "text-muted-foreground",
                     )}
                   >
-                    {dateRange.from ? (
-                      dateRange.from.toLocaleDateString()
-                    ) : (
-                      "From date"
-                    )}
+                    {dateRange.from ? dateRange.from.toLocaleDateString() : "From date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
-                    onSelect={(date) =>
-                      setDateRange((prev) => ({ ...prev, from: date }))
-                    }
+                    onSelect={(date: Date | undefined) => setDateRange((prev) => ({ ...prev, from: date }))}
                     initialFocus
                   />
                 </PopoverContent>
@@ -203,23 +171,17 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !dateRange.to && "text-muted-foreground"
+                      !dateRange.to && "text-muted-foreground",
                     )}
                   >
-                    {dateRange.to ? (
-                      dateRange.to.toLocaleDateString()
-                    ) : (
-                      "To date"
-                    )}
+                    {dateRange.to ? dateRange.to.toLocaleDateString() : "To date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.to}
-                    onSelect={(date) =>
-                      setDateRange((prev) => ({ ...prev, to: date }))
-                    }
+                    onSelect={(date: Date | undefined) => setDateRange((prev) => ({ ...prev, to: date }))}
                     initialFocus
                   />
                 </PopoverContent>
@@ -231,14 +193,8 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
             <Label>Status</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between"
-                >
-                  {selectedStatuses.length === 0
-                    ? "Select status..."
-                    : `${selectedStatuses.length} selected`}
+                <Button variant="outline" role="combobox" className="w-full justify-between">
+                  {selectedStatuses.length === 0 ? "Select status..." : `${selectedStatuses.length} selected`}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -247,23 +203,19 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                   <CommandInput placeholder="Search status..." />
                   <CommandEmpty>No status found.</CommandEmpty>
                   <CommandGroup>
-                    {['Upcoming', 'Active', 'Completed'].map((status) => (
+                    {["Upcoming", "Active", "Completed"].map((status) => (
                       <CommandItem
                         key={status}
                         onSelect={() => {
                           setSelectedStatuses((prev) =>
-                            prev.includes(status)
-                              ? prev.filter((s) => s !== status)
-                              : [...prev, status]
+                            prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status],
                           )
                         }}
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            selectedStatuses.includes(status)
-                              ? "opacity-100"
-                              : "opacity-0"
+                            selectedStatuses.includes(status) ? "opacity-100" : "opacity-0",
                           )}
                         />
                         {status}

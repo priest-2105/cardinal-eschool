@@ -1,7 +1,7 @@
-import { Course } from './types'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { TableCell, TableRow } from "@/components/ui/table"
+import { Course } from '../types'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
+import { Button } from "@/components/dashboard/student/ui/button"
+import { TableCell, TableRow } from "@/components/dashboard/student/ui/table"
 import { MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

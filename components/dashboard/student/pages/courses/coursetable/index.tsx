@@ -1,12 +1,12 @@
-import { Course } from './types'
-import { CourseTableRow } from './CourseTableRow'
+import { Course } from '../types'
+import { CourseTableRow } from '../coursetablerow/index'
 import {
   Table,
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/dashboard/student/ui/table"
 
 interface CourseTableProps {
   courses: Course[];

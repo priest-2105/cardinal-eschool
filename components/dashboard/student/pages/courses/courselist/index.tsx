@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { FilterModal } from './FilterModal'
-import { CourseTable } from './CourseTable'
+import { FilterModal } from '../coursefilter/index'
+import { CourseTable } from '../coursetable/index'
 import { Search } from 'lucide-react'
-import { Course, FilterValues } from './types'
+import { Course, FilterValues } from '../types'
 
-// Sample data - replace with your actual data
+
 const COURSES_DATA: Course[] = [
   {
     id: 1,
