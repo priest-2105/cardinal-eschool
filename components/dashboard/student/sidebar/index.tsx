@@ -45,12 +45,13 @@ const navigation = [
       cardinalConfig.routes.dashboard.student.courses, 
     ] },
   { name: "Payments", 
-    href: "/student/payments", 
+    href: cardinalConfig.routes.dashboard.student.studentMakePayment, 
     icon: PaymentIcon, 
     iconLight: PaymentLightIcon, 
     activePaths: [
-      "/student/payments", 
-      "/student/payment-history"
+      cardinalConfig.routes.dashboard.student.studentMakePayment, 
+      cardinalConfig.routes.dashboard.student.studentPaymentHistory, 
+      
     ] },
   { name: "Admin Support", 
     href:  cardinalConfig.routes.dashboard.student.studentticketlist, 

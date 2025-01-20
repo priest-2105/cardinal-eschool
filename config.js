@@ -51,6 +51,8 @@ const cardinalConfig = {
             studentprofilesettings: "/student/settings",
             studentticketlist: "/student/ticketlist",
             studentcreateticket: "/student/createticket",
+            studentMakePayment: "/student/makepayment",
+            studentPaymentHistory: "/student/paymenthistory",
           },
           tutor: {
             home: "/tutor",
