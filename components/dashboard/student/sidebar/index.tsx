@@ -53,12 +53,12 @@ const navigation = [
       "/student/payment-history"
     ] },
   { name: "Admin Support", 
-    href: "/student/support", 
+    href:  cardinalConfig.routes.dashboard.student.studentticketlist, 
     icon: AdminSupportIcon, 
     iconLight: AdminSupportLightIcon, 
     activePaths: [
-      "/student/support", 
-      "/student/contact-support"
+      cardinalConfig.routes.dashboard.student.studentticketlist, 
+      cardinalConfig.routes.dashboard.student.studentcreateticket, 
     ] },
 ]
 

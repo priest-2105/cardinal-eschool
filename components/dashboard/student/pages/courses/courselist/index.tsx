@@ -36,27 +36,27 @@ const COURSES_DATA: Course[] = [
   },
   {
     id: 1,
-    name: "Social Studies",
+    name: "English Studies",
     tutor: {
-      name: "Florence Adekunle",
-      email: "florenceadekunle1@gmail.com",
+      name: "Josh Samuel",
+      email: "joshsamuel@gmail.com",
       avatar: "/avatars/florence.jpg"
     },
-    schedule: "Wednesday 11th Jan 2025",
-    status: "Upcoming",
-    dateAdded: "January 5, 2025"
+    schedule: "Friday 21st Feb 2025",
+    status: "Active",
+    dateAdded: "March 5, 2025"
   },
   {
     id: 1,
-    name: "Social Studies",
+    name: "Econommics",
     tutor: {
-      name: "Florence Adekunle",
-      email: "florenceadekunle1@gmail.com",
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
       avatar: "/avatars/florence.jpg"
     },
-    schedule: "Wednesday 11th Jan 2025",
-    status: "Upcoming",
-    dateAdded: "January 5, 2025"
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
   },
 ]
 

@@ -1,6 +1,6 @@
 'use client'
 
-
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils"
@@ -8,21 +8,18 @@ import cardinalConfig from '@/config'
 
 const tabs = [
   {
-    title: 'Personal Information',
-    href: cardinalConfig.routes.dashboard.student.studentinformation,
+    title: 'Ticket List',
+    href: cardinalConfig.routes.dashboard.student.studentticketlist,
     exact: true
   },
   {
-    title: 'Guardian Information',
-    href: cardinalConfig.routes.dashboard.student.guardianinformation,
+    title: 'Create a New Ticket',
+    href: cardinalConfig.routes.dashboard.student.studentcreateticket,
   },
-  {
-    title: 'Settings',
-    href: cardinalConfig.routes.dashboard.student.studentprofilesettings,
-  },
+
 ]
 
-export default function ProfileLayout({
+export default function TicketLayout({
   children
 }: {
   children: React.ReactNode
