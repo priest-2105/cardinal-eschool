@@ -22,7 +22,42 @@ const COURSES_DATA: Course[] = [
     status: "Upcoming",
     dateAdded: "January 5, 2025"
   },
-  // Add more courses...
+  {
+    id: 1,
+    name: "Mathematics",
+    tutor: {
+      name: "Popoola Adekunle",
+      email: "popoolaade@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 1sh Jan 2025",
+    status: "Upcoming",
+    dateAdded: "January 5, 2025"
+  },
+  {
+    id: 1,
+    name: "Social Studies",
+    tutor: {
+      name: "Florence Adekunle",
+      email: "florenceadekunle1@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Wednesday 11th Jan 2025",
+    status: "Upcoming",
+    dateAdded: "January 5, 2025"
+  },
+  {
+    id: 1,
+    name: "Social Studies",
+    tutor: {
+      name: "Florence Adekunle",
+      email: "florenceadekunle1@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Wednesday 11th Jan 2025",
+    status: "Upcoming",
+    dateAdded: "January 5, 2025"
+  },
 ]
 
 const INITIAL_LOAD = 10

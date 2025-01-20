@@ -56,7 +56,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
           Filters
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-white">
         <DialogHeader>
           <DialogTitle>Filter Courses</DialogTitle>
         </DialogHeader>
@@ -70,7 +70,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search courses..." />
                   <CommandEmpty>No course found.</CommandEmpty>
@@ -110,7 +110,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search tutors..." />
                   <CommandEmpty>No tutor found.</CommandEmpty>
@@ -156,7 +156,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                     {dateRange.from ? dateRange.from.toLocaleDateString() : "From date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 bg-white" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
@@ -177,7 +177,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                     {dateRange.to ? dateRange.to.toLocaleDateString() : "To date"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 bg-white" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.to}
@@ -198,7 +198,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search status..." />
                   <CommandEmpty>No status found.</CommandEmpty>
