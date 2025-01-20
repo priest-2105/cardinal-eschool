@@ -1,47 +1,37 @@
 "use client"
 
 import { useState } from "react"
+import { Button } from "@/components/dashboard/student/ui/button"
+import { Calendar } from "@/components/dashboard/student/ui/calender"
+import { Check } from "@/components/dashboard/student/ui/check"
 import {
-  Button,
-  Calendar,
-  Check,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
+} from "@/components/dashboard/student/ui/command"
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Input,
-  Label,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/dashboard/student/ui"
+} from "@/components/dashboard/student/ui/dialog"
+import { Input } from "@/components/dashboard/student/ui/input"
+import { Label } from "@/components/dashboard/student/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/student/ui/popover"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, ChevronsUpDown } from "lucide-react"
-import type { FilterValues } from "../types"
-
-interface Ticket {
-  name: string
-  email: string
-  department: string
-  issue: string
-  subject: string
-  message: string
-  status: string
-}
+import type { FilterValues, Ticket } from "../types"
 
 interface FilterModalProps {
-  tickets: Ticket[]
+  tickets?: Ticket[]
   onFilterChange: (filters: FilterValues) => void
 }
 
-export function FilterModal({ tickets, onFilterChange }: FilterModalProps) {
+export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) {
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
     from: undefined,
@@ -70,7 +60,7 @@ export function FilterModal({ tickets, onFilterChange }: FilterModalProps) {
       <DialogTrigger asChild>
         <Button variant="outline">Filter</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white">
         <DialogHeader>
           <DialogTitle>Filter Tickets</DialogTitle>
         </DialogHeader>
