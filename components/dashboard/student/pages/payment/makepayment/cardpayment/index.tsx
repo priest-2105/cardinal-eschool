@@ -22,7 +22,7 @@ const StudentCardPayment = () => {
               id="cardNumber"
               type="text"
               placeholder="9870 8880 8880 7880"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
             />
           </div>
 
@@ -36,7 +36,7 @@ const StudentCardPayment = () => {
                 id="expiry"
                 type="text"
                 placeholder="16/27"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
               />
             </div>
             <div className="flex-1">
@@ -47,7 +47,7 @@ const StudentCardPayment = () => {
                 id="cvc"
                 type="text"
                 placeholder="XXX"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
               />
             </div>
           </div>
@@ -61,14 +61,14 @@ const StudentCardPayment = () => {
               id="discountCode"
               type="text"
               placeholder="C00-20-OFF"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
             />
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-lg py-2 mt-4"
+            className="w-full bg-[#1BC2C2] hover:bg-teal-600 text-white rounded-lg py-2 mt-4"
           >
             Pay Now
           </button>
