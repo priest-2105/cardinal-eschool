@@ -9,11 +9,12 @@ const cardinalConfig = {
       address: "123 Cardinal Street, Lagos, Nigeria",
     },
     socialInfo: {
-      facebook: "https://facebook.com/cardinaleschools",
-      X: "https://x.com/cardinaleschools",
-      tikTok: "https://tiktok.com/cardinaleschools",
-      youtube: "https://youtube.com/cardinaleschools",
-      whatsapp: "https://whatsapp.com/cardinaleschools",
+      facebook: "https://www.facebook.com/share/1A5tjqXiNN/",
+      X: "https://x.com/@CardinalEschool",
+      tikTok: "https://tiktok.com/@cardinal.eschool",
+      youtube: "https://youtube.com/@cardinale-school?si=zGTvnW1KDIeM_CGt",
+      whatsapp: "https://wa.link/bbt2vr",
+      instagram: "https://www.instagram.com/cardinaleschool?igsh=eDd1ejdubXo5OWpt",
     },
     features: {
       enableNotifications: true,
@@ -38,6 +39,36 @@ const cardinalConfig = {
         faq: "/faq", 
         dashboard: "/dashboard",
         privacyPolicy: "/privacy-policy", 
+        dashboard: {
+          student: {
+            home: "/student",
+            courses: "/student/courses",
+            coursesdetails: "/student/courses/:id",
+            assignments: "/student/assignments",
+            notifications: "/student/notifications",
+            studentinformation: "/student/studentinformation",
+            guardianinformation : "/student/guardianinformation",
+            studentprofilesettings: "/student/settings",
+            studentticketlist: "/student/ticketlist",
+            studentcreateticket: "/student/createticket",
+            studentMakePayment: "/student/makepayment",
+            studentPaymentHistory: "/student/paymenthistory",
+          },
+          tutor: {
+            home: "/tutor",
+            courses: "/tutor/courses",
+            assignments: "/tutor/assignments",
+            notifications: "/tutor/notifications",
+            profile: "/tutor/profile",
+          },
+          admin: {
+            home: "/admin",
+            courses: "/admin/courses",
+            assignments: "/admin/assignments",
+            notifications: "/admin/notifications",
+            profile: "/admin/profile",
+          },
+        }
       },
   };
   

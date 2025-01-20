@@ -2,8 +2,15 @@
 
 import { motion } from "framer-motion";
 
-const PlanList: React.FC<{ onPlanSelect: (plan: any) => void }> = ({ onPlanSelect }) => {
-  const pricingPlans = [
+interface Plan {
+  title: string;
+  price: string;
+  duration: string;
+  features: string[];
+}
+
+const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSelect }) => {
+  const pricingPlans: Plan[] = [
     {
       title: "Basic Plan",
       price: "$60",
@@ -63,16 +70,6 @@ const PlanList: React.FC<{ onPlanSelect: (plan: any) => void }> = ({ onPlanSelec
     },
   ];
 
-  const pricingDiscounts = [
-    {
-      title: "SAVE 10%",
-      duration: "When you Subscribe with us for 3-6 months",
-    },
-    {
-      title: "SAVE 10%",
-      duration: "When you refer your friends and family (Existing Clients Only)",
-    },
-  ];
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },  

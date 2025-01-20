@@ -138,7 +138,7 @@ const FaqQuestions = () => {
           variants={popInAnimation}
         >
           Got Questions? <br/>
-          We've got answers!
+          We&apos;ve got answers!
         </motion.h1>
 
         {/* FAQ Items */}
