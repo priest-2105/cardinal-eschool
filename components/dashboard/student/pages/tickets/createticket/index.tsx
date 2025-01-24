@@ -1,59 +1,135 @@
-'use client'
+"use client"
 
-import { Button } from "@/components/dashboard/student/ui/button"
-import { Card } from "@/components/dashboard/student/ui/card"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Input } from "@/components/dashboard/student/ui/input"
+import { Textarea } from "@/components/dashboard/student/ui/textarea"
+import { Button } from "@/components/dashboard/student/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Label } from "@/components/dashboard/student/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/dashboard/student/ui/select"
+import Popup from "@/components/dashboard/student/ui/Popup"
+
+interface FormData {
+  name: string
+  email: string
+  department: string
+  issue: string
+  subject: string
+  message: string
+}
 
 export default function CreateTicketForm() {
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    department: "",
+    issue: "",
+    subject: "",
+    message: ""
+  })
+  const [showPopup, setShowPopup] = useState(false)
+  const router = useRouter()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Simulate ticket submission
+    setTimeout(() => {
+      setShowPopup(true)
+      setTimeout(() => {
+        setShowPopup(false)
+        router.push("/dashboard/student/ticketdetails")
+      }, 3000)
+    }, 1000)
+  }
+
   return (
-    <Card className="p-6">
-      <div className="space-y-8">
-        <div className="flex items-center gap-8">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold">Submit your Complaints</h2>
-            <p className="text-sm text-muted-foreground">
-            If you are experiencing any issues impacting your service
-            </p>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Name */}
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label htmlFor="name"> Full Name</Label>
-            <Input id="name" defaultValue="Temilade Hassan" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue="hassantemilade@gmail.com" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="department">Department</Label>
-            <Input id="department" defaultValue="3 Lawson Street Okeodo, Kwara State" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">Country of Residence</Label>
-            <Input id="country" defaultValue="Nigeria" />
-          </div>
-          <div className="space-y-2 w-full">
-            <Label htmlFor="state">State of Residence</Label>
-            <Input id="state" defaultValue="Kwara" />
-          </div>       
+        {/* Department */}
+        <div className="space-y-2">
+          <Label htmlFor="department">Department</Label>
+          <Select
+            id="department"
+            value={formData.department}
+            onValueChange={(value) => setFormData({ ...formData, department: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Admin Department">Admin Department</SelectItem>
+              <SelectItem value="Support Department">Support Department</SelectItem>
+              <SelectItem value="Technical Department">Technical Department</SelectItem>
+              <SelectItem value="Sales Department">Sales Department</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex justify-end">
-          <Button className="bg-[#1BC2C2] hover:bg-teal-600">
-            Update Your Profile
-          </Button>
+        {/* Issue */}
+        <div className="space-y-2">
+          <Label htmlFor="issue">Issue</Label>
+          <Input
+            id="issue"
+            value={formData.issue}
+            onChange={(e) => setFormData({ ...formData, issue: e.target.value })}
+            required
+          />
         </div>
-      </div>
-    </Card>
+
+        {/* Subject */}
+        <div className="space-y-2">
+          <Label htmlFor="subject">Subject</Label>
+          <Input
+            id="subject"
+            value={formData.subject}
+            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+            required
+          />
+        </div>
+
+        {/* Message */}
+        <div className="space-y-2">
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            value={formData.message}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            rows={6}
+            required
+          />
+        </div>
+
+        <Button type="submit" fullWidth size="lg">
+          Submit Ticket
+        </Button>
+      </form>
+      {showPopup && <Popup message="Your ticket has been successfully submitted." onClose={() => setShowPopup(false)} />}
+    </div>
   )
 }

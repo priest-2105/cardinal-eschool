@@ -4,7 +4,6 @@ import CreateTicketForm from "@/components/dashboard/student/pages/tickets/creat
 import TicketLayout from "@/components/dashboard/student/pages/tickets/layout"
 import { useState, useEffect } from "react"
 
-
 export default function CreateTicketPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
@@ -25,9 +24,9 @@ export default function CreateTicketPage() {
 
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <TicketLayout>
-            <CreateTicketForm/>
-        </TicketLayout>
+      <TicketLayout>
+        <CreateTicketForm />
+      </TicketLayout>
     </div>
   )
 }
