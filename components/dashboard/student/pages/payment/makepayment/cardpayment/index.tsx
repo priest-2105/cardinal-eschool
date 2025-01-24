@@ -138,8 +138,6 @@ const StudentCardPayment = () => {
             and have access to perks and benefits in basic plan.
             </p>
         </div>
-
-
       </div>
     </div>
   );
