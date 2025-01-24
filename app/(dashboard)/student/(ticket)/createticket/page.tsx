@@ -1,11 +1,11 @@
 "use client"
 
+import CreateTicketForm from "@/components/dashboard/student/pages/tickets/createticket"
 import TicketLayout from "@/components/dashboard/student/pages/tickets/layout"
-import { TicketList } from "@/components/dashboard/student/pages/tickets/ticketlist"
 import { useState, useEffect } from "react"
 
 
-export default function TicketListPage() {
+export default function CreateTicketPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function TicketListPage() {
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
         <TicketLayout>
-        <TicketList/>
+            <CreateTicketForm/>
         </TicketLayout>
     </div>
   )
