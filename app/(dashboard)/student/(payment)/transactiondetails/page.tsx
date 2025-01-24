@@ -10,13 +10,16 @@ interface Transaction {
   package: string
   amount: string
   grade: string
+  timestamp: string
+  transactionId: string
+  paymentMethod: string
 }
 
 const SAMPLE_TRANSACTIONS: Transaction[] = [
-  { date: "2025/11/23", status: "Success", package: "Premium Plan", amount: "$120", grade: "A" },
-  { date: "2025/10/15", status: "Pending", package: "Basic Plan", amount: "$60", grade: "B" },
-  { date: "2025/09/10", status: "Failed", package: "Standard Plan", amount: "$90", grade: "C" },
-  { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40", grade: "A" },
+  { date: "2025/11/23", status: "Success", package: "Premium Plan", amount: "$120", grade: "A", timestamp: "2025-11-23T10:00:00Z", transactionId: "TXN123456", paymentMethod: "Credit Card" },
+  { date: "2025/10/15", status: "Pending", package: "Basic Plan", amount: "$60", grade: "B", timestamp: "2025-10-15T12:00:00Z", transactionId: "TXN123457", paymentMethod: "PayPal" },
+  { date: "2025/09/10", status: "Failed", package: "Standard Plan", amount: "$90", grade: "C", timestamp: "2025-09-10T14:00:00Z", transactionId: "TXN123458", paymentMethod: "Bank Transfer" },
+  { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40", grade: "A", timestamp: "2025-08-05T16:00:00Z", transactionId: "TXN123459", paymentMethod: "Credit Card" },
 ]
 
 export default function TransactionDetailsPage() {
@@ -52,6 +55,15 @@ export default function TransactionDetailsPage() {
         </div>
         <div>
           <strong>Grade:</strong> {transaction.grade}
+        </div>
+        <div>
+          <strong>Timestamp:</strong> {new Date(transaction.timestamp).toLocaleString()}
+        </div>
+        <div>
+          <strong>Transaction ID:</strong> {transaction.transactionId}
+        </div>
+        <div>
+          <strong>Payment Method:</strong> {transaction.paymentMethod}
         </div>
       </div>
       <Button onClick={() => router.back()} className="mt-4">

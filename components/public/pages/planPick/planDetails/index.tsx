@@ -23,7 +23,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan, onDeselect: () => void }> = ({ p
     
     console.log("Checkout with plan:", plan)
     console.log("User details:", userDetails)
-    router.push("/dashboard/student")
+    router.push("/student")
   }
 
   const calculatePrice = () => {

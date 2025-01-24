@@ -8,9 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { FilterModal } from "../ticketfilter/index"
 import { Search } from "lucide-react"
-import { useRouter } from "next/navigation"
-
-
 
 const SAMPLE_TICKETS: Ticket[] = [
   {
@@ -62,7 +59,6 @@ const SAMPLE_TICKETS: Ticket[] = [
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
-  const router = useRouter();
 
   const sortedTickets = [...SAMPLE_TICKETS].sort((a, b) => {
     if (sortBy === "latest") {
@@ -77,10 +73,6 @@ export function TicketList() {
       ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.department.toLowerCase().includes(searchQuery.toLowerCase()),
   )
-
-  const gotoDetails = () => {
-    router.push("/student/ticketdetails");
-  }
 
   return (
     <div className="space-y-4">
@@ -138,7 +130,7 @@ export function TicketList() {
                   </Button>
                 </TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="sm" onClick={gotoDetails}>
+                  <Button variant="ghost" size="sm">
                     View Tickets
                   </Button>
                 </TableCell>

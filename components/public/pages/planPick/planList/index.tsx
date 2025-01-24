@@ -27,6 +27,20 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
       ],
     },
     {
+      title: "Standard Plan",
+      price: "$90",
+      duration: "/ Month",
+      features: [
+        "For students requiring regular support",
+        "Register 2 school subjects only",
+        "2 sessions per course weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Take-home Assessments",
+        "Available for Test Preppers",
+      ],
+    },
+    {
       title: "Premium Plan",
       price: "$120",
       duration: "/ Month",
@@ -41,20 +55,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
         "Access to exclusive premium content and resources",
       ],
     },
-    {
-      title: "Standard Plan",
-      price: "$90",
-      duration: "/ Month",
-      features: [
-        "For students requiring regular support",
-        "Register 2 school subjects only",
-        "2 sessions per course weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Take-home Assessments",
-        "Available for Test Preppers",
-      ],
-    },
+   
     {
       title: "Group Sessions",
       price: "$40",

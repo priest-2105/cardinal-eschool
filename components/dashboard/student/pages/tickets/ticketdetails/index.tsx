@@ -65,7 +65,7 @@ export default function TicketDetailsComponent() {
       setShowPopup(true)
       setTimeout(() => {
         setShowPopup(false)
-        router.push("/dashboard/student/ticketdetails")
+        router.push("/student/ticketdetails")
       }, 3000)
     }, 1000)
   }

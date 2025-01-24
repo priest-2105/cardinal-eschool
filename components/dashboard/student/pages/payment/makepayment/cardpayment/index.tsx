@@ -7,7 +7,7 @@ const StudentCardPayment = () => {
     <div className="flex flex-col md:flex-row bg-white justify-between rounded-lg p-6 space-y-6 md:space-y-0 md:space-x-6">
       {/* Left Section - Payment Form */}
       <div className="flex-1  p-6 w-fit max-w-screen-sm">
-        <h2 className="text-2xl font-bold mb-4">Final Step, Make the payment.</h2>
+        <h2 className="text-2xl font-bold mb-4">Final Step, Make the Payment.</h2>
         <p className="text-[#626262] font-semibold mb-6">
           To finalize your subscription, kindly complete your payment using a valid credit card.
         </p>

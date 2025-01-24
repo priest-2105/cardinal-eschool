@@ -10,27 +10,26 @@ interface Transaction {
   date: string
   status: string
   package: string
-  amount: string
-  grade: string
+  amount: string 
 }
 
 const SAMPLE_TRANSACTIONS: Transaction[] = [
-  { date: "2025/11/23", status: "Success", package: "Premium Plan", amount: "$120", grade: "A" },
-  { date: "2025/10/15", status: "Pending", package: "Basic Plan", amount: "$60", grade: "B" },
-  { date: "2025/09/10", status: "Failed", package: "Standard Plan", amount: "$90", grade: "C" },
-  { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40", grade: "A" },
+  { date: "2025/11/23", status: "Success", package: "Premium Plan", amount: "$120",},
+  { date: "2025/10/15", status: "Pending", package: "Basic Plan", amount: "$60",},
+  { date: "2025/09/10", status: "Failed", package: "Standard Plan", amount: "$90",},
+  { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40",},
 ]
 
 export default function TransactionList() {
   const [selectedMonths, setSelectedMonths] = useState<string[]>([])
-  const router = useRouter()
+  const router = useRouter();
 
   const filteredTransactions = selectedMonths.length
     ? SAMPLE_TRANSACTIONS.filter(transaction => selectedMonths.includes(new Date(transaction.date).getMonth().toString()))
     : SAMPLE_TRANSACTIONS
 
-  const handleStatusClick = () => {
-    router.push(`/dashboard/student/transactiondetails`)
+  const handleTransactionClick = () => {
+    router.push(`student/transactiondetails`)
   }
 
   return (
@@ -42,7 +41,7 @@ export default function TransactionList() {
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Select multiple value={selectedMonths} onValueChange={setSelectedMonths}>
+          <Select multiple  value={selectedMonths} onValueChange={setSelectedMonths}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder={selectedMonths.length ? `${selectedMonths.length} selected` : "Filter by Month"} />
             </SelectTrigger>
@@ -71,14 +70,13 @@ export default function TransactionList() {
               <TableHead>Date</TableHead>
               <TableHead>Transaction Status</TableHead>
               <TableHead>Package</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Grade</TableHead>
+              <TableHead>Amount</TableHead> 
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredTransactions.map((transaction, index) => (
               <TableRow key={index} className="hover:bg-slate-100 cursor-pointer"
-              onClick={() => handleStatusClick}>
+              onClick={() => handleTransactionClick}>
                 <TableCell>{transaction.date}</TableCell>
                 <TableCell>
                   <Button 
@@ -95,8 +93,7 @@ export default function TransactionList() {
                   </Button>
                 </TableCell>
                 <TableCell>{transaction.package}</TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-                <TableCell>{transaction.grade}</TableCell>
+                <TableCell>{transaction.amount}</TableCell> 
               </TableRow>
             ))}
           </TableBody>
