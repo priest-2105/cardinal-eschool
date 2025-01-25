@@ -29,7 +29,7 @@ export default function TransactionList() {
     ? SAMPLE_TRANSACTIONS.filter(transaction => selectedMonths.includes(new Date(transaction.date).getMonth().toString()))
     : SAMPLE_TRANSACTIONS
 
-  const handleStatusClick = (status: string) => {
+  const handleStatusClick = () => {
     router.push(`/dashboard/student/transactiondetails`)
   }
 
@@ -77,11 +77,11 @@ export default function TransactionList() {
           </TableHeader>
           <TableBody>
             {filteredTransactions.map((transaction, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} className="hover:bg-slate-100 cursor-pointer"
+              onClick={() => handleStatusClick}>
                 <TableCell>{transaction.date}</TableCell>
                 <TableCell>
-                  <Button
-                    // variant="outline"
+                  <Button 
                     size="sm"
                     className={`${
                       transaction.status === "Pending"
@@ -90,7 +90,6 @@ export default function TransactionList() {
                         ? "bg-[#0FFF0378]"
                         : "bg-red-300"
                     } text-gray-700`}
-                    onClick={() => handleStatusClick(transaction.status)}
                   >
                     {transaction.status}
                   </Button>
