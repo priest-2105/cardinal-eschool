@@ -1,7 +1,7 @@
 "use client"
 
-import TicketLayout from "@/components/dashboard/student/pages/tickets/layout"
 import TicketDetailsComponent from "@/components/dashboard/student/pages/tickets/ticketdetails"
+import TicketDetailsLayout from "@/components/dashboard/student/pages/tickets/ticketdetailslayout"
 import { useState, useEffect } from "react"
 
 export default function TicketDetailsPage() {
@@ -24,9 +24,9 @@ export default function TicketDetailsPage() {
 
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <TicketLayout>
+      <TicketDetailsLayout>
         <TicketDetailsComponent />
-      </TicketLayout>
+      </TicketDetailsLayout>
     </div>
   )
 }
