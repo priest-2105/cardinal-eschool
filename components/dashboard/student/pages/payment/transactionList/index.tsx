@@ -30,7 +30,7 @@ export default function TransactionList() {
     : SAMPLE_TRANSACTIONS
 
   const handleStatusClick = (status: string) => {
-    router.push(`/dashboard/student/transactiondetails?status=${status}`)
+    router.push(`/dashboard/student/transactiondetails`)
   }
 
   return (
@@ -81,15 +81,15 @@ export default function TransactionList() {
                 <TableCell>{transaction.date}</TableCell>
                 <TableCell>
                   <Button
-                    variant="outline"
+                    // variant="outline"
                     size="sm"
                     className={`${
                       transaction.status === "Pending"
-                        ? "bg-yellow-500"
+                        ? "bg-yellow-200"
                         : transaction.status === "Success"
-                        ? "bg-green-500"
-                        : "bg-red-500"
-                    } text-white`}
+                        ? "bg-[#0FFF0378]"
+                        : "bg-red-300"
+                    } text-gray-700`}
                     onClick={() => handleStatusClick(transaction.status)}
                   >
                     {transaction.status}
