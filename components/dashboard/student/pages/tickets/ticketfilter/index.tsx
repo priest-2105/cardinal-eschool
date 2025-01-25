@@ -60,7 +60,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
       <DialogTrigger asChild>
         <Button variant="outline">Filter</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-max bg-white">
         <DialogHeader>
           <DialogTitle>Filter Tickets</DialogTitle>
         </DialogHeader>
@@ -76,7 +76,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-max p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search departments..." />
                   <CommandEmpty>No department found.</CommandEmpty>
@@ -122,7 +122,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     {dateRange.from ? format(dateRange.from, "PPP") : <span>From date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 bg-white" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.from}
@@ -144,7 +144,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     {dateRange.to ? format(dateRange.to, "PPP") : <span>To date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 bg-white" align="start">
                   <Calendar
                     mode="single"
                     selected={dateRange.to}
@@ -164,7 +164,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search statuses..." />
                   <CommandEmpty>No status found.</CommandEmpty>

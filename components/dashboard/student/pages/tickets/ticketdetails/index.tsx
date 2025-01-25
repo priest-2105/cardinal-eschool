@@ -9,6 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/dashboard/student/ui/label"
 import Popup from "@/components/dashboard/student/ui/Popup"
 
+interface Message {
+  id: string
+  sender: string
+  content: string
+  timestamp: string
+  replyTo?: string
+}
+
 interface Ticket {
   id: string
   name: string
@@ -16,7 +24,7 @@ interface Ticket {
   department: string
   issue: string
   subject: string
-  message: string
+  messages: Message[]
   status: string
   lastUpdated: string
 }
@@ -28,13 +36,18 @@ const SAMPLE_TICKET: Ticket = {
   department: "Admin Department",
   issue: "Login Issue",
   subject: "Login Details",
-  message: "Unable to login with provided credentials.",
+  messages: [
+    { id: "1", sender: "John Doe", content: "Unable to login with provided credentials.", timestamp: "2025/11/23 19:16" },
+    { id: "2", sender: "Support", content: "Please try resetting your password.", timestamp: "2025/11/23 20:00", replyTo: "1" },
+    { id: "3", sender: "John Doe", content: "I have tried that, but it still doesn't work.", timestamp: "2025/11/23 21:00", replyTo: "2" },
+  ],
   status: "Open",
-  lastUpdated: "2025/11/23 19:16",
+  lastUpdated: "2025/11/23 21:00",
 }
 
 export default function TicketDetailsComponent() {
   const [ticket, setTicket] = useState<Ticket | null>(null)
+  const [newMessage, setNewMessage] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const router = useRouter()
 
@@ -57,8 +70,82 @@ export default function TicketDetailsComponent() {
     }, 1000)
   }
 
+  const handleAddMessage = () => {
+    if (ticket && newMessage.trim()) {
+      const newMsg: Message = {
+        id: (ticket.messages.length + 1).toString(),
+        sender: "John Doe",
+        content: newMessage,
+        timestamp: new Date().toISOString(),
+      }
+      setTicket({ ...ticket, messages: [...ticket.messages, newMsg] })
+      setNewMessage("")
+    }
+  }
+
   if (!ticket) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from "@/lib/utils"
+import cardinalConfig from '@/config'
+
+const tabs = [
+  {
+    title: 'Ticket List',
+    href: cardinalConfig.routes.dashboard.student.studentticketlist,
+    exact: true
+  },
+  {
+    title: 'Create a New Ticket',
+    href: cardinalConfig.routes.dashboard.student.studentcreateticket,
+  },
+
+]
+
+export default function TicketLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
+  const pathname = usePathname()
+
+  return (
+    <div className="flex flex-col w-full mx-auto px-4">
+      <div className="border-b">
+        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          {tabs.map((tab) => {
+            const isActive = tab.exact 
+              ? pathname === tab.href
+              : pathname?.startsWith(tab.href)
+
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={cn(
+                  "py-4 px-1 border-b-2 text-sm font-medium transition-colors hover:border-gray-300 hover:text-gray-700",
+                  isActive
+                    ? "border-teal-500 text-teal-600"
+                    : "border-transparent text-gray-500"
+                )}
+              >
+                {tab.title}
+              </Link>
+            )
+          })}
+        </nav>
+      </div>
+      <div className="mt-6">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+
   }
 
   return (
@@ -127,15 +214,33 @@ export default function TicketDetailsComponent() {
           />
         </div>
 
-        {/* Message */}
+        {/* Messages */}
         <div className="space-y-2">
-          <Label htmlFor="message">Message</Label>
+          <Label>Messages</Label>
+          <div className="space-y-4">
+            {ticket.messages.map((message) => (
+              <div key={message.id} className="relative pl-8">
+                {message.replyTo && <div className="absolute left-0 top-0 h-full w-1 bg-gray-300"></div>}
+                <div className="bg-gray-100 p-4 rounded-lg">
+                  <p className="font-semibold">{message.sender}</p>
+                  <p className="text-sm text-gray-600">{message.content}</p>
+                  <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* New Message */}
+        <div className="space-y-2">
+          <Label htmlFor="newMessage">Add a Message</Label>
           <Textarea
-            id="message"
-            value={ticket.message}
-            readOnly
-            rows={6}
+            id="newMessage"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            rows={4}
           />
+          <Button onClick={handleAddMessage}>Send Message</Button>
         </div>
 
         {/* Status */}
