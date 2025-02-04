@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { MultiSelect } from "@/components/ui/multi-select"
+import type React from "react" // Added import for React
 
 const subjects = [
   { value: "MATHEMATICS", label: "Mathematics" },
@@ -37,16 +37,16 @@ const testPrep = [
 ]
 
 interface FormData {
-  gender: string;
-  educationLevel: string;
-  dateOfBirth: string;
-  subjects: string[];
-  testPrep: string[];
-  expectations: string;
-  hasLearningDifficulties: string;
-  learningDifficultiesDetails: string;
-  selectedPlan: string;
-  specificGoals: string;
+  gender: string
+  educationLevel: string
+  dateOfBirth: string
+  subjects: string[]
+  testPrep: string[]
+  expectations: string
+  hasLearningDifficulties: string
+  learningDifficultiesDetails: string
+  selectedPlan: string
+  specificGoals: string
 }
 
 export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: FormData) => void }) {
@@ -60,7 +60,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
     hasLearningDifficulties: "",
     learningDifficultiesDetails: "",
     selectedPlan: "",
-    specificGoals: ""
+    specificGoals: "",
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,36 +74,38 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Gender */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Learner&apos;s Gender
-            </label>
-            <Select
-              value={formData.gender}
-              onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-            >
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+            <label className="block text-sm font-medium text-gray-700">Learner&apos;s Gender</label>
+            <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
             </Select>
           </div>
 
           {/* Education Level */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Learner&apos;s Level of Education
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Learner&apos;s Level of Education</label>
             <Select
               value={formData.educationLevel}
-              onChange={(e) => setFormData({ ...formData, educationLevel: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, educationLevel: value })}
             >
-              <option value="">Select Level</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={`YEAR ${i + 1}`}>YEAR {i + 1}</option>
-              ))}
+              <SelectTrigger>
+                <SelectValue placeholder="Select Level" />
+              </SelectTrigger>
+              <SelectContent>
+                {[...Array(12)].map((_, i) => (
+                  <SelectItem key={i} value={`YEAR ${i + 1}`}>
+                    YEAR {i + 1}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
-          
         </div>
 
         {/* Subjects */}
@@ -120,9 +122,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
 
         {/* Test Prep */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Test Preparation Courses
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Test Preparation Courses</label>
           <MultiSelect
             options={testPrep}
             value={formData.testPrep}
@@ -151,19 +151,21 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
             </label>
             <Select
               value={formData.hasLearningDifficulties}
-              onChange={(e) => setFormData({ ...formData, hasLearningDifficulties: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, hasLearningDifficulties: value })}
             >
-              <option value="">Select</option>
-              <option value="YES">Yes</option>
-              <option value="NO">No</option>
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="YES">Yes</SelectItem>
+                <SelectItem value="NO">No</SelectItem>
+              </SelectContent>
             </Select>
           </div>
 
           {formData.hasLearningDifficulties === "YES" && (
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                If yes, briefly explain
-              </label>
+              <label className="block text-sm font-medium text-gray-700">If yes, briefly explain</label>
               <textarea
                 value={formData.learningDifficultiesDetails}
                 onChange={(e) => setFormData({ ...formData, learningDifficultiesDetails: e.target.value })}
@@ -187,12 +189,11 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
           />
         </div>
 
-        <Button type="submit" fullWidth size="lg">
+        <Button type="submit" className="w-full">
           Submit Assessment
         </Button>
       </form>
     </div>
   )
 }
-
 
