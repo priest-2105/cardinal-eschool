@@ -6,20 +6,25 @@ import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { DatePicker } from "@/components/ui/date-picker"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/dashboard/student/ui/select"
-import { Eye, EyeOff, Youtube } from "lucide-react"
-import PhoneInput from "react-phone-input-2"
-import "react-phone-input-2/lib/style.css"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "@/components/dashboard/student/ui/select"
+import { Eye, EyeOff, Youtube } from 'lucide-react'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 import { motion, AnimatePresence } from "framer-motion"
 import Popup from "@/components/ui/Popup"
-import XIcon from "@/public/assets/icons/x-dark.png"
-import TiktokIcon from "@/public/assets/icons/tiktok-dark.png"
-import WhatsappIcon from "@/public/assets/icons/whatsapp-dark.png"
+import XIcon from '@/public/assets/icons/x-dark.png'
+import TiktokIcon from '@/public/assets/icons/tiktok-dark.png'
+import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png'
 import cardinalConfig from "@/config"
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 export default function SignupPage() {
@@ -27,12 +32,13 @@ export default function SignupPage() {
     firstName: "",
     lastName: "",
     gender: "",
-    dateOfBirth: null as Date | null,
+    age: "",
     email: "",
     phone: "",
     guardianName: "",
     guardianEmail: "",
-    guardianPhone: "", 
+    guardianPhone: "",
+    guardianRelationship: "",
     referralChannel: "",
     password: "",
     confirmPassword: "",
@@ -46,50 +52,48 @@ export default function SignupPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const savedData = sessionStorage.getItem("signupData")
+    const savedData = localStorage.getItem("signupData")
     if (savedData) {
-      const parsedData = JSON.parse(savedData)
-      if (parsedData.dateOfBirth) {
-        parsedData.dateOfBirth = new Date(parsedData.dateOfBirth)
-      }
-      setFormData(parsedData)
+      setFormData(JSON.parse(savedData))
     }
   }, [])
 
   const validateForm = () => {
     const newErrors: FormErrors = {}
 
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required"
-    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required"
+    if (!formData.firstName) newErrors.firstName = "First name is required"
+    if (!formData.lastName) newErrors.lastName = "Last name is required"
     if (!formData.gender) newErrors.gender = "Gender is required"
-    if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of Birth is required"
+    if (!formData.age) newErrors.age = "Age is required"
     if (!formData.password) newErrors.password = "Password is required"
     if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password"
 
-    const isUnder18 = formData.dateOfBirth && new Date().getFullYear() - formData.dateOfBirth.getFullYear() < 18
-
-    if (isUnder18) {
-      if (!formData.guardianName.trim()) newErrors.guardianName = "Guardian's name is required"
-      if (!formData.guardianEmail.trim()) newErrors.guardianEmail = "Guardian's email is required"
+    if (parseInt(formData.age) < 18) {
+      if (!formData.guardianName) newErrors.guardianName = "Guardian's name is required"
+      if (!formData.guardianEmail) newErrors.guardianEmail = "Guardian's email is required"
       if (!formData.guardianPhone) newErrors.guardianPhone = "Guardian's phone is required"
-      if (formData.guardianPhone && formData.guardianPhone.length < 10)
-        newErrors.guardianPhone = "Guardian's phone number should be at least 10 digits" 
+      if (formData.guardianPhone && formData.guardianPhone.length < 11) newErrors.guardianPhone = "Guardian's phone number should be at least 11 digits"
+      if (!formData.guardianRelationship) newErrors.guardianRelationship = "Guardian's relationship is required"
     } else {
-      if (!formData.email.trim()) newErrors.email = "Email is required"
+      if (!formData.email) newErrors.email = "Email is required"
       if (!formData.phone) newErrors.phone = "Phone number is required"
-      if (formData.phone && formData.phone.length < 10) newErrors.phone = "Phone number should be at least 10 digits"
+      if (formData.phone && formData.phone.length < 11) newErrors.phone = "Phone number should be at least 11 digits"
     }
 
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "Invalid email format"
-    if (formData.guardianEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.guardianEmail))
-      newErrors.guardianEmail = "Invalid guardian email format"
+    if (formData.email && !formData.email.includes("@")) newErrors.email = "Invalid email format"
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match"
-
+    
+    // Check password strength
     if (passwordStrength < 3) newErrors.password = "Password is too weak. Please use a stronger password."
 
     setErrors(newErrors)
 
-    return Object.keys(newErrors).length === 0
+    if (Object.keys(newErrors).length > 0) {
+      setPopupMessage("Please correct the highlighted fields.")
+      return false
+    }
+
+    return true
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,13 +110,18 @@ export default function SignupPage() {
     setPasswordStrength(strength)
   }
 
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value.length <= 2) {
+      setFormData({ ...formData, age: value })
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      sessionStorage.setItem("signupData", JSON.stringify(formData))
+      localStorage.setItem("signupData", JSON.stringify(formData))
       router.push("/assessment")
-    } else {
-      setPopupMessage("Please correct the highlighted fields.")
     }
   }
 
@@ -134,58 +143,14 @@ export default function SignupPage() {
             <h1 className="text-3xl font-bold text-center mt-8 mb-4">
               Learn From Highly Skilled Experts & Experienced Tutors
             </h1>
-            <div className="flex justify-center items-center mx-auto text-dark space-x-2 py-2">
-              <a
-                className="flex items-center space-x-2 hover:opacity-75 mx-2"
-                target="_blank"
-                href={`${cardinalConfig.socialInfo.whatsapp}`}
-                rel="noreferrer"
-              >
-                <Image
-                  onDragStart={(event) => event.preventDefault()}
-                  src={WhatsappIcon || "/placeholder.svg"}
-                  alt="whatsapp icon"
-                  width={24}
-                  height={24}
-                />{" "}
-              </a>
-              <a
-                className="flex items-center space-x-2 hover:opacity-75 mx-2"
-                target="_blank"
-                href={`${cardinalConfig.socialInfo.tikTok}`}
-                rel="noreferrer"
-              >
-                <Image
-                  onDragStart={(event) => event.preventDefault()}
-                  src={TiktokIcon || "/placeholder.svg"}
-                  alt="tiktok Icon"
-                  width={24}
-                  height={24}
-                />{" "}
-              </a>
-              <a
-                className="flex items-center space-x-2 hover:opacity-75 mx-2"
-                target="_blank"
-                href={`${cardinalConfig.socialInfo.youtube}`}
-                rel="noreferrer"
-              >
-                {" "}
-                <Youtube size={24} />{" "}
-              </a>
-              <a
-                className="flex items-center space-x-2 hover:opacity-75 mx-2"
-                target="_blank"
-                href={`${cardinalConfig.socialInfo.X}`}
-                rel="noreferrer"
-              >
-                <Image
-                  onDragStart={(event) => event.preventDefault()}
-                  src={XIcon || "/placeholder.svg"}
-                  alt="X-icon"
-                  width={24}
-                  height={24}
-                />{" "}
-              </a>
+            <div className='flex justify-center items-center mx-auto text-dark space-x-2 py-2'>
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={WhatsappIcon || "/placeholder.svg"} alt="whatsapp icon" width={24} height={24} /> </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={TiktokIcon || "/placeholder.svg"} alt="tiktok Icon" width={24} height={24} />  </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.youtube}`}>  <Youtube size={24} />  </a> 
+                <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.X}`}>  
+                  <Image onDragStart={(event) => event.preventDefault()} src={XIcon || "/placeholder.svg"} alt="X-icon" width={24} height={24} /> </a> 
             </div>
           </div>
         </div>
@@ -228,116 +193,118 @@ export default function SignupPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Select
-                      value={formData.gender}
-                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                    >
-                      <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
-                        <SelectValue placeholder="Select Gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
-                  </div>
-                  <div>
-                    <DatePicker
-                      selected={formData.dateOfBirth}
-                      onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
-                      placeholder="Select Date of Birth (MM/DD/YYYY)"
-                      error={!!errors.dateOfBirth}
-                      className="sm:w-[15.5rem] w-full outline-none"
-                    />
-                    {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
-                  </div>
+                <div>
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                    <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+                </div>
+
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="Enter age"
+                    value={formData.age}
+                    onChange={handleAgeChange}
+                    className={errors.age ? "border-red-500" : ""}
+                  />
+                  {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
                 </div>
 
                 <AnimatePresence>
-                  {formData.dateOfBirth && new Date().getFullYear() - formData.dateOfBirth.getFullYear() < 18 && (
-                    <motion.div
-                      key="guardianInfo"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <div className="space-y-4">
-                        <div>
-                          <Input
-                            placeholder="Guardian's Name"
-                            value={formData.guardianName}
-                            onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
-                            className={errors.guardianName ? "border-red-500" : ""}
-                          />
-                          {errors.guardianName && <p className="text-red-500 text-sm mt-1">{errors.guardianName}</p>}
-                        </div>
-                        <div>
-                          <Input
-                            type="email"
-                            placeholder="Guardian's Email"
-                            value={formData.guardianEmail}
-                            onChange={(e) => setFormData({ ...formData, guardianEmail: e.target.value })}
-                            className={errors.guardianEmail ? "border-red-500" : ""}
-                          />
-                          {errors.guardianEmail && <p className="text-red-500 text-sm mt-1">{errors.guardianEmail}</p>}
-                        </div>
-                        <div>
-                          <PhoneInput
-                            country={"us"}
-                            value={formData.guardianPhone}
-                            onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })}
-                            containerClass={errors.guardianPhone ? "border-red-500" : ""}
-                          />
-                          {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
-                        </div>
-                      </div>
-                    </motion.div>
+                  {formData.age && parseInt(formData.age) >= 10 && (
+                    <>
+                      {parseInt(formData.age) < 18 ? (
+                        <motion.div
+                          key="guardianInfo"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <Input
+                                placeholder="Guardian's Name"
+                                value={formData.guardianName}
+                                onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                                className={errors.guardianName ? "border-red-500" : ""}
+                              />
+                              {errors.guardianName && <p className="text-red-500 text-sm mt-1">{errors.guardianName}</p>}
+                            </div>
+                            <div>
+                              <Input
+                                type="email"
+                                placeholder="Guardian's Email"
+                                value={formData.guardianEmail}
+                                onChange={(e) => setFormData({ ...formData, guardianEmail: e.target.value })}
+                                className={errors.guardianEmail ? "border-red-500" : ""}
+                              />
+                              {errors.guardianEmail && <p className="text-red-500 text-sm mt-1">{errors.guardianEmail}</p>}
+                            </div>
+                            <div>
+                              <PhoneInput      
+                                country={'us'}
+                                value={formData.guardianPhone}
+                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })} 
+                                containerClass={errors.guardianPhone ? "border-red-500" : ""}
+                              />
+                              {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
+                            </div>
+                            <div>
+                              <Input
+                                placeholder="Guardian's Relationship"
+                                value={formData.guardianRelationship}
+                                onChange={(e) => setFormData({ ...formData, guardianRelationship: e.target.value })}
+                                className={errors.guardianRelationship ? "border-red-500" : ""}
+                              />
+                              {errors.guardianRelationship && <p className="text-red-500 text-sm mt-1">{errors.guardianRelationship}</p>}
+                            </div>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="studentInfo"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <Input
+                                type="email"
+                                placeholder="Student's Email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className={errors.email ? "border-red-500" : ""}
+                              />
+                              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                            </div>
+                            <div>
+                              <PhoneInput
+                                country={'us'}
+                                value={formData.phone}
+                                onChange={(phone) => setFormData({ ...formData, phone: phone })} 
+                                containerClass={errors.phone ? "border-red-500" : ""}
+                              />
+                              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </>
                   )}
                 </AnimatePresence>
 
-                <AnimatePresence>
-                  {formData.dateOfBirth && new Date().getFullYear() - formData.dateOfBirth.getFullYear() >= 18 && (
-                    <motion.div
-                      key="studentInfo"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      <div className="space-y-4">
-                        <div>
-                          <Input
-                            type="email"
-                            placeholder="Student's Email"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className={errors.email ? "border-red-500" : ""}
-                          />
-                          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                        </div>
-                        <div>
-                          <PhoneInput
-                            country={"us"}
-                            value={formData.phone}
-                            onChange={(phone) => setFormData({ ...formData, phone: phone })}
-                            containerClass={errors.phone ? "border-red-500" : ""}
-                          />
-                          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <Select
-                  value={formData.referralChannel}
-                  onValueChange={(value) => setFormData({ ...formData, referralChannel: value })}
-                >
+                <Select value={formData.referralChannel} onValueChange={(value) => setFormData({ ...formData, referralChannel: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="How did you hear about us?" />
                   </SelectTrigger>
@@ -362,15 +329,10 @@ export default function SignupPage() {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-500" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
                   </button>
-                  {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                 </div>
-
+                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                 <div className="mt-2 flex space-x-1">
                   {[1, 2, 3, 4, 5].map((index) => (
                     <div
@@ -378,15 +340,15 @@ export default function SignupPage() {
                       className={`h-2 rounded w-8 ${
                         index <= passwordStrength
                           ? passwordStrength <= 1
-                            ? "bg-red-500"
+                            ? 'bg-red-500'
                             : passwordStrength <= 2
-                              ? "bg-yellow-500"
-                              : passwordStrength <= 3
-                                ? "bg-blue-500"
-                                : passwordStrength <= 4
-                                  ? "bg-green-500"
-                                  : "bg-teal-500"
-                          : "bg-gray-300"
+                            ? 'bg-yellow-500'
+                            : passwordStrength <= 3
+                            ? 'bg-blue-500'
+                            : passwordStrength <= 4
+                            ? 'bg-green-500'
+                            : 'bg-teal-500'
+                          : 'bg-gray-300'
                       }`}
                     />
                   ))}
@@ -405,14 +367,10 @@ export default function SignupPage() {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-500" />
-                    )}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
                   </button>
-                  {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
                 </div>
+                {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
 
                 <div className="text-sm text-gray-600">
                   By clicking continue, I agree to{" "}
@@ -427,7 +385,7 @@ export default function SignupPage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <Button className="w-full" type="submit" size="lg">
+                 <Button className="w-full" type="submit" size="lg">
                     Submit
                   </Button>
                 </div>

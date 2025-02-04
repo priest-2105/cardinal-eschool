@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/dashboard/student/ui/select"
+import PhoneInputField from "../../ui/phoneInputFeild"
 
 export default function GuardianInformationForm() {
   return (
@@ -53,7 +54,12 @@ export default function GuardianInformationForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" defaultValue="08123456789" />
+            <PhoneInputField
+            value={phoneNumber}
+            onChange={(phone) => setPhoneNumber(phone)}
+            country="us"
+            // label="Phone Number"
+              />
           </div>
           <div className="space-y-2">
             <Label htmlFor="address">Home Address</Label>
