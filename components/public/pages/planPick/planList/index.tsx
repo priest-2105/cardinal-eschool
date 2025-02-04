@@ -69,6 +69,19 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
         "Available for Test Preppers",
       ],
     },
+    {
+      title: "Custom Plan",
+      price: "",
+      duration: "Speak to Support",
+      features: [
+        "For those who need a scalable custom plan",
+        "1 group session weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Regular feedback and tracking",
+        "Access to exclusive premium content and resources",
+      ],
+    },
   ];
 
 

@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { MultiSelect } from "@/components/ui/multi-select"
-import type React from "react" // Added import for React
+import type React from "react"
 
 const subjects = [
   { value: "MATHEMATICS", label: "Mathematics" },
@@ -36,10 +36,8 @@ const testPrep = [
   { value: "PTE", label: "PTE" },
 ]
 
-interface FormData {
-  gender: string
-  educationLevel: string
-  dateOfBirth: string
+interface FormData { 
+  educationLevel: string 
   subjects: string[]
   testPrep: string[]
   expectations: string
@@ -50,10 +48,8 @@ interface FormData {
 }
 
 export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: FormData) => void }) {
-  const [formData, setFormData] = useState<FormData>({
-    gender: "",
-    educationLevel: "",
-    dateOfBirth: "",
+  const [formData, setFormData] = useState<FormData>({ 
+    educationLevel: "", 
     subjects: [],
     testPrep: [],
     expectations: "",
@@ -63,8 +59,21 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
     specificGoals: "",
   })
 
+  useEffect(() => {
+    const savedData = sessionStorage.getItem("signupData")
+    if (savedData) {
+      const parsedData = JSON.parse(savedData)
+      setFormData((prevData) => ({
+        ...prevData,
+      }))
+    }
+  }, [])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const savedData = sessionStorage.getItem("signupData")
+    const updatedData = savedData ? { ...JSON.parse(savedData), ...formData } : formData
+    sessionStorage.setItem("signupData", JSON.stringify(updatedData))
     onSubmit(formData)
   }
 
@@ -72,20 +81,6 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Gender */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Learner&apos;s Gender</label>
-            <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Education Level */}
           <div className="space-y-2">
@@ -106,6 +101,8 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
               </SelectContent>
             </Select>
           </div>
+
+          
         </div>
 
         {/* Subjects */}
@@ -139,7 +136,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
             value={formData.expectations}
             onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
             rows={4}
-            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-200 outline-none rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
           />
         </div>
 
@@ -170,24 +167,11 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
                 value={formData.learningDifficultiesDetails}
                 onChange={(e) => setFormData({ ...formData, learningDifficultiesDetails: e.target.value })}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
+                className="w-full px-4 py-2 border outline-none border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
               />
             </div>
           )}
-        </div>
-
-        {/* Specific Goals */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Is there anything specific you would like to achieve?
-          </label>
-          <textarea
-            value={formData.specificGoals}
-            onChange={(e) => setFormData({ ...formData, specificGoals: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
-          />
-        </div>
+        </div> 
 
         <Button type="submit" className="w-full">
           Submit Assessment
