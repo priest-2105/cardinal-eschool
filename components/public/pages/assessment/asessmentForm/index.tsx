@@ -103,18 +103,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
               ))}
             </Select>
           </div>
-
-          {/* Date of Birth */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Learner&apos;s Date of Birth
-            </label>
-            <Input
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-            />
-          </div>
+          
         </div>
 
         {/* Subjects */}

@@ -4,9 +4,9 @@ const cardinalConfig = {
     description: "A modern e-learning platform for seamless school management.",
     apiBaseURL: "",
     contactInfo: {
-      phone: "+234 01 2345 6789",
+      phone: "+234 811 181 1995",
       email: "online@cardinalschools.com",
-      address: "123 Cardinal Street, Lagos, Nigeria",
+      address: "3, Olalekan Adekoya Street, Off Liasu Road, Egbe-Idimu, Lagos.",
     },
     socialInfo: {
       facebook: "https://www.facebook.com/share/1A5tjqXiNN/",
