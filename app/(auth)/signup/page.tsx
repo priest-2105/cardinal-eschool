@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/date-picker"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/dashboard/student/ui/select"
-import { Eye, EyeOff, Youtube } from 'lucide-react'
+import { Eye, EyeOff, Youtube } from "lucide-react"
 import PhoneInput from "react-phone-input-2"
 import "react-phone-input-2/lib/style.css"
 import { motion, AnimatePresence } from "framer-motion"
@@ -32,8 +32,7 @@ export default function SignupPage() {
     phone: "",
     guardianName: "",
     guardianEmail: "",
-    guardianPhone: "",
-    guardianRelationship: "",
+    guardianPhone: "", 
     referralChannel: "",
     password: "",
     confirmPassword: "",
@@ -47,7 +46,7 @@ export default function SignupPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const savedData = localStorage.getItem("signupData")
+    const savedData = sessionStorage.getItem("signupData")
     if (savedData) {
       const parsedData = JSON.parse(savedData)
       if (parsedData.dateOfBirth) {
@@ -74,8 +73,7 @@ export default function SignupPage() {
       if (!formData.guardianEmail.trim()) newErrors.guardianEmail = "Guardian's email is required"
       if (!formData.guardianPhone) newErrors.guardianPhone = "Guardian's phone is required"
       if (formData.guardianPhone && formData.guardianPhone.length < 10)
-        newErrors.guardianPhone = "Guardian's phone number should be at least 10 digits"
-      if (!formData.guardianRelationship.trim()) newErrors.guardianRelationship = "Guardian's relationship is required"
+        newErrors.guardianPhone = "Guardian's phone number should be at least 10 digits" 
     } else {
       if (!formData.email.trim()) newErrors.email = "Email is required"
       if (!formData.phone) newErrors.phone = "Phone number is required"
@@ -111,7 +109,7 @@ export default function SignupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validateForm()) {
-      localStorage.setItem("signupData", JSON.stringify(formData))
+      sessionStorage.setItem("signupData", JSON.stringify(formData))
       router.push("/assessment")
     } else {
       setPopupMessage("Please correct the highlighted fields.")
@@ -230,33 +228,33 @@ export default function SignupPage() {
                   </div>
                 </div>
 
-                <div>
-                  <Select
-                    value={formData.gender}
-                    onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                  >
-                    <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select Gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
-                </div>
-
-                <div>
-                  {/* <label className="block text-sm font-medium text-gray-700">Date of Birth</label> */}
-                  <DatePicker
-                    selected={formData.dateOfBirth}
-                    onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
-                    placeholder="Select Date of Birth ( MM/DD/YYYY"
-                    error={!!errors.dateOfBirth}
-                    className="mt-2 outline-none"
-                  />
-                  {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Select
+                      value={formData.gender}
+                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
+                    >
+                      <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+                  </div>
+                  <div>
+                    <DatePicker
+                      selected={formData.dateOfBirth}
+                      onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
+                      placeholder="Select Date of Birth (MM/DD/YYYY)"
+                      error={!!errors.dateOfBirth}
+                      className="sm:w-[15.5rem] w-full outline-none"
+                    />
+                    {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
+                  </div>
                 </div>
 
                 <AnimatePresence>
@@ -296,17 +294,6 @@ export default function SignupPage() {
                             containerClass={errors.guardianPhone ? "border-red-500" : ""}
                           />
                           {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
-                        </div>
-                        <div>
-                          <Input
-                            placeholder="Guardian's Relationship"
-                            value={formData.guardianRelationship}
-                            onChange={(e) => setFormData({ ...formData, guardianRelationship: e.target.value })}
-                            className={errors.guardianRelationship ? "border-red-500" : ""}
-                          />
-                          {errors.guardianRelationship && (
-                            <p className="text-red-500 text-sm mt-1">{errors.guardianRelationship}</p>
-                          )}
                         </div>
                       </div>
                     </motion.div>
