@@ -60,7 +60,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
       <DialogTrigger asChild>
         <Button variant="outline">Filter</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-fit bg-white">
         <DialogHeader>
           <DialogTitle>Filter Tickets</DialogTitle>
         </DialogHeader>
