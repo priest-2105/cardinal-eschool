@@ -7,6 +7,8 @@ import { Progress } from "@/components/dashboard/student/ui/progress"
 import { Avatar } from "@/components/dashboard/student/ui/avatar"
 import { ChevronRight } from 'lucide-react'
 import { useState, useEffect } from "react"
+import StudentEventCalendar from "@/components/dashboard/student/pages/home/eventCalender"
+import Announcements from "@/components/dashboard/student/pages/home/announcements"
 
 const announcements = [
   { title: "Father's day", date: "16-06-2024" },
@@ -106,35 +108,9 @@ export default function StudentDashboard() {
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
       <div className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-medium">Schedule</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar />
-            </CardContent>
-          </Card>
+         <StudentEventCalendar/>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-medium">Announcements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {announcements.map((announcement, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-4 rounded-lg border p-3"
-                  >
-                    <div className="flex-1">
-                      <h3 className="font-medium">{announcement.title}</h3>
-                      <p className="text-sm text-gray-500">{announcement.date}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <Announcements />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
