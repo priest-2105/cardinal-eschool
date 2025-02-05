@@ -22,6 +22,7 @@ import XIcon from '@/public/assets/icons/x-dark.png'
 import TiktokIcon from '@/public/assets/icons/tiktok-dark.png'
 import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png'
 import cardinalConfig from "@/config"
+import { DatePicker } from "@/components/ui/date-picker"
 
 interface FormErrors {
   [key: string]: string;
@@ -32,7 +33,7 @@ export default function SignupPage() {
     firstName: "",
     lastName: "",
     gender: "",
-    age: "",
+    dateOfBirth: null as Date | null,
     email: "",
     phone: "",
     guardianName: "",
@@ -64,11 +65,13 @@ export default function SignupPage() {
     if (!formData.firstName) newErrors.firstName = "First name is required"
     if (!formData.lastName) newErrors.lastName = "Last name is required"
     if (!formData.gender) newErrors.gender = "Gender is required"
-    if (!formData.age) newErrors.age = "Age is required"
+    if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required"
     if (!formData.password) newErrors.password = "Password is required"
     if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password"
 
-    if (parseInt(formData.age) < 18) {
+    const age = formData.dateOfBirth ? new Date().getFullYear() - formData.dateOfBirth.getFullYear() : 0
+
+    if (age < 18) {
       if (!formData.guardianName) newErrors.guardianName = "Guardian's name is required"
       if (!formData.guardianEmail) newErrors.guardianEmail = "Guardian's email is required"
       if (!formData.guardianPhone) newErrors.guardianPhone = "Guardian's phone is required"
@@ -108,13 +111,6 @@ export default function SignupPage() {
     if (/[^A-Za-z0-9]/.test(value)) strength++
 
     setPasswordStrength(strength)
-  }
-
-  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (value.length <= 2) {
-      setFormData({ ...formData, age: value })
-    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -208,20 +204,19 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <Input
-                    type="number"
-                    placeholder="Enter age"
-                    value={formData.age}
-                    onChange={handleAgeChange}
-                    className={errors.age ? "border-red-500" : ""}
+                  <DatePicker
+                    selected={formData.dateOfBirth}
+                    onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
+                    placeholder="Select Date of Birth"
+                    className={errors.dateOfBirth ? "border-red-500" : ""}
                   />
-                  {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+                  {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                 </div>
 
                 <AnimatePresence>
-                  {formData.age && parseInt(formData.age) >= 10 && (
+                  {formData.dateOfBirth && new Date().getFullYear() - formData.dateOfBirth.getFullYear() >= 10 && (
                     <>
-                      {parseInt(formData.age) < 18 ? (
+                      {new Date().getFullYear() - formData.dateOfBirth.getFullYear() < 18 ? (
                         <motion.div
                           key="guardianInfo"
                           initial={{ opacity: 0, y: 20 }}

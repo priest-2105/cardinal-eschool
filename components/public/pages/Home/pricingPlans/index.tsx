@@ -48,7 +48,7 @@ const PricingPlans: React.FC = () => {
         "Access to exclusive premium content and resources",
       ],
     },
-
+   
     {
       title: "Group Sessions",
       price: "$40",
@@ -60,6 +60,19 @@ const PricingPlans: React.FC = () => {
         "In-class Activities",
         "Regular feedback and tracking",
         "Available for Test Preppers",
+      ],
+    },
+    {
+      title: "Custom Plan",
+      price: "",
+      duration: "Speak to Support",
+      features: [
+        "For those who need a scalable custom plan",
+        "1 group session weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Regular feedback and tracking",
+        "Access to exclusive premium content and resources",
       ],
     },
   ];

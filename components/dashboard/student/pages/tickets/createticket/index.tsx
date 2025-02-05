@@ -84,7 +84,7 @@ export default function CreateTicketForm() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Admin Department">Admin Department</SelectItem>
-              <SelectItem value="Admin Department">Academic Department</SelectItem>
+              <SelectItem value="Academic Department">Academic Department</SelectItem>
               <SelectItem value="Support Department">Support Department</SelectItem>
               <SelectItem value="Technical Department">Technical Department</SelectItem>
               <SelectItem value="Sales Department">Sales Department</SelectItem>

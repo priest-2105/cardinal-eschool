@@ -4,14 +4,22 @@ import { Button } from "@/components/dashboard/student/ui/button"
 import { TableCell, TableRow } from "@/components/dashboard/student/ui/table"
 import { MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 interface CourseTableRowProps {
   course: Course;
 }
 
 export function CourseTableRow({ course }: CourseTableRowProps) {
+
+  const route = useRouter();
+
+  const handleCourseDetails = () => {
+     route.push('/student/courses/coursedetails')
+  }
+
   return (
-    <TableRow  className='hover:bg-slate-100 cursor-pointer'>
+    <TableRow  className='hover:bg-slate-100 cursor-pointer' onClick={handleCourseDetails}>
       <TableCell className="font-medium">{course.name}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">

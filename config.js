@@ -4,7 +4,7 @@ const cardinalConfig = {
     description: "A modern e-learning platform for seamless school management.",
     apiBaseURL: "",
     contactInfo: {
-      phone: "+234 811 181 1995",
+      phone: "+234 811 181 1995", 
       email: "online@cardinalschools.com",
       address: "3, Olalekan Adekoya Street, Off Liasu Road, Egbe-Idimu, Lagos.",
     },
@@ -20,6 +20,13 @@ const cardinalConfig = {
       enableNotifications: true,
       enableDarkMode: false,
       supportedLanguages: ["en", "fr", "es"],
+    },
+    payment: {
+      accountNumber: "2005415730",
+      accountName: "CARDINAL E-SCHOOL AND EDU SERVICES LTD",
+      bankName: "FCMB",
+      accountType: "",
+      currency: "NGN",
     },
     developerInfo: {
       name: "Cardinal Tech Team", 

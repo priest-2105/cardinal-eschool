@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { CheckCircle2, Upload, Copy, X } from "lucide-react"
+import cardinalConfig from "@/config"
 
 const StudentTransferPayment = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -59,19 +60,19 @@ const StudentTransferPayment = () => {
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Account Number</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold">3121795438</span>
-                  <button onClick={() => copyToClipboard("3121795438")} className="text-[#1BC2C2] hover:text-teal-700">
+                  <span className="font-semibold">{cardinalConfig.payment.accountNumber}</span>
+                  <button onClick={() => copyToClipboard(cardinalConfig.payment.accountNumber)} className="text-[#1BC2C2] hover:text-teal-700">
                     <Copy size={16} />
                   </button>
                 </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Bank Name</span>
-                <span className="font-semibold">First Bank PLC</span>
+                <span className="font-semibold">{cardinalConfig.payment.bankName}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Account Name</span>
-                <span className="font-semibold">Cardinal E-School</span>
+                <span className="font-semibold">{cardinalConfig.payment.accountName}</span>
               </div>
             </div>
           </div>
