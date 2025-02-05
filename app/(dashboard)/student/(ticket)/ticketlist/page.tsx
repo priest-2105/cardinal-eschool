@@ -5,7 +5,7 @@ import { TicketList } from "@/components/dashboard/student/pages/tickets/ticketl
 import { useState, useEffect } from "react"
 
 
-export default function StudentDashboard() {
+export default function TicketListPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {

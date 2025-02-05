@@ -7,7 +7,7 @@ const StudentCardPayment = () => {
     <div className="flex flex-col md:flex-row bg-white justify-between rounded-lg p-6 space-y-6 md:space-y-0 md:space-x-6">
       {/* Left Section - Payment Form */}
       <div className="flex-1  p-6 w-fit max-w-screen-sm">
-        <h2 className="text-2xl font-bold mb-4">Final Step, Make the payment.</h2>
+        <h2 className="text-2xl font-bold mb-4">Final Step, Make the Payment.</h2>
         <p className="text-[#626262] font-semibold mb-6">
           To finalize your subscription, kindly complete your payment using a valid credit card.
         </p>
@@ -22,7 +22,7 @@ const StudentCardPayment = () => {
               id="cardNumber"
               type="text"
               placeholder="9870 8880 8880 7880"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
             />
           </div>
 
@@ -36,7 +36,7 @@ const StudentCardPayment = () => {
                 id="expiry"
                 type="text"
                 placeholder="16/27"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
               />
             </div>
             <div className="flex-1">
@@ -47,7 +47,7 @@ const StudentCardPayment = () => {
                 id="cvc"
                 type="text"
                 placeholder="XXX"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
               />
             </div>
           </div>
@@ -61,14 +61,14 @@ const StudentCardPayment = () => {
               id="discountCode"
               type="text"
               placeholder="C00-20-OFF"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
             />
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white rounded-lg py-2 mt-4"
+            className="w-full bg-[#1BC2C2] hover:bg-teal-600 text-white rounded-lg py-2 mt-4"
           >
             Pay Now
           </button>
@@ -138,8 +138,6 @@ const StudentCardPayment = () => {
             and have access to perks and benefits in basic plan.
             </p>
         </div>
-
-
       </div>
     </div>
   );

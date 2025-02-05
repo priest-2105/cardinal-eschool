@@ -7,8 +7,12 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  Select
-} from "@/components/ui/select"
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "@/components/dashboard/student/ui/select"
 import { Eye, EyeOff, Youtube } from 'lucide-react'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
@@ -190,15 +194,15 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <Select
-                    value={formData.gender}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className={errors.gender ? "border-red-500" : ""}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                    <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
                   </Select>
                   {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
                 </div>
@@ -249,7 +253,7 @@ export default function SignupPage() {
                               <PhoneInput      
                                 country={'us'}
                                 value={formData.guardianPhone}
-                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })}
+                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })} 
                                 containerClass={errors.guardianPhone ? "border-red-500" : ""}
                               />
                               {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
@@ -288,7 +292,7 @@ export default function SignupPage() {
                               <PhoneInput
                                 country={'us'}
                                 value={formData.phone}
-                                onChange={(phone) => setFormData({ ...formData, phone: phone })}
+                                onChange={(phone) => setFormData({ ...formData, phone: phone })} 
                                 containerClass={errors.phone ? "border-red-500" : ""}
                               />
                               {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -300,15 +304,16 @@ export default function SignupPage() {
                   )}
                 </AnimatePresence>
 
-                <Select
-                  value={formData.referralChannel}
-                  onChange={(e) => setFormData({ ...formData, referralChannel: e.target.value })}
-                >
-                  <option value="">How did you hear about us?</option>
-                  <option value="social">Social Media</option>
-                  <option value="friend">Friend/Family</option>
-                  <option value="search">Search Engine</option>
-                  <option value="other">Other</option>
+                <Select value={formData.referralChannel} onValueChange={(value) => setFormData({ ...formData, referralChannel: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="How did you hear about us?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="social">Social Media</SelectItem>
+                    <SelectItem value="friend">Friend/Family</SelectItem>
+                    <SelectItem value="search">Search Engine</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
                 </Select>
 
                 <div className="relative">

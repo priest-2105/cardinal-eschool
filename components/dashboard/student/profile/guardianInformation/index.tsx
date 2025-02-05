@@ -11,8 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/dashboard/student/ui/select"
+import PhoneInputField from "../../ui/phoneInputFeild"
+import { useState } from "react"
 
 export default function GuardianInformationForm() {
+
+    const [phoneNumber, setPhoneNumber] = useState("")
+  
+
   return (
     <Card className="p-6">
       <div className="space-y-8">
@@ -52,8 +58,13 @@ export default function GuardianInformationForm() {
             <Input id="email" type="email" defaultValue="hassantemilade@gmail.com" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" defaultValue="08123456789" />
+            {/* <Label htmlFor="phone">Phone Number</Label> */}
+            <PhoneInputField
+            value={phoneNumber}
+            onChange={(phone) => setPhoneNumber(phone)}
+            country="us"
+            // label="Phone Number"
+              />
           </div>
           <div className="space-y-2">
             <Label htmlFor="address">Home Address</Label>

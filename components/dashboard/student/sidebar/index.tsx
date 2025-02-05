@@ -60,6 +60,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.student.studentticketlist, 
       cardinalConfig.routes.dashboard.student.studentcreateticket, 
+      cardinalConfig.routes.dashboard.student.studentticketdetails, 
     ] },
 ]
 

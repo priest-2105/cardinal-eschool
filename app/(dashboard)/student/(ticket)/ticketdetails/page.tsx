@@ -1,10 +1,10 @@
 "use client"
 
-import PaymentLayout from "@/components/dashboard/student/pages/payment/layout"
-import TransactionList from "@/components/dashboard/student/pages/payment/transactionList"
+import TicketDetailsComponent from "@/components/dashboard/student/pages/tickets/ticketdetails"
+import TicketDetailsLayout from "@/components/dashboard/student/pages/tickets/ticketdetailslayout"
 import { useState, useEffect } from "react"
 
-export default function StudentPaymentHistory() {
+export default function TicketDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -24,11 +24,10 @@ export default function StudentPaymentHistory() {
 
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <PaymentLayout>
-        <TransactionList />
-      </PaymentLayout>
+      <TicketDetailsLayout>
+        <TicketDetailsComponent />
+      </TicketDetailsLayout>
     </div>
   )
 }
-
 
