@@ -1,146 +1,156 @@
-"use client";
+"use client"
 
-import { CheckCircle2 } from "lucide-react";
+import { useState } from "react"
+import { CheckCircle2, Upload, Copy, X } from "lucide-react"
 
 const StudentTransferPayment = () => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0])
+    }
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+  }
+
   return (
     <div className="flex flex-col md:flex-row bg-white justify-between rounded-lg p-6 space-y-6 md:space-y-0 md:space-x-6">
       {/* Left Section - Payment Form */}
-      <div className="flex-1  p-6 w-fit max-w-screen-sm">
+      <div className="flex-1 p-6 w-fit max-w-screen-sm">
         <h2 className="text-2xl font-bold mb-4">Final Step, Make the Payment.</h2>
         <p className="text-[#626262] font-semibold mb-6">
-          To finalize your subscription, kindly complete your payment using a valid credit card.
+          To finalize your subscription, kindly complete your payment using bank transfer.
         </p>
 
-        <form className="space-y-4">
-          {/* Card Number Input */}
-          <div>
-            <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700">
-              Card Number
-            </label>
-            <input
-              id="cardNumber"
-              type="text"
-              placeholder="9870 8880 8880 7880"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
-            />
+        <div className="space-y-6">
+          {/* Receipt Upload */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Receipt File</label>
+            <div className="relative">
+              <input type="file" onChange={handleFileChange} className="hidden" id="receipt" accept="image/*,.pdf" />
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="receipt"
+                  className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Choose File
+                </label>
+                <span className="text-gray-500">{selectedFile ? selectedFile.name : "No File Chosen"}</span>
+                {selectedFile && (
+                  <button onClick={() => setSelectedFile(null)} className="text-gray-500 hover:text-gray-700">
+                    <X size={20} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <button className="w-full bg-[#1BC2C2] text-white rounded-lg py-2 flex items-center justify-center gap-2">
+              <Upload size={20} />
+              Upload Receipt
+            </button>
           </div>
 
-          {/* Expiry and CVC */}
-          <div className="flex space-x-4">
-            <div className="flex-1">
-              <label htmlFor="expiry" className="block text-sm font-medium text-gray-700">
-                Expiry
-              </label>
-              <input
-                id="expiry"
-                type="text"
-                placeholder="16/27"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor="cvc" className="block text-sm font-medium text-gray-700">
-                CVC
-              </label>
-              <input
-                id="cvc"
-                type="text"
-                placeholder="XXX"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
-              />
+          {/* Bank Details */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Make payment to:</h3>
+            <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Account Number</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">3121795438</span>
+                  <button onClick={() => copyToClipboard("3121795438")} className="text-[#1BC2C2] hover:text-teal-700">
+                    <Copy size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Bank Name</span>
+                <span className="font-semibold">First Bank PLC</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Account Name</span>
+                <span className="font-semibold">Cardinal E-School</span>
+              </div>
             </div>
           </div>
 
-          {/* Discount Code Input */}
-          <div>
-            <label htmlFor="discountCode" className="block text-sm font-medium text-gray-700">
-              Discount Code
-            </label>
+          {/* Confirmation Button */}
+          <button className="w-full bg-[#1BC2C2] hover:bg-teal-600 text-white rounded-lg py-3 font-semibold">
+            Click here after transfer
+          </button>
+
+          {/* Discount Code */}
+          <div className="flex gap-2">
             <input
-              id="discountCode"
               type="text"
               placeholder="C00-20-OFF"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-[#1BC2C2] focus:border-[#1BC2C2]"
             />
+            <button className="px-6 py-2 text-[#1BC2C2] font-semibold hover:bg-teal-50 rounded-lg">Apply</button>
           </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-[#1BC2C2] hover:bg-teal-600 text-white rounded-lg py-2 mt-4"
-          >
-            Pay Now
-          </button>
-        </form>
+        </div>
       </div>
 
       {/* Right Section - Payment Details */}
       <div className="space-y-4 bg-gray-100 p-6 w-fit max-w-screen-sm">
-        {/* YouTube Video Section */}
+        {/* Video Section */}
         <div className="relative group">
           <img
             src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle1548.png"
             alt="Payment Instruction"
             className="max-w-full h-auto rounded-lg shadow-md"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-16 h-16 text-white"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path d="M4.887 3.2a1 1 0 0 1 1.13-.09l7 4a1 1 0 0 1 0 1.78l-7 4A1 1 0 0 1 4 11.999V4a1 1 0 0 1 .887-.8z" />
-            </svg>
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+            <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+              <div className="w-0 h-0 border-t-8 border-b-8 border-l-12 border-transparent border-l-black ml-1" />
+            </div>
           </div>
         </div>
 
         {/* Plan Details */}
         <div className="bg-transparent w-full max-w-full px-10 flex items-center p-4">
-        <div className="bg-[#E6FFFC] -mt-28 z-10 w-full max-w-full px-10 flex items-center p-4 rounded-lg shadow-md">
-        
-          <img
-            src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle 1550.png"
-            alt="Payment Instruction"
-            className="w-32 h-auto rounded-lg shadow-md"
-          />
-
-         <div className="px-3">
-           <h3 className="text-lg font-semibold">Basic Plan</h3>
-          <p className="text-2xl font-bold text-teal-600">$60/month</p>
-        
-         </div>
-        
-        </div>
-        </div>
-
-        <div className="p-4 rounded-lg">
-            <div className="flex items-center">
-            <CheckCircle2 color="#11C700"/>
-            <h3 className="text-lg ms-2 font-bold"> Payment & Invoice</h3>
+          <div className="bg-[#E6FFFC] -mt-28 z-10 w-full max-w-full px-10 flex items-center p-4 rounded-lg shadow-md">
+            <img
+              src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle 1550.png"
+              alt="Payment Instruction"
+              className="w-32 h-auto rounded-lg shadow-md"
+            />
+            <div className="px-3">
+              <h3 className="text-lg font-semibold">Basic Plan</h3>
+              <p className="text-2xl font-bold text-teal-600">$60/month</p>
             </div>
-            <p>
-            We’ll worry about all the transactions and 
-            payment. You can sit back and relax while you 
-            get ready to take your classes. Check Your E-mail
-            for your payment receipt.
-            </p>
+          </div>
         </div>
 
-        <div className="p-4 rounded-lg">
-        <div className="flex items-center">
-            <CheckCircle2 color="#11C700"/>
-            <h3 className="text-lg ms-2 font-bold"> Payment & Invoice</h3>
+        {/* Information Sections */}
+        <div className="space-y-4">
+          <div className="p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <CheckCircle2 className="text-[#11C700]" />
+              <h3 className="text-lg ms-2 font-bold">Payment & Invoice</h3>
             </div>
-            <p>
-            You’ll be provided with updates from time to time 
-            and have access to perks and benefits in basic plan.
+            <p className="text-gray-600">
+              We'll worry about all the transactions and payment. You can sit back and relax while you get ready to take
+              your classes. Check Your E-mail for your payment receipt.
             </p>
+          </div>
+
+          <div className="p-4 rounded-lg">
+            <div className="flex items-center mb-2">
+              <CheckCircle2 className="text-[#11C700]" />
+              <h3 className="text-lg ms-2 font-bold">Updates & Benefits</h3>
+            </div>
+            <p className="text-gray-600">
+              You'll be provided with updates from time to time and have access to perks and benefits in basic plan.
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default StudentTransferPayment;
+export default StudentTransferPayment
+
