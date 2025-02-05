@@ -9,6 +9,8 @@ import { ChevronRight } from 'lucide-react'
 import { useState, useEffect } from "react"
 import StudentEventCalendar from "@/components/dashboard/student/pages/home/eventCalender"
 import Announcements from "@/components/dashboard/student/pages/home/announcements"
+import Assignments from "@/components/dashboard/student/pages/home/assignments"
+import UpcomingClasses from "@/components/dashboard/student/pages/upcomingClasses"
 
 const announcements = [
   { title: "Father's day", date: "16-06-2024" },
@@ -106,87 +108,16 @@ export default function StudentDashboard() {
 
   return (
     <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+     
+        <div className="">
          <StudentEventCalendar/>
+        <UpcomingClasses/>
+      </div>
 
+        <div className="">
         <Announcements />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-medium">Top Courses ({topCourses.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {topCourses.map((course, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-medium">{course.title}</h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span>Chapter {course.chapter}</span>
-                        <span>•</span>
-                        <span>{course.totalClasses} Classes</span>
-                      </div>
-                      <Progress value={course.progress} className="mt-2" />
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{course.score}%</div>
-                      <div className="text-sm text-gray-500">{course.status}</div>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-medium">Assignment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {assignments.map((assignment, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium">{assignment.subject}</h3>
-                        <Button variant="outline" size="sm">Upload</Button>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span>{assignment.assignments} assignments</span>
-                        <span>•</span>
-                        <span className="text-red-500">Submit before {assignment.deadline}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg font-medium">Upcoming Classes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {upcomingClasses.map((class_, index) => (
-                    <div key={index} className="flex items-center gap-4">
-                      <Avatar src={class_.avatar} alt={class_.instructor} fallback={class_.instructor[0]} />
-                      <div className="flex-1">
-                        <h3 className="font-medium">{class_.title}</h3>
-                        <p className="text-sm text-gray-500">{class_.subject}</p>
-                        <p className="text-sm text-gray-500">by {class_.instructor}</p>
-                      </div>
-                      <Button>Join</Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <Assignments/>
         </div>
       </div>
     </div>
