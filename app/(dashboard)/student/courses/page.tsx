@@ -23,8 +23,7 @@ export default function Courses() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-    Courses
+    <div className={`transition-all ease-in-out  bg-white border border-gray-200 rounded-lg p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     <CourseList/>
     </div>
   )

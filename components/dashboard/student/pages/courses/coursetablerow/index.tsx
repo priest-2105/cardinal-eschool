@@ -11,7 +11,7 @@ interface CourseTableRowProps {
 
 export function CourseTableRow({ course }: CourseTableRowProps) {
   return (
-    <TableRow>
+    <TableRow  className='hover:bg-slate-100 cursor-pointer'>
       <TableCell className="font-medium">{course.name}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
