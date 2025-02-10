@@ -78,7 +78,6 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
                   <label className="text-sm font-medium text-gray-700">Grade</label>
                   <Input value="Grade 6" readOnly className="bg-gray-50 border-gray-200" />
                 </div>
-
                 <Button className="w-full bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white font-medium py-6">
                   Join Class
                 </Button>
