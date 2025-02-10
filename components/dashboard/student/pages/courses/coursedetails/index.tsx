@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/student/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Clock, Users, GraduationCap, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import ResourcesList from "./ResourcesList"
 
 type Tab = "description" | "resources" | "reports" | "assessments"
 
@@ -44,7 +44,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
   }
 
   return (
-    <div className="max-w-4xl min-h-full p-6">
+    <div className="w-full min-h-full p-6">
       {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
@@ -74,66 +74,30 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
       </div>
 
       {/* Content */}
-      <Card className="border-none shadow-none">
-        <CardContent className="space-y-8">
-          {activeTab === "description" && (
-            <div className="space-y-8">
-              {/* Course Header */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <h2 className="text-2xl font-semibold">Basic Science</h2>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary">Science</Badge>
-                    <Badge variant="secondary">Grade 6</Badge>
+      <div className="flex gap-8">
+        <Card className="border-none shadow-none flex-grow">
+          <CardContent className="space-y-8">
+            {activeTab === "description" && (
+              <div className="space-y-8">
+                {/* Course Header */}
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-semibold">Basic Science</h2>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">Science</Badge>
+                      <Badge variant="secondary">Grade 6</Badge>
+                    </div>
                   </div>
+                  <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
                 </div>
-                <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
-              </div>
 
-              {/* Instructor Info */}
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-semibold">Dr. John Doe</h3>
-                  <p className="text-sm text-gray-500">Senior Science Instructor</p>
-                  <p className="text-sm text-gray-500">Ph.D. in Physical Sciences</p>
-                </div>
-              </div>
-
-              {/* Course Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Duration</p>
-                  <p className="font-medium">12 Weeks</p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                  <Users className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Class Size</p>
-                  <p className="font-medium">25 Students</p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                  <GraduationCap className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Level</p>
-                  <p className="font-medium">Intermediate</p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg space-y-2">
-                  <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Lessons</p>
-                  <p className="font-medium">24 Topics</p>
-                </div>
-              </div>
-
-              {/* Course Description */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Course Description</label>
-                <Textarea
-                  readOnly
-                  className="bg-gray-50 border-gray-200 min-h-[150px]"
-                  value={`This comprehensive Basic Science course is designed for Grade 6 students, covering fundamental concepts in physics, chemistry, and biology. The course emphasizes hands-on experiments and practical applications.
+                {/* Course Description */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Course Description</label>
+                  <Textarea
+                    readOnly
+                    className="bg-gray-50 border-gray-200 min-h-[150px]"
+                    value={`This comprehensive Basic Science course is designed for Grade 6 students, covering fundamental concepts in physics, chemistry, and biology. The course emphasizes hands-on experiments and practical applications.
 
 Key Topics:
 • Introduction to Scientific Method
@@ -143,68 +107,115 @@ Key Topics:
 • Basic Laboratory Skills
 
 Students will participate in weekly laboratory sessions and group discussions to reinforce their understanding of scientific concepts.`}
-                />
-              </div>
+                  />
+                </div>
 
-              {/* Class Schedule */}
-              <div className="space-y-4">
-                <label className="text-sm font-medium text-gray-700">Class Schedule</label>
-                <div className="space-y-2">
-                  {SAMPLE_SCHEDULES.map((schedule, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
-                        <span className="font-medium">{schedule.day}</span>
+                {/* Class Schedule */}
+                <div className="space-y-4">
+                  <label className="text-sm font-medium text-gray-700">Class Schedule</label>
+                  <div className="space-y-2">
+                    {SAMPLE_SCHEDULES.map((schedule, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
+                          <span className="font-medium">{schedule.day}</span>
+                        </div>
+                        <span className="text-gray-600">{schedule.time}</span>
                       </div>
-                      <span className="text-gray-600">{schedule.time}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Learning Outcomes */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Learning Outcomes</label>
+                  <Textarea
+                    readOnly
+                    className="bg-gray-50 border-gray-200"
+                    value={`Upon completion, students will be able to:
+                    • Apply scientific method to solve problems
+                    • Understand basic principles of matter and energy
+                    • Conduct simple scientific experiments
+                    • Explain fundamental concepts in biology, chemistry, and physics
+                    • Develop critical thinking and analytical skills`}
+                  />
                 </div>
               </div>
+            )}
 
-              {/* Prerequisites */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Prerequisites</label>
-                <Input
-                  value="Completion of Grade 5 Science or equivalent"
-                  readOnly
-                  className="bg-gray-50 border-gray-200"
-                />
+            {activeTab === "resources" && <ResourcesList />}
+
+            {activeTab === "reports" && (
+              <div className="text-center py-8 text-gray-500">Reports content will be displayed here</div>
+            )}
+
+            {activeTab === "assessments" && (
+              <div className="text-center py-8 text-gray-500">Assessments content will be displayed here</div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sidebar */}
+        <div className="w-1/3 space-y-8">
+          {/* Instructor Info */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <h3 className="font-semibold text-lg">Instructor</h3>
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-semibold">Dr. John Doe</h4>
+                  <p className="text-sm text-gray-500">Senior Science Instructor</p>
+                  <p className="text-sm text-gray-500">Ph.D. in Physical Sciences</p>
+                </div>
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Learning Outcomes */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Learning Outcomes</label>
-                <Textarea
-                  readOnly
-                  className="bg-gray-50 border-gray-200"
-                  value={`Upon completion, students will be able to:
-                  • Apply scientific method to solve problems
-                  • Understand basic principles of matter and energy
-                  • Conduct simple scientific experiments
-                  • Explain fundamental concepts in biology, chemistry, and physics
-                  • Develop critical thinking and analytical skills`}
-                />
+          {/* Course Stats */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <h3 className="font-semibold text-lg">Course Information</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Duration</p>
+                  <p className="font-medium">12 Weeks</p>
+                </div>
+                <div className="space-y-2">
+                  <Users className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Class Size</p>
+                  <p className="font-medium">25 Students</p>
+                </div>
+                <div className="space-y-2">
+                  <GraduationCap className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Level</p>
+                  <p className="font-medium">Intermediate</p>
+                </div>
+                <div className="space-y-2">
+                  <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Lessons</p>
+                  <p className="font-medium">24 Topics</p>
+                </div>
               </div>
-            </div>
-          )}
+            </CardContent>
+          </Card>
 
-          {activeTab === "resources" && (
-            <div className="text-center py-8 text-gray-500">Resources content will be displayed here</div>
-          )}
-
-          {activeTab === "reports" && (
-            <div className="text-center py-8 text-gray-500">Reports content will be displayed here</div>
-          )}
-
-          {activeTab === "assessments" && (
-            <div className="text-center py-8 text-gray-500">Assessments content will be displayed here</div>
-          )}
-        </CardContent>
-      </Card>
+          {/* Prerequisites */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <h3 className="font-semibold text-lg">Prerequisites</h3>
+              <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
