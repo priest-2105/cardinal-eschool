@@ -64,7 +64,8 @@ export default function CourseDescription({ studentName = "Temilade" }: CourseDe
                   <Textarea
                     readOnly
                     className="bg-gray-50 border-gray-200 min-h-[150px]"
-                    value={`This comprehensive Basic Science course is designed for Grade 6 students, covering fundamental concepts in physics, chemistry, and biology. The course emphasizes hands-on experiments and practical applications.
+                    value={`
+                    This comprehensive Basic Science course is designed for Grade 6 students, covering fundamental concepts in physics, chemistry, and biology. The course emphasizes hands-on experiments and practical applications.
 
                     Key Topics:
                     • Introduction to Scientific Method
