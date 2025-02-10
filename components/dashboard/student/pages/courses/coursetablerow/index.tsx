@@ -15,7 +15,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
   const route = useRouter();
 
   const handleCourseDetails = () => {
-     route.push('/student/courses/coursedetails')
+     route.push('/student/course/1')
   }
 
   return (
