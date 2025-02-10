@@ -7,7 +7,7 @@ import { Search, Calendar, FileText, CheckCircle, Clock } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { AssessmentModal } from "./AssessmentModal"
+import { AssessmentModal } from "../assessmentModal"
 
 interface Assessment {
   id: string

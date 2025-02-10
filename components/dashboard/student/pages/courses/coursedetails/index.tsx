@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import ResourcesList from "../../resources/resourcesList"
 import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
+import AssessmentsList from "../../assessment/assessmentList"
 
 
 type Tab = "description" | "resources" | "reports" | "assessments"
@@ -86,9 +87,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
 
             {activeTab === "reports" && <ReportsList/>}
 
-            {activeTab === "assessments" && (
-              <div className="text-center py-8 text-gray-500">Assessments content will be displayed here</div>
-            )}
+            {activeTab === "assessments" && <AssessmentsList/>}
           </CardContent>
         </Card>
 
