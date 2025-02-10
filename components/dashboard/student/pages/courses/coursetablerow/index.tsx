@@ -55,4 +55,3 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
     </TableRow>
   )
 }
-

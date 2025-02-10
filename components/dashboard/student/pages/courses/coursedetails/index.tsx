@@ -1,20 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/dashboard/student/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 type Tab = "description" | "resources" | "reports" | "assessments"
 
-interface CourseDetailsProps {
+interface CourseDetailsComponentProps {
   studentName?: string
 }
 
-export default function CourseDetails({ studentName = "Temilade" }: CourseDetailsProps) {
+export default function CourseDetailsComponent({ studentName = "Temilade" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
+  const route = useRouter();
 
   const tabs = [
     { id: "description", label: "Class Description" },
@@ -23,14 +25,15 @@ export default function CourseDetails({ studentName = "Temilade" }: CourseDetail
     { id: "assessments", label: "Assessments" },
   ]
 
-  return (
-    <div className="min-h-screen bg-gray-50">
+  const handleback = () => {
+    route.back();
+  };
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto p-6">
+  return (
+      <div className="max-w-4xl min-h-full p-6">
         {/* Back Button and Title */}
         <div className="flex items-center gap-2 mb-6">
-          <Button variant="ghost" size="icon" className="rounded-full">
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-xl font-semibold text-[#1BC2C2]">Class Details</h1>
@@ -76,7 +79,7 @@ export default function CourseDetails({ studentName = "Temilade" }: CourseDetail
                   <Input value="Grade 6" readOnly className="bg-gray-50 border-gray-200" />
                 </div>
 
-                <Button className="w-full bg-[#1BC2C2] hover:bg-teal-600 text-white font-medium py-6">
+                <Button className="w-full bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white font-medium py-6">
                   Join Class
                 </Button>
               </div>
@@ -95,8 +98,7 @@ export default function CourseDetails({ studentName = "Temilade" }: CourseDetail
             )}
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </div> 
   )
 }
 
