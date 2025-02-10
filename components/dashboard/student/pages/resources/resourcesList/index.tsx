@@ -3,21 +3,35 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Download, Search } from "lucide-react"
+import { Download, Search, Calendar } from "lucide-react"
+import { format } from "date-fns"
 
 interface Resource {
   id: string
   title: string
   type: string
   size: string
+  dateUploaded: Date
 }
 
 const SAMPLE_RESOURCES: Resource[] = [
-  { id: "1", title: "Introduction to Scientific Method", type: "PDF", size: "2.3 MB" },
-  { id: "2", title: "Matter and Energy Basics", type: "PDF", size: "1.8 MB" },
-  { id: "3", title: "Living Systems Overview", type: "PDF", size: "3.1 MB" },
-  { id: "4", title: "Earth and Space Science Fundamentals", type: "PDF", size: "2.7 MB" },
-  { id: "5", title: "Laboratory Safety Guidelines", type: "PDF", size: "1.2 MB" },
+  {
+    id: "1",
+    title: "Introduction to Scientific Method",
+    type: "PDF",
+    size: "2.3 MB",
+    dateUploaded: new Date(2023, 5, 15),
+  },
+  { id: "2", title: "Matter and Energy Basics", type: "PDF", size: "1.8 MB", dateUploaded: new Date(2023, 6, 1) },
+  { id: "3", title: "Living Systems Overview", type: "PDF", size: "3.1 MB", dateUploaded: new Date(2023, 6, 10) },
+  {
+    id: "4",
+    title: "Earth and Space Science Fundamentals",
+    type: "PDF",
+    size: "2.7 MB",
+    dateUploaded: new Date(2023, 6, 22),
+  },
+  { id: "5", title: "Laboratory Safety Guidelines", type: "PDF", size: "1.2 MB", dateUploaded: new Date(2023, 7, 5) },
 ]
 
 export default function ResourcesList() {
@@ -57,6 +71,10 @@ export default function ResourcesList() {
               <h3 className="font-medium">{resource.title}</h3>
               <p className="text-sm text-gray-500">
                 {resource.type} • {resource.size}
+              </p>
+              <p className="text-xs text-gray-400 flex items-center mt-1">
+                <Calendar size={12} className="mr-1" />
+                {format(resource.dateUploaded, "MMM d, yyyy")}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={() => handleDownload(resource.id)}>
