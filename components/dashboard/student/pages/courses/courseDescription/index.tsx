@@ -54,8 +54,8 @@ export default function CourseDescription({ studentName = "Temilade" }: CourseDe
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold">Basic Science</h2>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">Science</Badge>
-            <Badge variant="secondary">Grade 6</Badge>
+            <Badge variant="secondary" className="bg-slate-200">Science</Badge>
+            <Badge variant="secondary" className="bg-slate-200">Grade 6</Badge>
           </div>
         </div>
         <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
