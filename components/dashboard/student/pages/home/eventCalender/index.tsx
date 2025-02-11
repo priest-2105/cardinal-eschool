@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/dashboard/student/ui/card"
 import { Button } from "@/components/dashboard/student/ui/button"
-import { X } from "lucide-react"
+import { X } from 'lucide-react'
 
 interface Event {
   id: string
@@ -116,7 +116,7 @@ export default function StudentEventCalendar() {
   const currentMonth = selectedDate.toLocaleString("default", { month: "long", year: "numeric" })
 
   return (
-    <div className={`transition-all ease-in-out duration-300`}>
+    <div className="transition-all ease-in-out duration-300">
       <div className="relative">
         <Card className="border rounded-lg shadow-sm">
           <CardHeader className="border-b bg-gray-50/80">
@@ -157,29 +157,33 @@ export default function StudentEventCalendar() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-8 mt-4">
-              <div className="col-span-1 text-center py-1 font-medium">
-                <div className="text-xs">Time</div>
-                <div className="text-sm" id="timezone"></div>
-              </div>
-              {DAYS.map((day, i) => {
-                const date = new Date(selectedDate)
-                date.setDate(date.getDate() - 3 + i)
-                const isToday = date.toDateString() === new Date().toDateString()
-                return (
-                  <div
-                    key={day}
-                    className={`text-center py-1 font-medium ${isToday ? "bg-blue-500 text-white rounded-md" : ""}`}
-                  >
-                    <div className="text-xs">{day}</div>
-                    <div className="text-sm">{date.getDate()}</div>
-                  </div>
-                )
-              })}
-            </div>
           </CardHeader>
           <CardContent className="p-0 overflow-auto custom-scrollbar" style={{ height: "480px" }}>
             <div className="relative" style={{ minWidth: "1000px" }}>
+              <div className="sticky top-0 z-10 bg-white border-b">
+                <div className="grid grid-cols-8">
+                  <div className="col-span-1 py-2 px-4 font-medium border-r">
+                    <div className="text-xs">Time</div>
+                    <div className="text-sm" id="timezone"></div>
+                  </div>
+                  {DAYS.map((day, i) => {
+                    const date = new Date(selectedDate)
+                    date.setDate(date.getDate() - 3 + i)
+                    const isToday = date.toDateString() === new Date().toDateString()
+                    return (
+                      <div
+                        key={day}
+                        className={`text-center py-2 font-medium ${
+                          isToday ? "bg-blue-500 text-white" : ""
+                        }`}
+                      >
+                        <div className="text-xs">{day}</div>
+                        <div className="text-sm">{date.getDate()}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
               <div className="grid grid-cols-8">
                 {/* Time labels */}
                 <div className="col-span-1 border-r sticky left-0 bg-white z-10">
@@ -275,4 +279,3 @@ export default function StudentEventCalendar() {
     </div>
   )
 }
-
