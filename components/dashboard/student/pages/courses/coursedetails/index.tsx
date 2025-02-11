@@ -141,12 +141,29 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
           </Card>
 
           {/* Prerequisites */}
-          <Card className="p-4 bg-gray-50">
+          {/* <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
               <h3 className="font-semibold text-lg">Prerequisites</h3>
               <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
             </CardContent>
-          </Card>
+          </Card> */}
+           <div className="space-y-4">
+        <label className="text-sm font-medium text-gray-700">Class Schedule</label>
+        <div className="space-y-2">
+          {SAMPLE_SCHEDULES.map((schedule, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
+                <span className="font-medium">{schedule.day}</span>
+              </div>
+              <span className="text-gray-600">{schedule.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CourseDescriptionModal } from "../courseDescriptionModal"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface Schedule {
   day: string
@@ -77,7 +78,7 @@ export default function CourseDescription({ studentName = "Temilade" }: CourseDe
       </div>
 
       {/* Class Schedule */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <label className="text-sm font-medium text-gray-700">Class Schedule</label>
         <div className="space-y-2">
           {SAMPLE_SCHEDULES.map((schedule, index) => (
@@ -93,7 +94,13 @@ export default function CourseDescription({ studentName = "Temilade" }: CourseDe
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <h3 className="font-semibold text-lg">Prerequisites</h3>
+              <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
+            </CardContent>
+          </Card>
 
       {/* Learning Outcomes */}
       <div className="space-y-2">
