@@ -72,14 +72,22 @@ const SAMPLE_EVENTS: Event[] = [
   },
 ]
 
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 9) // 9AM to 10PM
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const HOURS = Array.from({ length: 24 }, (_, i) => i)
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function StudentEventCalendar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 })
+
+  useEffect(() => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const timezoneElement = document.getElementById("timezone")
+    if (timezoneElement) {
+      timezoneElement.textContent = timezone
+    }
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {
@@ -149,39 +157,47 @@ export default function StudentEventCalendar() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-7 mt-4">
-              <div className="col-span-1" /> {/* Empty cell for time column */}
-              {DAYS.map((day, i) => (
-                <div
-                  key={day}
-                  className={`text-center py-1 font-medium ${i === 3 ? "bg-blue-500 text-white rounded-md" : ""}`}
-                >
-                  <div className="text-xs">{day}</div>
-                  <div className="text-sm">{i + 1}</div>
-                </div>
-              ))}
+            <div className="grid grid-cols-8 mt-4">
+              <div className="col-span-1 text-start py-1 font-medium">
+                <div className="text-xs">Time</div>
+                <div className="text-sm" id="timezone"></div>
+              </div>
+              {DAYS.map((day, i) => {
+                const date = new Date(selectedDate)
+                date.setDate(date.getDate() - 3 + i)
+                const isToday = date.toDateString() === new Date().toDateString()
+                return (
+                  <div
+                    key={day}
+                    className={`text-center py-1 font-medium ${isToday ? "bg-blue-500 text-white rounded-md" : ""}`}
+                  >
+                    <div className="text-xs">{day}</div>
+                    <div className="text-sm">{date.getDate()}</div>
+                  </div>
+                )
+              })}
             </div>
           </CardHeader>
-          <CardContent className="p-0 overflow-auto" style={{ height: "calc(100vh - 200px)" }}>
-            <div className="relative grid grid-cols-7">
+          <CardContent className="p-0 overflow-auto custom-scrollbar" style={{ height: "480px" }}>
+            <div className="relative grid grid-cols-8">
               {/* Time labels */}
               <div className="col-span-1 border-r sticky left-0 bg-white z-10">
                 {HOURS.map((hour) => (
                   <div key={hour} className="h-12 border-b px-2 py-1">
-                    <span className="text-xs text-gray-500">{`${hour}:00`}</span>
+                    <span className="text-xs text-gray-500">{`${hour.toString().padStart(2, "0")}:00`}</span>
                   </div>
                 ))}
               </div>
 
               {/* Calendar grid */}
-              {Array.from({ length: 6 }).map((_, dayIndex) => (
+              {DAYS.map((_, dayIndex) => (
                 <div key={dayIndex} className="col-span-1 border-r">
                   {HOURS.map((hour) => (
                     <div key={hour} className="h-12 border-b relative">
                       {SAMPLE_EVENTS.map((event) => {
                         const [eventHour] = event.start.split(":").map(Number)
-                        if (eventHour === hour && dayIndex === 1) {
-                          // Showing events only on Tuesday for demo
+                        if (eventHour === hour && dayIndex === 3) {
+                          // Showing events only on Wednesday (middle day) for demo
                           return (
                             <button
                               key={event.id}

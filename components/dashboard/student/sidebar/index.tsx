@@ -87,7 +87,7 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean, setIsOpen: (isOpen: b
   }
 
   return (
-    <div className={`flex h-full z-10 ${isOpen ? 'w-64' : 'w-20'} flex-col fixed left-0 top-0 border-r bg-[#E9FFFF] transition-all ease-in-out duration-300`}>
+    <div className={`flex h-full z-26 ${isOpen ? 'w-64' : 'w-20'} flex-col fixed left-0 top-0 border-r bg-[#E9FFFF] transition-all ease-in-out duration-300`}>
       <div className="block h-26 py-12 shrink-0 items-center text-end px-6 relative">
         <button onClick={toggleSidebar} className="ml-auto mr-2 mb-0 lg:hidden">
           {isOpen ? 
