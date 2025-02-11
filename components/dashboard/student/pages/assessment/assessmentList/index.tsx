@@ -64,6 +64,15 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
     description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
     submittedFile: "chemical_reactions_worksheet.pdf",
   },
+  {
+    id: "6",
+    title: "Scientific Method Essay",
+    subject: "Basic Science",
+    dueDate: new Date(2023, 7, 15),
+    status: "pending",
+    description:
+      "Write a 500-word essay explaining the steps of the scientific method and provide an example of its application.",
+  },
 ]
 
 export default function AssessmentsList() {
