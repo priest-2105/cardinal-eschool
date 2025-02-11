@@ -28,8 +28,7 @@ interface CourseDetailsComponentProps {
 
 const SAMPLE_SCHEDULES: Schedule[] = [
   { day: "Monday", time: "10:00 AM - 11:30 AM" },
-  { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
-  { day: "Friday", time: "11:00 AM - 12:30 PM" },
+  { day: "Wednesday", time: "2:00 PM - 3:30 PM" }, 
 ]
 
 export default function CourseDetailsComponent({ studentName = "Temilade" }: CourseDetailsComponentProps) {

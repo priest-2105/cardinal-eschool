@@ -45,7 +45,7 @@ export function AssessmentModal({ assessment, isOpen, onClose, onSubmit }: Asses
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
           <DialogTitle>{assessment.title}</DialogTitle>
         </DialogHeader>
