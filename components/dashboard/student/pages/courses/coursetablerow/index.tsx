@@ -5,6 +5,7 @@ import { TableCell, TableRow } from "@/components/dashboard/student/ui/table"
 import { MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import cardinalConfig from '@/config'
 
 interface CourseTableRowProps {
   course: Course;
@@ -15,7 +16,8 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
   const route = useRouter();
 
   const handleCourseDetails = () => {
-     route.push('/student/course/1')
+     route.push(cardinalConfig.routes.dashboard.student.courseDetails("123"))
+    //  route.push('/student/course/1')
   }
 
   return (

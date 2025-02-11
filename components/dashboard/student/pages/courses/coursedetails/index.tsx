@@ -98,7 +98,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
             ref={contentRef}
             className={cn(
               "space-y-8 h-[65vh] overflow-y-auto",
-              showScrollbar ? "custom-transparent-scrollbar" : "scrollbar-hide",
+              showScrollbar ? "custom-scrollbar" : "scrollbar-hide",
             )}
           >
             {activeTab === "description" && <CourseDescription />}
