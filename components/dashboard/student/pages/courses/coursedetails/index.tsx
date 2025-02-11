@@ -79,7 +79,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
       {/* Content */}
       <div className="flex gap-8">
         <Card className="border-none shadow-none flex-grow">
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-8 h-[65vh]">
             {activeTab === "description" && <CourseDescription/>}
 
             {activeTab === "resources" && <ResourcesList />}
