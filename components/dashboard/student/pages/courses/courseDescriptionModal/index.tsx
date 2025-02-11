@@ -12,7 +12,7 @@ interface CourseDescriptionModalProps {
 export function CourseDescriptionModal({ isOpen, onClose, title, description }: CourseDescriptionModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

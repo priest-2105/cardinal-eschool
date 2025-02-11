@@ -95,12 +95,12 @@ export default function CourseDescription({ studentName = "Temilade" }: CourseDe
           ))}
         </div>
       </div> */}
-          <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
-              <h3 className="font-semibold text-lg">Prerequisites</h3>
-              <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
-            </CardContent>
-          </Card>
+        <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Prerequisites</label>
+        <div className="bg-gray-50 border-gray-200 rounded-md p-4">
+          <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
+        </div>
+      </div> 
 
       {/* Learning Outcomes */}
       <div className="space-y-2">
