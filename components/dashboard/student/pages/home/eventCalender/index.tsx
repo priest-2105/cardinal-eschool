@@ -158,7 +158,7 @@ export default function StudentEventCalendar() {
               </div>
             </div>
             <div className="grid grid-cols-8 mt-4">
-              <div className="col-span-1 text-start py-1 font-medium">
+              <div className="col-span-1 text-center py-1 font-medium">
                 <div className="text-xs">Time</div>
                 <div className="text-sm" id="timezone"></div>
               </div>
@@ -179,49 +179,51 @@ export default function StudentEventCalendar() {
             </div>
           </CardHeader>
           <CardContent className="p-0 overflow-auto custom-scrollbar" style={{ height: "480px" }}>
-            <div className="relative grid grid-cols-8">
-              {/* Time labels */}
-              <div className="col-span-1 border-r sticky left-0 bg-white z-10">
-                {HOURS.map((hour) => (
-                  <div key={hour} className="h-12 border-b px-2 py-1">
-                    <span className="text-xs text-gray-500">{`${hour.toString().padStart(2, "0")}:00`}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Calendar grid */}
-              {DAYS.map((_, dayIndex) => (
-                <div key={dayIndex} className="col-span-1 border-r">
+            <div className="relative" style={{ minWidth: "1000px" }}>
+              <div className="grid grid-cols-8">
+                {/* Time labels */}
+                <div className="col-span-1 border-r sticky left-0 bg-white z-10">
                   {HOURS.map((hour) => (
-                    <div key={hour} className="h-12 border-b relative">
-                      {SAMPLE_EVENTS.map((event) => {
-                        const [eventHour] = event.start.split(":").map(Number)
-                        if (eventHour === hour && dayIndex === 3) {
-                          // Showing events only on Wednesday (middle day) for demo
-                          return (
-                            <button
-                              key={event.id}
-                              onClick={(e) => handleEventClick(event, e)}
-                              className={`absolute w-11/12 left-1/2 -translate-x-1/2 p-1 rounded-md border ${event.color} 
-                                hover:shadow-md transition-shadow cursor-pointer`}
-                              style={{
-                                top: "2px",
-                                minHeight: "32px",
-                              }}
-                            >
-                              <div className="text-xs font-medium truncate">{event.title}</div>
-                              <div className="text-xs truncate">
-                                {event.start} - {event.end}
-                              </div>
-                            </button>
-                          )
-                        }
-                        return null
-                      })}
+                    <div key={hour} className="h-12 border-b px-2 py-1">
+                      <span className="text-xs text-gray-500">{`${hour.toString().padStart(2, "0")}:00`}</span>
                     </div>
                   ))}
                 </div>
-              ))}
+
+                {/* Calendar grid */}
+                {DAYS.map((_, dayIndex) => (
+                  <div key={dayIndex} className="col-span-1 border-r">
+                    {HOURS.map((hour) => (
+                      <div key={hour} className="h-12 border-b relative">
+                        {SAMPLE_EVENTS.map((event) => {
+                          const [eventHour] = event.start.split(":").map(Number)
+                          if (eventHour === hour && dayIndex === 3) {
+                            // Showing events only on Wednesday (middle day) for demo
+                            return (
+                              <button
+                                key={event.id}
+                                onClick={(e) => handleEventClick(event, e)}
+                                className={`absolute w-11/12 left-1/2 -translate-x-1/2 p-1 rounded-md border ${event.color} 
+                                  hover:shadow-md transition-shadow cursor-pointer`}
+                                style={{
+                                  top: "2px",
+                                  minHeight: "32px",
+                                }}
+                              >
+                                <div className="text-xs font-medium truncate">{event.title}</div>
+                                <div className="text-xs truncate">
+                                  {event.start} - {event.end}
+                                </div>
+                              </button>
+                            )
+                          }
+                          return null
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
