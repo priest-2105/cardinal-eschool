@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/student/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Button } from "@/components/dashboard/student/ui/button"
@@ -19,6 +19,8 @@ const SAMPLE_TRANSACTIONS: Transaction[] = [
   { date: "10/15/2025", status: "Pending", package: "Basic Plan", amount: "$60" },
   { date: "09/10/2025", status: "Failed", package: "Standard Plan", amount: "$90" },
   { date: "08/05/2025", status: "Success", package: "Group Sessions", amount: "$40" },
+  { date: "12/01/2024", status: "Success", package: "Premium Plan", amount: "$120" },
+  { date: "11/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
 ]
 
 const MONTHS = [
@@ -36,21 +38,32 @@ const MONTHS = [
   "December",
 ]
 
+const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
+
 export default function TransactionList() {
-  const [selectedMonths, setSelectedMonths] = useState<string[]>([])
-  const [selectedStatus, setSelectedStatus] = useState<string>("")
+  const [selectedMonths, setSelectedMonths] = useState<string[]>(["all"])
+  const [selectedYear, setSelectedYear] = useState<string>("all")
+  const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const router = useRouter()
 
   const clearMonths = () => {
-    setSelectedMonths([])
+    setSelectedMonths(["all"])
   }
 
-  const filteredTransactions = SAMPLE_TRANSACTIONS.filter((transaction) => {
-    const monthMatch =
-      selectedMonths.length === 0 || selectedMonths.includes(new Date(transaction.date).getMonth().toString())
-    const statusMatch = !selectedStatus || transaction.status === selectedStatus
-    return monthMatch && statusMatch
-  })
+  const clearYear = () => {
+    setSelectedYear("all")
+  }
+
+  const filteredTransactions = useMemo(() => {
+    return SAMPLE_TRANSACTIONS.filter((transaction) => {
+      const transactionDate = new Date(transaction.date)
+      const monthMatch =
+        selectedMonths.includes("all") || selectedMonths.includes(transactionDate.getMonth().toString())
+      const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
+      const statusMatch = selectedStatus === "all" || transaction.status === selectedStatus
+      return monthMatch && yearMatch && statusMatch
+    })
+  }, [selectedMonths, selectedYear, selectedStatus])
 
   const handleTransactionClick = () => {
     router.push("student/transactiondetails")
@@ -68,10 +81,11 @@ export default function TransactionList() {
           <Select multiple value={selectedMonths} onValueChange={setSelectedMonths}>
             <SelectTrigger className="w-[180px]">
               <SelectValue
-                placeholder={selectedMonths.length ? `${selectedMonths.length} months` : "Filter by Month"}
+                placeholder={selectedMonths.includes("all") ? "All Months" : `${selectedMonths.length} months`}
               />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Months</SelectItem>
               {MONTHS.map((month, index) => (
                 <SelectItem key={month} value={index.toString()}>
                   {month}
@@ -79,7 +93,7 @@ export default function TransactionList() {
               ))}
             </SelectContent>
           </Select>
-          {selectedMonths.length > 0 && (
+          {!selectedMonths.includes("all") && (
             <button
               onClick={clearMonths}
               className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
@@ -89,9 +103,33 @@ export default function TransactionList() {
           )}
         </div>
 
+        <div className="relative">
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={selectedYear === "all" ? "All Years" : selectedYear} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Years</SelectItem>
+              {YEARS.map((year) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedYear !== "all" && (
+            <button
+              onClick={clearYear}
+              className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Status" />
+            <SelectValue placeholder={selectedStatus === "all" ? "All Status" : selectedStatus} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
