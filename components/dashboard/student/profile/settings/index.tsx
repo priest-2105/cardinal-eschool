@@ -36,6 +36,7 @@ export default function StudentSettings() {
                 <Label htmlFor="current-password">Current Password</Label>
                 <Input id="current-password" type="password" />
               </div>
+              <div className="space-y-2"></div>
               <div className="space-y-2">
                 <Label htmlFor="new-password">New Password</Label>
                 <Input id="new-password" type="password" />
