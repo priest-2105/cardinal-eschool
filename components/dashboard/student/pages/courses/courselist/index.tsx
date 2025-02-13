@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button"
 import { FilterModal } from '../coursefilter/index'
 import { CourseTable } from '../coursetable/index'
 import { Search } from 'lucide-react'
-import { Course, FilterValues } from '../types'
-
+import { Course, FilterValues } from '../types' 
 
 const COURSES_DATA: Course[] = [
   {
@@ -64,6 +63,7 @@ const INITIAL_LOAD = 10
 const LOAD_MORE_COUNT = 3
 
 export function CourseList() {
+
   const [searchQuery, setSearchQuery] = useState('')
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
   const [filters, setFilters] = useState<FilterValues>({

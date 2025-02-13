@@ -7,8 +7,12 @@ import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
-  Select
-} from "@/components/ui/select"
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "@/components/dashboard/student/ui/select"
 import { Eye, EyeOff, Youtube } from 'lucide-react'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
@@ -18,6 +22,7 @@ import XIcon from '@/public/assets/icons/x-dark.png'
 import TiktokIcon from '@/public/assets/icons/tiktok-dark.png'
 import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png'
 import cardinalConfig from "@/config"
+import { DatePicker } from "@/components/ui/date-picker"
 
 interface FormErrors {
   [key: string]: string;
@@ -28,7 +33,7 @@ export default function SignupPage() {
     firstName: "",
     lastName: "",
     gender: "",
-    age: "",
+    dateOfBirth: null as Date | null,
     email: "",
     phone: "",
     guardianName: "",
@@ -60,11 +65,13 @@ export default function SignupPage() {
     if (!formData.firstName) newErrors.firstName = "First name is required"
     if (!formData.lastName) newErrors.lastName = "Last name is required"
     if (!formData.gender) newErrors.gender = "Gender is required"
-    if (!formData.age) newErrors.age = "Age is required"
+    if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required"
     if (!formData.password) newErrors.password = "Password is required"
     if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password"
 
-    if (parseInt(formData.age) < 18) {
+    const age = formData.dateOfBirth ? new Date().getFullYear() - formData.dateOfBirth.getFullYear() : 0
+
+    if (age < 18) {
       if (!formData.guardianName) newErrors.guardianName = "Guardian's name is required"
       if (!formData.guardianEmail) newErrors.guardianEmail = "Guardian's email is required"
       if (!formData.guardianPhone) newErrors.guardianPhone = "Guardian's phone is required"
@@ -104,13 +111,6 @@ export default function SignupPage() {
     if (/[^A-Za-z0-9]/.test(value)) strength++
 
     setPasswordStrength(strength)
-  }
-
-  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (value.length <= 2) {
-      setFormData({ ...formData, age: value })
-    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -190,34 +190,33 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <Select
-                    value={formData.gender}
-                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className={errors.gender ? "border-red-500" : ""}
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    {/* <option value="other">Other</option> */}
+                  <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                    <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      {/* <SelectItem value="other">Other</SelectItem> */}
+                    </SelectContent>
                   </Select>
                   {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
                 </div>
 
                 <div>
-                  <Input
-                    type="number"
-                    placeholder="Enter age"
-                    value={formData.age}
-                    onChange={handleAgeChange}
-                    className={errors.age ? "border-red-500" : ""}
+                  <DatePicker
+                    selected={formData.dateOfBirth}
+                    onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
+                    placeholder="Select Date of Birth"
+                    className={errors.dateOfBirth ? "border-red-500" : ""}
                   />
-                  {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+                  {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                 </div>
 
                 <AnimatePresence>
-                  {formData.age && parseInt(formData.age) >= 10 && (
+                  {formData.dateOfBirth && new Date().getFullYear() - formData.dateOfBirth.getFullYear() >= 10 && (
                     <>
-                      {parseInt(formData.age) < 18 ? (
+                      {new Date().getFullYear() - formData.dateOfBirth.getFullYear() < 18 ? (
                         <motion.div
                           key="guardianInfo"
                           initial={{ opacity: 0, y: 20 }}
@@ -249,7 +248,7 @@ export default function SignupPage() {
                               <PhoneInput      
                                 country={'us'}
                                 value={formData.guardianPhone}
-                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })}
+                                onChange={(phone) => setFormData({ ...formData, guardianPhone: phone })} 
                                 containerClass={errors.guardianPhone ? "border-red-500" : ""}
                               />
                               {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
@@ -288,7 +287,7 @@ export default function SignupPage() {
                               <PhoneInput
                                 country={'us'}
                                 value={formData.phone}
-                                onChange={(phone) => setFormData({ ...formData, phone: phone })}
+                                onChange={(phone) => setFormData({ ...formData, phone: phone })} 
                                 containerClass={errors.phone ? "border-red-500" : ""}
                               />
                               {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
@@ -300,15 +299,16 @@ export default function SignupPage() {
                   )}
                 </AnimatePresence>
 
-                <Select
-                  value={formData.referralChannel}
-                  onChange={(e) => setFormData({ ...formData, referralChannel: e.target.value })}
-                >
-                  <option value="">How did you hear about us?</option>
-                  <option value="social">Social Media</option>
-                  <option value="friend">Friend/Family</option>
-                  <option value="search">Search Engine</option>
-                  <option value="other">Other</option>
+                <Select value={formData.referralChannel} onValueChange={(value) => setFormData({ ...formData, referralChannel: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="How did you hear about us?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="social">Social Media</SelectItem>
+                    <SelectItem value="friend">Friend/Family</SelectItem>
+                    <SelectItem value="search">Search Engine</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
                 </Select>
 
                 <div className="relative">

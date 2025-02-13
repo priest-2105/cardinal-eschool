@@ -4,30 +4,29 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton"
-import { X } from 'lucide-react'
+import { X, Check } from "lucide-react"
 
 interface Plan {
-  title: string;
-  price: string;
-  duration: string;
-  features: string[];
+  title: string
+  price: string
+  duration: string
+  features: string[]
 }
 
-const ChosenPlanDetails: React.FC<{ plan: Plan, onDeselect: () => void }> = ({ plan, onDeselect }) => {
+const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ plan, onDeselect }) => {
   const userDetails = JSON.parse(localStorage.getItem("signupData") || "{}")
   const [months, setMonths] = useState(1)
   const [coupon, setCoupon] = useState("")
   const router = useRouter()
 
   const handleCheckout = () => {
-    
     console.log("Checkout with plan:", plan)
     console.log("User details:", userDetails)
-    router.push("/dashboard/student")
+    router.push("/student")
   }
 
   const calculatePrice = () => {
-    let price = parseFloat(plan.price.replace("$", "")) * months
+    let price = Number.parseFloat(plan.price.replace("$", "")) * months
     if (coupon === "SAVE10") {
       price *= 0.9
     }
@@ -35,57 +34,76 @@ const ChosenPlanDetails: React.FC<{ plan: Plan, onDeselect: () => void }> = ({ p
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center relative">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full"
+        className="bg-white rounded-lg shadow-lg max-w-4xl w-full relative overflow-hidden"
       >
-        <button onClick={onDeselect} className="absolute top-10 right-10">
-          <X size={40} />
-        </button>
-        <h2 className="text-2xl font-bold mb-4">Chosen Plan Details</h2>
-        <p className="text-xl font-semibold mb-2">{plan.title}</p>
-        <p className="text-lg mb-2">{plan.price} {plan.duration}</p>
-        <ul className="list-disc pl-5 mb-4">
-          {plan.features.map((feature: string, index: number) => (
-            <li key={index}>{feature}</li>
-          ))}
-        </ul>
-        <h3 className="text-xl font-bold mb-2">User Details</h3>
-        <p className="mb-2"><strong>Name:</strong> {userDetails.firstName} {userDetails.lastName}</p>
-        <p className="mb-2"><strong>Email:</strong> {userDetails.email}</p>
-        <p className="mb-2"><strong>Phone:</strong> {userDetails.phone}</p>
-      </motion.div>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-6 shadow-lg flex items-center justify-between">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Number of Months</label>
-          <input
-            type="number"
-            value={months}
-            onChange={(e) => setMonths(parseInt(e.target.value))}
-            className="w-20 px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
-            min="1"
-          />
+        <div className="flex flex-col md:flex-row ">
+          <div className="md:w-1/2 p-6 bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+            <button onClick={onDeselect} className="absolute top-1 right-1 text-white hover:text-gray-200">
+              <X size={34} color="#000" />
+            </button>
+            <h2 className="text-3xl font-bold mb-4">{plan.title}</h2>
+            <p className="text-2xl font-semibold mb-2">
+              {plan.price} <span className="text-sm">{plan.duration}</span>
+            </p>
+            <ul className="space-y-2">
+              {plan.features.map((feature: string, index: number) => (
+                <li key={index} className="flex items-center">
+                  <Check size={16} className="mr-2" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="md:w-1/2 p-6">
+            <h3 className="text-xl font-bold mb-4">User Details</h3>
+            <div className="space-y-2 mb-6">
+              <p>
+                <strong>Name:</strong> {userDetails.firstName} {userDetails.lastName}
+              </p>
+              <p>
+                <strong>Email:</strong> {userDetails.email}
+              </p>
+              <p>
+                <strong>Phone:</strong> {userDetails.phone}
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Months</label>
+                <input
+                  type="number"
+                  value={months}
+                  onChange={(e) => setMonths(Number.parseInt(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-#[#1BC2C2] outline-none focus:border-transparent"
+                  min="1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
+                <input
+                  type="text"
+                  value={coupon}
+                  onChange={(e) => setCoupon(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-#[#1BC2C2] outline-none focus:border-transparent"
+                  placeholder="Enter coupon code"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Coupon Code</label>
-          <input
-            type="text"
-            value={coupon}
-            onChange={(e) => setCoupon(e.target.value)}
-            className="w-40 px-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
-          />
-        </div>
-        <div className="text-right">
-          <p className="text-lg font-bold mb-2">Total Price: ${calculatePrice()}</p>
+        <div className="bg-gray-50 p-6 flex items-center justify-between">
+          <div className="text-2xl font-bold">Total: ${calculatePrice()}</div>
           <CheckoutButton onClick={handleCheckout} />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 export default ChosenPlanDetails
+

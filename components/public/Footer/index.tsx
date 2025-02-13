@@ -7,6 +7,7 @@ import XIcon from '@/public/assets/icons/x.png';
 import TiktokIcon from '@/public/assets/icons/tiktok.png';
 import WhatsappIcon from '@/public/assets/icons/whatsapp.png';
 import cardinalConfig from '@/config';
+import { config } from 'process';
 
 
 function PublicFooter() {
@@ -57,8 +58,8 @@ function PublicFooter() {
                   </p>
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.privacyPolicy}`}>  <span>Privacy Policy</span> </a>
-                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`tel: ${cardinalConfig.contactInfo.phone}`}><Phone /> <span>+234 01 2345 6789</span> </a>
-                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`mailto: ${cardinalConfig.contactInfo.email}`}><Mail /> <span>Online@Cardinalschools.com</span> </a> 
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`tel: ${cardinalConfig.contactInfo.phone}`}><Phone /> <span>{cardinalConfig.contactInfo.phone}</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`mailto: ${cardinalConfig.contactInfo.email}`}><Mail /> <span>{cardinalConfig.contactInfo.email}</span> </a> 
                     <div className='flex items-center space-x-2 py-2'>
                     <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.whatsapp}`}>  <Image onDragStart={(event) => event.preventDefault()} src={WhatsappIcon} alt="whatsapp cion" /> </a> 
                     <a className='flex items-center space-x-2 hover:opacity-75 mx-2' target='_blank' href={`${cardinalConfig.socialInfo.tikTok}`}>  <Image onDragStart={(event) => event.preventDefault()} src={TiktokIcon} alt="tiktok Icon" />  </a> 
