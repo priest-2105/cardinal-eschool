@@ -67,9 +67,9 @@ export default function LoginPage() {
           <div className="max-w-lg flex mx-auto items-center align-middle self-center">
            <div></div>
            <div>
-           <h2 className="text-3xl font-bold mb-2">Sign In</h2>
+           <h2 className="text-3xl font-bold mb-2">Log In</h2>
             <p className="text-gray-600 font-semibold mb-8">
-              Enter Your email address and password to securely log in to 
+              Enter your email address and password to securely log in to 
               Cardinal E-School portal
             </p>
             <form onSubmit={handleSubmit} className="space-y-6">

@@ -36,6 +36,7 @@ export default function StudentSettings() {
                 <Label htmlFor="current-password">Current Password</Label>
                 <Input id="current-password" type="password" />
               </div>
+              <div className="space-y-2"></div>
               <div className="space-y-2">
                 <Label htmlFor="new-password">New Password</Label>
                 <Input id="new-password" type="password" />
@@ -63,7 +64,7 @@ export default function StudentSettings() {
             </Button>
           </div>
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="text-lg font-medium">Notification Preferences</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -101,7 +102,7 @@ export default function StudentSettings() {
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex justify-end">

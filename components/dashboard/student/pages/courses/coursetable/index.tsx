@@ -13,6 +13,8 @@ interface CourseTableProps {
 }
 
 export function CourseTable({ courses }: CourseTableProps) {
+
+
   return (
     <Table>
       <TableHeader>

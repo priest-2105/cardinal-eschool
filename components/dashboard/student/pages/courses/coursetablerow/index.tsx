@@ -4,14 +4,24 @@ import { Button } from "@/components/dashboard/student/ui/button"
 import { TableCell, TableRow } from "@/components/dashboard/student/ui/table"
 import { MoreVertical } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
+import cardinalConfig from '@/config'
 
 interface CourseTableRowProps {
   course: Course;
 }
 
 export function CourseTableRow({ course }: CourseTableRowProps) {
+
+  const route = useRouter();
+
+  const handleCourseDetails = () => {
+     route.push(cardinalConfig.routes.dashboard.student.courseDetails("123"))
+    //  route.push('/student/course/1')
+  }
+
   return (
-    <TableRow>
+    <TableRow  className='hover:bg-slate-100 cursor-pointer' onClick={handleCourseDetails}>
       <TableCell className="font-medium">{course.name}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
@@ -47,4 +57,3 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
     </TableRow>
   )
 }
-

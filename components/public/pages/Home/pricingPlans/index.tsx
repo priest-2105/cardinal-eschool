@@ -20,21 +20,6 @@ const PricingPlans: React.FC = () => {
       ],
     },
     {
-      title: "Premium Plan",
-      price: "$120",
-      duration: "/ Month",
-      features: [
-        "For students needing intensive personalized attention",
-        "Register 2 school subjects only",
-        "3 sessions per course weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Take-home Assessments",
-        "Available for Test Preppers",
-        "Access to exclusive premium content and resources",
-      ],
-    },
-    {
       title: "Standard Plan",
       price: "$90",
       duration: "/ Month",
@@ -49,6 +34,22 @@ const PricingPlans: React.FC = () => {
       ],
     },
     {
+      title: "Premium Plan",
+      price: "$120",
+      duration: "/ Month",
+      features: [
+        "For students needing intensive personalized attention",
+        "Register 2 school subjects only",
+        "3 sessions per course weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Take-home Assessments",
+        "Available for Test Preppers",
+        "Access to exclusive premium content and resources",
+      ],
+    },
+   
+    {
       title: "Group Sessions",
       price: "$40",
       duration: "/ Session",
@@ -59,6 +60,19 @@ const PricingPlans: React.FC = () => {
         "In-class Activities",
         "Regular feedback and tracking",
         "Available for Test Preppers",
+      ],
+    },
+    {
+      title: "Custom Plan",
+      price: "",
+      duration: "Speak to Support",
+      features: [
+        "For those who need a scalable custom plan",
+        "1 group session weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Regular feedback and tracking",
+        "Access to exclusive premium content and resources",
       ],
     },
   ];
