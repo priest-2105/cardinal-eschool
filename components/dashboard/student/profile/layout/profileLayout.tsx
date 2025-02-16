@@ -32,7 +32,7 @@ export default function ProfileLayout({
   return (
     <div className="flex flex-col w-full mx-auto px-4 max-sm:w-[100%]">
       <div className="border-b">
-        <nav className="-mb-px flex space-x-8 max-sm:w-[100vw] max-sm:items-end max-sm:overflow-x-scroll" aria-label="Tabs">
+        <nav className="-mb-px flex space-x-8 max-sm:w-[100%] max-sm:items-end max-sm:overflow-x-scroll" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = tab.exact 
               ? pathname === tab.href
