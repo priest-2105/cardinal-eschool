@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/student/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, GraduationCap, BookOpen, Menu } from "lucide-react"
+import { ArrowLeft, Clock, Users, GraduationCap, BookOpen, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -104,7 +104,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
           )}
         >
           <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
-            <ArrowLeft className="h-5 w-5" />
+            <X className="h-5 w-5" />
           </Button>
 
           {/* Instructor Info */}
