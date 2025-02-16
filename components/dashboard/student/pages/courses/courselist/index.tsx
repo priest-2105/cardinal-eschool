@@ -22,7 +22,7 @@ const COURSES_DATA: Course[] = [
     dateAdded: "January 5, 2025"
   },
   {
-    id: 1,
+    id: 2,
     name: "Mathematics",
     tutor: {
       name: "Popoola Adekunle",
@@ -34,7 +34,7 @@ const COURSES_DATA: Course[] = [
     dateAdded: "January 5, 2025"
   },
   {
-    id: 1,
+    id: 3,
     name: "English Studies",
     tutor: {
       name: "Josh Samuel",
@@ -46,7 +46,73 @@ const COURSES_DATA: Course[] = [
     dateAdded: "March 5, 2025"
   },
   {
-    id: 1,
+    id: 4,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 5,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 6,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 7,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 8,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 9,
+    name: "Econommics",
+    tutor: {
+      name: "Isreal Alejo",
+      email: "sirealajo@gmail.com",
+      avatar: "/avatars/florence.jpg"
+    },
+    schedule: "Tuesday 5th Jan 2025",
+    status: "Completed",
+    dateAdded: "March 5, 2025"
+  }, {
+    id: 10,
     name: "Econommics",
     tutor: {
       name: "Isreal Alejo",
@@ -123,7 +189,7 @@ export function CourseList() {
   const hasMore = visibleCourses.length < filteredCourses.length
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-h-[80vh] h-full overflow-hidden">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold">View Class Lists</h2>
