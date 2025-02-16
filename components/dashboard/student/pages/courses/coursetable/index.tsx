@@ -8,7 +8,7 @@ interface CourseTableProps {
 
 export function CourseTable({ courses }: CourseTableProps) {
   return (
-    <div className="relative h-[calc(100vh-200px)]">
+    <div className="relative h-[calc(90vh-200px)] scroll-smooth custom-scrollbar">
       {" "} 
       <Table>
         <TableHeader>
@@ -22,7 +22,7 @@ export function CourseTable({ courses }: CourseTableProps) {
           </TableRow>
         </TableHeader>
       </Table>
-      <div className="overflow-y-auto h-full">
+      <div className="overflow-y-auto h-full scroll-smooth custom-scrollbar">
         <Table>
           <TableBody>
             {courses.map((course) => (
