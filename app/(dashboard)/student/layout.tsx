@@ -48,11 +48,11 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/assets/img/favicon-logo.png" type="image/x-icon" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen w-[100%]  bg-gray-500 flex">
           <StudentDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           <div className={`flex-1 transition-all ease-in-out duration-300`}>
             <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-            <main className="pt-[104px] px-4 pb-8">
+            <main className="pt-[104px] sm:px-4 sm:pb-8 max-sm:px-1">
               {children}
             </main>
           </div>

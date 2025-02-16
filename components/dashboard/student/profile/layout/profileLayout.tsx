@@ -30,7 +30,7 @@ export default function ProfileLayout({
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col w-full mx-auto px-4">
+    <div className="flex flex-col w-full mx-auto bg-red-400 px-4">
       <div className="border-b">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {tabs.map((tab) => {
