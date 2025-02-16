@@ -22,7 +22,7 @@ const SAMPLE_TRANSACTIONS: Transaction[] = [
   { date: "12/01/2024", status: "Success", package: "Premium Plan", amount: "$120" },
   { date: "11/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
   { date: "01/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "51/20/2014", status: "Pending", package: "Basic Plan", amount: "$60" },
+  { date: "51/20/204", status: "Pending", package: "Basic Plan", amount: "$60" },
 ]
 
 const MONTHS = [
@@ -157,7 +157,7 @@ export default function TransactionList() {
                 </TableHeader>
               </Table>
             </div>
-            <div className="overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
+            <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
               <Table>
                 <TableBody>
                   {filteredTransactions.map((transaction, index) => (
