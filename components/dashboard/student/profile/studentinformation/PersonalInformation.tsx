@@ -44,7 +44,7 @@ export default function PersonalInformation() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-6 max-sm:block">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" defaultValue="Temilade Hassan" />

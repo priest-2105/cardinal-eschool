@@ -197,7 +197,7 @@ export default function SignupPage() {
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      {/* <SelectItem value="other">Other</SelectItem>*/}
                     </SelectContent>
                   </Select>
                   {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
