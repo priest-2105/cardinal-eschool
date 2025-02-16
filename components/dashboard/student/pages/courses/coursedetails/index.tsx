@@ -35,7 +35,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
   const route = useRouter()
 
   const tabs = [
-    { id: "description", label: "Class Description" },
+    { id: "description", label: "Description" },
     { id: "resources", label: "Resources" },
     { id: "reports", label: "Reports" },
     { id: "assessments", label: "Assessments" },
@@ -62,24 +62,24 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
   }, [])
 
   return (
-    <div className="w-full min-h-full p-6">
+    <div className="w-full min-h-full p-4 md:p-6">
       {/* Back Button and Title */}
-      <div className="flex items-center gap-2 mb-6">
+      <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-xl font-semibold text-[#1BC2C2]">Class Details</h1>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Class Details</h1>
       </div>
 
       {/* Tabs */}
-      <div className="border-b mb-6">
-        <div className="flex space-x-8">
+      <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+        <div className="flex space-x-4 md:space-x-8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as Tab)}
               className={cn(
-                "pb-2 text-sm font-medium transition-colors relative",
+                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap",
                 activeTab === tab.id
                   ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
                   : "text-gray-500 hover:text-gray-700",
@@ -92,12 +92,12 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
       </div>
 
       {/* Content */}
-      <div className="flex gap-8">
-        <Card className="border-none shadow-none flex-grow">
+      <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
+        <Card className="border-none shadow-none flex-grow order-2 lg:order-1">
           <CardContent
             ref={contentRef}
             className={cn(
-              "space-y-8 h-[65vh] overflow-y-auto",
+              "space-y-8 h-[50vh] md:h-[65vh] overflow-y-auto",
               showScrollbar ? "custom-scrollbar" : "scrollbar-hide",
             )}
           >
@@ -109,13 +109,13 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
         </Card>
 
         {/* Sidebar */}
-        <div className="w-1/3 space-y-8">
+        <div className="w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2">
           {/* Instructor Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
               <h3 className="font-semibold text-lg">Instructor</h3>
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
+                <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
                   <AvatarFallback>JD</AvatarFallback>
                 </Avatar>

@@ -8,7 +8,7 @@ interface CourseTableProps {
 
 export function CourseTable({ courses }: CourseTableProps) {
   return (
-    <div className="relative h-[calc(90vh-200px)] scroll-smooth custom-scrollbar">
+    <div className="relative max-sm:h-[calc(85vh-200px)] sm:h-[calc(90vh-200px)] scroll-smooth custom-scrollbar">
       <Table>
         <TableHeader>
           <TableRow>
