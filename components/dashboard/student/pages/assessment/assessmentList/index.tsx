@@ -66,6 +66,24 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
     description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
     submittedFile: "chemical_reactions_worksheet.pdf",
   },
+  {
+    id: "6",
+    title: "Chemical Reactions Worksheet",
+    subject: "Chemistry",
+    dueDate: new Date(2023, 8, 5),
+    status: "done",
+    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
+    submittedFile: "chemical_reactions_worksheet.pdf",
+  },
+  {
+    id: "7",
+    title: "Chemical Reactions Worksheet",
+    subject: "Chemistry",
+    dueDate: new Date(2023, 8, 5),
+    status: "done",
+    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
+    submittedFile: "chemical_reactions_worksheet.pdf",
+  },
 ]
 
 export default function AssessmentsList() {
@@ -144,8 +162,8 @@ export default function AssessmentsList() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -178,7 +196,7 @@ export default function AssessmentsList() {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {assessments.map((assessment) => (
           <div
             key={assessment.id}

@@ -23,7 +23,7 @@ export default function CourseDetails() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out  bg-white border border-gray-200 rounded-lg p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    <div className={`transition-all ease-in-out w-[100%]  bg-white border border-gray-200 rounded-lg p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     <CourseDetailsComponent/>
     </div>
   )

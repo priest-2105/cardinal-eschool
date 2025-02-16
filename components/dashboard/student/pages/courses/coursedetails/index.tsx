@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/student/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, GraduationCap, BookOpen } from "lucide-react"
+import { ArrowLeft, Clock, Users, GraduationCap, BookOpen, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -30,8 +30,7 @@ const SAMPLE_SCHEDULES: Schedule[] = [
 
 export default function CourseDetailsComponent({ studentName = "Temilade" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
-  const [showScrollbar, setShowScrollbar] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
 
   const tabs = [
@@ -45,30 +44,23 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
     route.back()
   }
 
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (contentRef.current) {
-        const isOverflowing = contentRef.current.scrollHeight > contentRef.current.clientHeight
-        setShowScrollbar(isOverflowing)
-      }
-    }
-
-    checkOverflow()
-    window.addEventListener("resize", checkOverflow)
-
-    return () => {
-      window.removeEventListener("resize", checkOverflow)
-    }
-  }, [])
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+    // Dispatch a custom event to notify the layout about sidebar state change
+    window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
+  }
 
   return (
-    <div className="w-full min-h-full p-4 md:p-6">
+    <div className="w-full min-h-full p-4 md:p-6 relative">
       {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Class Details</h1>
+        <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
+          <Menu className="h-5 w-5" />
+        </Button>
       </div>
 
       {/* Tabs */}
@@ -94,13 +86,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
       {/* Content */}
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1">
-          <CardContent
-            ref={contentRef}
-            className={cn(
-              "space-y-8 h-[50vh] md:h-[65vh] overflow-y-auto",
-              showScrollbar ? "custom-scrollbar" : "scrollbar-hide",
-            )}
-          >
+          <CardContent className="h-[calc(100vh-200px)] p-0">
             {activeTab === "description" && <CourseDescription />}
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
@@ -109,7 +95,18 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
         </Card>
 
         {/* Sidebar */}
-        <div className="w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2">
+        <div
+          className={cn(
+            "w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2",
+            "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
+            "lg:relative lg:inset-auto lg:transform-none lg:transition-none",
+            isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
+          )}
+        >
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+
           {/* Instructor Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">

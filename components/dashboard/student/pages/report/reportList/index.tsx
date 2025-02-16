@@ -95,8 +95,8 @@ export default function ReportsList() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -119,7 +119,7 @@ export default function ReportsList() {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {reports.map((report) => (
           <div
             key={report.id}

@@ -55,8 +55,8 @@ export default function ResourcesList() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
+    <div className="h-full flex flex-col">
+      <div className="relative mb-4">
         <Input
           type="text"
           placeholder="Search resources..."
@@ -66,7 +66,7 @@ export default function ResourcesList() {
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {resources.map((resource) => (
           <div
             key={resource.id}
