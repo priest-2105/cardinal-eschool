@@ -98,7 +98,7 @@ const StudentCardPayment = () => {
 
         {/* Plan Details */}
         <div className="bg-transparent w-full px-4 sm:px-10 flex items-center p-4">
-          <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full px-4 sm:px-10 flex items-center p-4 rounded-lg shadow-md">
+          <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full px-4 sm:px-10 max-sm:block sm:flex items-center p-4 rounded-lg shadow-md">
             <img
               src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle 1550.png"
               alt="Payment Instruction"

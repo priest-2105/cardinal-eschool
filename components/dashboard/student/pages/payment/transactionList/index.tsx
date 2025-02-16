@@ -68,7 +68,7 @@ export default function TransactionList() {
   }, [selectedMonths, selectedYear, selectedStatus])
 
   const handleTransactionClick = () => {
-    router.push("student/transactiondetails")
+    router.push("/student/transactiondetails")
   }
 
   return (

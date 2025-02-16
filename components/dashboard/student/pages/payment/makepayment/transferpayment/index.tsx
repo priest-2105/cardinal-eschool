@@ -77,7 +77,7 @@ const StudentTransferPayment = () => {
                 <span className="text-gray-600">Bank Name</span>
                 <span className="font-semibold">{cardinalConfig.payment.bankName}</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center max-sm:block">
                 <span className="text-gray-600">Account Name</span>
                 <span className="font-semibold">{cardinalConfig.payment.accountName}</span>
               </div>
@@ -121,7 +121,7 @@ const StudentTransferPayment = () => {
 
         {/* Plan Details */}
         <div className="bg-transparent w-full px-4 sm:px-10 flex items-center p-4">
-          <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full px-4 sm:px-10 flex items-center p-4 rounded-lg shadow-md">
+          <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full px-4 max-sm:block max-sm:text-center sm:px-10 flex items-center p-4 rounded-lg shadow-md">
             <img
               src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle 1550.png"
               alt="Payment Instruction"
