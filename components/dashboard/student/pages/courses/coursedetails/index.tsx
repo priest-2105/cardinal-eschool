@@ -51,7 +51,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
   }
 
   return (
-    <div className="w-full overflow-hidden max-sm:py-5 min-h-full p-4 md:p-6 relative">
+    <div className="w-full max-sm:w-[100%] overflow-hidden max-sm:py-5 min-h-full relative">
       {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
