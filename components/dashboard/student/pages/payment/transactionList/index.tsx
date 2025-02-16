@@ -21,6 +21,8 @@ const SAMPLE_TRANSACTIONS: Transaction[] = [
   { date: "08/05/2025", status: "Success", package: "Group Sessions", amount: "$40" },
   { date: "12/01/2024", status: "Success", package: "Premium Plan", amount: "$120" },
   { date: "11/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
+  { date: "01/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
+  { date: "51/20/2014", status: "Pending", package: "Basic Plan", amount: "$60" },
 ]
 
 const MONTHS = [
@@ -71,15 +73,15 @@ export default function TransactionList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Transaction History</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-semibold">Transaction History</h2>
         <p className="text-sm text-muted-foreground">View and filter your transaction history</p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+        <div className="relative w-full sm:w-auto">
           <Select multiple value={selectedMonths} onValueChange={setSelectedMonths}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue
                 placeholder={selectedMonths.includes("all") ? "All Months" : `${selectedMonths.length} months`}
               />
@@ -103,9 +105,9 @@ export default function TransactionList() {
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder={selectedYear === "all" ? "All Years" : selectedYear} />
             </SelectTrigger>
             <SelectContent>
@@ -128,7 +130,7 @@ export default function TransactionList() {
         </div>
 
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder={selectedStatus === "all" ? "All Status" : selectedStatus} />
           </SelectTrigger>
           <SelectContent>
@@ -140,40 +142,54 @@ export default function TransactionList() {
         </Select>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Transaction Status</TableHead>
-              <TableHead>Package</TableHead>
-              <TableHead>Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredTransactions.map((transaction, index) => (
-              <TableRow key={index} className="hover:bg-slate-100 cursor-pointer" onClick={handleTransactionClick}>
-                <TableCell>{transaction.date}</TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    className={`${
-                      transaction.status === "Pending"
-                        ? "bg-yellow-200 hover:bg-yellow-300"
-                        : transaction.status === "Success"
-                          ? "bg-[#0FFF0378] hover:bg-[#0FFF0399]"
-                          : "bg-red-300 hover:bg-red-400"
-                    } text-gray-700`}
-                  >
-                    {transaction.status}
-                  </Button>
-                </TableCell>
-                <TableCell>{transaction.package}</TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <div className="rounded-md border overflow-hidden">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="bg-muted/50 font-semibold">Date</TableHead>
+                    <TableHead className="bg-muted/50 font-semibold">Transaction Status</TableHead>
+                    <TableHead className="bg-muted/50 font-semibold">Package</TableHead>
+                    <TableHead className="bg-muted/50 font-semibold">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+              </Table>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
+              <Table>
+                <TableBody>
+                  {filteredTransactions.map((transaction, index) => (
+                    <TableRow
+                      key={index}
+                      className="hover:bg-slate-100 cursor-pointer"
+                      onClick={handleTransactionClick}
+                    >
+                      <TableCell className="font-medium">{transaction.date}</TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          className={`${
+                            transaction.status === "Pending"
+                              ? "bg-yellow-200 hover:bg-yellow-300"
+                              : transaction.status === "Success"
+                                ? "bg-[#0FFF0378] hover:bg-[#0FFF0399]"
+                                : "bg-red-300 hover:bg-red-400"
+                          } text-gray-700`}
+                        >
+                          {transaction.status}
+                        </Button>
+                      </TableCell>
+                      <TableCell>{transaction.package}</TableCell>
+                      <TableCell>{transaction.amount}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -47,12 +47,12 @@ export default function RootLayout({
       <head>
         <link rel="shortcut icon" href="/assets/img/favicon-logo.png" type="image/x-icon" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <div className="min-h-screen w-[100vw] overflow-hidden bg-gray-50 flex">
           <StudentDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-          <div className={`flex-1 transition-all ease-in-out duration-300`}>
+          <div className={`flex-1 transition-all ease-in-out overflow-hidden duration-300`}>
             <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-            <main className="pt-[104px] sm:px-4 sm:pb-8 max-sm:px-1 w-[100vw]">
+            <main className="pt-[104px] sm:px-4 sm:pb-8 max-sm:px-1 w-[100vw] overflow-x-hidden">
               {children}
             </main>
           </div>

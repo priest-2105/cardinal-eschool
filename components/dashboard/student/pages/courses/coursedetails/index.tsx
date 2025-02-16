@@ -51,7 +51,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
   }
 
   return (
-    <div className="w-full max-sm:w-[100%] overflow-hidden max-sm:py-5 min-h-full relative">
+    <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
       {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
@@ -65,7 +65,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
 
       {/* Tabs */}
       <div className="border-b mb-4 md:mb-6 overflow-x-auto">
-        <div className="flex space-x-4 md:space-x-8">
+        <div className="flex space-x-4 md:space-x-8 pb-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -85,7 +85,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
 
       {/* Content */}
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
-        <Card className="border-none shadow-none flex-grow order-2 lg:order-1">
+        <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
             {activeTab === "description" && <CourseDescription />}
             {activeTab === "resources" && <ResourcesList />}
