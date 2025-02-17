@@ -52,7 +52,7 @@ export default function RootLayout({
           <StudentDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           <div className={`flex-1 transition-all ease-in-out overflow-hidden duration-300`}>
             <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-            <main className="pt-[104px] sm:px-4 z-90 sm:pb-8 max-sm:px-1 w-[100vw] overflow-x-hidden">
+            <main className="pt-[104px] sm:px-4 z-90 sm:pb-8 max-sm:px-1  w-[100vw] overflow-x-hidden">
               {children}
             </main>
           </div>
