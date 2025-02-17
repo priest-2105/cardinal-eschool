@@ -6,8 +6,7 @@ import { Phone, Mail, Youtube } from 'lucide-react';
 import XIcon from '@/public/assets/icons/x.png';
 import TiktokIcon from '@/public/assets/icons/tiktok.png';
 import WhatsappIcon from '@/public/assets/icons/whatsapp.png';
-import cardinalConfig from '@/config';
-import { config } from 'process';
+import cardinalConfig from '@/config'; 
 
 
 function PublicFooter() {
