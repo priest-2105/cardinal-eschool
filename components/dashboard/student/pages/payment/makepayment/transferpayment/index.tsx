@@ -142,7 +142,7 @@ const StudentTransferPayment = () => {
               <h3 className="text-base sm:text-lg ms-2 font-bold">Payment & Invoice</h3>
             </div>
             <p className="text-sm sm:text-base text-gray-600">
-              We'll worry about all the transactions and payment. You can sit back and relax while you get ready to take
+              We&apos;ll worry about all the transactions and payment. You can sit back and relax while you get ready to take
               your classes. Check Your E-mail for your payment receipt.
             </p>
           </div>
@@ -153,7 +153,7 @@ const StudentTransferPayment = () => {
               <h3 className="text-base sm:text-lg ms-2 font-bold">Updates & Benefits</h3>
             </div>
             <p className="text-sm sm:text-base text-gray-600">
-              You'll be provided with updates from time to time and have access to perks and benefits in basic plan.
+              You&apos;ll be provided with updates from time to time and have access to perks and benefits in basic plan.
             </p>
           </div>
         </div>

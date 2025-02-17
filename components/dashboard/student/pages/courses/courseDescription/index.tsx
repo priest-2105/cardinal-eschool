@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CourseDescriptionModal } from "../courseDescriptionModal"
 
-interface Schedule {
-  day: string
-  time: string
-}
-
 interface CourseDescriptionProps {
   studentName?: string
 }
