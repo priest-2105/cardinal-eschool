@@ -31,7 +31,7 @@ export default function StudentSettings() {
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Change Password</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="sm:grid sm:grid-cols-2 gap-4 max-sm:block">
               <div className="space-y-2">
                 <Label htmlFor="current-password">Current Password</Label>
                 <Input id="current-password" type="password" />

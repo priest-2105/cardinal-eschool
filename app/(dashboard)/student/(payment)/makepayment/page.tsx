@@ -25,7 +25,7 @@ export default function StudentMakePayment() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    <div className={`transition-all ease-in-out duration-300 bg-white border border-gray-200 rounded-lg p-2 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
        <PaymentLayout>
         <StudentTransferPayment/>
         {/* <StudentCardPayment/> */}

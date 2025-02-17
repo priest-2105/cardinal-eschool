@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -93,8 +95,8 @@ export default function ReportsList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex space-x-4">
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -106,7 +108,7 @@ export default function ReportsList() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
         <Select onValueChange={handleDateFilter} defaultValue="all">
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by date" />
           </SelectTrigger>
           <SelectContent>
@@ -117,10 +119,13 @@ export default function ReportsList() {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {reports.map((report) => (
-          <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
+          <div
+            key={report.id}
+            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <div className="mb-2 sm:mb-0">
               <h3 className="font-medium">{report.title}</h3>
               <p className="text-sm text-gray-500">
                 {report.subject} • Grade: {report.grade}
@@ -130,7 +135,7 @@ export default function ReportsList() {
                 {format(report.dateSubmitted, "MMM d, yyyy")}
               </p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
               <FileText size={16} className="mr-2" />
               View Report
             </Button>

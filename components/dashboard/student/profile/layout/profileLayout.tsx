@@ -30,31 +30,35 @@ export default function ProfileLayout({
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col w-full mx-auto px-4">
-      <div className="border-b">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+    <div className="flex flex-col w-full mx-auto px-4 max-sm:w-[100%]">
+      <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+        <div className="flex space-x-4 md:space-x-8">
+       {/* <div className="border-b"> */}
+        {/* <nav className="-mb-px flex space-x-8 max-sm:w-[100%] max-sm:items-end max-sm:overflow-x-scroll" aria-label="Tabs"> */}
           {tabs.map((tab) => {
             const isActive = tab.exact 
               ? pathname === tab.href
               : pathname?.startsWith(tab.href)
 
-            return (
+            return ( 
               <Link
                 key={tab.href}
-                href={tab.href}
+                href={tab.href} 
                 className={cn(
-                  "py-4 px-1 border-b-2 text-sm font-medium transition-colors hover:border-gray-300 hover:text-gray-700",
-                  isActive
-                    ? "border-teal-500 text-teal-600"
-                    : "border-transparent text-gray-500"
-                )}
+                      "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap",
+                      isActive                        
+                      ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
+                        : "text-gray-500 hover:text-gray-700",
+                    )}
               >
                 {tab.title}
               </Link>
             )
           })}
-        </nav>
-      </div>
+          </div>
+          </div>
+        {/* </nav> */}
+      {/* </div> */}
       <div className="mt-6">
         {children}
       </div>

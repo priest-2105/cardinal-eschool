@@ -22,6 +22,50 @@ const SAMPLE_TICKETS: Ticket[] = [
     status: "Open",
   },
   {
+    id: "#htr-329-37756",
+    name: "John Doe",
+    email: "john.doe@example.com",
+    department: "Admin Department",
+    issue: "Login Issue",
+    subject: "Login Details",
+    message: "Unable to login with provided credentials.",
+    lastUpdated: "2025/11/23 19:16",
+    status: "Open",
+  },
+  {
+    id: "#htr-325-88756",
+    name: "John Doe",
+    email: "john.doe@example.com",
+    department: "Admin Department",
+    issue: "Login Issue",
+    subject: "Login Details",
+    message: "Unable to login with provided credentials.",
+    lastUpdated: "2025/11/23 19:16",
+    status: "Open",
+  },
+  {
+    id: "#jtr-325-87756",
+    name: "John Doe",
+    email: "john.doe@example.com",
+    department: "Admin Department",
+    issue: "Login Issue",
+    subject: "Login Details",
+    message: "Unable to login with provided credentials.",
+    lastUpdated: "2025/11/23 19:16",
+    status: "Open",
+  },
+  {
+    id: "#htr-399-87756",
+    name: "John Doe",
+    email: "john.doe@example.com",
+    department: "Admin Department",
+    issue: "Login Issue",
+    subject: "Login Details",
+    message: "Unable to login with provided credentials.",
+    lastUpdated: "2025/11/23 19:16",
+    status: "Open",
+  },
+  {
     id: "#htr-325-87757",
     name: "Jane Smith",
     email: "jane.smith@example.com",
@@ -55,6 +99,7 @@ const SAMPLE_TICKETS: Ticket[] = [
     status: "Open",
   },
 ]
+ 
 
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -75,69 +120,81 @@ export function TicketList() {
   )
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">My tickets</h2>
-        <p className="text-sm text-muted-foreground">View and update tickets</p>
+    <div className="flex flex-col h-full">
+      <div className="space-y-4 p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-xl sm:text-2xl font-semibold">My tickets</h2>
+          <p className="text-sm text-muted-foreground">View and update tickets</p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+            <Select defaultValue={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
+            <FilterModal />
+          </div>
+          <div className="relative flex-1 w-full sm:max-w-sm">
+            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by Ticket ID, Department, Body..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 w-full"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Select defaultValue={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="latest">Latest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
-          <FilterModal />
+      <div className="flex-1 overflow-hidden">
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[120px]">Ticket ID</TableHead>
+                    <TableHead className="w-[200px]">Description</TableHead>
+                    <TableHead className="w-[180px] hidden md:table-cell">Department</TableHead>
+                    <TableHead className="w-[140px] hidden lg:table-cell">Last Updated</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[120px]">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+              </Table>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
+              <Table>
+                <TableBody>
+                  {filteredTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-medium">{ticket.id}</TableCell>
+                      <TableCell>{ticket.subject}</TableCell>
+                      <TableCell className="hidden md:table-cell">{ticket.department}</TableCell>
+                      <TableCell className="hidden lg:table-cell">{ticket.lastUpdated}</TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm">
+                          {ticket.status}
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by Ticket ID, Department, Body..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
-          />
-        </div>
-      </div>
-
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Ticket ID</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Last Updated</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>View Tickets</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredTickets.map((ticket) => (
-              <TableRow key={ticket.id}>
-                <TableCell>{ticket.id}</TableCell>
-                <TableCell>{ticket.subject}</TableCell>
-                <TableCell>{ticket.department}</TableCell>
-                <TableCell>{ticket.lastUpdated}</TableCell>
-                <TableCell>
-                  <Button variant="outline" size="sm">
-                    {ticket.status}
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm">
-                    View Tickets
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
       </div>
     </div>
   )

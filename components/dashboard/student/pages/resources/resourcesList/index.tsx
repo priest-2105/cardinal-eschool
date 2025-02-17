@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -53,8 +55,8 @@ export default function ResourcesList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="relative">
+    <div className="h-full flex flex-col">
+      <div className="relative mb-4">
         <Input
           type="text"
           placeholder="Search resources..."
@@ -64,10 +66,13 @@ export default function ResourcesList() {
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {resources.map((resource) => (
-          <div key={resource.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div>
+          <div
+            key={resource.id}
+            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <div className="mb-2 sm:mb-0">
               <h3 className="font-medium">{resource.title}</h3>
               <p className="text-sm text-gray-500">
                 {resource.type} • {resource.size}
@@ -77,7 +82,7 @@ export default function ResourcesList() {
                 {format(resource.dateUploaded, "MMM d, yyyy")}
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => handleDownload(resource.id)}>
+            <Button variant="outline" size="sm" onClick={() => handleDownload(resource.id)} className="mt-2 sm:mt-0">
               <Download size={16} className="mr-2" />
               Download
             </Button>

@@ -22,7 +22,7 @@ const SAMPLE_TRANSACTIONS: Transaction[] = [
   { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40", grade: "A", timestamp: "2025-08-05T16:00:00Z", transactionId: "TXN123459", paymentMethod: "Credit Card" },
 ]
 
-export default function TransactionDetailsPage() {
+export default function TransactionDetailsPage(isSidebarOpen: boolean) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [transaction, setTransaction] = useState<Transaction | null>(null)
@@ -38,7 +38,8 @@ export default function TransactionDetailsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+   <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">Transaction Details</h2>
       <div className="space-y-4">
         <div>
@@ -69,6 +70,7 @@ export default function TransactionDetailsPage() {
       <Button onClick={() => router.back()} className="mt-4">
         Back
       </Button>
+    </div>
     </div>
   )
 }

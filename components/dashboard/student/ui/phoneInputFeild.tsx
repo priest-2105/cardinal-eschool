@@ -32,8 +32,8 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
           id: id,
           name: id,
         }}
-        containerClass="w-full"
-        inputClass="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        containerClass=""
+        inputClass="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
         buttonClass="border border-gray-300 rounded-l-md"
       />
     </div>
