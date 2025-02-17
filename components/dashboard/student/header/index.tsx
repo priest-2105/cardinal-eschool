@@ -81,7 +81,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[], icon: React.
 }
 
 const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void, isSidebarOpen: boolean }> = ({ toggleSidebar, isSidebarOpen }) => {
-  const [showNotification, setShowNotification] = useState(true)
+  // const [showNotification, setShowNotification] = useState(true)
 
   return (
     <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-40 shadow-md">

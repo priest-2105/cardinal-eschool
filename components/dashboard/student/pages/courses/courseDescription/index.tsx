@@ -14,12 +14,6 @@ interface CourseDescriptionProps {
   studentName?: string
 }
 
-const SAMPLE_SCHEDULES: Schedule[] = [
-  { day: "Monday", time: "10:00 AM - 11:30 AM" },
-  { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
-  { day: "Friday", time: "11:00 AM - 12:30 PM" },
-]
-
 const COURSE_DESCRIPTION = `This comprehensive Basic Science course is designed for Grade 6 students, covering fundamental concepts in physics, chemistry, and biology. The course emphasizes hands-on experiments and practical applications.
 
 Key Topics:
@@ -38,7 +32,7 @@ const LEARNING_OUTCOMES = `Upon completion, students will be able to:
 • Explain fundamental concepts in biology, chemistry, and physics
 • Develop critical thinking and analytical skills`
 
-export default function CourseDescription({ studentName = "Temilade" }: CourseDescriptionProps) {
+export default function CourseDescription({ }: CourseDescriptionProps) {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false)
   const [isILOModalOpen, setIsILOModalOpen] = useState(false)
 
