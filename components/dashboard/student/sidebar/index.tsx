@@ -38,7 +38,7 @@ const navigation = [
     ],
   },
   {
-    name: "My Courses",
+    name: "My Course",
     href: cardinalConfig.routes.dashboard.student.courses,
     icon: CoursesIcon,
     iconLight: CoursesLightIcon,

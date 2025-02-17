@@ -57,7 +57,7 @@ export default function CourseDetailsComponent({ studentName = "Temilade" }: Cou
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Class Details</h1>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details</h1>
         <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>

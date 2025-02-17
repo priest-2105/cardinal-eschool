@@ -192,9 +192,9 @@ export function CourseList() {
     <div className="space-y-4 max-h-[80vh] h-full overflow-hidden">
       <div className="sm:flex max-sm:block max-sm:pb-3 items-center justify-between">
         <div className="space-y-1 max-sm:pb-3">
-          <h2 className="text-2xl font-semibold">View Class Lists</h2>
+          <h2 className="text-2xl font-semibold">View Course Lists</h2>
           <p className="text-sm text-muted-foreground">
-            Manage and track your enrolled classes
+            Manage and track your enrolled courses
           </p>
         </div>
         <div className="flex items-center gap-2">
