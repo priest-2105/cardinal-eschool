@@ -22,7 +22,7 @@ import XIcon from '@/public/assets/icons/x-dark.png'
 import TiktokIcon from '@/public/assets/icons/tiktok-dark.png'
 import WhatsappIcon from '@/public/assets/icons/whatsapp-dark.png'
 import cardinalConfig from "@/config"
-import { DatePicker } from "@/components/ui/date-picker"
+import { DatePicker } from "@/components/dashboard/student/ui/date-picker"
 
 interface FormErrors {
   [key: string]: string;
