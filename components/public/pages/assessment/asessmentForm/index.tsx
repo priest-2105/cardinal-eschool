@@ -62,7 +62,7 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
   useEffect(() => {
     const savedData = sessionStorage.getItem("signupData")
     if (savedData) {
-      const parsedData = JSON.parse(savedData)
+      // const parsedData = JSON.parse(savedData)
       setFormData((prevData) => ({
         ...prevData,
       }))

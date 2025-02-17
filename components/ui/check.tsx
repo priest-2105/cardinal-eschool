@@ -1,6 +1,6 @@
 import type * as React from "react"
 
-export interface CheckProps extends React.SVGProps<SVGSVGElement> {}
+// export interface CheckProps extends React.SVGProps<SVGSVGElement> {}
 
 export const Check: React.FC<CheckProps> = (props) => (
   <svg
