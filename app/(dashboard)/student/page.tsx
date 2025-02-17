@@ -10,7 +10,7 @@ import { useState, useEffect } from "react"
 import StudentEventCalendar from "@/components/dashboard/student/pages/home/eventCalender"
 import Announcements from "@/components/dashboard/student/pages/home/announcements"
 import Assignments from "@/components/dashboard/student/pages/home/assignments"
-import UpcomingClasses from "@/components/dashboard/student/pages/upcomingClasses"
+import UpcomingClasses from "@/components/dashboard/student/pages/home/upcomingClasses"
 
 const announcements = [
   { title: "Father's day", date: "16-06-2024" },
