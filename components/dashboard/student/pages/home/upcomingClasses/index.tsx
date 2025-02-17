@@ -54,21 +54,21 @@ export default function UpcomingClasses() {
         {UPCOMING_CLASSES.map((class_) => (
           <div
             key={class_.id}
-            className="flex items-center justify-between space-x-4 p-2 hover:bg-gray-50 rounded-lg transition-colors"
+            className="flex items-center justify-between max-sm:block space-x-4 p-2 hover:bg-gray-50 rounded-lg transition-colors"
           >
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
+            <div className="flex max-sm:block items-center space-x-4">
+              <Avatar className="h-12 w-12 ">
                 <AvatarImage src={class_.teacher.image} alt={class_.teacher.name} />
               </Avatar>
               <div>
-                <h3 className="font-medium">{class_.title}</h3>
+                <h3 className="font-medium max-sm:my-2">{class_.title}</h3>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs px-2 py-1 bg-[#E8F9F9] text-[#1BC2C2] rounded">{class_.subject}</span>
+                  <span className="text-xs px-2 max-sm:my-2 py-1 bg-[#E8F9F9] text-[#1BC2C2] rounded">{class_.subject}</span>
                   <span className="text-sm text-gray-500">by {class_.teacher.name}</span>
                 </div>
               </div>
             </div>
-            <Button size="sm" className="bg-[#1BC2C2] hover:bg-teal-600 text-white min-w-[80px]">
+            <Button size="sm" className="bg-[#1BC2C2] max-sm:my-2 hover:bg-teal-600 text-white min-w-[80px]">
               Join
             </Button>
           </div>

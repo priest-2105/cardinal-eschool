@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -66,12 +68,21 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
   },
   {
     id: "6",
-    title: "Scientific Method Essay",
-    subject: "Basic Science",
-    dueDate: new Date(2023, 7, 15),
-    status: "pending",
-    description:
-      "Write a 500-word essay explaining the steps of the scientific method and provide an example of its application.",
+    title: "Chemical Reactions Worksheet",
+    subject: "Chemistry",
+    dueDate: new Date(2023, 8, 5),
+    status: "done",
+    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
+    submittedFile: "chemical_reactions_worksheet.pdf",
+  },
+  {
+    id: "7",
+    title: "Chemical Reactions Worksheet",
+    subject: "Chemistry",
+    dueDate: new Date(2023, 8, 5),
+    status: "done",
+    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
+    submittedFile: "chemical_reactions_worksheet.pdf",
   },
 ]
 
@@ -151,8 +162,8 @@ export default function AssessmentsList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex space-x-4">
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -164,7 +175,7 @@ export default function AssessmentsList() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
         <Select onValueChange={handleStatusFilter} defaultValue="all">
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -174,7 +185,7 @@ export default function AssessmentsList() {
           </SelectContent>
         </Select>
         <Select onValueChange={handleDateFilter} defaultValue="all">
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full sm:w-[140px]">
             <SelectValue placeholder="Due Date" />
           </SelectTrigger>
           <SelectContent>
@@ -185,10 +196,13 @@ export default function AssessmentsList() {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {assessments.map((assessment) => (
-          <div key={assessment.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-4">
+          <div
+            key={assessment.id}
+            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
+          >
+            <div className="flex items-center space-x-4 mb-2 sm:mb-0">
               {assessment.status === "done" ? (
                 <CheckCircle className="text-green-500" size={24} />
               ) : (
@@ -209,7 +223,7 @@ export default function AssessmentsList() {
                 )}
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
               <Badge variant={assessment.status === "done" ? "success" : "warning"}>
                 {assessment.status === "done" ? "Completed" : "Pending"}
               </Badge>

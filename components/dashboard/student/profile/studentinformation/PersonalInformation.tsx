@@ -21,8 +21,8 @@ export default function PersonalInformation() {
   return (
     <Card className="p-6">
       <div className="space-y-8">
-        <div className="flex items-center gap-8">
-          <div className="relative">
+        <div className="sm:flex max-sm:block items-center gap-8">
+          <div className="relative w-fit">
             <img
               src="/assets/img/dashboard/student/Ellipse2036.png"
               alt="Profile"
@@ -44,7 +44,7 @@ export default function PersonalInformation() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="sm:grid sm:grid-cols-2 gap-6 max-sm:block">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" defaultValue="Temilade Hassan" />
