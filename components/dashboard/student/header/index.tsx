@@ -84,7 +84,7 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void, isSidebarOpe
   const [showNotification, setShowNotification] = useState(true)
 
   return (
-    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white">
+    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-50 shadow-md">
       <div className="border-b">
         <div className="flex h-16 items-center max-lg:justify-between justify-end gap-x-4 px-6">
           <button onClick={toggleSidebar} className="ml-28 mr-2 mb-0 lg:hidden">
