@@ -1,76 +1,82 @@
-"use client"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Download } from "lucide-react"
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/dashboard/student/ui/button"
-
-interface Transaction {
-  date: string
-  status: string
-  package: string
-  amount: string
-  grade: string
-  timestamp: string
-  transactionId: string
-  paymentMethod: string
-}
-
-const SAMPLE_TRANSACTIONS: Transaction[] = [
-  { date: "2025/11/23", status: "Success", package: "Premium Plan", amount: "$120", grade: "A", timestamp: "2025-11-23T10:00:00Z", transactionId: "TXN123456", paymentMethod: "Credit Card" },
-  { date: "2025/10/15", status: "Pending", package: "Basic Plan", amount: "$60", grade: "B", timestamp: "2025-10-15T12:00:00Z", transactionId: "TXN123457", paymentMethod: "PayPal" },
-  { date: "2025/09/10", status: "Failed", package: "Standard Plan", amount: "$90", grade: "C", timestamp: "2025-09-10T14:00:00Z", transactionId: "TXN123458", paymentMethod: "Bank Transfer" },
-  { date: "2025/08/05", status: "Success", package: "Group Sessions", amount: "$40", grade: "A", timestamp: "2025-08-05T16:00:00Z", transactionId: "TXN123459", paymentMethod: "Credit Card" },
-]
-
-export default function TransactionDetailsPage(isSidebarOpen: boolean) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [transaction, setTransaction] = useState<Transaction | null>(null)
-
-  useEffect(() => {
-    const status = searchParams.get("status")
-    const foundTransaction = SAMPLE_TRANSACTIONS.find(t => t.status === status)
-    setTransaction(foundTransaction || null)
-  }, [searchParams])
-
-  if (!transaction) {
-    return <div>Loading...</div>
-  }
-
+export default function TransactionDetailsPage() {
   return (
-    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-   <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">Transaction Details</h2>
-      <div className="space-y-4">
-        <div>
-          <strong>Date:</strong> {transaction.date}
-        </div>
-        <div>
-          <strong>Status:</strong> {transaction.status}
-        </div>
-        <div>
-          <strong>Package:</strong> {transaction.package}
-        </div>
-        <div>
-          <strong>Amount:</strong> {transaction.amount}
-        </div>
-        <div>
-          <strong>Grade:</strong> {transaction.grade}
-        </div>
-        <div>
-          <strong>Timestamp:</strong> {new Date(transaction.timestamp).toLocaleString()}
-        </div>
-        <div>
-          <strong>Transaction ID:</strong> {transaction.transactionId}
-        </div>
-        <div>
-          <strong>Payment Method:</strong> {transaction.paymentMethod}
-        </div>
+    <div className="container mx-auto p-4">
+      <div className="mb-6 flex items-center">
+        <Button variant="ghost" size="icon" className="mr-2">
+          <ArrowLeft className="h-6 w-6" />
+        </Button>
+        <h1 className="text-2xl font-bold">Transaction Details</h1>
       </div>
-      <Button onClick={() => router.back()} className="mt-4">
-        Back
-      </Button>
-    </div>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Payment Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Transaction ID</p>
+              <p className="font-medium">#TRX-123456</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Date</p>
+              <p className="font-medium">May 15, 2023</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Amount</p>
+              <p className="font-medium">$120.00</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Status</p>
+              <p className="font-medium text-green-600">Successful</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Payment Method</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="font-medium">Credit Card</p>
+          <p className="text-sm text-gray-500">Visa ending in 4242</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Transaction Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <p className="text-sm text-gray-500">Subtotal</p>
+              <p className="font-medium">$100.00</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-sm text-gray-500">Tax</p>
+              <p className="font-medium">$20.00</p>
+            </div>
+            <div className="flex justify-between border-t pt-2">
+              <p className="text-sm font-bold">Total</p>
+              <p className="font-bold">$120.00</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="mt-6 flex justify-center">
+        <Button variant="outline" className="flex items-center">
+          <Download className="mr-2 h-4 w-4" />
+          Download Receipt
+        </Button>
+      </div>
     </div>
   )
 }
+
