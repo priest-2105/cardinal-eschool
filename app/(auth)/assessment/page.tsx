@@ -1,22 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import AssessmentForm from "@/components/public/pages/assessment/asessmentForm"
+import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm"
 import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
-
-interface FormData {
-  gender: string
-  educationLevel: string
-  dateOfBirth: string
-  subjects: string[]
-  testPrep: string[]
-  expectations: string
-  hasLearningDifficulties: string
-  learningDifficultiesDetails: string
-  selectedPlan: string
-  specificGoals: string
-}
 
 export default function AssessmentPage() {
   const router = useRouter()

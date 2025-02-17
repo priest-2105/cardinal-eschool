@@ -1,43 +1,17 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { MultiSelect } from "@/components/ui/multi-select"
 import type React from "react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
 
-const subjects = [
-  { value: "MATHEMATICS", label: "Mathematics" },
-  { value: "ENGLISH", label: "English" },
-  { value: "LITERATURE", label: "Literature" },
-  { value: "SCIENCE", label: "Science" },
-  { value: "BIOLOGY", label: "Biology" },
-  { value: "GEOGRAPHY", label: "Geography" },
-  { value: "MUSIC", label: "Music" },
-  { value: "CODING", label: "Coding" },
-  { value: "HISTORY", label: "History" },
-  { value: "PHYSICS", label: "Physics" },
-  { value: "CHEMISTRY", label: "Chemistry" },
-  { value: "IGBO", label: "Igbo" },
-  { value: "HAUSA", label: "Hausa" },
-  { value: "YORUBA", label: "Yoruba" },
-  { value: "SOCIAL_STUDIES", label: "Social Studies" },
-  { value: "ECONOMICS", label: "Economics" },
-  { value: "DATA_ANALYSIS", label: "Data Analysis" },
-]
-
-const testPrep = [
-  { value: "SAT", label: "SAT" },
-  { value: "IELTS", label: "IELTS" },
-  { value: "TOEFL", label: "TOEFL" },
-  { value: "CELPIP", label: "CELPIP" },
-  { value: "GMAT", label: "GMAT" },
-  { value: "GRE", label: "GRE" },
-  { value: "PTE", label: "PTE" },
-]
-
-interface FormData { 
-  educationLevel: string 
+export interface FormData {
+  gender: string
+  educationLevel: string
+  dateOfBirth: string
   subjects: string[]
   testPrep: string[]
   expectations: string
@@ -47,9 +21,15 @@ interface FormData {
   specificGoals: string
 }
 
-export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: FormData) => void }) {
-  const [formData, setFormData] = useState<FormData>({ 
-    educationLevel: "", 
+interface AssessmentFormProps {
+  onSubmit: (formData: FormData) => void
+}
+
+const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
+  const [formData, setFormData] = useState<FormData>({
+    gender: "",
+    educationLevel: "",
+    dateOfBirth: "",
     subjects: [],
     testPrep: [],
     expectations: "",
@@ -59,125 +39,186 @@ export default function AssessmentForm({ onSubmit }: { onSubmit: (formData: Form
     specificGoals: "",
   })
 
-  useEffect(() => {
-    const savedData = sessionStorage.getItem("signupData")
-    if (savedData) {
-      // const parsedData = JSON.parse(savedData)
-      setFormData((prevData) => ({
-        ...prevData,
-      }))
-    }
-  }, [])
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked
+        ? [...prev[name as keyof FormData], value]
+        : (prev[name as keyof FormData] as string[]).filter((item) => item !== value),
+    }))
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const savedData = sessionStorage.getItem("signupData")
-    const updatedData = savedData ? { ...JSON.parse(savedData), ...formData } : formData
-    sessionStorage.setItem("signupData", JSON.stringify(updatedData))
     onSubmit(formData)
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {/* Education Level */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Learner&apos;s Level of Education</label>
-            <Select
-              value={formData.educationLevel}
-              onValueChange={(value) => setFormData({ ...formData, educationLevel: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Level" />
-              </SelectTrigger>
-              <SelectContent>
-                {[...Array(12)].map((_, i) => (
-                  <SelectItem key={i} value={`YEAR ${i + 1}`}>
-                    YEAR {i + 1}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <Label htmlFor="gender">Gender</Label>
+        <RadioGroup
+          name="gender"
+          value={formData.gender}
+          onValueChange={(value) => handleSelectChange("gender", value)}
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="male" id="male" />
+            <Label htmlFor="male">Male</Label>
           </div>
-
-          
-        </div>
-
-        {/* Subjects */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            What Subjects are You Interested in Learning?
-          </label>
-          <MultiSelect
-            options={subjects}
-            value={formData.subjects}
-            onChange={(selected) => setFormData({ ...formData, subjects: selected })}
-          />
-        </div>
-
-        {/* Test Prep */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Test Preparation Courses</label>
-          <MultiSelect
-            options={testPrep}
-            value={formData.testPrep}
-            onChange={(selected) => setFormData({ ...formData, testPrep: selected })}
-          />
-        </div>
-
-        {/* Expectations */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            What are your expectations for this program?
-          </label>
-          <textarea
-            value={formData.expectations}
-            onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-200 outline-none rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
-          />
-        </div>
-
-        {/* Learning Difficulties */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Do you have any learning difficulties or special needs?
-            </label>
-            <Select
-              value={formData.hasLearningDifficulties}
-              onValueChange={(value) => setFormData({ ...formData, hasLearningDifficulties: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="YES">Yes</SelectItem>
-                <SelectItem value="NO">No</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="female" id="female" />
+            <Label htmlFor="female">Female</Label>
           </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="other" id="other" />
+            <Label htmlFor="other">Other</Label>
+          </div>
+        </RadioGroup>
+      </div>
 
-          {formData.hasLearningDifficulties === "YES" && (
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">If yes, briefly explain</label>
-              <textarea
-                value={formData.learningDifficultiesDetails}
-                onChange={(e) => setFormData({ ...formData, learningDifficultiesDetails: e.target.value })}
-                rows={4}
-                className="w-full px-4 py-2 border outline-none border-gray-200 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"
+      <div>
+        <Label htmlFor="educationLevel">Education Level</Label>
+        <Select
+          name="educationLevel"
+          value={formData.educationLevel}
+          onValueChange={(value) => handleSelectChange("educationLevel", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select education level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="highSchool">High School</SelectItem>
+            <SelectItem value="undergraduate">Undergraduate</SelectItem>
+            <SelectItem value="graduate">Graduate</SelectItem>
+            <SelectItem value="postgraduate">Postgraduate</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="dateOfBirth">Date of Birth</Label>
+        <Input type="date" id="dateOfBirth" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+      </div>
+
+      <div>
+        <Label>Subjects Interested In</Label>
+        <div className="space-y-2">
+          {["Mathematics", "Science", "English", "History", "Art"].map((subject) => (
+            <div key={subject} className="flex items-center space-x-2">
+              <Checkbox
+                id={subject}
+                checked={formData.subjects.includes(subject)}
+                onCheckedChange={(checked) => handleCheckboxChange("subjects", subject, checked as boolean)}
               />
+              <Label htmlFor={subject}>{subject}</Label>
             </div>
-          )}
-        </div> 
+          ))}
+        </div>
+      </div>
 
-        <Button type="submit" className="w-full">
-          Submit Assessment
-        </Button>
-      </form>
-    </div>
+      <div>
+        <Label>Test Preparation</Label>
+        <div className="space-y-2">
+          {["SAT", "ACT", "GRE", "GMAT", "TOEFL"].map((test) => (
+            <div key={test} className="flex items-center space-x-2">
+              <Checkbox
+                id={test}
+                checked={formData.testPrep.includes(test)}
+                onCheckedChange={(checked) => handleCheckboxChange("testPrep", test, checked as boolean)}
+              />
+              <Label htmlFor={test}>{test}</Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="expectations">What are your expectations from this course?</Label>
+        <Textarea
+          id="expectations"
+          name="expectations"
+          value={formData.expectations}
+          onChange={handleChange}
+          placeholder="Enter your expectations here"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="hasLearningDifficulties">Do you have any learning difficulties?</Label>
+        <RadioGroup
+          name="hasLearningDifficulties"
+          value={formData.hasLearningDifficulties}
+          onValueChange={(value) => handleSelectChange("hasLearningDifficulties", value)}
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="yes" id="yes" />
+            <Label htmlFor="yes">Yes</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="no" id="no" />
+            <Label htmlFor="no">No</Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {formData.hasLearningDifficulties === "yes" && (
+        <div>
+          <Label htmlFor="learningDifficultiesDetails">Please provide details about your learning difficulties</Label>
+          <Textarea
+            id="learningDifficultiesDetails"
+            name="learningDifficultiesDetails"
+            value={formData.learningDifficultiesDetails}
+            onChange={handleChange}
+            placeholder="Enter details here"
+          />
+        </div>
+      )}
+
+      <div>
+        <Label htmlFor="selectedPlan">Selected Plan</Label>
+        <Select
+          name="selectedPlan"
+          value={formData.selectedPlan}
+          onValueChange={(value) => handleSelectChange("selectedPlan", value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a plan" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic Plan</SelectItem>
+            <SelectItem value="standard">Standard Plan</SelectItem>
+            <SelectItem value="premium">Premium Plan</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="specificGoals">Specific Goals</Label>
+        <Textarea
+          id="specificGoals"
+          name="specificGoals"
+          value={formData.specificGoals}
+          onChange={handleChange}
+          placeholder="Enter your specific goals here"
+        />
+      </div>
+
+      <Button type="submit" className="w-full">
+        Submit Assessment
+      </Button>
+    </form>
   )
 }
+
+export default AssessmentForm
 
