@@ -107,7 +107,7 @@ export default function StudentDashboard() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out max-sm:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
      
         <div className="">
