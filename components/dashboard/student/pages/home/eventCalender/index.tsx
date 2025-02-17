@@ -76,7 +76,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function StudentEventCalendar() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 })
