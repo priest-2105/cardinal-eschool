@@ -224,9 +224,9 @@ export default function AssessmentsList() {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-              <Badge variant={assessment.status === "done" ? "success" : "warning"}>
-                {assessment.status === "done" ? "Completed" : "Pending"}
-              </Badge>
+            <Badge variant={assessment.status === "done" ? "success" : "warning"}>
+            {assessment.status === "done" ? "Completed" : "Pending"}
+          </Badge>
               <Button variant="outline" size="sm" onClick={() => handleViewAssessment(assessment)}>
                 <FileText size={16} className="mr-2" />
                 {assessment.status === "done" ? "View" : "Submit"}
