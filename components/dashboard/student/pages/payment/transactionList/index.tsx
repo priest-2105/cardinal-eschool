@@ -80,7 +80,7 @@ export default function TransactionList() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
         <div className="relative w-full sm:w-auto">
-          <Select multiple value={selectedMonths} onValueChange={setSelectedMonths}>
+          <Select value={selectedMonths} onValueChange={setSelectedMonths}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue
                 placeholder={selectedMonths.includes("all") ? "All Months" : `${selectedMonths.length} months`}
