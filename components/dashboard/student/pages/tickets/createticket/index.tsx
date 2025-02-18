@@ -119,7 +119,7 @@ export default function CreateTicketForm() {
           <Textarea
             id="message"
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, message: e.target.value })}
             rows={6}
             required
           />
