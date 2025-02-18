@@ -31,8 +31,7 @@ export default function CreateTicketForm() {
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Simulate ticket submission
+    e.preventDefault() 
     setTimeout(() => {
       setShowPopup(true)
       setTimeout(() => {
@@ -74,7 +73,7 @@ export default function CreateTicketForm() {
         <div className="space-y-2">
           <Label htmlFor="department">Department</Label>
           <Select
-            id="department"
+            // id="department"
             value={formData.department}
             onValueChange={(value) => setFormData({ ...formData, department: value })}
             required
@@ -120,13 +119,13 @@ export default function CreateTicketForm() {
           <Textarea
             id="message"
             value={formData.message}
-            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, message: e.target.value })}
             rows={6}
             required
           />
         </div>
 
-        <Button type="submit" fullWidth size="lg">
+        <Button type="submit" size="lg">
           Submit Ticket
         </Button>
       </form>

@@ -23,9 +23,9 @@ const StudentTransferPayment = () => {
     <div className="flex flex-col lg:flex-row bg-white justify-between rounded-lg p-4 sm:p-6 space-y-6 lg:space-y-0 lg:space-x-6">
       {/* Left Section - Payment Form */}
       <div className="flex-1 p-4 sm:p-6 w-full lg:w-1/2 max-w-screen-sm">
-        <h2 className="text-xl sm:text-2xl font-bold mb-4">Final Step, Make the Payment.</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-4">Final Step&apos; Make the Payment.</h2>
         <p className="text-sm sm:text-base text-[#626262] font-semibold mb-6">
-          To finalize your subscription, kindly complete your payment using bank transfer.
+          To finalize your subscription&apos; kindly complete your payment using bank transfer.
         </p>
 
         <div className="space-y-6">
@@ -142,7 +142,7 @@ const StudentTransferPayment = () => {
               <h3 className="text-base sm:text-lg ms-2 font-bold">Payment & Invoice</h3>
             </div>
             <p className="text-sm sm:text-base text-gray-600">
-              We'll worry about all the transactions and payment. You can sit back and relax while you get ready to take
+              We&apos;ll worry about all the transactions and payment. You can sit back and relax while you get ready to take
               your classes. Check Your E-mail for your payment receipt.
             </p>
           </div>
@@ -153,7 +153,7 @@ const StudentTransferPayment = () => {
               <h3 className="text-base sm:text-lg ms-2 font-bold">Updates & Benefits</h3>
             </div>
             <p className="text-sm sm:text-base text-gray-600">
-              You'll be provided with updates from time to time and have access to perks and benefits in basic plan.
+              You&apos;ll be provided with updates from time to time and have access to perks and benefits in basic plan.
             </p>
           </div>
         </div>

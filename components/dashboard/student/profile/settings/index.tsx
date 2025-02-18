@@ -1,22 +1,11 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from "@/components/dashboard/student/ui/button"
 import { Card } from "@/components/dashboard/student/ui/card"
 import { Input } from "@/components/dashboard/student/ui/input"
-import { Label } from "@/components/dashboard/student/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/dashboard/student/ui/select"
-import { Switch } from "@/components/dashboard/student/ui/switch"
+import { Label } from "@/components/dashboard/student/ui/label" 
 
 export default function StudentSettings() {
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [smsNotifications, setSmsNotifications] = useState(false)
 
   return (
     <Card className="p-6">

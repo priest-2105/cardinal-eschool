@@ -76,11 +76,10 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function StudentEventCalendar() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 })
-
+  const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 }) 
+ 
   useEffect(() => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const timezoneElement = document.getElementById("timezone")
@@ -89,26 +88,12 @@ export default function StudentEventCalendar() {
     }
   }, [])
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
-      }
-    }
-
-    window.addEventListener("resize", handleResize)
-    handleResize()
-
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
 
   const handleEventClick = (event: Event, e: React.MouseEvent) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect()
     setEventPosition({
       top: rect.top + window.scrollY,
-      left: rect.right + 20, // 20px offset from the event
+      left: rect.right + 20,  
     })
     setSelectedEvent(event)
   }

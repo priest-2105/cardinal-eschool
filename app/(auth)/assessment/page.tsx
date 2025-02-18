@@ -1,22 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import AssessmentForm from "@/components/public/pages/assessment/asessmentForm"
+import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm"
 import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
-
-interface FormData {
-  gender: string;
-  educationLevel: string;
-  dateOfBirth: string;
-  subjects: string[];
-  testPrep: string[];
-  expectations: string;
-  hasLearningDifficulties: string;
-  learningDifficultiesDetails: string;
-  selectedPlan: string;
-  specificGoals: string;
-}
 
 export default function AssessmentPage() {
   const router = useRouter()
@@ -52,14 +39,14 @@ export default function AssessmentPage() {
         <div className="w-full lg:w-1/2 lg:ml-auto px-4 sm:px-6 lg:px-8 py-12 overflow-y-auto">
           <div className="mx-auto">
             <button
-              onClick={() => router.push('/signup')}
-              className="text-[#1BC2C2]  hover:underline mb-4"
-            >  <ArrowLeft/> 
+              onClick={() => router.push("/signup")}
+              className="text-[#1BC2C2] hover:underline mb-4 flex items-center"
+            >
+              <ArrowLeft className="mr-2" />
+              Back to Signup
             </button>
             <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
-            <p className="text-gray-600 mb-8">
-              Help us understand your learning needs better
-            </p>
+            <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>
             <AssessmentForm onSubmit={handleSubmit} />
           </div>
         </div>

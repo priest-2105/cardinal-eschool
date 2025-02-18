@@ -43,13 +43,13 @@ const MONTHS = [
 const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
 
 export default function TransactionList() {
-  const [selectedMonths, setSelectedMonths] = useState<string[]>(["all"])
+  const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const router = useRouter()
 
   const clearMonths = () => {
-    setSelectedMonths(["all"])
+    setSelectedMonths("all")
   }
 
   const clearYear = () => {
@@ -80,7 +80,7 @@ export default function TransactionList() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
         <div className="relative w-full sm:w-auto">
-          <Select multiple value={selectedMonths} onValueChange={setSelectedMonths}>
+          <Select value={selectedMonths} onValueChange={setSelectedMonths}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue
                 placeholder={selectedMonths.includes("all") ? "All Months" : `${selectedMonths.length} months`}

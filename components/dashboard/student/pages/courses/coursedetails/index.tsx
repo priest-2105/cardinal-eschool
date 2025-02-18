@@ -28,7 +28,7 @@ const SAMPLE_SCHEDULES: Schedule[] = [
   { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
 ]
 
-export default function CourseDetailsComponent({ studentName = "Temilade" }: CourseDetailsComponentProps) {
+export default function CourseDetailsComponent({ }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
