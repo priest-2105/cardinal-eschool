@@ -49,7 +49,7 @@ export default function TransactionList() {
   const router = useRouter()
 
   const clearMonths = () => {
-    setSelectedMonths(["all"])
+    setSelectedMonths("all")
   }
 
   const clearYear = () => {
