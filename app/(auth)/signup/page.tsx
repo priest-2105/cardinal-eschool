@@ -121,6 +121,10 @@ export default function SignupPage() {
     }
   }
 
+  const handleDateChange = (date: Date | undefined) => {
+    setFormData({ ...formData, dateOfBirth: date || null })
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {popupMessage && <Popup message={popupMessage} onClose={() => setPopupMessage("")} />}
@@ -197,7 +201,6 @@ export default function SignupPage() {
                     <SelectContent>
                       <SelectItem value="male">Male</SelectItem>
                       <SelectItem value="female">Female</SelectItem>
-                      {/* <SelectItem value="other">Other</SelectItem>*/}
                     </SelectContent>
                   </Select>
                   {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
@@ -205,10 +208,7 @@ export default function SignupPage() {
 
                 <div>
                   <DatePicker
-                    selected={formData.dateOfBirth}
-                    onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
-                    placeholder="Select Date of Birth"
-                    className={errors.dateOfBirth ? "border-red-500" : ""}
+                    onDateChange={handleDateChange}
                   />
                   {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                 </div>
@@ -380,7 +380,7 @@ export default function SignupPage() {
                 </div>
 
                 <div className="flex justify-between">
-                 <Button className="w-full" type="submit" size="lg">
+                  <Button className="w-full" type="submit" size="lg">
                     Submit
                   </Button>
                 </div>
@@ -392,4 +392,3 @@ export default function SignupPage() {
     </div>
   )
 }
-
