@@ -43,7 +43,7 @@ const MONTHS = [
 const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
 
 export default function TransactionList() {
-  const [selectedMonths, setSelectedMonths] = useState<string>(["all"])
+  const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const router = useRouter()
