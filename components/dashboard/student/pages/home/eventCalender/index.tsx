@@ -78,7 +78,8 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 export default function StudentEventCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 })
+  const [eventPosition, setEventPosition] = useState({ top: 0, left: 0 }) 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
