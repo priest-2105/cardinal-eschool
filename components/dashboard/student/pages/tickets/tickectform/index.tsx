@@ -45,7 +45,7 @@ export function ComplaintForm() {
             id="name"
             placeholder="Enter your name"
             value={formData.name}
-            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
             required
           />
         </div>
@@ -114,7 +114,7 @@ export function ComplaintForm() {
           id="message"
           placeholder="Enter your message"
           value={formData.message}
-          onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
           required
           className="min-h-[150px]"
         />
