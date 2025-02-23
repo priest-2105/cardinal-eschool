@@ -24,7 +24,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, ChevronsUpDown } from "lucide-react"
-import type { FilterValues, Ticket } from "../types"
+import type { Ticket } from "../types"
+
+interface FilterValues {
+  departments?: string[]
+  dateRange?: { from: Date | undefined; to: Date | undefined }
+  status?: string[]
+}
 
 interface FilterModalProps {
   tickets?: Ticket[]
