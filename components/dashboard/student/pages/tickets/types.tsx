@@ -26,6 +26,10 @@ export interface ComplaintFormData {
 
 export interface FilterValues {
   departments: string[]
-  dateRange: { from: Date | undefined; to: undefined }
+  dateRange: {
+    from: Date | undefined
+    to: Date | undefined
+  }
   status: string[]
 }
+

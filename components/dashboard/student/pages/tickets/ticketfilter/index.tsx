@@ -43,7 +43,10 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
   const handleApplyFilters = () => {
     onFilterChange({
       departments: selectedDepartments,
-      dateRange,
+      dateRange: {
+        from: dateRange.from,
+        to: dateRange.to,
+      },
       status: selectedStatuses,
     })
     setOpen(false)
