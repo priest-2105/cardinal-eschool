@@ -118,8 +118,7 @@ export default function TicketDetailsComponent() {
           <Label htmlFor="department">Department</Label>
           <Select
             id="department"
-            value={ticket.department}
-            readOnly
+            value={ticket.department} 
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Department" />
