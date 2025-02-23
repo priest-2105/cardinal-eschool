@@ -147,7 +147,7 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
-            <FilterModal />
+          <FilterModal tickets={SAMPLE_TICKETS} onFilterChange={handleFilterChange} />
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
