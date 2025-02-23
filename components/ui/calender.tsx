@@ -7,17 +7,16 @@ import { DayPicker, DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/dashboard/student/ui/button"
 
-// Extend the props with the additional selection properties
 export interface CalendarProps
   extends Omit<React.ComponentProps<typeof DayPicker>, "components"> {
-  selected?: Date | DateRange | undefined
-  onSelect?: (date: Date | DateRange | undefined) => void
-  mode?: "single" | "multiple" | "range"
-  initialFocus?: boolean
+  selected?: Date | DateRange | undefined;
+  onSelect?: (date: Date | DateRange | undefined) => void; 
+  mode?: "single" | "multiple" | "range";
+  initialFocus?: boolean;
   components?: Partial<{
-    IconLeft: React.FC
-    IconRight: React.FC
-  }>
+    IconLeft: React.FC;
+    IconRight: React.FC;
+  }>;
 }
 
 function Calendar({
