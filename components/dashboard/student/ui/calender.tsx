@@ -1,16 +1,17 @@
 "use client"
 
-import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
-import type { CustomComponents } from "react-day-picker";
+import type * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { DayPicker } from "react-day-picker"
+import type { CustomComponents } from "react-day-picker"
+import "@/types/react-day-picker" 
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/dashboard/student/ui/button";
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/dashboard/student/ui/button"
 
-// You no longer need to extend CalendarProps manually since our module augmentation
-// makes IconLeft and IconRight available on CustomComponents.
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  components?: Partial<CustomComponents & { IconLeft: React.FC; IconRight: React.FC }>
+}
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
   return (
@@ -25,7 +26,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -50,8 +51,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       }}
       {...props}
     />
-  );
+  )
 }
-Calendar.displayName = "Calendar";
+Calendar.displayName = "Calendar"
 
-export { Calendar };
+export { Calendar }
