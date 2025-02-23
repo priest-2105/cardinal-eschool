@@ -52,7 +52,7 @@ export default function TicketDetailsComponent() {
         {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="title">Title</Label>
-          <Input id="title" value={ticket.title} onChange={(e) => setTicket({ ...ticket, title: e.target.value })} />
+          <Input id="title" value={ticket.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTicket({ ...ticket, title: e.target.value })} />
         </div>
 
         {/* Description */}
@@ -61,7 +61,7 @@ export default function TicketDetailsComponent() {
           <Textarea
             id="description"
             value={ticket.description}
-            onChange={(e) => setTicket({ ...ticket, description: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTicket({ ...ticket, description: e.target.value })}
           />
         </div>
 
