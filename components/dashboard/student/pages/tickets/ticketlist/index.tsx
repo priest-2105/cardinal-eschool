@@ -101,6 +101,13 @@ const SAMPLE_TICKETS: Ticket[] = [
 ]
  
 
+
+interface FilterValues {
+  status?: string
+  priority?: string
+  department?: string
+}
+
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
@@ -118,6 +125,10 @@ export function TicketList() {
       ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.department.toLowerCase().includes(searchQuery.toLowerCase()),
   )
+
+  const handleFilterChange = (filters: FilterValues) => {
+    console.log("Filters applied:", filters)
+  }
 
   return (
     <div className="flex flex-col h-full">
