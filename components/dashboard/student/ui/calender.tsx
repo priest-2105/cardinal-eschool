@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, DateRange } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/dashboard/student/ui/button"
@@ -10,8 +10,8 @@ import { buttonVariants } from "@/components/dashboard/student/ui/button"
 // Extend the props with the additional selection properties
 export interface CalendarProps
   extends Omit<React.ComponentProps<typeof DayPicker>, "components"> {
-  selected?: Date | undefined
-  onSelect?: (date: Date | undefined) => void
+  selected?: Date | DateRange | undefined
+  onSelect?: (date: Date | DateRange | undefined) => void
   mode?: "single" | "multiple" | "range"
   initialFocus?: boolean
   components?: Partial<{
