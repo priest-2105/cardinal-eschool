@@ -1,10 +1,13 @@
-import { cn } from "@/lib/utils";
-import { DayPicker, DateRange } from "react-day-picker";
-import { buttonVariants } from "./button";
+"use client";
+
+import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DayPicker, DateRange } from "react-day-picker";
 
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/dashboard/student/ui/button";
 
-
+// Define the CalendarProps interface
 export interface CalendarPropsBase
   extends Omit<React.ComponentProps<typeof DayPicker>, "components" | "selected" | "onSelect"> {
   mode?: "single" | "multiple" | "range";
@@ -29,6 +32,7 @@ export interface RangeCalendarProps extends CalendarPropsBase {
 
 export type CalendarProps = SingleCalendarProps | RangeCalendarProps;
 
+// Define the Calendar component
 function Calendar({
   className,
   classNames,
@@ -89,6 +93,7 @@ function Calendar({
     />
   );
 }
+
 Calendar.displayName = "Calendar";
 
 export { Calendar };

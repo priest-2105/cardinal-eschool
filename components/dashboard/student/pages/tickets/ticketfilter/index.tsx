@@ -143,7 +143,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     }
                   }}
                   initialFocus
-                  />
+                />
                 </PopoverContent>
               </Popover>
               <Popover>
@@ -169,7 +169,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     }
                   }}
                   initialFocus
-                  />
+                />
                 </PopoverContent>
               </Popover>
             </div>
