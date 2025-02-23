@@ -101,9 +101,9 @@ const SAMPLE_TICKETS: Ticket[] = [
 ]
 
 interface FilterValues {
-  status?: string
-  priority?: string
-  department?: string
+  departments?: string[]
+  dateRange?: { from: Date | undefined; to: Date | undefined }
+  status?: string[]
 }
 
 export function TicketList() {
@@ -129,7 +129,6 @@ export function TicketList() {
     console.log("Filters applied:", filters)
   }
 
-
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-4 p-4 sm:p-6 lg:p-8">
@@ -149,7 +148,7 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
-          <FilterModal tickets={SAMPLE_TICKETS} onFilterChange={handleFilterChange} />
+            <FilterModal tickets={SAMPLE_TICKETS} onFilterChange={handleFilterChange} />
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
