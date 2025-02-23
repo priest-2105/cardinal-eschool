@@ -124,9 +124,9 @@ export function TicketList() {
       ticket.department.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
-  // const handleFilterChange = (filters: FilterValues) => {
-  //   console.log("Filters applied:", filters)
-  // }
+  const handleFilterChange = (filters: FilterValues) => {
+    console.log("Filters applied:", filters)
+  }
 
   return (
     <div className="flex flex-col h-full">
