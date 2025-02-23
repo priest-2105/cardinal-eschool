@@ -4,7 +4,7 @@ import type * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 import type { CustomComponents } from "react-day-picker"
-import "@/types/react-day-picker" 
+// import "@/types/react-day-picker" 
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/dashboard/student/ui/button"
