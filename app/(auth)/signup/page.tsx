@@ -205,7 +205,7 @@ export default function SignupPage() {
 
                 <div>
                   <DatePicker
-                    selected={formData.dateOfBirth}
+                    // selected={formData.dateOfBirth}
                     onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
                     placeholder="Select Date of Birth"
                     className={errors.dateOfBirth ? "border-red-500" : ""}
