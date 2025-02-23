@@ -1,24 +1,31 @@
-"use client"
+import { cn } from "@/lib/utils";
+import { DayPicker, DateRange } from "react-day-picker";
+import { buttonVariants } from "./button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, DateRange } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/dashboard/student/ui/button"
-
-// Extend the props with the additional selection properties
-export interface CalendarProps
-  extends Omit<React.ComponentProps<typeof DayPicker>, "components"> {
-  selected?: Date | DateRange | undefined
-  onSelect?: (date: Date | DateRange | undefined) => void
-  mode?: "single" | "multiple" | "range"
-  initialFocus?: boolean
+export interface CalendarPropsBase
+  extends Omit<React.ComponentProps<typeof DayPicker>, "components" | "selected" | "onSelect"> {
+  mode?: "single" | "multiple" | "range";
+  initialFocus?: boolean;
   components?: Partial<{
-    IconLeft: React.FC
-    IconRight: React.FC
-  }>
+    IconLeft: React.FC;
+    IconRight: React.FC;
+  }>;
 }
+
+export interface SingleCalendarProps extends CalendarPropsBase {
+  mode: "single";
+  selected?: Date | undefined;
+  onSelect?: (date: Date | undefined) => void;
+}
+
+export interface RangeCalendarProps extends CalendarPropsBase {
+  mode: "range";
+  selected?: DateRange | undefined;
+  onSelect?: (date: DateRange | undefined) => void;
+}
+
+export type CalendarProps = SingleCalendarProps | RangeCalendarProps;
 
 function Calendar({
   className,
@@ -26,7 +33,7 @@ function Calendar({
   showOutsideDays = true,
   selected,
   onSelect,
-  mode,
+  mode = "single",  
   initialFocus,
   components,
   ...props
@@ -78,8 +85,8 @@ function Calendar({
       }}
       {...props}
     />
-  )
+  );
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = "Calendar";
 
-export { Calendar }
+export { Calendar };
