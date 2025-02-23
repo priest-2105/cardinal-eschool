@@ -134,12 +134,12 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto bg-white p-0" align="center">
-                  <Calendar
-                    mode="single"
-                    selected={dateRange.from}
-                    onSelect={(date) => setDateRange((prev) => ({ ...prev, from: date }))}
-                    initialFocus
-                  />
+                <Calendar
+                  mode="single"
+                  selected={dateRange.from}
+                  onSelect={(date) => setDateRange((prev) => ({ ...prev, from: date }))}
+                  initialFocus
+                />
                 </PopoverContent>
               </Popover>
               <Popover>
@@ -156,12 +156,12 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto bg-white p-0" align="center">
-                  <Calendar
-                    mode="single"
-                    selected={dateRange.to}
-                    onSelect={(date) => setDateRange((prev) => ({ ...prev, to: date }))}
-                    initialFocus
-                  />
+                <Calendar
+                  mode="single"
+                  selected={dateRange.from}
+                  onSelect={(date) => setDateRange((prev) => ({ ...prev, from: date }))}
+                  initialFocus
+                />
                 </PopoverContent>
               </Popover>
             </div>
