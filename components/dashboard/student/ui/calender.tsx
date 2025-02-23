@@ -3,6 +3,8 @@ import { DayPicker, DateRange } from "react-day-picker";
 import { buttonVariants } from "./button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+
+
 export interface CalendarPropsBase
   extends Omit<React.ComponentProps<typeof DayPicker>, "components" | "selected" | "onSelect"> {
   mode?: "single" | "multiple" | "range";
@@ -33,7 +35,7 @@ function Calendar({
   showOutsideDays = true,
   selected,
   onSelect,
-  mode = "single",  
+  mode = "single", // Default to "single" mode
   initialFocus,
   components,
   ...props
