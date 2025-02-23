@@ -125,8 +125,10 @@ export function TicketList() {
   )
 
   const handleFilterChange = (filters: FilterValues) => {
+    // Implement filter logic here
     console.log("Filters applied:", filters)
   }
+
 
   return (
     <div className="flex flex-col h-full">
