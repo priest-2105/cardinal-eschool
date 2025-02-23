@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/dashboard/student/ui/label"
 import Popup from "@/components/dashboard/student/ui/Popup"
 import type React from "react"
-
  
 
 const SAMPLE_TICKET = {
