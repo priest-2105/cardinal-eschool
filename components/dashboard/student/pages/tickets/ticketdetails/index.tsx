@@ -10,11 +10,7 @@ import { Label } from "@/components/dashboard/student/ui/label"
 import Popup from "@/components/dashboard/student/ui/Popup"
 import type React from "react"
 
-interface TicketDetailsProps {
-  ticket: {
-    department: string
-  }
-}
+ 
 
 const SAMPLE_TICKET = {
   id: "7e19c06b-1c1f-4a91-b94c-74dd9a13aa07",
