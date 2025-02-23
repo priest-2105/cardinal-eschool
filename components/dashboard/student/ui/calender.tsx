@@ -3,19 +3,20 @@
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { DayPicker } from "react-day-picker"
-import type { CustomComponents } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/dashboard/student/ui/button"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+// Omit the original 'components' prop from DayPicker's props,
+// and add our own type for components that includes IconLeft and IconRight.
+export type CalendarProps = Omit<React.ComponentProps<typeof DayPicker>, "components"> & {
+  components?: Partial<{
+    IconLeft: React.FC
+    IconRight: React.FC
+  }>
+}
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
-  const customComponents = {
-    IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-    IconRight: () => <ChevronRight className="h-4 w-4" />,
-  };
-
+function Calendar({ className, classNames, showOutsideDays = true, components, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -47,12 +48,15 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         day_hidden: "invisible",
         ...classNames,
       }}
-      
-      components={customComponents as unknown as Partial<CustomComponents>}
+      components={{
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        ...components, 
+      }}
       {...props}
     />
-  );
+  )
 }
-Calendar.displayName = "Calendar";
+Calendar.displayName = "Calendar"
 
-export { Calendar };
+export { Calendar }
