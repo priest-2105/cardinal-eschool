@@ -100,11 +100,11 @@ const SAMPLE_TICKETS: Ticket[] = [
   },
 ]
 
-// interface FilterValues {
-//   status?: string
-//   priority?: string
-//   department?: string
-// }
+interface FilterValues {
+  status?: string
+  priority?: string
+  department?: string
+}
 
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
