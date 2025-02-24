@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useCallback } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
@@ -48,30 +48,29 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const router = useRouter()
+  const pathname = usePathname()
 
-  useEffect(() => {
-    const loadSavedData = () => {
-      const savedData = sessionStorage.getItem("signupData")
-      if (savedData) {
-        const parsedData = JSON.parse(savedData)
-        // Convert the dateOfBirth string back to a Date object
-        if (parsedData.dateOfBirth) {
-          parsedData.dateOfBirth = new Date(parsedData.dateOfBirth)
-        }
-        setFormData(parsedData)
+  const loadSavedData = useCallback(() => {
+    const savedData = sessionStorage.getItem("signupData")
+    if (savedData) {
+      const parsedData = JSON.parse(savedData)
+      if (parsedData.dateOfBirth) {
+        parsedData.dateOfBirth = new Date(parsedData.dateOfBirth)
       }
-    }
-
-    loadSavedData()
-
-    // Add event listener for the custom event
-    window.addEventListener("load-signup-data", loadSavedData)
-
-    // Cleanup
-    return () => {
-      window.removeEventListener("load-signup-data", loadSavedData)
+      setFormData(parsedData)
     }
   }, [])
+
+  useEffect(() => {
+    loadSavedData()
+  }, [loadSavedData])
+
+  useEffect(() => {
+      if (pathname === "/signup") {
+        loadSavedData()
+      }
+    
+  }, [ pathname, loadSavedData])
 
   const validateForm = () => {
     const newErrors: FormErrors = {}
