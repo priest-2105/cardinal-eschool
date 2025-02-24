@@ -20,10 +20,10 @@ export default function AssessmentPage() {
     router.push("/planPick")
   }
 
-  const handleBack = () => {
-    window.dispatchEvent(new Event("load-signup-data"))
-    router.push("/signup")
-  }
+  // const handleBack = () => {
+  //   window.dispatchEvent(new Event("load-signup-data"))
+  //   router.push("/signup")
+  // }
 
 
   return (
