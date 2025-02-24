@@ -99,7 +99,12 @@ const SAMPLE_TICKETS: Ticket[] = [
     status: "Open",
   },
 ]
- 
+
+interface FilterValues {
+  departments?: string[]
+  dateRange?: { from: Date | undefined; to: Date | undefined }
+  status?: string[]
+}
 
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -118,6 +123,11 @@ export function TicketList() {
       ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ticket.department.toLowerCase().includes(searchQuery.toLowerCase()),
   )
+
+  const handleFilterChange = (filters: FilterValues) => {
+    // Implement filter logic here
+    console.log("Filters applied:", filters)
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -138,7 +148,7 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
-            <FilterModal />
+            <FilterModal tickets={SAMPLE_TICKETS} onFilterChange={handleFilterChange} />
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

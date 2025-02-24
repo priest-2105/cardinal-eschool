@@ -1,8 +1,6 @@
-import type * as React from "react"
+import type * as React from "react";
 
-// export interface CheckProps extends React.SVGProps<SVGSVGElement> {}
-
-export const Check: React.FC<CheckProps> = (props) => (
+export const Check: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
@@ -17,5 +15,4 @@ export const Check: React.FC<CheckProps> = (props) => (
   >
     <polyline points="20 6 9 17 4 12" />
   </svg>
-)
-
+);

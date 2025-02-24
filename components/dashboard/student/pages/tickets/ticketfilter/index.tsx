@@ -10,6 +10,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/dashboard/student/ui/command"
 import {
   Dialog,
@@ -17,13 +18,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/dashboard/student/ui/dialog" 
+} from "@/components/dashboard/student/ui/dialog"
 import { Label } from "@/components/dashboard/student/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/student/ui/popover"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, ChevronsUpDown } from "lucide-react"
-import type { FilterValues, Ticket } from "../types"
+import type { Ticket } from "../types"
+
+interface FilterValues {
+  departments?: string[]
+  dateRange?: { from: Date | undefined; to: Date | undefined }
+  status?: string[]
+}
 
 interface FilterModalProps {
   tickets?: Ticket[]
@@ -42,7 +49,10 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
   const handleApplyFilters = () => {
     onFilterChange({
       departments: selectedDepartments,
-      dateRange,
+      dateRange: {
+        from: dateRange.from,
+        to: dateRange.to,
+      },
       status: selectedStatuses,
     })
     setOpen(false)
@@ -64,6 +74,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
           <DialogTitle>Filter Tickets</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          {/* Departments filter */}
           <div className="space-y-2">
             <Label>Departments</Label>
             <Popover>
@@ -78,33 +89,37 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
               <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search departments..." />
-                  <CommandEmpty>No department found.</CommandEmpty>
-                  <CommandGroup>
-                    {Array.from(new Set(tickets.map((ticket) => ticket.department))).map((department) => (
-                      <CommandItem
-                        key={department}
-                        onSelect={() => {
-                          setSelectedDepartments((prev) =>
-                            prev.includes(department)
-                              ? prev.filter((name) => name !== department)
-                              : [...prev, department],
-                          )
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedDepartments.includes(department) ? "opacity-100" : "opacity-0",
-                          )}
-                        />
-                        {department}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                  <CommandList>
+                    <CommandEmpty>No department found.</CommandEmpty>
+                    <CommandGroup>
+                      {Array.from(new Set(tickets.map((ticket) => ticket.department))).map((department) => (
+                        <CommandItem
+                          key={department}
+                          onSelect={() => {
+                            setSelectedDepartments((prev) =>
+                              prev.includes(department)
+                                ? prev.filter((name) => name !== department)
+                                : [...prev, department],
+                            )
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedDepartments.includes(department) ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                          {department}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>
           </div>
+
+          {/* Date Range filter */}
           <div className="grid gap-2">
             <Label>Date Range</Label>
             <div className="flex items-center gap-2">
@@ -154,6 +169,8 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
               </Popover>
             </div>
           </div>
+
+          {/* Status filter */}
           <div className="space-y-2">
             <Label>Status</Label>
             <Popover>
@@ -166,27 +183,29 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
               <PopoverContent className="w-full p-0 bg-white">
                 <Command>
                   <CommandInput placeholder="Search statuses..." />
-                  <CommandEmpty>No status found.</CommandEmpty>
-                  <CommandGroup>
-                    {Array.from(new Set(tickets.map((ticket) => ticket.status))).map((status) => (
-                      <CommandItem
-                        key={status}
-                        onSelect={() => {
-                          setSelectedStatuses((prev) =>
-                            prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status],
-                          )
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedStatuses.includes(status) ? "opacity-100" : "opacity-0",
-                          )}
-                        />
-                        {status}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {Array.from(new Set(tickets.map((ticket) => ticket.status))).map((status) => (
+                        <CommandItem
+                          key={status}
+                          onSelect={() => {
+                            setSelectedStatuses((prev) =>
+                              prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status],
+                            )
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedStatuses.includes(status) ? "opacity-100" : "opacity-0",
+                            )}
+                          />
+                          {status}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
                 </Command>
               </PopoverContent>
             </Popover>

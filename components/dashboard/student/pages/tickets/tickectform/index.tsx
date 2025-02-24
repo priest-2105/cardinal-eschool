@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import type { ComplaintFormData } from "../types"
 import { Button } from "@/components/dashboard/student/ui/button"
@@ -45,7 +47,9 @@ export function ComplaintForm() {
             id="name"
             placeholder="Enter your name"
             value={formData.name}
-            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFormData((prev) => ({ ...prev, name: e.target.value }))
+            }
             required
           />
         </div>
@@ -57,7 +61,9 @@ export function ComplaintForm() {
             type="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFormData((prev) => ({ ...prev, email: e.target.value }))
+            }
             required
           />
         </div>
@@ -103,7 +109,9 @@ export function ComplaintForm() {
           id="subject"
           placeholder="Enter subject"
           value={formData.subject}
-          onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFormData((prev) => ({ ...prev, subject: e.target.value }))
+          }
           required
         />
       </div>
@@ -114,7 +122,9 @@ export function ComplaintForm() {
           id="message"
           placeholder="Enter your message"
           value={formData.message}
-          onChange={(e) => setFormData((prev) => ({ ...prev, message: e.target.value }))}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setFormData((prev) => ({ ...prev, message: e.target.value }))
+          }
           required
           className="min-h-[150px]"
         />

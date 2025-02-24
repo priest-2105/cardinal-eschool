@@ -8,120 +8,114 @@ import { Button } from "@/components/dashboard/student/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Label } from "@/components/dashboard/student/ui/label"
 import Popup from "@/components/dashboard/student/ui/Popup"
+import type React from "react"
+ 
 
-interface Message {
-  id: string
-  sender: string
-  content: string
-  timestamp: string
-  replyTo?: string
-}
-
-interface Ticket {
-  id: string
-  name: string
-  email: string
-  department: string
-  issue: string
-  subject: string
-  messages: Message[]
-  status: string
-  lastUpdated: string
-}
-
-const SAMPLE_TICKET: Ticket = {
-  id: "#htr-325-87756",
-  name: "John Doe",
-  email: "john.doe@example.com",
-  department: "Admin Department",
-  issue: "Login Issue",
-  subject: "Login Details",
-  messages: [
-    { id: "1", sender: "John Doe", content: "Unable to login with provided credentials.", timestamp: "2025/11/23 19:16" },
-    { id: "2", sender: "Support", content: "Please try resetting your password.", timestamp: "2025/11/23 20:00", replyTo: "1" },
-    { id: "3", sender: "John Doe", content: "I have tried that, but it still doesn't work.", timestamp: "2025/11/23 21:00", replyTo: "2" },
-  ],
+const SAMPLE_TICKET = {
+  id: "7e19c06b-1c1f-4a91-b94c-74dd9a13aa07",
+  title: "Unable to connect to the internet",
+  description:
+    "I have been unable to connect to the internet for the past few hours. I have tried restarting my computer and modem, but nothing seems to work.",
+  priority: "High",
   status: "Open",
-  lastUpdated: "2025/11/23 21:00",
+  category: "Technical",
+  department: "Technical Department",
+  createdAt: "2023-09-15T14:30:00.000Z",
+  updatedAt: "2023-09-15T14:30:00.000Z",
 }
 
 export default function TicketDetailsComponent() {
-  const [ticket, setTicket] = useState<Ticket | null>(null)
-  const [newMessage, setNewMessage] = useState("")
+  const [ticket, setTicket] = useState(SAMPLE_TICKET)
   const [showPopup, setShowPopup] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    // Simulate fetching ticket details
-    setTimeout(() => {
-      setTicket(SAMPLE_TICKET)
-    }, 1000)
+    // Here you would typically fetch the ticket details from an API
+    // For now, we're using the sample ticket
+    // fetchTicketDetails(ticketId).then(data => setTicket(data));
   }, [])
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Simulate ticket update
+  const handleUpdate = async (event: React.FormEvent) => {
+    event.preventDefault()
+    // Here you would typically send the updated ticket details to an API
+    // await updateTicket(ticket.id, ticket);
+    setShowPopup(true)
     setTimeout(() => {
-      setShowPopup(true)
-      setTimeout(() => {
-        setShowPopup(false)
-        router.push("/student/ticketdetails")
-      }, 3000)
-    }, 1000)
-  }
-
-  const handleAddMessage = () => {
-    if (ticket && newMessage.trim()) {
-      const newMsg: Message = {
-        id: (ticket.messages.length + 1).toString(),
-        sender: "John Doe",
-        content: newMessage,
-        timestamp: new Date().toISOString(),
-      }
-      setTicket({ ...ticket, messages: [...ticket.messages, newMsg] })
-      setNewMessage("")
-    }
-  }
-
-  if (!ticket) {
-    return <div>Loading...</div>
+      setShowPopup(false)
+      router.push("/dashboard/student/tickets") // Redirect to the tickets page
+    }, 2000)
   }
 
   return (
     <div className="max-w-4xl p-6 bg-white rounded-lg">
       <form onSubmit={handleUpdate} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={ticket.name}
-              readOnly
-            />
-          </div>
+        {/* Title */}
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Input id="title" value={ticket.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTicket({ ...ticket, title: e.target.value })} />
+        </div>
 
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={ticket.email}
-              readOnly
-            />
-          </div>
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={ticket.description}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTicket({ ...ticket, description: e.target.value })}
+          />
+        </div>
+
+        {/* Priority */}
+        <div className="space-y-2">
+          <Label htmlFor="priority">Priority</Label>
+          <Select value={ticket.priority} onValueChange={(value) => setTicket({ ...ticket, priority: value })}>
+            <SelectTrigger id="priority">
+              <SelectValue placeholder="Select Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="High">High</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Status */}
+        <div className="space-y-2">
+          <Label htmlFor="status">Status</Label>
+          <Select value={ticket.status} onValueChange={(value) => setTicket({ ...ticket, status: value })}>
+            <SelectTrigger id="status">
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Open">Open</SelectItem>
+              <SelectItem value="In Progress">In Progress</SelectItem>
+              <SelectItem value="Resolved">Resolved</SelectItem>
+              <SelectItem value="Closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Category */}
+        <div className="space-y-2">
+          <Label htmlFor="category">Category</Label>
+          <Select value={ticket.category} onValueChange={(value) => setTicket({ ...ticket, category: value })}>
+            <SelectTrigger id="category">
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Technical">Technical</SelectItem>
+              <SelectItem value="Billing">Billing</SelectItem>
+              <SelectItem value="General">General</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Department */}
         <div className="space-y-2">
           <Label htmlFor="department">Department</Label>
-          <Select
-            id="department"
-            value={ticket.department}
-            readOnly
-          >
-            <SelectTrigger>
+          <Select value={ticket.department} onValueChange={(value) => setTicket({ ...ticket, department: value })}>
+            <SelectTrigger id="department">
               <SelectValue placeholder="Select Department" />
             </SelectTrigger>
             <SelectContent>
@@ -133,79 +127,11 @@ export default function TicketDetailsComponent() {
           </Select>
         </div>
 
-        {/* Issue */}
-        <div className="space-y-2">
-          <Label htmlFor="issue">Issue</Label>
-          <Input
-            id="issue"
-            value={ticket.issue}
-            readOnly
-          />
-        </div>
-
-        {/* Subject */}
-        <div className="space-y-2">
-          <Label htmlFor="subject">Subject</Label>
-          <Input
-            id="subject"
-            value={ticket.subject}
-            readOnly
-          />
-        </div>
-
-        {/* Messages */}
-        <div className="space-y-2">
-          <Label>Messages</Label>
-          <div className="space-y-4">
-            {ticket.messages.map((message) => (
-              <div key={message.id} className="relative pl-8">
-                {message.replyTo && <div className="absolute left-0 top-0 h-full w-1 bg-gray-300"></div>}
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <p className="font-semibold">{message.sender}</p>
-                  <p className="text-sm text-gray-600">{message.content}</p>
-                  <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* New Message */}
-        <div className="space-y-2">
-          <Label htmlFor="newMessage">Add a Message</Label>
-          <Textarea
-            id="newMessage"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            rows={4}
-          />
-          <Button onClick={handleAddMessage}>Send Message</Button>
-        </div>
-
-        {/* Status */}
-        <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Select
-            id="status"
-            value={ticket.status}
-            onValueChange={(value) => setTicket({ ...ticket, status: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Open">Open</SelectItem>
-              <SelectItem value="In Progress">In Progress</SelectItem>
-              <SelectItem value="Closed">Closed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button type="submit" fullWidth size="lg">
-          Update Ticket
-        </Button>
+        {/* Submit Button */}
+        <Button type="submit">Update Ticket</Button>
       </form>
       {showPopup && <Popup message="Your ticket has been successfully updated." onClose={() => setShowPopup(false)} />}
     </div>
   )
 }
+

@@ -6,9 +6,19 @@ export interface Ticket {
   issue: string
   subject: string
   message: string
-  status: string
   lastUpdated: string
+  status: string
 }
+
+export interface FilterValues {
+  departments: string[]
+  dateRange: {
+    from: Date | undefined
+    to: Date | undefined
+  }
+  status: string[]
+}
+
 
 export interface Department {
   id: string
@@ -22,10 +32,4 @@ export interface ComplaintFormData {
   issue: string
   subject: string
   message: string
-}
-
-export interface FilterValues {
-  departments: string[]
-  dateRange: { from: Date | undefined; to: undefined }
-  status: string[]
-}
+} 
