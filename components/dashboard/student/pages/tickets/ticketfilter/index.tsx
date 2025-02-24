@@ -74,6 +74,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
           <DialogTitle>Filter Tickets</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          {/* Departments filter */}
           <div className="space-y-2">
             <Label>Departments</Label>
             <Popover>
@@ -117,6 +118,8 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
               </PopoverContent>
             </Popover>
           </div>
+
+          {/* Date Range filter */}
           <div className="grid gap-2">
             <Label>Date Range</Label>
             <div className="flex items-center gap-2">
@@ -134,16 +137,12 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto bg-white p-0" align="center">
-                <Calendar
-                  mode="single"
-                  selected={dateRange.from}
-                  onSelect={(date) => {
-                    if (date instanceof Date || date === undefined) {
-                      setDateRange((prev) => ({ ...prev, from: date }));
-                    }
-                  }}
-                  initialFocus
-                />
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) => setDateRange((prev) => ({ ...prev, from: date }))}
+                    initialFocus
+                  />
                 </PopoverContent>
               </Popover>
               <Popover>
@@ -160,20 +159,18 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto bg-white p-0" align="center">
-                <Calendar
-                  mode="single"
-                  selected={dateRange.to}
-                  onSelect={(date) => {
-                    if (date instanceof Date || date === undefined) {
-                      setDateRange((prev) => ({ ...prev, to: date }));
-                    }
-                  }}
-                  initialFocus
-                />
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) => setDateRange((prev) => ({ ...prev, to: date }))}
+                    initialFocus
+                  />
                 </PopoverContent>
               </Popover>
             </div>
           </div>
+
+          {/* Status filter */}
           <div className="space-y-2">
             <Label>Status</Label>
             <Popover>
@@ -224,3 +221,4 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
     </Dialog>
   )
 }
+
