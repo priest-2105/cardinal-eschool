@@ -64,12 +64,12 @@ export default function SignupPage() {
 
     loadSavedData()
 
-    // Add event listener for popstate (back/forward navigation)
-    window.addEventListener("popstate", loadSavedData)
+    // Add event listener for the custom event
+    window.addEventListener("load-signup-data", loadSavedData)
 
     // Cleanup
     return () => {
-      window.removeEventListener("popstate", loadSavedData)
+      window.removeEventListener("load-signup-data", loadSavedData)
     }
   }, [])
 
@@ -133,7 +133,6 @@ export default function SignupPage() {
     if (validateForm()) {
       setIsSubmitting(true)
       try {
-        // Store the date as an ISO string
         const dataToStore = {
           ...formData,
           dateOfBirth: formData.dateOfBirth ? formData.dateOfBirth.toISOString() : null,

@@ -4,9 +4,14 @@ import { useRouter } from "next/navigation"
 import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm"
 import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
+import { useEffect } from "react"
 
 export default function AssessmentPage() {
   const router = useRouter()
+
+  useEffect(() => {
+    window.dispatchEvent(new Event("load-signup-data"))
+  }, [])
 
   const handleSubmit = (formData: FormData) => {
     const signupData = JSON.parse(localStorage.getItem("signupData") || "{}")
@@ -14,6 +19,12 @@ export default function AssessmentPage() {
     localStorage.setItem("signupData", JSON.stringify(combinedData))
     router.push("/planPick")
   }
+
+  const handleBack = () => {
+    window.dispatchEvent(new Event("load-signup-data"))
+    router.push("/signup")
+  }
+
 
   return (
     <div className="min-h-screen bg-white">
