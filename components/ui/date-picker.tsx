@@ -1,7 +1,9 @@
 "use client"
+import ReactDatePicker from "react-datepicker"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
-import * as React from "react"
-import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"
+import { cn } from "@/lib/utils"
 
 interface DatePickerProps {
   selected: Date | null
@@ -34,9 +36,11 @@ export function DatePicker({ selected, onChange, placeholder, className, error }
       onChange={onChange}
       dateFormat="MM/dd/yyyy"
       placeholderText={placeholder}
-      className={`w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent ${
-        error ? "border-red-500" : "border-gray-200"
-      } ${className}`}
+      className={cn(
+        "w-full px-3 py-2 text-sm rounded-md border focus:outline-none focus:ring-2 focus:ring-primary",
+        error ? "border-red-500" : "border-input",
+        className,
+      )}
       renderCustomHeader={({
         date,
         changeYear,
@@ -47,14 +51,19 @@ export function DatePicker({ selected, onChange, placeholder, className, error }
         nextMonthButtonDisabled,
       }) => (
         <div className="flex items-center justify-between px-2 py-2">
-          <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled} type="button" className="p-1">
-            {"<"}
+          <button
+            onClick={decreaseMonth}
+            disabled={prevMonthButtonDisabled}
+            type="button"
+            className="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <div className="flex space-x-2">
             <select
               value={date.getFullYear()}
               onChange={({ target: { value } }) => changeYear(Number.parseInt(value))}
-              className="text-sm rounded-md border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              className="text-sm rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
             >
               {years.map((option) => (
                 <option key={option} value={option}>
@@ -65,7 +74,7 @@ export function DatePicker({ selected, onChange, placeholder, className, error }
             <select
               value={months[date.getMonth()]}
               onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}
-              className="text-sm rounded-md border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              className="text-sm rounded-md border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
             >
               {months.map((option) => (
                 <option key={option} value={option}>
@@ -74,8 +83,13 @@ export function DatePicker({ selected, onChange, placeholder, className, error }
               ))}
             </select>
           </div>
-          <button onClick={increaseMonth} disabled={nextMonthButtonDisabled} type="button" className="p-1">
-            {">"}
+          <button
+            onClick={increaseMonth}
+            disabled={nextMonthButtonDisabled}
+            type="button"
+            className="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       )}
