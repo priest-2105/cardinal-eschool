@@ -82,7 +82,8 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-lg px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold mb-2 text-center">Forgot Password</h2>
         <p className="text-gray-600 font-semibold mb-8 text-center">
-          Take the next steps to apply to Cardinal E-School
+        No worries Enter your email address below, and we &#39 ll 
+        send you a link to reset your password.
         </p>
   
         <form onSubmit={handleSubmit} className="space-y-6">
