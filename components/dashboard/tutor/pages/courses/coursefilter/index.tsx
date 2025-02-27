@@ -101,46 +101,6 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
           </div>
 
           <div className="space-y-2">
-            <Label>Tutors</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" role="combobox" className="w-full justify-between">
-                  {selectedTutors.length === 0 ? "Select tutors..." : `${selectedTutors.length} selected`}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-white">
-                <Command>
-                  <CommandInput placeholder="Search tutors..." />
-                  <CommandEmpty>No tutor found.</CommandEmpty>
-                  <CommandGroup>
-                    {tutors.map((tutor) => (
-                      <CommandItem
-                        key={tutor.id}
-                        onSelect={() => {
-                          setSelectedTutors((prev) =>
-                            prev.includes(tutor.name)
-                              ? prev.filter((name) => name !== tutor.name)
-                              : [...prev, tutor.name],
-                          )
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedTutors.includes(tutor.name) ? "opacity-100" : "opacity-0",
-                          )}
-                        />
-                        {tutor.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
             <Label>Date Range</Label>
             <div className="flex gap-2">
               <Popover>
