@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -8,37 +6,45 @@ import { format } from "date-fns"
 import { Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+// import type { Assessment, Student } from "@/types"
 
-interface Assessment {
+interface Student {
+  id: string
+  name: string
+  email: string
+}
+
+ interface Assessment {
   id: string
   title: string
   subject: string
   dueDate: Date
-  status: "done" | "pending"
+  status: "pending" | "submitted" | "graded"
   description?: string
+  submittedFile?: string
+  studentId: string
+  grade?: number
 }
+
 
 interface AssessmentModalProps {
   assessment: Assessment | null
   isOpen: boolean
   onClose: () => void
-  onSubmit: (id: string, file: File) => void
+  onGrade: (id: string, grade: number) => void
+  students: Student[]
 }
 
-export function AssessmentModal({ assessment, isOpen, onClose, onSubmit }: AssessmentModalProps) {
-  const [file, setFile] = useState<File | null>(null)
+export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students }: AssessmentModalProps) {
+  const [grade, setGrade] = useState<number | "">("")
 
   if (!assessment) return null
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0])
-    }
-  }
+  const student = students.find((s) => s.id === assessment.studentId)
 
-  const handleSubmit = () => {
-    if (file) {
-      onSubmit(assessment.id, file)
+  const handleGrade = () => {
+    if (typeof grade === "number") {
+      onGrade(assessment.id, grade)
       onClose()
     }
   }
@@ -51,8 +57,12 @@ export function AssessmentModal({ assessment, isOpen, onClose, onSubmit }: Asses
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-2">
-            <Badge variant={assessment.status === "done" ? "success" : "warning"}>
-              {assessment.status === "done" ? "Completed" : "Pending"}
+            <Badge
+              variant={
+                assessment.status === "graded" ? "success" : assessment.status === "submitted" ? "info" : "warning"
+              }
+            >
+              {assessment.status.charAt(0).toUpperCase() + assessment.status.slice(1)}
             </Badge>
             <span className="text-sm text-gray-500">{assessment.subject}</span>
           </div>
@@ -61,18 +71,37 @@ export function AssessmentModal({ assessment, isOpen, onClose, onSubmit }: Asses
             Due: {format(assessment.dueDate, "MMM d, yyyy")}
           </div>
           <p className="text-sm">{assessment.description || "No description provided."}</p>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="assessment-file">Upload Assessment</Label>
-            <Input id="assessment-file" type="file" onChange={handleFileChange} className="cursor-pointer" />
+          <div className="text-sm">
+            <strong>Student:</strong> {student ? student.name : "Unknown"}
           </div>
+          {assessment.submittedFile && (
+            <div className="text-sm">
+              <strong>Submitted File:</strong> {assessment.submittedFile}
+            </div>
+          )}
+          {assessment.status !== "pending" && (
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="grade">Grade</Label>
+              <Input
+                id="grade"
+                type="number"
+                min="0"
+                max="100"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value === "" ? "" : Number(e.target.value))}
+              />
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Close
           </Button>
-          <Button onClick={handleSubmit} disabled={assessment.status === "done" || !file}>
-            {assessment.status === "done" ? "Submitted" : "Submit"}
-          </Button>
+          {assessment.status !== "pending" && (
+            <Button onClick={handleGrade} disabled={grade === "" || assessment.status === "graded"}>
+              {assessment.status === "graded" ? "Graded" : "Submit Grade"}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

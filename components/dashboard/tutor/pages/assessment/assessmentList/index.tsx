@@ -1,25 +1,42 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, CheckCircle, Clock } from "lucide-react"
+import { Search, Calendar, FileText, CheckCircle, Clock, Plus } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { AssessmentModal } from "../assessmentModal"
+import { AssessmentModal } from "../assessmentModal/index"
+import { CreateAssessmentModal } from "../createassessmentModal/index"
+// import type { Assessment, Student } from "@/types"
 
-interface Assessment {
+
+interface Student {
+  id: string
+  name: string
+  email: string
+}
+
+ interface Assessment {
   id: string
   title: string
   subject: string
   dueDate: Date
-  status: "done" | "pending"
+  status: "pending" | "submitted" | "graded"
   description?: string
   submittedFile?: string
+  studentId: string
+  grade?: number
 }
+
+
+const SAMPLE_STUDENTS: Student[] = [
+  { id: "1", name: "Alice Johnson", email: "alice@example.com" },
+  { id: "2", name: "Bob Smith", email: "bob@example.com" },
+  { id: "3", name: "Charlie Brown", email: "charlie@example.com" },
+]
 
 const SAMPLE_ASSESSMENTS: Assessment[] = [
   {
@@ -30,59 +47,56 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
     status: "pending",
     description:
       "Write a 500-word essay explaining the steps of the scientific method and provide an example of its application.",
+    studentId: "1",
   },
   {
     id: "2",
     title: "Energy Conservation Lab Report",
     subject: "Physics",
     dueDate: new Date(2023, 7, 20),
-    status: "done",
+    status: "submitted",
     description: "Complete the lab report for the energy conservation experiment conducted in class.",
     submittedFile: "energy_conservation_report.pdf",
+    studentId: "2",
   },
   {
-    id: "3",
-    title: "Ecosystem Diagram",
-    subject: "Biology",
-    dueDate: new Date(2023, 7, 25),
-    status: "pending",
-    description:
-      "Create a detailed diagram of a local ecosystem, identifying at least 10 different organisms and their interactions.",
+    id: "2",
+    title: "Energy Conservation Lab Report",
+    subject: "Physics",
+    dueDate: new Date(2023, 7, 20),
+    status: "submitted",
+    description: "Complete the lab report for the energy conservation experiment conducted in class.",
+    submittedFile: "energy_conservation_report.pdf",
+    studentId: "2",
   },
   {
-    id: "4",
-    title: "Solar System Quiz",
-    subject: "Astronomy",
-    dueDate: new Date(2023, 8, 1),
-    status: "pending",
-    description: "Complete the online quiz about the solar system. The quiz will cover all planets and major moons.",
+    id: "2",
+    title: "Energy Conservation Lab Report",
+    subject: "Physics",
+    dueDate: new Date(2023, 7, 20),
+    status: "submitted",
+    description: "Complete the lab report for the energy conservation experiment conducted in class.",
+    submittedFile: "energy_conservation_report.pdf",
+    studentId: "2",
   },
   {
-    id: "5",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
-  },
-  {
-    id: "6",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
-  },
-  {
-    id: "7",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
+    id: "2",
+    title: "Energy Conservation Lab Report",
+    subject: "Physics",
+    dueDate: new Date(2023, 7, 20),
+    status: "submitted",
+    description: "Complete the lab report for the energy conservation experiment conducted in class.",
+    submittedFile: "energy_conservation_report.pdf",
+    studentId: "2",
+  },{
+    id: "2",
+    title: "Energy Conservation Lab Report",
+    subject: "Physics",
+    dueDate: new Date(2023, 7, 20),
+    status: "submitted",
+    description: "Complete the lab report for the energy conservation experiment conducted in class.",
+    submittedFile: "energy_conservation_report.pdf",
+    studentId: "2",
   },
 ]
 
@@ -91,26 +105,33 @@ export default function AssessmentsList() {
   const [assessments, setAssessments] = useState(SAMPLE_ASSESSMENTS)
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
+  const [studentFilter, setStudentFilter] = useState("all")
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
-    filterAssessments(term, statusFilter, dateFilter)
+    filterAssessments(term, statusFilter, dateFilter, studentFilter)
   }
 
   const handleStatusFilter = (value: string) => {
     setStatusFilter(value)
-    filterAssessments(searchTerm, value, dateFilter)
+    filterAssessments(searchTerm, value, dateFilter, studentFilter)
   }
 
   const handleDateFilter = (value: string) => {
     setDateFilter(value)
-    filterAssessments(searchTerm, statusFilter, value)
+    filterAssessments(searchTerm, statusFilter, value, studentFilter)
   }
 
-  const filterAssessments = (term: string, status: string, date: string) => {
+  const handleStudentFilter = (value: string) => {
+    setStudentFilter(value)
+    filterAssessments(searchTerm, statusFilter, dateFilter, value)
+  }
+
+  const filterAssessments = (term: string, status: string, date: string, student: string) => {
     let filteredAssessments = SAMPLE_ASSESSMENTS.filter(
       (assessment) =>
         assessment.title.toLowerCase().includes(term.toLowerCase()) ||
@@ -119,6 +140,10 @@ export default function AssessmentsList() {
 
     if (status !== "all") {
       filteredAssessments = filteredAssessments.filter((assessment) => assessment.status === status)
+    }
+
+    if (student !== "all") {
+      filteredAssessments = filteredAssessments.filter((assessment) => assessment.studentId === student)
     }
 
     const now = new Date()
@@ -145,24 +170,36 @@ export default function AssessmentsList() {
 
   const handleViewAssessment = (assessment: Assessment) => {
     setSelectedAssessment(assessment)
-    setIsModalOpen(true)
+    setIsAssessmentModalOpen(true)
   }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
+  const handleCloseAssessmentModal = () => {
+    setIsAssessmentModalOpen(false)
     setSelectedAssessment(null)
   }
 
-  const handleSubmitAssessment = (id: string, file: File) => {
+  const handleGradeAssessment = (id: string, grade: number) => {
     const updatedAssessments = assessments.map((assessment) =>
-      assessment.id === id ? { ...assessment, status: "done" as const, submittedFile: file.name } : assessment,
+      assessment.id === id ? { ...assessment, status: "graded" as const, grade } : assessment,
     )
     setAssessments(updatedAssessments)
-    console.log(`File "${file.name}" uploaded for assessment ID: ${id}`)
+    console.log(`Assessment ID: ${id} graded with ${grade}`)
+  }
+
+  const handleCreateAssessment = (newAssessment: Omit<Assessment, "id">) => {
+    const id = (assessments.length + 1).toString()
+    setAssessments([...assessments, { ...newAssessment, id }])
+    setIsCreateModalOpen(false)
   }
 
   return (
     <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Assessments</h2>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Create Assessment
+        </Button>
+      </div>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
@@ -180,8 +217,9 @@ export default function AssessmentsList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="submitted">Submitted</SelectItem>
+            <SelectItem value="graded">Graded</SelectItem>
           </SelectContent>
         </Select>
         <Select onValueChange={handleDateFilter} defaultValue="all">
@@ -195,6 +233,19 @@ export default function AssessmentsList() {
             <SelectItem value="year">This Year</SelectItem>
           </SelectContent>
         </Select>
+        <Select onValueChange={handleStudentFilter} defaultValue="all">
+          <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectValue placeholder="Student" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Students</SelectItem>
+            {SAMPLE_STUDENTS.map((student) => (
+              <SelectItem key={student.id} value={student.id}>
+                {student.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {assessments.map((assessment) => (
@@ -203,8 +254,10 @@ export default function AssessmentsList() {
             className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
           >
             <div className="flex items-center space-x-4 mb-2 sm:mb-0">
-              {assessment.status === "done" ? (
+              {assessment.status === "graded" ? (
                 <CheckCircle className="text-green-500" size={24} />
+              ) : assessment.status === "submitted" ? (
+                <FileText className="text-blue-500" size={24} />
               ) : (
                 <Clock className="text-yellow-500" size={24} />
               )}
@@ -215,21 +268,22 @@ export default function AssessmentsList() {
                   <Calendar size={12} className="mr-1" />
                   Due: {format(assessment.dueDate, "MMM d, yyyy")}
                 </p>
-                {assessment.submittedFile && (
-                  <p className="text-xs text-gray-400 flex items-center mt-1">
-                    <FileText size={12} className="mr-1" />
-                    Submitted: {assessment.submittedFile}
-                  </p>
-                )}
+                <p className="text-xs text-gray-400 flex items-center mt-1">
+                  Student: {SAMPLE_STUDENTS.find((s) => s.id === assessment.studentId)?.name}
+                </p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-            <Badge variant={assessment.status === "done" ? "success" : "warning"}>
-            {assessment.status === "done" ? "Completed" : "Pending"}
-          </Badge>
+              <Badge
+                variant={
+                  assessment.status === "graded" ? "success" : assessment.status === "submitted" ? "info" : "warning"
+                }
+              >
+                {assessment.status.charAt(0).toUpperCase() + assessment.status.slice(1)}
+              </Badge>
               <Button variant="outline" size="sm" onClick={() => handleViewAssessment(assessment)}>
                 <FileText size={16} className="mr-2" />
-                {assessment.status === "done" ? "View" : "Submit"}
+                View
               </Button>
             </div>
           </div>
@@ -237,9 +291,16 @@ export default function AssessmentsList() {
       </div>
       <AssessmentModal
         assessment={selectedAssessment}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmitAssessment}
+        isOpen={isAssessmentModalOpen}
+        onClose={handleCloseAssessmentModal}
+        onGrade={handleGradeAssessment}
+        students={SAMPLE_STUDENTS}
+      />
+      <CreateAssessmentModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateAssessment}
+        students={SAMPLE_STUDENTS}
       />
     </div>
   )
