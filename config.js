@@ -69,7 +69,7 @@ const cardinalConfig = {
         courseDetails: (courseId) => `/tutor/course/${courseId}`,
         assignments: "/tutor/assignments",
         notifications: "/tutor/notifications",
-        tutorinformation: "/tutorinformation",
+        tutorinformation: "/tutor/tutorinformation",
         guardianinformation: "/tutor/guardianinformation",
         tutorprofilesettings: "/tutor/settings",
         tutorticketlist: "/tutor/ticketlist",
