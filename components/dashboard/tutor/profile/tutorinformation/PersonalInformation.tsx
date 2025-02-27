@@ -64,7 +64,7 @@ export default function PersonalInformation() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue="hassantemilade@gmail.com" />
+            <Input readOnly id="email" type="email" defaultValue="hassantemilade@gmail.com" />
           </div>
           <div className="space-y-2">
             {/* <Label htmlFor="phone">Phone Number</Label> */}
