@@ -11,11 +11,7 @@ const tabs = [
     title: 'Personal Information',
     href: cardinalConfig.routes.dashboard.tutor.tutorinformation,
     exact: true
-  },
-  {
-    title: 'Guardian Information',
-    href: cardinalConfig.routes.dashboard.tutor.guardianinformation,
-  },
+  }, 
   {
     title: 'Settings',
     href: cardinalConfig.routes.dashboard.tutor.tutorprofilesettings,
