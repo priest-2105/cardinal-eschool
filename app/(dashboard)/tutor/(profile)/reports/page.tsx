@@ -1,6 +1,5 @@
 "use client"
-
-import GuardianInformation from "@/components/dashboard/tutor/profile/guardianInformation";
+ 
 import ProfileLayout from "@/components/dashboard/tutor/profile/layout/profileLayout";
 import { useEffect, useState } from "react"
 
@@ -27,9 +26,9 @@ export default function TutorReports() {
   return (
     <>
       <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <ProfileLayout>
-        <GuardianInformation/>
-        </ProfileLayout>
+        {/* <ProfileLayout> */}
+        {/* <GuardianInformation/> */}
+        {/* </ProfileLayout> */}
       </div>
     </>
   )
