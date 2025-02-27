@@ -40,7 +40,7 @@ export default function TutorSettings() {
             </Button>
           </div>
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="text-lg font-medium">Email Settings</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -51,47 +51,8 @@ export default function TutorSettings() {
             <Button className="bg-[#1BC2C2] hover:bg-teal-600">
               Confirm Email
             </Button>
-          </div>
-
-          {/* <div className="space-y-4">
-            <h3 className="text-lg font-medium">Notification Preferences</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="email-notifications">Email Notifications</Label>
-                <Switch
-                  id="email-notifications"
-                  checked={emailNotifications}
-                  onCheckedChange={setEmailNotifications}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="sms-notifications">SMS Notifications</Label>
-                <Switch
-                  id="sms-notifications"
-                  checked={smsNotifications}
-                  onCheckedChange={setSmsNotifications}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Language Preferences</h3>
-            <div className="space-y-2">
-              <Label htmlFor="language">Preferred Language</Label>
-              <Select defaultValue="english">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">English</SelectItem>
-                  <SelectItem value="french">French</SelectItem>
-                  <SelectItem value="spanish">Spanish</SelectItem>
-                  <SelectItem value="german">German</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div> */}
+ 
         </div>
 
         <div className="flex justify-end">
