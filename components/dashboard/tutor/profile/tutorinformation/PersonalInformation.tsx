@@ -82,29 +82,12 @@ export default function PersonalInformation() {
             <Input id="address" defaultValue="3 Lawson Street Okeodo, Kwara State" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="education">Education Level</Label>
-            <Input id="education" defaultValue="Grade 4" />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="country">Country of Residence</Label>
             <Input id="country" defaultValue="Nigeria" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="state">State of Residence</Label>
             <Input id="state" defaultValue="Kwara" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="employment">Employment Status</Label>
-            <Select defaultValue="unemployed">
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="employed">Employed</SelectItem>
-                <SelectItem value="unemployed">Unemployed</SelectItem>
-                <SelectItem value="tutor">Tutor</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="dob">Date of Birth</Label>
