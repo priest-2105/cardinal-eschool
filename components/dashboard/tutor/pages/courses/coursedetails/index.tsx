@@ -3,16 +3,15 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, GraduationCap, BookOpen, Menu, X } from "lucide-react"
+import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import ResourcesList from "../../resources/resourcesList"
 import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 
-type Tab = "description" | "resources" | "reports" | "assessments"
+type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
 interface Schedule {
   day: string
@@ -20,7 +19,7 @@ interface Schedule {
 }
 
 interface CourseDetailsComponentProps {
-  tutorName?: string
+  courseName?: string
 }
 
 const SAMPLE_SCHEDULES: Schedule[] = [
@@ -28,7 +27,7 @@ const SAMPLE_SCHEDULES: Schedule[] = [
   { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
 ]
 
-export default function CourseDetailsComponent({ }: CourseDetailsComponentProps) {
+export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
@@ -38,6 +37,7 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
     { id: "resources", label: "Resources" },
     { id: "reports", label: "Reports" },
     { id: "assessments", label: "Assessments" },
+    { id: "students", label: "Students" },
   ]
 
   const handleback = () => {
@@ -46,7 +46,6 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
-    // Dispatch a custom event to notify the layout about sidebar state change
     window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
   }
 
@@ -57,7 +56,7 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details</h1>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {courseName}</h1>
         <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
@@ -91,6 +90,7 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
+            {activeTab === "students" && <AssessmentsList />}
           </CardContent>
         </Card>
 
@@ -107,53 +107,49 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
             <X className="h-5 w-5" />
           </Button>
 
-          {/* Instructor Info */}
-          <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
-              <h3 className="font-semibold text-lg">Instructor</h3>
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12 md:h-16 md:w-16">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="font-semibold">Dr. John Doe</h4>
-                  <p className="text-sm text-gray-500">Senior Science Instructor</p>
-                  <p className="text-sm text-gray-500">Ph.D. in Physical Sciences</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Course Stats */}
+          {/* Course Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
               <h3 className="font-semibold text-lg">Course Information</h3>
+              <div>
+                <p className="font-semibold">{courseName}</p>
+                <p className="text-sm text-gray-500">Course Code: PHY301</p>
+                <p className="text-sm text-gray-500">Department: Physics</p>
+                <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Class Statistics */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <h3 className="font-semibold text-lg">Class Statistics</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Duration</p>
-                  <p className="font-medium">12 Weeks</p>
-                </div>
-                <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Class Size</p>
-                  <p className="font-medium">25 Tutors</p>
+                  <p className="text-sm text-gray-500">Enrolled Students</p>
+                  <p className="font-medium">25</p>
                 </div>
                 <div className="space-y-2">
-                  <GraduationCap className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Level</p>
-                  <p className="font-medium">Intermediate</p>
+                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Hours Taught</p>
+                  <p className="font-medium">36 / 48</p>
+                </div>
+                <div className="space-y-2">
+                  <BarChart className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Avg. Performance</p>
+                  <p className="font-medium">78%</p>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Lessons</p>
-                  <p className="font-medium">24 Topics</p>
+                  <p className="text-sm text-gray-500">Assignments</p>
+                  <p className="font-medium">8 / 12</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Class Schedule */}
           <div className="space-y-4">
             <label className="text-sm font-medium text-gray-700">Class Schedule</label>
             <div className="space-y-2">
@@ -171,7 +167,8 @@ export default function CourseDetailsComponent({ }: CourseDetailsComponentProps)
               ))}
             </div>
           </div>
-        </div>
+
+         </div>
       </div>
     </div>
   )
