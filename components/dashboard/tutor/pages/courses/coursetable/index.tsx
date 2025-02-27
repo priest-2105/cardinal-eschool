@@ -12,12 +12,12 @@ export function CourseTable({ courses }: CourseTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-1/3 md:w-1/4">Class</TableHead>
-            <TableHead className="hidden md:table-cell">No of Students</TableHead>
-            <TableHead className="hidden lg:table-cell">Schedule</TableHead>
-            <TableHead className="w-1/3 md:w-1/4">Status</TableHead>
-            <TableHead className="hidden xl:table-cell">Date Added</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="bg-slate-600 border-4 border-red-600 ">Class</TableHead>
+            <TableHead className="bg-slate-600 border-4 border-red-600 hidden md:table-cell">No of Students</TableHead>
+            <TableHead className="bg-slate-600 border-4 border-red-600 hidden lg:table-cell">Schedule</TableHead>
+            <TableHead className="bg-slate-600 border-4 border-red-600 ">Status</TableHead>
+            <TableHead className="bg-slate-600 border-4 border-red-600 hidden xl:table-cell">Date Added</TableHead>
+            {/* <TableHead className="w-[50px]"></TableHead> */}
           </TableRow>
         </TableHeader>
       </Table>
