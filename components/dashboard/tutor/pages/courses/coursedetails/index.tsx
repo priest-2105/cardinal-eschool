@@ -91,7 +91,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
-            {activeTab === "students" && <AssessmentsList />}
+            {activeTab === "students" && <StudentList />}
           </CardContent>
         </Card>
 
