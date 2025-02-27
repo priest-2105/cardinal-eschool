@@ -11,12 +11,12 @@ import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
+// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
+// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import cardinalConfig from "@/config"
-import type React from "react" // Added import for React
+import type React from "react" 
 
 const navigation = [
   {
