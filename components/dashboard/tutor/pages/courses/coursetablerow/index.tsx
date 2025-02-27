@@ -24,13 +24,12 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
       <TableCell className="hidden md:table-cell">
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 md:h-8 md:w-8">
-            <AvatarImage src={course.tutor.avatar} />
-            <AvatarFallback>{course.tutor.name[0]}</AvatarFallback>
+            <AvatarFallback>{course.noOfStudent}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-xs md:text-sm font-medium">{course.tutor.name}</span>
-            <span className="text-xs text-muted-foreground hidden lg:inline">{course.tutor.email}</span>
-          </div>
+          {/* <div className="flex flex-col">
+            <span className="text-xs md:text-sm font-medium">{course.noOfStudent}</span>
+            <span className="text-xs text-muted-foreground hidden lg:inline">{course.noOfStudent}</span>
+          </div> */}
         </div>
       </TableCell>
       <TableCell className="hidden lg:table-cell">{course.schedule}</TableCell>
@@ -47,11 +46,11 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
         </span>
       </TableCell>
       <TableCell className="hidden xl:table-cell">{course.dateAdded}</TableCell>
-      <TableCell>
+      {/* <TableCell>
         <Button variant="ghost" size="icon" className="h-6 w-6 md:h-8 md:w-8">
           <MoreVertical className="h-4 w-4" />
         </Button>
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   )
 }

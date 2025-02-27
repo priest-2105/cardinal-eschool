@@ -12,11 +12,7 @@ const COURSES_DATA: Course[] = [
   {
     id: 1,
     name: "Social Studies",
-    tutor: {
-      name: "Florence Adekunle",
-      email: "florenceadekunle1@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 14,
     schedule: "Wednesday 11th Jan 2025",
     status: "Upcoming",
     dateAdded: "January 5, 2025"
@@ -24,11 +20,7 @@ const COURSES_DATA: Course[] = [
   {
     id: 2,
     name: "Mathematics",
-    tutor: {
-      name: "Popoola Adekunle",
-      email: "popoolaade@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 14,
     schedule: "Tuesday 1sh Jan 2025",
     status: "Upcoming",
     dateAdded: "January 5, 2025"
@@ -36,11 +28,7 @@ const COURSES_DATA: Course[] = [
   {
     id: 3,
     name: "English Studies",
-    tutor: {
-      name: "Josh Samuel",
-      email: "joshsamuel@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 14,
     schedule: "Friday 21st Feb 2025",
     status: "Active",
     dateAdded: "March 5, 2025"
@@ -48,77 +36,49 @@ const COURSES_DATA: Course[] = [
   {
     id: 4,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 12,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 5,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 14,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 6,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 6,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 7,
-    name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    name: "Econommics",    
+    noOfStudent: 9,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 8,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 7,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 9,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 4,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
     id: 10,
     name: "Econommics",
-    tutor: {
-      name: "Isreal Alejo",
-      email: "sirealajo@gmail.com",
-      avatar: "/avatars/florence.jpg"
-    },
+    noOfStudent: 14,
     schedule: "Tuesday 5th Jan 2025",
     status: "Completed",
     dateAdded: "March 5, 2025"
@@ -149,11 +109,11 @@ export function CourseList() {
       name
     }))
 
-  const uniqueTutors = Array.from(new Set(COURSES_DATA.map(course => course.tutor.name)))
-    .map(name => ({
-      id: COURSES_DATA.findIndex(c => c.tutor.name === name),
-      name
-    }))
+  // const uniqueTutors = Array.from(new Set(COURSES_DATA.map(course => course.tutor.name)))
+  //   .map(name => ({
+  //     id: COURSES_DATA.findIndex(c => c.tutor.name === name),
+  //     name
+  //   }))
 
   const handleFilterChange = (newFilters: FilterValues) => {
     setFilters(newFilters)
@@ -163,16 +123,18 @@ export function CourseList() {
   // Apply filters and search to courses
   const filteredCourses = COURSES_DATA.filter(course => {
     const matchesSearch = 
-      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.tutor.name.toLowerCase().includes(searchQuery.toLowerCase())
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) 
+      // ||
+      // course.tutor.name.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesCourses = 
       filters.courses.length === 0 || 
       filters.courses.includes(course.name)
     
     const matchesTutors = 
-      filters.tutors.length === 0 || 
-      filters.tutors.includes(course.tutor.name)
+      filters.tutors.length === 0 
+      // || 
+      // filters.tutors.includes(course.tutor.name)
     
     const matchesStatus = 
       filters.status.length === 0 || 
@@ -209,7 +171,7 @@ export function CourseList() {
           </div>
           <FilterModal 
             courses={uniqueCourses}
-            tutors={uniqueTutors}
+            // tutors={uniqueTutors}
             onFilterChange={handleFilterChange}
           />
         </div>

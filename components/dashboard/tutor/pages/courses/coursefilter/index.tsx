@@ -13,11 +13,11 @@ import { Check, ChevronsUpDown, Filter } from "lucide-react"
 
 interface FilterModalProps {
   courses: { id: number; name: string }[]
-  tutors: { id: number; name: string }[]
+  // tutors: { id: number; name: string }[]
   onFilterChange: (filters: FilterValues) => void
 }
 
-export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProps) {
+export function FilterModal({ courses,  onFilterChange }: FilterModalProps) {
   const [open, setOpen] = useState(false)
   const [selectedCourses, setSelectedCourses] = useState<string[]>([])
   const [selectedTutors, setSelectedTutors] = useState<string[]>([])
