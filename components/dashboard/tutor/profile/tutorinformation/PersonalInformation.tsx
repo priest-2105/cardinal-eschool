@@ -24,7 +24,7 @@ export default function PersonalInformation() {
         <div className="sm:flex max-sm:block items-center gap-8">
           <div className="relative w-fit">
             <img
-              src="/assets/img/dashboard/tutor/Ellipse2036.png"
+              src="/assets/img/dashboard/tutor/Ellipse 2034.png"
               alt="Profile"
               className="w-24 h-24 rounded-full "
             />
@@ -47,7 +47,7 @@ export default function PersonalInformation() {
         <div className="sm:grid sm:grid-cols-2 gap-6 max-sm:block">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue="Temilade Hassan" />
+            <Input id="name" defaultValue="Hanah Olumide" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="gender">Gender</Label>

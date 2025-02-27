@@ -119,10 +119,10 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/assets/img/dashboard/tutor/Ellipse2036.png" alt="User" />
+                    <AvatarImage src="/assets/img/dashboard/tutor/Ellipse 2034.png" alt="User" />
                     <AvatarFallback>TD</AvatarFallback>
                   </Avatar>
-                  <h3 className="font-bold text-sm">Temilade Hassan</h3>
+                  <h3 className="font-bold text-sm">Hanah Olumide</h3>
                   <FaAngleDown />
                 </Button>
               }

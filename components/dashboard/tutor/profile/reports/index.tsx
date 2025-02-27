@@ -28,7 +28,7 @@ export default function TutorReportsList() {
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue="Temilade Hassan" />
+            <Input id="name" defaultValue="Hanah Olumide" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="gender">Gender</Label>

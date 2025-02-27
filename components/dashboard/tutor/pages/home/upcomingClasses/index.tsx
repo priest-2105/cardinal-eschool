@@ -46,7 +46,7 @@ const UPCOMING_CLASSES: Class[] = [
 
 export default function UpcomingClasses() {
   return (
-    <Card className="mt-5">
+    <Card className="">
       <CardHeader>
         <CardTitle>Upcoming classes</CardTitle>
       </CardHeader>
