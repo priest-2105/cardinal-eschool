@@ -1,21 +1,39 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText } from "lucide-react"
+import { Search, Calendar, FileText, Plus } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CreateReportModal } from "../createReportModal"
+import { ViewReportModal } from "../viewReportModal"
 
-interface Report {
+
+export interface Student {
+  id: string
+  name: string
+  email: string
+}
+
+export interface Report {
   id: string
   title: string
   subject: string
   grade: string
   dateSubmitted: Date
+  studentId: string
+  content: string
 }
+
+
+
+const SAMPLE_STUDENTS: Student[] = [
+  { id: "1", name: "Alice Johnson", email: "alice@example.com" },
+  { id: "2", name: "Bob Smith", email: "bob@example.com" },
+  { id: "3", name: "Charlie Brown", email: "charlie@example.com" },
+]
 
 const SAMPLE_REPORTS: Report[] = [
   {
@@ -24,6 +42,8 @@ const SAMPLE_REPORTS: Report[] = [
     subject: "Basic Science",
     grade: "A",
     dateSubmitted: new Date(2024, 5, 15),
+    studentId: "1",
+    content: "Alice demonstrated excellent understanding of basic scientific principles...",
   },
   {
     id: "2",
@@ -31,46 +51,47 @@ const SAMPLE_REPORTS: Report[] = [
     subject: "Physics",
     grade: "B+",
     dateSubmitted: new Date(2025, 6, 1),
+    studentId: "2",
+    content: "Bob's lab report on energy conservation showed good analytical skills...",
   },
-  {
-    id: "3",
-    title: "Essay: Ecosystem Dynamics",
-    subject: "Biology",
-    grade: "A-",
-    dateSubmitted: new Date(2024, 6, 10),
-  },
-  {
-    id: "4",
-    title: "Project: Solar System Model",
-    subject: "Astronomy",
-    grade: "A",
-    dateSubmitted: new Date(2024, 6, 22),
-  },
-  { id: "5", title: "Quiz: Chemical Reactions", subject: "Chemistry", grade: "B", dateSubmitted: new Date(2023, 7, 5) },
+  // ... add more sample reports
 ]
 
 export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
+  const [studentFilter, setStudentFilter] = useState("all")
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
-    filterReports(term, dateFilter)
+    filterReports(term, dateFilter, studentFilter)
   }
 
   const handleDateFilter = (value: string) => {
     setDateFilter(value)
-    filterReports(searchTerm, value)
+    filterReports(searchTerm, value, studentFilter)
   }
 
-  const filterReports = (term: string, date: string) => {
+  const handleStudentFilter = (value: string) => {
+    setStudentFilter(value)
+    filterReports(searchTerm, dateFilter, value)
+  }
+
+  const filterReports = (term: string, date: string, student: string) => {
     let filteredReports = SAMPLE_REPORTS.filter(
       (report) =>
         report.title.toLowerCase().includes(term.toLowerCase()) ||
         report.subject.toLowerCase().includes(term.toLowerCase()),
     )
+
+    if (student !== "all") {
+      filteredReports = filteredReports.filter((report) => report.studentId === student)
+    }
 
     const now = new Date()
     switch (date) {
@@ -94,8 +115,25 @@ export default function ReportsList() {
     setReports(filteredReports)
   }
 
+  const handleCreateReport = (newReport: Omit<Report, "id">) => {
+    const id = (reports.length + 1).toString()
+    setReports([...reports, { ...newReport, id }])
+    setIsCreateModalOpen(false)
+  }
+
+  const handleViewReport = (report: Report) => {
+    setSelectedReport(report)
+    setIsViewModalOpen(true)
+  }
+
   return (
     <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Student Reports</h2>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Create Report
+        </Button>
+      </div>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
@@ -118,6 +156,19 @@ export default function ReportsList() {
             <SelectItem value="year">Past year</SelectItem>
           </SelectContent>
         </Select>
+        <Select onValueChange={handleStudentFilter} defaultValue="all">
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Filter by student" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All students</SelectItem>
+            {SAMPLE_STUDENTS.map((student) => (
+              <SelectItem key={student.id} value={student.id}>
+                {student.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {reports.map((report) => (
@@ -134,14 +185,29 @@ export default function ReportsList() {
                 <Calendar size={12} className="mr-1" />
                 {format(report.dateSubmitted, "MMM d, yyyy")}
               </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Student: {SAMPLE_STUDENTS.find((s) => s.id === report.studentId)?.name}
+              </p>
             </div>
-            <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
+            <Button variant="outline" size="sm" className="mt-2 sm:mt-0" onClick={() => handleViewReport(report)}>
               <FileText size={16} className="mr-2" />
               View Report
             </Button>
           </div>
         ))}
       </div>
+      <CreateReportModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateReport}
+        students={SAMPLE_STUDENTS}
+      />
+      <ViewReportModal
+        report={selectedReport}
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        students={SAMPLE_STUDENTS}
+      />
     </div>
   )
 }
