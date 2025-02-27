@@ -88,11 +88,7 @@ export default function PersonalInformation() {
           <div className="space-y-2">
             <Label htmlFor="state">State of Residence</Label>
             <Input id="state" defaultValue="Kwara" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dob">Date of Birth</Label>
-            <Input id="dob" type="date" defaultValue="2012-02-15" />
-          </div>
+          </div> 
         </div>
 
         <div className="flex justify-end">
