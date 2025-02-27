@@ -49,21 +49,16 @@ const SAMPLE_STUDENTS: Student[] = [
 
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [students, setStudents] = useState(SAMPLE_STUDENTS)
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [students, setStudents] = useState(SAMPLE_STUDENTS) 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
-    filterStudents(term, statusFilter)
+    filterStudents(term)
   }
+ 
 
-  // const handleStatusFilter = (value: string) => {
-  //   setStatusFilter(value)
-  //   filterStudents(searchTerm, value)
-  // }
-
-  const filterStudents = (term: string, status: string) => {
+  const filterStudents = (term: string) => {
     let filteredStudents = SAMPLE_STUDENTS.filter(
       (student) =>
         student.name.toLowerCase().includes(term.toLowerCase()) ||
