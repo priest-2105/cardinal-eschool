@@ -1,6 +1,6 @@
 "use client"
  
-import ProfileLayout from "@/components/dashboard/tutor/profile/layout/profileLayout";
+// import ProfileLayout from "@/components/dashboard/tutor/profile/layout/profileLayout";
 import { useEffect, useState } from "react"
 
 export default function TutorReports() {
