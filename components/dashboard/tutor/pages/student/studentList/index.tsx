@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Search, Mail, Phone, MoreHorizontal } from "lucide-react"
+import { Search, Mail, Phone } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface Student {
@@ -58,10 +58,10 @@ export default function StudentList() {
     filterStudents(term, statusFilter)
   }
 
-  const handleStatusFilter = (value: string) => {
-    setStatusFilter(value)
-    filterStudents(searchTerm, value)
-  }
+  // const handleStatusFilter = (value: string) => {
+  //   setStatusFilter(value)
+  //   filterStudents(searchTerm, value)
+  // }
 
   const filterStudents = (term: string, status: string) => {
     let filteredStudents = SAMPLE_STUDENTS.filter(
