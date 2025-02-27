@@ -38,22 +38,12 @@ const navigation = [
     ],
   },
   {
-    name: "My Course",
+    name: "Courses",
     href: cardinalConfig.routes.dashboard.tutor.courses,
     icon: CoursesIcon,
     iconLight: CoursesLightIcon,
     activePaths: [cardinalConfig.routes.dashboard.tutor.courses],
     dynamicPath: "/tutor/course/",
-  },
-  {
-    name: "Payments",
-    href: cardinalConfig.routes.dashboard.tutor.tutorMakePayment,
-    icon: PaymentIcon,
-    iconLight: PaymentLightIcon,
-    activePaths: [
-      cardinalConfig.routes.dashboard.tutor.tutorMakePayment,
-      cardinalConfig.routes.dashboard.tutor.tutorPaymentHistory,
-    ],
   },
   {
     name: "Admin Support",
