@@ -1,7 +1,14 @@
 import type React from "react"
-import * as Select from "@radix-ui/react-select"
-import { ChevronDown } from "lucide-react"
+import * as SelectPrimitive from "@radix-ui/react-select"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+// Export DropdownMenu components
+export const DropdownMenu = DropdownMenuPrimitive.Root
+export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+export const DropdownMenuContent = DropdownMenuPrimitive.Content
+export const DropdownMenuItem = DropdownMenuPrimitive.Item
 
 export interface DropdownOption {
   value: string
@@ -26,28 +33,28 @@ export const Dropdown: React.FC<DropdownProps> = ({
   className,
 }) => {
   return (
-    <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
-      <Select.Trigger
+    <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
+      <SelectPrimitive.Trigger
         className={cn(
           "flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
           disabled && "opacity-50 cursor-not-allowed",
           className,
         )}
       >
-        <Select.Value placeholder={placeholder} />
-        <Select.Icon>
+        <SelectPrimitive.Value placeholder={placeholder} />
+        <SelectPrimitive.Icon>
           <ChevronDown className="w-4 h-4 opacity-50" />
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Content
+        </SelectPrimitive.Icon>
+      </SelectPrimitive.Trigger>
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content
           className="overflow-hidden bg-white border border-gray-300 rounded-md shadow-lg"
           position="popper"
           sideOffset={4}
         >
-          <Select.Viewport className="p-1">
+          <SelectPrimitive.Viewport className="p-1">
             {options.map((option) => (
-              <Select.Item
+              <SelectPrimitive.Item
                 key={option.value}
                 value={option.value}
                 className={cn(
@@ -56,13 +63,36 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   "focus:outline-none",
                 )}
               >
-                <Select.ItemText>{option.label}</Select.ItemText>
-              </Select.Item>
+                <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
+              </SelectPrimitive.Item>
             ))}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
+          </SelectPrimitive.Viewport>
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    </SelectPrimitive.Root>
+  )
+}
+
+export const DropdownMenuDemo: React.FC = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="p-2 rounded-md hover:bg-gray-100">
+          <MoreHorizontal size={16} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-[200px] bg-white border border-gray-200 rounded-md shadow-lg p-1">
+        <DropdownMenuItem className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-md">
+          View Details
+        </DropdownMenuItem>
+        <DropdownMenuItem className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-md">
+          Send Message
+        </DropdownMenuItem>
+        <DropdownMenuItem className="px-2 py-1 text-sm cursor-pointer hover:bg-blue-50 rounded-md">
+          Edit Information
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
