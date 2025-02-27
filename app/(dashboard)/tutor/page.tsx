@@ -2,7 +2,6 @@
 
 
 import { useState, useEffect } from "react"
-import TutorEventCalendar from "@/components/dashboard/tutor/pages/home/eventCalender"
 import Announcements from "@/components/dashboard/tutor/pages/home/announcements"
 import Assignments from "@/components/dashboard/tutor/pages/home/assignments"
 import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses"
@@ -32,7 +31,6 @@ export default function TutorDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
      
         <div className="">
-         <TutorEventCalendar/>
         <UpcomingClasses/>
       </div>
 
