@@ -1,6 +1,6 @@
 import type { Course } from "../types"
 import { CourseTableRow } from "../coursetablerow/index"
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/dashboard/student/ui/table"
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/dashboard/tutor/ui/table"
 
 interface CourseTableProps {
   courses: Course[]
@@ -13,12 +13,11 @@ export function CourseTable({ courses }: CourseTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[25%]">Class</TableHead>
-              <TableHead className="w-[25%] hidden md:table-cell">Tutor Assigned</TableHead>
-              <TableHead className="w-[20%] hidden lg:table-cell">Schedule</TableHead>
+              <TableHead className="w-[30%]">Class</TableHead>
+              <TableHead className="w-[15%] hidden md:table-cell">No of Students</TableHead>
+              <TableHead className="w-[25%] hidden lg:table-cell">Schedule</TableHead>
               <TableHead className="w-[15%]">Status</TableHead>
-              <TableHead className="w-[10%] hidden xl:table-cell">Date Added</TableHead>
-              <TableHead className="w-[5%]"></TableHead>
+              <TableHead className="w-[15%] hidden xl:table-cell">Date Added</TableHead>
             </TableRow>
           </TableHeader>
         </Table>
