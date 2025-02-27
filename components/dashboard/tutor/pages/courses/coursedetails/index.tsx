@@ -11,6 +11,7 @@ import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
+import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
