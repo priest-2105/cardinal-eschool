@@ -55,11 +55,11 @@ export default function TutorSettings() {
  
         </div>
 
-        <div className="flex justify-end">
+        {/* <div className="flex justify-end">
           <Button className="bg-[#1BC2C2] hover:bg-teal-600">
             Save All Changes
           </Button>
-        </div>
+        </div> */}
       </div>
     </Card>
   )
