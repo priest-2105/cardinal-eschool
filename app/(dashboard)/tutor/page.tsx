@@ -2,14 +2,14 @@
 
 
 import { useState, useEffect } from "react"
-import StudentEventCalendar from "@/components/dashboard/student/pages/home/eventCalender"
-import Announcements from "@/components/dashboard/student/pages/home/announcements"
-import Assignments from "@/components/dashboard/student/pages/home/assignments"
-import UpcomingClasses from "@/components/dashboard/student/pages/home/upcomingClasses"
+import TutorEventCalendar from "@/components/dashboard/tutor/pages/home/eventCalender"
+import Announcements from "@/components/dashboard/tutor/pages/home/announcements"
+import Assignments from "@/components/dashboard/tutor/pages/home/assignments"
+import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses"
 
 
 
-export default function StudentDashboard() {
+export default function TutorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
      
         <div className="">
-         <StudentEventCalendar/>
+         <TutorEventCalendar/>
         <UpcomingClasses/>
       </div>
 

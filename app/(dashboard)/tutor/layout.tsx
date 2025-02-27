@@ -2,8 +2,8 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "../../globals.css";
-import StudentDashboardHeader from "@/components/dashboard/student/header";
-import StudentDashboardSideBar from "@/components/dashboard/student/sidebar";
+import TutorDashboardHeader from "@/components/dashboard/tutor/header";
+import TutorDashboardSideBar from "@/components/dashboard/tutor/sidebar";
 import { useState, useEffect } from "react";
 
 const geistSans = Geist({
@@ -49,9 +49,9 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <div className="min-h-screen w-[100vw] overflow-hidden bg-gray-50 flex">
-          <StudentDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+          <TutorDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           <div className={`flex-1 transition-all ease-in-out overflow-hidden duration-300`}>
-            <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+            <TutorDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
             <main className="pt-[104px] sm:px-4 z-90 sm:pb-8 max-sm:px-1  w-[100vw] overflow-x-hidden">
               {children}
             </main>

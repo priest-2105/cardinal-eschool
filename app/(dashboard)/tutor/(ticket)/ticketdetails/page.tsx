@@ -1,7 +1,7 @@
 "use client"
 
-import TicketDetailsComponent from "@/components/dashboard/student/pages/tickets/ticketdetails"
-import TicketDetailsLayout from "@/components/dashboard/student/pages/tickets/ticketdetailslayout"
+import TicketDetailsComponent from "@/components/dashboard/tutor/pages/tickets/ticketdetails"
+import TicketDetailsLayout from "@/components/dashboard/tutor/pages/tickets/ticketdetailslayout"
 import { useState, useEffect } from "react"
 
 export default function TicketDetailsPage() {

@@ -1,7 +1,7 @@
 "use client"
 
-import TicketLayout from "@/components/dashboard/student/pages/tickets/layout"
-import { TicketList } from "@/components/dashboard/student/pages/tickets/ticketlist"
+import TicketLayout from "@/components/dashboard/tutor/pages/tickets/layout"
+import { TicketList } from "@/components/dashboard/tutor/pages/tickets/ticketlist"
 import { useState, useEffect } from "react"
 
 

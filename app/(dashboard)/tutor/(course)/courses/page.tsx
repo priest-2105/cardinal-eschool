@@ -1,6 +1,6 @@
 "use client"
 
-import { CourseList } from "@/components/dashboard/student/pages/courses/courselist"
+import { CourseList } from "@/components/dashboard/tutor/pages/courses/courselist"
 import { useState, useEffect } from "react"
 
 

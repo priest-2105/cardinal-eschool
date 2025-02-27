@@ -1,10 +1,10 @@
 "use client"
 
-import PaymentLayout from "@/components/dashboard/student/pages/payment/layout"
-import TransactionList from "@/components/dashboard/student/pages/payment/transactionList"
+import PaymentLayout from "@/components/dashboard/tutor/pages/payment/layout"
+import TransactionList from "@/components/dashboard/tutor/pages/payment/transactionList"
 import { useState, useEffect } from "react"
 
-export default function StudentPaymentHistory() {
+export default function TutorPaymentHistory() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {

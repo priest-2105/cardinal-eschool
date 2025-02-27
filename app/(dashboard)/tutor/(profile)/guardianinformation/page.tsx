@@ -1,10 +1,10 @@
 "use client"
  
-import GuardianInformationForm from "@/components/dashboard/student/profile/guardianInformation";
-import ProfileLayout from "@/components/dashboard/student/profile/layout/profileLayout";
+import GuardianInformationForm from "@/components/dashboard/tutor/profile/guardianInformation";
+import ProfileLayout from "@/components/dashboard/tutor/profile/layout/profileLayout";
 import { useEffect, useState } from "react"
 
-export default function StudentProfile() {
+export default function TutorProfile() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

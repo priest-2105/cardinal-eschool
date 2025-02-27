@@ -1,7 +1,7 @@
 "use client"
 
-import CreateTicketForm from "@/components/dashboard/student/pages/tickets/createticket"
-import TicketLayout from "@/components/dashboard/student/pages/tickets/layout"
+import CreateTicketForm from "@/components/dashboard/tutor/pages/tickets/createticket"
+import TicketLayout from "@/components/dashboard/tutor/pages/tickets/layout"
 import { useState, useEffect } from "react"
 
 export default function CreateTicketPage() {

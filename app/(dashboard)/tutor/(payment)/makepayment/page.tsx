@@ -1,12 +1,12 @@
 "use client"
 
-import PaymentLayout from "@/components/dashboard/student/pages/payment/layout"
-import StudentCardPayment from "@/components/dashboard/student/pages/payment/makepayment/cardpayment"
-// import StudentTransferPayment from "@/components/dashboard/student/pages/payment/makepayment/transferpayment"
+import PaymentLayout from "@/components/dashboard/tutor/pages/payment/layout"
+import TutorCardPayment from "@/components/dashboard/tutor/pages/payment/makepayment/cardpayment"
+// import TutorTransferPayment from "@/components/dashboard/tutor/pages/payment/makepayment/transferpayment"
 import { useState, useEffect } from "react"
 
 
-export default function StudentMakePayment() {
+export default function TutorMakePayment() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -27,8 +27,8 @@ export default function StudentMakePayment() {
   return (
     <div className={`transition-all ease-in-out duration-300 bg-white border border-gray-200 rounded-lg p-2 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
        <PaymentLayout>
-        {/* <StudentTransferPayment/> */}
-        <StudentCardPayment/>
+        {/* <TutorTransferPayment/> */}
+        <TutorCardPayment/>
        </PaymentLayout>
     </div>
   )

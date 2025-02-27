@@ -1,10 +1,10 @@
 "use client"
 
-import ProfileLayout from "@/components/dashboard/student/profile/layout/profileLayout"; 
-import StudentSettings from "@/components/dashboard/student/profile/settings";
+import ProfileLayout from "@/components/dashboard/tutor/profile/layout/profileLayout"; 
+import TutorSettings from "@/components/dashboard/tutor/profile/settings";
 import { useEffect, useState } from "react"
 
-export default function StudentSettingsPage() {
+export default function TutorSettingsPage() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -28,7 +28,7 @@ export default function StudentSettingsPage() {
     <>
       <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
         <ProfileLayout>
-        <StudentSettings/>
+        <TutorSettings/>
         </ProfileLayout>
       </div>
     </>
