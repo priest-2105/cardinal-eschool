@@ -9,26 +9,27 @@ interface CourseTableProps {
 export function CourseTable({ courses }: CourseTableProps) {
   return (
     <div className="relative max-sm:h-[calc(85vh-200px)] sm:h-[calc(90vh-200px)] scroll-smooth custom-scrollbar">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="bg-slate-600 border-4 border-red-600 ">Class</TableHead>
-            <TableHead className="bg-slate-600 border-4 border-red-600 hidden md:table-cell">No of Students</TableHead>
-            <TableHead className="bg-slate-600 border-4 border-red-600 hidden lg:table-cell">Schedule</TableHead>
-            <TableHead className="bg-slate-600 border-4 border-red-600 ">Status</TableHead>
-            <TableHead className="bg-slate-600 border-4 border-red-600 hidden xl:table-cell">Date Added</TableHead>
-            {/* <TableHead className="w-[50px]"></TableHead> */}
-          </TableRow>
-        </TableHeader>
-      </Table>
-      <div className="overflow-y-auto h-full scroll-smooth custom-scrollbar">
+      <div className="overflow-hidden border rounded-md">
         <Table>
-          <TableBody>
-            {courses.map((course) => (
-              <CourseTableRow key={course.id} course={course} />
-            ))}
-          </TableBody>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[30%]">Class</TableHead>
+              <TableHead className="w-[15%] hidden md:table-cell">No of Students</TableHead>
+              <TableHead className="w-[25%] hidden lg:table-cell">Schedule</TableHead>
+              <TableHead className="w-[15%]">Status</TableHead>
+              <TableHead className="w-[15%] hidden xl:table-cell">Date Added</TableHead>
+            </TableRow>
+          </TableHeader>
         </Table>
+        <div className="overflow-y-auto h-full max-h-[calc(90vh-250px)] scroll-smooth custom-scrollbar">
+          <Table>
+            <TableBody>
+              {courses.map((course) => (
+                <CourseTableRow key={course.id} course={course} />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )
