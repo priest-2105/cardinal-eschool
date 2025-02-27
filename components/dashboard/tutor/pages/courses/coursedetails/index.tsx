@@ -10,6 +10,7 @@ import ResourcesList from "../../resources/resourcesList"
 import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -110,12 +111,16 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {/* Course Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-              <h3 className="font-semibold text-lg">Course Information</h3>
-              <div>
-                <p className="font-semibold">{courseName}</p>
-                <p className="text-sm text-gray-500">Course Code: PHY301</p>
-                <p className="text-sm text-gray-500">Department: Physics</p>
-                <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+            <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12 md:h-16 md:w-16">
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback> PHY301</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-semibold">Course Code: PHY301</h4>
+                  <p className="text-sm text-gray-500">Department: Physics</p>
+                  <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+                </div>
               </div>
             </CardContent>
           </Card>
