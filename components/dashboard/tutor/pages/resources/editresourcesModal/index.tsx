@@ -6,7 +6,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { Resource } from "@/types"
+
+
+export interface Student {
+    id: string
+    name: string
+    email: string
+  }
+  
+  
+  export interface Resource {
+    id: string
+    title: string
+    type: string
+    size: string
+    dateUploaded: Date
+    fileUrl: string
+  }
+  
 
 interface EditResourceModalProps {
   isOpen: boolean

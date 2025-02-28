@@ -1,19 +1,30 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Download, Search, Calendar } from "lucide-react"
+import { Download, Search, Calendar, Plus, Edit, Eye } from "lucide-react"
 import { format } from "date-fns"
+import { CreateResourceModal } from "../createResourceModal"
+import { EditResourceModal } from "../editresourcesModal"
+import { ViewResourceModal } from "../resourcesDetails"
 
-interface Resource {
+
+export interface Student {
+  id: string
+  name: string
+  email: string
+}
+
+
+export interface Resource {
   id: string
   title: string
   type: string
   size: string
   dateUploaded: Date
+  fileUrl: string
 }
 
 const SAMPLE_RESOURCES: Resource[] = [
@@ -23,22 +34,25 @@ const SAMPLE_RESOURCES: Resource[] = [
     type: "PDF",
     size: "2.3 MB",
     dateUploaded: new Date(2023, 5, 15),
+    fileUrl: "/path/to/scientific-method.pdf",
   },
-  { id: "2", title: "Matter and Energy Basics", type: "PDF", size: "1.8 MB", dateUploaded: new Date(2023, 6, 1) },
-  { id: "3", title: "Living Systems Overview", type: "PDF", size: "3.1 MB", dateUploaded: new Date(2023, 6, 10) },
   {
-    id: "4",
-    title: "Earth and Space Science Fundamentals",
+    id: "2",
+    title: "Matter and Energy Basics",
     type: "PDF",
-    size: "2.7 MB",
-    dateUploaded: new Date(2023, 6, 22),
+    size: "1.8 MB",
+    dateUploaded: new Date(2023, 6, 1),
+    fileUrl: "/path/to/matter-energy.pdf",
   },
-  { id: "5", title: "Laboratory Safety Guidelines", type: "PDF", size: "1.2 MB", dateUploaded: new Date(2023, 7, 5) },
 ]
 
 export default function ResourcesList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [resources, setResources] = useState(SAMPLE_RESOURCES)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -49,13 +63,38 @@ export default function ResourcesList() {
     setResources(filteredResources)
   }
 
-  const handleDownload = (resourceId: string) => {
-    console.log(`Downloading resource with ID: ${resourceId}`)
-    // Implement actual download logic here
+  const handleView = (resource: Resource) => {
+    setSelectedResource(resource)
+    setIsViewModalOpen(true)
+  }
+
+  const handleCreateResource = (newResource: Omit<Resource, "id">) => {
+    const id = (resources.length + 1).toString()
+    setResources([...resources, { ...newResource, id }])
+    setIsCreateModalOpen(false)
+  }
+
+  const handleEditResource = (resource: Resource) => {
+    setSelectedResource(resource)
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateResource = (updatedResource: Resource) => {
+    const updatedResources = resources.map((resource) =>
+      resource.id === updatedResource.id ? updatedResource : resource,
+    )
+    setResources(updatedResources)
+    setIsEditModalOpen(false)
   }
 
   return (
     <div className="h-full flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Resources</h2>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Upload Resource
+        </Button>
+      </div>
       <div className="relative mb-4">
         <Input
           type="text"
@@ -82,13 +121,36 @@ export default function ResourcesList() {
                 {format(resource.dateUploaded, "MMM d, yyyy")}
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => handleDownload(resource.id)} className="mt-2 sm:mt-0">
-              <Download size={16} className="mr-2" />
-              Download
-            </Button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+              <Button variant="outline" size="sm" onClick={() => handleView(resource)}>
+                <Eye size={16} className="mr-2" />
+                View
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleEditResource(resource)}>
+                <Edit size={16} className="mr-2" />
+                Edit
+              </Button>
+            </div>
           </div>
         ))}
       </div>
+      <CreateResourceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateResource}
+      />
+      <EditResourceModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleUpdateResource}
+        resource={selectedResource}
+      />
+       <ViewResourceModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        onSubmit={handleUpdateResource}
+        resource={selectedResource}
+      />
     </div>
   )
 }
