@@ -4,18 +4,19 @@ import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, Plus } from "lucide-react"
+import { Search, Calendar, FileText, Plus, Edit } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CreateReportModal } from "../createReportModal"
-import { ViewReportModal } from "../viewReportModal"
-
+import { CreateReportModal } from "../createReportModal/index"
+import { ViewReportModal } from "../viewReportModal/index"
+import { EditReportModal } from "../editReportModal/index"
 
 export interface Student {
   id: string
   name: string
   email: string
 }
+ 
 
 export interface Report {
   id: string
@@ -26,8 +27,6 @@ export interface Report {
   studentId: string
   content: string
 }
-
-
 
 const SAMPLE_STUDENTS: Student[] = [
   { id: "1", name: "Alice Johnson", email: "alice@example.com" },
@@ -54,7 +53,6 @@ const SAMPLE_REPORTS: Report[] = [
     studentId: "2",
     content: "Bob's lab report on energy conservation showed good analytical skills...",
   },
-  // ... add more sample reports
 ]
 
 export default function ReportsList() {
@@ -65,6 +63,7 @@ export default function ReportsList() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -124,6 +123,17 @@ export default function ReportsList() {
   const handleViewReport = (report: Report) => {
     setSelectedReport(report)
     setIsViewModalOpen(true)
+  }
+
+  const handleEditReport = (report: Report) => {
+    setSelectedReport(report)
+    setIsEditModalOpen(true)
+  }
+
+  const handleUpdateReport = (updatedReport: Report) => {
+    const updatedReports = reports.map((report) => (report.id === updatedReport.id ? updatedReport : report))
+    setReports(updatedReports)
+    setIsEditModalOpen(false)
   }
 
   return (
@@ -189,10 +199,16 @@ export default function ReportsList() {
                 Student: {SAMPLE_STUDENTS.find((s) => s.id === report.studentId)?.name}
               </p>
             </div>
-            <Button variant="outline" size="sm" className="mt-2 sm:mt-0" onClick={() => handleViewReport(report)}>
-              <FileText size={16} className="mr-2" />
-              View Report
-            </Button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+              <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
+                <FileText size={16} className="mr-2" />
+                View
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleEditReport(report)}>
+                <Edit size={16} className="mr-2" />
+                Edit
+              </Button>
+            </div>
           </div>
         ))}
       </div>
@@ -206,6 +222,13 @@ export default function ReportsList() {
         report={selectedReport}
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
+        students={SAMPLE_STUDENTS}
+      />
+      <EditReportModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleUpdateReport}
+        report={selectedReport}
         students={SAMPLE_STUDENTS}
       />
     </div>
