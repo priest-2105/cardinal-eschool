@@ -9,10 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 interface Student {
   id: string
   name: string
-  email: string
-  phone: string
+  // email: string
+  // phone: string
   enrollmentDate: Date
-  status: "active" | "inactive"
+  // status: "active" | "inactive"
   avatar?: string
 }
 
@@ -21,28 +21,28 @@ const SAMPLE_STUDENTS: Student[] = [
   {
     id: "1",
     name: "Alice Johnson",
-    email: "alice.johnson@example.com",
-    phone: "+1 234-567-8901",
+    // email: "alice.johnson@example.com",
+    // phone: "+1 234-567-8901",/
     enrollmentDate: new Date(2023, 0, 15),
-    status: "active",
+    // status: "active",
     avatar: "https://i.pravatar.cc/150?img=1",
   },
   {
     id: "2",
     name: "Bob Smith",
-    email: "bob.smith@example.com",
-    phone: "+1 234-567-8902",
+    // email: "bob.smith@example.com",
+    // phone: "+1 234-567-8902",
     enrollmentDate: new Date(2023, 1, 1),
-    status: "active",
+    // status: "active",
     avatar: "https://i.pravatar.cc/150?img=2",
   },
   {
     id: "3",
     name: "Charlie Brown",
-    email: "charlie.brown@example.com",
-    phone: "+1 234-567-8903",
+    // email: "charlie.brown@example.com",
+    // phone: "+1 234-567-8903",
     enrollmentDate: new Date(2023, 2, 10),
-    status: "inactive",
+    // status: "inactive",
     avatar: "https://i.pravatar.cc/150?img=3",
   },
   // Add more sample students as needed
@@ -62,13 +62,14 @@ export default function StudentList() {
   const filterStudents = (term: string) => {
     let filteredStudents = SAMPLE_STUDENTS.filter(
       (student) =>
-        student.name.toLowerCase().includes(term.toLowerCase()) ||
-        student.email.toLowerCase().includes(term.toLowerCase()),
+        student.name.toLowerCase().includes(term.toLowerCase()) 
+      // ||
+        // student.email.toLowerCase().includes(term.toLowerCase()),
     )
 
-    if (status !== "all") {
-      filteredStudents = filteredStudents.filter((student) => student.status === status)
-    }
+    // if (status !== "all") {
+    //   filteredStudents = filteredStudents.filter((student) => student.status === status)
+    // }
 
     setStudents(filteredStudents)
   }
@@ -98,14 +99,15 @@ export default function StudentList() {
               </Avatar>
               <div>
                 <h3 className="font-medium">{student.name}</h3>
-                <p className="text-sm text-gray-500 flex items-center">
+                {/* <p className="text-sm text-gray-500 flex items-center">
                   <Mail size={12} className="mr-1" />
                   {student.email}
-                </p>
-                <p className="text-sm text-gray-500 flex items-center">
+                </p> */}
+                {/* <p className="text-sm text-gray-500 flex items-center">
                   <Phone size={12} className="mr-1" />
                   {student.phone}
-                </p>
+                </p> */}
+                {/* <p>{student.enrollmentDate}</p> */}
               </div>
             </div>
             
