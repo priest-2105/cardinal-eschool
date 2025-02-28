@@ -16,6 +16,7 @@ interface Student {
   avatar?: string
 }
 
+
 const SAMPLE_STUDENTS: Student[] = [
   {
     id: "1",
