@@ -69,15 +69,15 @@ export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewR
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Input readOnly id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="type">Type</Label>
-            <Input id="type" value={type} onChange={(e) => setType(e.target.value)} required />
+            <Input readOnly id="type" value={type} onChange={(e) => setType(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="file">File (Optional)</Label>
-            <Input id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
+            <Input readOnly id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
