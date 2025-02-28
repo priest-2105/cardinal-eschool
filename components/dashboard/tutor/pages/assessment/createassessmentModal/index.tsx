@@ -9,14 +9,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 
-
-interface Student {
+export interface Student {
   id: string
   name: string
   email: string
 }
 
- interface Assessment {
+export interface Assessment {
   id: string
   title: string
   subject: string
@@ -24,7 +23,7 @@ interface Student {
   status: "pending" | "submitted" | "graded"
   description?: string
   submittedFile?: string
-  studentId: string
+  studentIds: string[]
   grade?: number
 }
 

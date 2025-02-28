@@ -4,22 +4,22 @@ import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, CheckCircle, Clock, Plus } from "lucide-react"
+import { Search, Calendar, FileText, CheckCircle, Clock, Plus, Edit } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { AssessmentModal } from "../assessmentModal/index"
 import { CreateAssessmentModal } from "../createassessmentModal/index"
-// import type { Assessment, Student } from "@/types"
+import { EditAssessmentModal } from "../editAssessmentModal/index"
 
 
-interface Student {
+export interface Student {
   id: string
   name: string
   email: string
 }
 
- interface Assessment {
+export interface Assessment {
   id: string
   title: string
   subject: string
@@ -27,10 +27,9 @@ interface Student {
   status: "pending" | "submitted" | "graded"
   description?: string
   submittedFile?: string
-  studentId: string
+  studentIds: string[]
   grade?: number
 }
-
 
 const SAMPLE_STUDENTS: Student[] = [
   { id: "1", name: "Alice Johnson", email: "alice@example.com" },
@@ -47,7 +46,7 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
     status: "pending",
     description:
       "Write a 500-word essay explaining the steps of the scientific method and provide an example of its application.",
-    studentId: "1",
+    studentIds: ["1"],
   },
   {
     id: "2",
@@ -57,46 +56,7 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
     status: "submitted",
     description: "Complete the lab report for the energy conservation experiment conducted in class.",
     submittedFile: "energy_conservation_report.pdf",
-    studentId: "2",
-  },
-  {
-    id: "2",
-    title: "Energy Conservation Lab Report",
-    subject: "Physics",
-    dueDate: new Date(2023, 7, 20),
-    status: "submitted",
-    description: "Complete the lab report for the energy conservation experiment conducted in class.",
-    submittedFile: "energy_conservation_report.pdf",
-    studentId: "2",
-  },
-  {
-    id: "2",
-    title: "Energy Conservation Lab Report",
-    subject: "Physics",
-    dueDate: new Date(2023, 7, 20),
-    status: "submitted",
-    description: "Complete the lab report for the energy conservation experiment conducted in class.",
-    submittedFile: "energy_conservation_report.pdf",
-    studentId: "2",
-  },
-  {
-    id: "2",
-    title: "Energy Conservation Lab Report",
-    subject: "Physics",
-    dueDate: new Date(2023, 7, 20),
-    status: "submitted",
-    description: "Complete the lab report for the energy conservation experiment conducted in class.",
-    submittedFile: "energy_conservation_report.pdf",
-    studentId: "2",
-  },{
-    id: "2",
-    title: "Energy Conservation Lab Report",
-    subject: "Physics",
-    dueDate: new Date(2023, 7, 20),
-    status: "submitted",
-    description: "Complete the lab report for the energy conservation experiment conducted in class.",
-    submittedFile: "energy_conservation_report.pdf",
-    studentId: "2",
+    studentIds: ["2"],
   },
 ]
 
@@ -109,6 +69,7 @@ export default function AssessmentsList() {
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -143,7 +104,7 @@ export default function AssessmentsList() {
     }
 
     if (student !== "all") {
-      filteredAssessments = filteredAssessments.filter((assessment) => assessment.studentId === student)
+      filteredAssessments = filteredAssessments.filter((assessment) => assessment.studentIds.includes(student))
     }
 
     const now = new Date()
@@ -173,6 +134,11 @@ export default function AssessmentsList() {
     setIsAssessmentModalOpen(true)
   }
 
+  const handleEditAssessment = (assessment: Assessment) => {
+    setSelectedAssessment(assessment)
+    setIsEditModalOpen(true)
+  }
+
   const handleCloseAssessmentModal = () => {
     setIsAssessmentModalOpen(false)
     setSelectedAssessment(null)
@@ -190,6 +156,14 @@ export default function AssessmentsList() {
     const id = (assessments.length + 1).toString()
     setAssessments([...assessments, { ...newAssessment, id }])
     setIsCreateModalOpen(false)
+  }
+
+  const handleUpdateAssessment = (updatedAssessment: Assessment) => {
+    const updatedAssessments = assessments.map((assessment) =>
+      assessment.id === updatedAssessment.id ? updatedAssessment : assessment,
+    )
+    setAssessments(updatedAssessments)
+    setIsEditModalOpen(false)
   }
 
   return (
@@ -269,7 +243,8 @@ export default function AssessmentsList() {
                   Due: {format(assessment.dueDate, "MMM d, yyyy")}
                 </p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
-                  Student: {SAMPLE_STUDENTS.find((s) => s.id === assessment.studentId)?.name}
+                  Students:{" "}
+                  {assessment.studentIds.map((id) => SAMPLE_STUDENTS.find((s) => s.id === id)?.name).join(", ")}
                 </p>
               </div>
             </div>
@@ -284,6 +259,10 @@ export default function AssessmentsList() {
               <Button variant="outline" size="sm" onClick={() => handleViewAssessment(assessment)}>
                 <FileText size={16} className="mr-2" />
                 View
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleEditAssessment(assessment)}>
+                <Edit size={16} className="mr-2" />
+                Edit
               </Button>
             </div>
           </div>
@@ -300,6 +279,13 @@ export default function AssessmentsList() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateAssessment}
+        students={SAMPLE_STUDENTS}
+      />
+      <EditAssessmentModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleUpdateAssessment}
+        assessment={selectedAssessment}
         students={SAMPLE_STUDENTS}
       />
     </div>
