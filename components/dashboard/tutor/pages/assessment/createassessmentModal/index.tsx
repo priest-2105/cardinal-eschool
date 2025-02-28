@@ -94,6 +94,9 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
                 <SelectValue placeholder="Select a student" />
               </SelectTrigger>
               <SelectContent>
+              <SelectItem value="all">
+                    All Students
+                  </SelectItem>
                 {students.map((student) => (
                   <SelectItem key={student.id} value={student.id}>
                     {student.name}
