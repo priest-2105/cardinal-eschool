@@ -29,21 +29,28 @@ export interface Student {
     grade?: number
   }
   
-
+ 
 interface EditAssessmentModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (assessment: Assessment) => void
+  onDelete: (id: string) => void
   assessment: Assessment | null
   students: Student[]
 }
 
-export function EditAssessmentModal({ isOpen, onClose, onSubmit, assessment, students }: EditAssessmentModalProps) {
+export function EditAssessmentModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  onDelete,
+  assessment,
+  students,
+}: EditAssessmentModalProps) {
   const [title, setTitle] = useState("")
   const [subject, setSubject] = useState("")
   const [dueDate, setDueDate] = useState("")
   const [description, setDescription] = useState("")
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([])
 
   useEffect(() => {
     if (assessment) {
@@ -51,7 +58,6 @@ export function EditAssessmentModal({ isOpen, onClose, onSubmit, assessment, stu
       setSubject(assessment.subject)
       setDueDate(assessment.dueDate.toISOString().split("T")[0])
       setDescription(assessment.description || "")
-      setSelectedStudents(assessment.studentIds)
     }
   }, [assessment])
 
@@ -64,25 +70,20 @@ export function EditAssessmentModal({ isOpen, onClose, onSubmit, assessment, stu
         subject,
         dueDate: new Date(dueDate),
         description,
-        studentIds: selectedStudents,
       }
       onSubmit(updatedAssessment)
     }
   }
 
-  const handleStudentSelection = (studentId: string) => {
-    setSelectedStudents((prev) =>
-      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId],
-    )
-  }
-
   if (!assessment) return null
+
+  const student = students.find((s) => s.id === assessment.studentIds[0])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
-          <DialogTitle>Edit Assessment</DialogTitle>
+          <DialogTitle>Edit Assessment for {student?.name}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -101,26 +102,16 @@ export function EditAssessmentModal({ isOpen, onClose, onSubmit, assessment, stu
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
-          <div>
-            <Label>Assign to Students</Label>
-            <div className="space-y-2 mt-2">
-              {students.map((student) => (
-                <div key={student.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`student-${student.id}`}
-                    checked={selectedStudents.includes(student.id)}
-                    onCheckedChange={() => handleStudentSelection(student.id)}
-                  />
-                  <Label htmlFor={`student-${student.id}`}>{student.name}</Label>
-                </div>
-              ))}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+          <DialogFooter className="flex justify-between">
+            <Button type="button" variant="danger" onClick={() => onDelete(assessment.id)}>
+              Delete
             </Button>
-            <Button type="submit">Update Assessment</Button>
+            <div>
+              <Button type="button" variant="outline" onClick={onClose} className="mr-2">
+                Cancel
+              </Button>
+              <Button type="submit">Update Assessment</Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
