@@ -26,15 +26,18 @@ export interface Student {
   }
   
  
+"use client"
+ 
 interface EditReportModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (report: Report) => void
+  onDelete: (id: string) => void
   report: Report | null
   students: Student[]
 }
 
-export function EditReportModal({ isOpen, onClose, onSubmit, report, students }: EditReportModalProps) {
+export function EditReportModal({ isOpen, onClose, onSubmit, onDelete, report, students }: EditReportModalProps) {
   const [title, setTitle] = useState("")
   const [subject, setSubject] = useState("")
   const [grade, setGrade] = useState("")
@@ -106,11 +109,16 @@ export function EditReportModal({ isOpen, onClose, onSubmit, report, students }:
             <Label htmlFor="content">Report Content</Label>
             <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required />
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+          <DialogFooter className="flex justify-between">
+            <Button type="button" variant="danger" onClick={() => onDelete(report.id)}>
+              Delete
             </Button>
-            <Button type="submit">Update Report</Button>
+            <div>
+              <Button type="button" variant="outline" onClick={onClose} className="mr-2">
+                Cancel
+              </Button>
+              <Button type="submit">Update Report</Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
