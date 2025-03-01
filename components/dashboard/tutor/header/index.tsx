@@ -104,7 +104,7 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
               </svg>
             )}
           </button>
-          <div className="flex items-center gap-x-4">
+          <div className="flex items-center gap-x-4 z-40">
             <Dropdown
               items={notifications}
               icon={

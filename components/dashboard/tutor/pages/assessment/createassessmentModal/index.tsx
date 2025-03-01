@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 
+
+
 export interface Student {
   id: string
   name: string
@@ -30,9 +32,10 @@ export interface Assessment {
 interface CreateAssessmentModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (assessment: Omit<Assessment, "id">) => void
+  onSubmit: (assessments: Omit<Assessment, "id">[]) => void
   students: Student[]
 }
+
 
 export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: CreateAssessmentModalProps) {
   const [title, setTitle] = useState("")
@@ -43,15 +46,15 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const newAssessment: Omit<Assessment, "id"> = {
+    const newAssessments: Omit<Assessment, "id">[] = selectedStudents.map((studentId) => ({
       title,
       subject,
       dueDate: new Date(dueDate),
       status: "pending",
       description,
-      studentIds: selectedStudents,
-    }
-    onSubmit(newAssessment)
+      studentIds: [studentId],
+    }))
+    onSubmit(newAssessments)
     resetForm()
   }
 
