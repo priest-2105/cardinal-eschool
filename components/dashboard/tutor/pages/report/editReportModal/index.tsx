@@ -26,8 +26,6 @@ export interface Student {
   }
   
  
-"use client"
- 
 interface EditReportModalProps {
   isOpen: boolean
   onClose: () => void
@@ -109,10 +107,12 @@ export function EditReportModal({ isOpen, onClose, onSubmit, onDelete, report, s
             <Label htmlFor="content">Report Content</Label>
             <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required />
           </div>
-          <DialogFooter className="flex justify-between">
-            <Button type="button" variant="danger" onClick={() => onDelete(report.id)}>
+          <DialogFooter className="flex">
+            <div className="ml-0 mr-auto">
+              <Button type="button" variant="danger" onClick={() => onDelete(report.id)}>
               Delete
             </Button>
+            </div>
             <div>
               <Button type="button" variant="outline" onClick={onClose} className="mr-2">
                 Cancel

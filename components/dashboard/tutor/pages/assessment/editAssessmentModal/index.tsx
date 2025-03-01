@@ -103,9 +103,11 @@ export function EditAssessmentModal({
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
           <DialogFooter className="flex justify-between">
-            <Button type="button" variant="danger" onClick={() => onDelete(assessment.id)}>
+          <div className="ml-0 mr-auto">
+             <Button type="button" variant="danger" onClick={() => onDelete(assessment.id)}>
               Delete
             </Button>
+            </div>
             <div>
               <Button type="button" variant="outline" onClick={onClose} className="mr-2">
                 Cancel

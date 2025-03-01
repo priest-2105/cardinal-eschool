@@ -80,9 +80,11 @@ export function EditResourceModal({ isOpen, onClose, onSubmit, onDelete, resourc
             <Input id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
           </div>
           <DialogFooter className="flex justify-between">
+          <div className="ml-0 mr-auto">
             <Button type="button" variant="danger" onClick={() => onDelete(resource.id)}>
               Delete
             </Button>
+            </div>
             <div>
               <Button type="button" variant="outline" onClick={onClose} className="mr-2">
                 Cancel
