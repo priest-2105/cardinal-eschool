@@ -6,15 +6,15 @@ import { format } from "date-fns"
 import { Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-// import type { Assessment, Student } from "@/types"
 
-interface Student {
+
+export interface Student {
   id: string
   name: string
   email: string
 }
 
- interface Assessment {
+export interface Assessment {
   id: string
   title: string
   subject: string
@@ -22,10 +22,9 @@ interface Student {
   status: "pending" | "submitted" | "graded"
   description?: string
   submittedFile?: string
-  studentId: string
+  studentIds: string[]
   grade?: number
 }
-
 
 interface AssessmentModalProps {
   assessment: Assessment | null
@@ -40,7 +39,7 @@ export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students
 
   if (!assessment) return null
 
-  const student = students.find((s) => s.id === assessment.studentId)
+  const student = students.find((s) => assessment.studentIds.includes(s.id))
 
   const handleGrade = () => {
     if (typeof grade === "number") {

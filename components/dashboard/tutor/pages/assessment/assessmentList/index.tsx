@@ -31,6 +31,7 @@ export interface Assessment {
   grade?: number
 }
 
+
 const SAMPLE_STUDENTS: Student[] = [
   { id: "1", name: "Alice Johnson", email: "alice@example.com" },
   { id: "2", name: "Bob Smith", email: "bob@example.com" },
@@ -175,8 +176,8 @@ export default function AssessmentsList() {
     setIsEditModalOpen(false)
   }
 
-  return (
-    <div className="h-full flex flex-col">
+  return ( 
+   <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Assessments</h2>
         <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -231,8 +232,10 @@ export default function AssessmentsList() {
         </Select>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {assessments.map((assessment) => (
-          <div
+        {assessments.map(
+          (assessment) =>
+            (
+              <div
             key={assessment.id}
             className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
           >
@@ -249,6 +252,9 @@ export default function AssessmentsList() {
                 <p className="text-sm text-gray-500">{assessment.subject}</p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
                   <Calendar size={12} className="mr-1" />
+                  Due: {format(assessment.dueDate, "MMM d, yyyy")}
+                </p>
+                <p>
                   Due: {format(assessment.dueDate, "MMM d, yyyy")}
                 </p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
@@ -275,7 +281,8 @@ export default function AssessmentsList() {
               </Button>
             </div>
           </div>
-        ))}
+            ),
+        )}
       </div>
       <AssessmentModal
         assessment={selectedAssessment}
