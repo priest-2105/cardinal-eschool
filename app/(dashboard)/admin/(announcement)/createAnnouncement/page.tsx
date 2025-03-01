@@ -1,11 +1,12 @@
 "use client"
 
-import TicketLayout from "@/components/dashboard/admin/pages/tickets/layout"
-import { TicketList } from "@/components/dashboard/admin/pages/tickets/ticketlist"
+
+
+import { StudentDetails } from "@/components/dashboard/admin/pages/manageStudents/studentDetails"
 import { useState, useEffect } from "react"
 
 
-export default function TicketListPage() {
+export default function StudentDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -25,9 +26,7 @@ export default function TicketListPage() {
 
   return (
     <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <TicketLayout>
-        <TicketList/>
-        </TicketLayout>
+        <StudentDetails/>
     </div>
   )
 }
