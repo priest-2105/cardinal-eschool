@@ -158,6 +158,7 @@ export default function ResourcesList() {
         onSubmit={handleUpdateResource}
         resource={selectedResource}
       />
+      
     </div>
   )
 }
