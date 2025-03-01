@@ -11,8 +11,8 @@ import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
+import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
+import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import cardinalConfig from "@/config"
@@ -38,22 +38,55 @@ const navigation = [
     ],
   },
   {
-    name: "Courses",
-    href: cardinalConfig.routes.dashboard.admin.courses,
-    icon: CoursesIcon,
-    iconLight: CoursesLightIcon,
-    activePaths: [cardinalConfig.routes.dashboard.admin.courses],
-    dynamicPath: "/admin/course/",
-  },
+    name: "Payments",
+    href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
+    icon: PaymentIcon,
+    iconLight: PaymentLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminMakePayment,
+      cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+    ],
+  }, 
   {
-    name: "Admin Support",
+    name: "Support Tickets",
     href: cardinalConfig.routes.dashboard.admin.adminticketlist,
     icon: AdminSupportIcon,
     iconLight: AdminSupportLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminticketlist,
-      cardinalConfig.routes.dashboard.admin.admincreateticket,
+      cardinalConfig.routes.dashboard.admin.adminreplyticket,
       cardinalConfig.routes.dashboard.admin.adminticketdetails,
+    ],
+  },
+  {
+    name: "Manage Courses",
+    href: cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+    icon: CoursesIcon,
+    iconLight: CoursesLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+      cardinalConfig.routes.dashboard.admin.courseDetails,
+      // cardinalConfig.routes.dashboard.admin.adminticketdetails,
+    ],
+  },
+  {
+    name: "Manage Tutors",
+    href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
+    icon: AdminSupportIcon,
+    iconLight: AdminSupportLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
+      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+    ],
+  },
+  {
+    name: "Announcements",
+    href: cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+    icon: AdminSupportIcon,
+    iconLight: AdminSupportLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+      cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
     ],
   },
 ]
