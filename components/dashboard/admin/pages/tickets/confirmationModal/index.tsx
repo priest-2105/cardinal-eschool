@@ -28,7 +28,7 @@ import {
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={onConfirm}>
+            <Button variant="danger" onClick={onConfirm}>
               Confirm
             </Button>
           </DialogFooter>
