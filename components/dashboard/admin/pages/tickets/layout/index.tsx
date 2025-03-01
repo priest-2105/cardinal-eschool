@@ -28,7 +28,7 @@ export default function TicketLayout({
 
   return (
     <div className="flex flex-col w-full mx-auto px-4">
-      <div className="border-b">
+      <div className=" ">
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = tab.exact 
@@ -40,7 +40,7 @@ export default function TicketLayout({
                 key={tab.href}
                 href={tab.href}
                 className={cn(
-                  "py-4 px-1 border-b-2 text-sm font-medium transition-colors hover:border-gray-300 hover:text-gray-700",
+                  "py-4 px-1  text-sm font-medium transition-colors hover:border-gray-300 hover:text-gray-700",
                   isActive
                     ? "border-teal-500 text-teal-600"
                     : "border-transparent text-gray-500"
