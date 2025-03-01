@@ -23,16 +23,16 @@ export interface Student {
     dateUploaded: Date
     fileUrl: string
   }
-  
-
+ 
 interface EditResourceModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (resource: Resource) => void
+  onDelete: (id: string) => void
   resource: Resource | null
 }
 
-export function EditResourceModal({ isOpen, onClose, onSubmit, resource }: EditResourceModalProps) {
+export function EditResourceModal({ isOpen, onClose, onSubmit, onDelete, resource }: EditResourceModalProps) {
   const [title, setTitle] = useState("")
   const [type, setType] = useState("")
   const [file, setFile] = useState<File | null>(null)
@@ -79,11 +79,16 @@ export function EditResourceModal({ isOpen, onClose, onSubmit, resource }: EditR
             <Label htmlFor="file">File (Optional)</Label>
             <Input id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+          <DialogFooter className="flex justify-between">
+            <Button type="button" variant="danger" onClick={() => onDelete(resource.id)}>
+              Delete
             </Button>
-            <Button type="submit">Update Resource</Button>
+            <div>
+              <Button type="button" variant="outline" onClick={onClose} className="mr-2">
+                Cancel
+              </Button>
+              <Button type="submit">Update Resource</Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
