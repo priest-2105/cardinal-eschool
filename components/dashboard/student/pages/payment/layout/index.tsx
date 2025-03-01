@@ -3,20 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils"
-import cardinalConfig from '@/config'
+// import cardinalConfig from '@/config'
 
-const tabs = [
-  {
-    title: 'Make Payment',
-    href: cardinalConfig.routes.dashboard.student.studentMakePayment,
-    exact: true
-  },
-  {
-    title: 'Payment History',
-    href: cardinalConfig.routes.dashboard.student.studentPaymentHistory,
-  },
+// const tabs = [
+//   {
+//     title: 'Make Payment',
+//     href: cardinalConfig.routes.dashboard.student.studentMakePayment,
+//     exact: true
+//   },
+//   {
+//     title: 'Payment History',
+//     href: cardinalConfig.routes.dashboard.student.studentPaymentHistory,
+//   },
 
-]
+// ]
 
 export default function PaymentLayout({
   children
@@ -27,8 +27,8 @@ export default function PaymentLayout({
 
   return (
     <div className="flex flex-col w-full mx-auto px-4">
-      <div className="border-b">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+      {/* <div className="border-b"> */}
+        {/* <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = tab.exact 
               ? pathname === tab.href
@@ -49,8 +49,8 @@ export default function PaymentLayout({
               </Link>
             )
           })}
-        </nav>
-      </div>
+        </nav> */}
+      {/* </div> */}
       <div className="mt-6">
         {children}
       </div>

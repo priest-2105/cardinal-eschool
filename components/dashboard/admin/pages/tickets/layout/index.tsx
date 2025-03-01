@@ -13,8 +13,8 @@ const tabs = [
     exact: true
   },
   {
-    title: 'Create a New Ticket',
-    href: cardinalConfig.routes.dashboard.admin.admincreateticket,
+    title: 'Reply Ticket',
+    href: cardinalConfig.routes.dashboard.admin.adminreplyticket,
   },
 
 ]
