@@ -1,12 +1,41 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Download } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function TransactionDetailsPage() {
+
+    const router = useRouter()
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth < 1024) {
+          setIsSidebarOpen(false)
+        } else {
+          setIsSidebarOpen(true)
+        }
+      }
+  
+      window.addEventListener("resize", handleResize)
+      handleResize()
+  
+      return () => window.removeEventListener("resize", handleResize)
+    }, [])
+
+    const handleBack = () => {
+    router.back()
+    }
+
   return (
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     <div className="container mx-auto p-4">
       <div className="mb-6 flex items-center">
-        <Button variant="ghost" size="icon" className="mr-2">
+        <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
           <ArrowLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-2xl font-bold">Transaction Details</h1>
@@ -76,6 +105,7 @@ export default function TransactionDetailsPage() {
           Download Receipt
         </Button>
       </div>
+    </div>
     </div>
   )
 }
