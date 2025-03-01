@@ -1,7 +1,7 @@
 "use client"
 
 import ProfileLayout from "@/components/dashboard/admin/profile/layout/profileLayout"; 
-import PersonalInformation from "@/components/dashboard/admin/profile/admininformation/PersonalInformation";
+import PersonalInformation from "@/components/dashboard/admin/profile/admin/PersonalInformation";
 import { useEffect, useState } from "react"
 
 export default function AdminProfile() {
