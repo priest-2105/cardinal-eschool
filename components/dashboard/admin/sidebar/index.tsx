@@ -1,0 +1,206 @@
+"use client"
+
+import { useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
+import HomeIcon from "@/public/assets/icons/home-01.png"
+import HomeLightIcon from "@/public/assets/icons/home-01-light.png"
+import ProfileIcon from "@/public/assets/icons/user.png"
+import ProfileLightIcon from "@/public/assets/icons/user-light.png"
+import CoursesIcon from "@/public/assets/icons/course.png"
+import CoursesLightIcon from "@/public/assets/icons/course-light.png"
+import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
+import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
+import AdminSupportIcon from "@/public/assets/icons/message-01.png"
+import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
+import ManageTutorsIcon from "@/public/assets/icons/user-multiple3x.png"
+import ManageTutorsLightIcon from "@/public/assets/icons/user-multiplelight.png"
+import ManageStudentsIcon from "@/public/assets/icons/user-star-013x.png"
+import ManageStudentsLightIcon from "@/public/assets/icons/user-star-01light.png"
+import AnnouncementIcon from "@/public/assets/icons/volume-high3x.png"
+import AnnouncementLightIcon from "@/public/assets/icons/volume-highlight.png"
+import cardinalConfig from "@/config"
+import type React from "react" 
+
+const navigation = [
+  {
+    name: "Home",
+    href: cardinalConfig.routes.dashboard.admin.home,
+    icon: HomeIcon,
+    iconLight: HomeLightIcon,
+    activePaths: [cardinalConfig.routes.dashboard.admin.home],
+  },
+  {
+    name: "Profile",
+    href: cardinalConfig.routes.dashboard.admin.admininformation,
+    icon: ProfileIcon,
+    iconLight: ProfileLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.guardianinformation,
+      cardinalConfig.routes.dashboard.admin.admininformation,
+      cardinalConfig.routes.dashboard.admin.adminprofilesettings,
+    ],
+  },
+  {
+    name: "Payments",
+    href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
+    icon: PaymentIcon,
+    iconLight: PaymentLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminMakePayment,
+      cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+    ],
+  }, 
+  {
+    name: "Support Tickets",
+    href: cardinalConfig.routes.dashboard.admin.adminticketlist,
+    icon: AdminSupportIcon,
+    iconLight: AdminSupportLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminticketlist,
+      cardinalConfig.routes.dashboard.admin.adminreplyticket,
+      cardinalConfig.routes.dashboard.admin.adminticketdetails,
+    ],
+  },
+  {
+    name: "Manage Courses",
+    href: cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+    icon: CoursesIcon,
+    iconLight: CoursesLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+      cardinalConfig.routes.dashboard.admin.courseDetails,
+      // cardinalConfig.routes.dashboard.admin.adm,
+    ],
+  },
+  {
+    name: "Manage Students",
+    href: cardinalConfig.routes.dashboard.admin.adminManageStudents,
+    icon:  ManageStudentsIcon,
+    iconLight: ManageStudentsLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageStudents,
+      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+    ],
+  },
+  {
+    name: "Manage Tutors",
+    href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
+    icon:  ManageTutorsIcon,
+    iconLight: ManageTutorsLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
+      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+    ],
+  },
+  {
+    name: "Announcements",
+    href: cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+    icon: AnnouncementIcon,
+    iconLight: AnnouncementLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+      cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
+    ],
+  },
+]
+
+const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
+  isOpen,
+  setIsOpen,
+}) => {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        setIsOpen(false)
+      } else {
+        setIsOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [setIsOpen])
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen)
+  }
+
+  return (
+    <div
+      className={`flex h-full ${isOpen ? "w-64" : "w-20"} flex-col fixed left-0 top-0 border-r bg-[#E9FFFF] z-50 transition-all ease-in-out duration-300`}
+    >
+      <div className="block h-26 py-12 shrink-0 items-center text-end px-6 relative">
+        <button onClick={toggleSidebar} className="ml-auto mr-2 mb-0 lg:hidden">
+          {isOpen ? (
+            <svg
+              className="block h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <></>
+          )}
+        </button>
+        {isOpen ? (
+          <Image src="/assets/img/logo.png" alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
+        ) : (
+          <Image
+            src="/assets/img/favicon-logo.png"
+            alt="Cardinal E-School"
+            width={30}
+            height={10}
+            className="h-8 w-auto"
+          />
+        )}
+      </div>
+      <div className="flex flex-1 flex-col px-4 py-4 space-y-1">
+        {navigation.map((item) => {
+          const isActive =
+            item.activePaths.includes(pathname) || (item.dynamicPath && pathname.startsWith(item.dynamicPath))
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
+              )}
+            >
+              <Image
+                src={isActive ? item.iconLight : item.icon}
+                alt={`${item.name} icon`}
+                className="h-5 w-5 group-hover:hidden"
+              />
+              <Image
+                src={item.iconLight || "/placeholder.svg"}
+                alt={`${item.name} icon light`}
+                className="h-5 w-5 hidden group-hover:block"
+              />
+              {isOpen && <span>{item.name}</span>}
+              {!isOpen && (
+                <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  {item.name}
+                </span>
+              )}
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default AdminDashboardSideBar
+

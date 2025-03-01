@@ -2,16 +2,36 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Input } from "@/components/dashboard/student/ui/input"
 import { Textarea } from "@/components/dashboard/student/ui/textarea"
 import { Button } from "@/components/dashboard/student/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Label } from "@/components/dashboard/student/ui/label"
-import Popup from "@/components/dashboard/student/ui/Popup"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/dashboard/student/ui/card"
+import Popup from "@/components/dashboard/student/ui/Popup" 
+// import { TicketReply } from "./TicketReply"
 import type React from "react"
- 
 
-const SAMPLE_TICKET = {
+interface Reply {
+  sender: "admin" | "you"
+  content: string
+  timestamp: string
+}
+
+interface Ticket {
+  id: string
+  title: string
+  description: string
+  priority: string
+  status: string
+  category: string
+  department: string
+  createdAt: string
+  updatedAt: string
+  userName: string
+  userEmail: string
+  replies: Reply[]
+}
+
+const SAMPLE_TICKET: Ticket = {
   id: "7e19c06b-1c1f-4a91-b94c-74dd9a13aa07",
   title: "Unable to connect to the internet",
   description:
@@ -22,11 +42,33 @@ const SAMPLE_TICKET = {
   department: "Technical Department",
   createdAt: "2023-09-15T14:30:00.000Z",
   updatedAt: "2023-09-15T14:30:00.000Z",
+  userName: "John Doe",
+  userEmail: "john.doe@example.com",
+  replies: [
+    {
+      sender: "you",
+      content: "Hi, I'm having trouble connecting to the internet. Can you help?",
+      timestamp: "2023-09-15T14:30:00.000Z",
+    },
+    {
+      sender: "admin",
+      content: "Hello John, I'm sorry to hear that. Have you tried restarting your router?",
+      timestamp: "2023-09-15T14:35:00.000Z",
+    },
+    {
+      sender: "you",
+      content: "Yes, I've tried that but it didn't work.",
+      timestamp: "2023-09-15T14:40:00.000Z",
+    },
+  ],
 }
 
 export default function TicketDetailsComponent() {
-  const [ticket, setTicket] = useState(SAMPLE_TICKET)
+  const [ticket, setTicket] = useState<Ticket>(SAMPLE_TICKET)
+  const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
+  const [popupMessage, setPopupMessage] = useState("")
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -35,102 +77,158 @@ export default function TicketDetailsComponent() {
     // fetchTicketDetails(ticketId).then(data => setTicket(data));
   }, [])
 
-  const handleUpdate = async (event: React.FormEvent) => {
+  const handleReply = async (event: React.FormEvent) => {
     event.preventDefault()
-    // Here you would typically send the updated ticket details to an API
-    // await updateTicket(ticket.id, ticket);
+    const newReply: Reply = {
+      sender: "admin",
+      content: reply,
+      timestamp: new Date().toISOString(),
+    }
+    setTicket((prevTicket) => ({
+      ...prevTicket,
+      replies: [...prevTicket.replies, newReply],
+    }))
+    setReply("")
+    setPopupMessage("Your reply has been sent successfully.")
     setShowPopup(true)
     setTimeout(() => {
       setShowPopup(false)
-      router.push("/dashboard/student/tickets") // Redirect to the tickets page
+    }, 2000)
+  }
+
+  const handleCloseTicket = async () => {
+    setShowConfirmModal(true)
+  }
+
+  const confirmCloseTicket = async () => {
+    // Here you would typically send a request to close the ticket
+    // await closeTicket(ticket.id);
+    setTicket({ ...ticket, status: "Closed" })
+    setShowConfirmModal(false)
+    setPopupMessage("The ticket has been closed successfully.")
+    setShowPopup(true)
+    setTimeout(() => {
+      setShowPopup(false)
+      router.push("/admin/tickets")
     }, 2000)
   }
 
   return (
-    <div className="max-w-4xl p-6 bg-white rounded-lg">
-      <form onSubmit={handleUpdate} className="space-y-8">
-        {/* Title */}
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input id="title" value={ticket.title} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTicket({ ...ticket, title: e.target.value })} />
-        </div>
+    <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Ticket #{ticket.id}</h2>
+        <Button onClick={handleCloseTicket} variant="default">
+          Reopen Ticket
+        </Button>
+      </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={ticket.description}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setTicket({ ...ticket, description: e.target.value })}
-          />
-        </div>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Ticket Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            {/* <div>
+              <Label className="font-semibold">User Name</Label>
+              <p>{ticket.userName}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">User Email</Label>
+              <p>{ticket.userEmail}</p>
+            </div> */}
+            <div>
+              <Label className="font-semibold">Created At</Label>
+              <p>{new Date(ticket.createdAt).toLocaleString()}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">Last Updated</Label>
+              <p>{new Date(ticket.updatedAt).toLocaleString()}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">Status</Label>
+              <p>{ticket.status}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">Priority</Label>
+              <p>{ticket.priority}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">Category</Label>
+              <p>{ticket.category}</p>
+            </div>
+            <div>
+              <Label className="font-semibold">Department</Label>
+              <p>{ticket.department}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Priority */}
-        <div className="space-y-2">
-          <Label htmlFor="priority">Priority</Label>
-          <Select value={ticket.priority} onValueChange={(value) => setTicket({ ...ticket, priority: value })}>
-            <SelectTrigger id="priority">
-              <SelectValue placeholder="Select Priority" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="High">High</SelectItem>
-              <SelectItem value="Medium">Medium</SelectItem>
-              <SelectItem value="Low">Low</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Ticket Description</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{ticket.description}</p>
+        </CardContent>
+      </Card>
 
-        {/* Status */}
-        <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
-          <Select value={ticket.status} onValueChange={(value) => setTicket({ ...ticket, status: value })}>
-            <SelectTrigger id="status">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Open">Open</SelectItem>
-              <SelectItem value="In Progress">In Progress</SelectItem>
-              <SelectItem value="Resolved">Resolved</SelectItem>
-              <SelectItem value="Closed">Closed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Ticket History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {ticket.replies.map((reply, index) => (
+              <TicketReply key={index} sender={reply.sender} content={reply.content} timestamp={reply.timestamp} />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Category */}
-        <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
-          <Select value={ticket.category} onValueChange={(value) => setTicket({ ...ticket, category: value })}>
-            <SelectTrigger id="category">
-              <SelectValue placeholder="Select Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Technical">Technical</SelectItem>
-              <SelectItem value="Billing">Billing</SelectItem>
-              <SelectItem value="General">General</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Reply</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleReply} className="space-y-4">
+            <Textarea
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              placeholder="Type your reply here..."
+              rows={4}
+            />
+            <div className="flex justify-end">
+              <Button type="submit">Send Reply</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
-        {/* Department */}
-        <div className="space-y-2">
-          <Label htmlFor="department">Department</Label>
-          <Select value={ticket.department} onValueChange={(value) => setTicket({ ...ticket, department: value })}>
-            <SelectTrigger id="department">
-              <SelectValue placeholder="Select Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Admin Department">Admin Department</SelectItem>
-              <SelectItem value="Support Department">Support Department</SelectItem>
-              <SelectItem value="Technical Department">Technical Department</SelectItem>
-              <SelectItem value="Sales Department">Sales Department</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {showPopup && <Popup message={popupMessage} onClose={() => setShowPopup(false)} />}
+ 
+    </div>
+  )
+}
 
-        {/* Submit Button */}
-        <Button type="submit">Update Ticket</Button>
-      </form>
-      {showPopup && <Popup message="Your ticket has been successfully updated." onClose={() => setShowPopup(false)} />}
+
+
+import { format } from "date-fns"
+
+interface TicketReplyProps {
+  sender: "admin" | "you"
+  content: string
+  timestamp: string
+}
+
+export function TicketReply({ sender, content, timestamp }: TicketReplyProps) {
+  return (
+    <div className="border-b border-gray-200 py-4">
+      <div className="flex justify-between items-center mb-2">
+        <span className="font-semibold">{sender === "admin" ? "Support Staff" : "User"}</span>
+        <span className="text-sm text-gray-500">{format(new Date(timestamp), "MMM d, yyyy HH:mm")}</span>
+      </div>
+      <p className="text-gray-700 whitespace-pre-wrap">{content}</p>
     </div>
   )
 }

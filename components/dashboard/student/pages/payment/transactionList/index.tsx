@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/student/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
-import { Button } from "@/components/dashboard/student/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/admin/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/admin/ui/select"
+import { Button } from "@/components/dashboard/admin/ui/button"
 import { useRouter } from "next/navigation"
 import { X } from "lucide-react"
 
@@ -68,7 +68,7 @@ export default function TransactionList() {
   }, [selectedMonths, selectedYear, selectedStatus])
 
   const handleTransactionClick = () => {
-    router.push("/student/transactiondetails")
+    router.push("/admin/transactiondetails")
   }
 
   return (
