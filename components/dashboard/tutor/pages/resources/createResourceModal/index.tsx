@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui/label" 
 
 
 export interface Student {
@@ -24,66 +24,69 @@ export interface Student {
     fileUrl: string
   }
   
+  
 
-interface ViewResourceModalProps {
+interface CreateResourceModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (resource: Resource) => void
-  resource: Resource | null
+  onSubmit: (resource: Omit<Resource, "id">) => void
 }
 
-export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewResourceModalProps) {
+export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourceModalProps) {
   const [title, setTitle] = useState("")
   const [type, setType] = useState("")
   const [file, setFile] = useState<File | null>(null)
 
-  useEffect(() => {
-    if (resource) {
-      setTitle(resource.title)
-      setType(resource.type)
-    }
-  }, [resource])
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (resource) {
-      const updatedResource: Resource = {
-        ...resource,
+    if (file) {
+      const newResource: Omit<Resource, "id"> = {
         title,
         type,
-        size: file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : resource.size,
-        fileUrl: file ? URL.createObjectURL(file) : resource.fileUrl,
+        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+        dateUploaded: new Date(),
+        fileUrl: URL.createObjectURL(file),
       }
-      onSubmit(updatedResource)
+      onSubmit(newResource)
+      resetForm()
     }
   }
 
-  if (!resource) return null
+  const resetForm = () => {
+    setTitle("")
+    setType("")
+    setFile(null)
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] bg-white">
         <DialogHeader>
-          <DialogTitle>View Resource</DialogTitle>
+          <DialogTitle>Upload New Resource</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Title</Label>
-            <Input readOnly id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="type">Type</Label>
-            <Input readOnly id="type" value={type} onChange={(e) => setType(e.target.value)} required />
+            <Input id="type" value={type} onChange={(e) => setType(e.target.value)} required />
           </div>
           <div>
-            <Label htmlFor="file">File (Optional)</Label>
-            <Input readOnly id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
+            <Label htmlFor="file">File</Label>
+            <Input
+              id="file"
+              type="file"
+              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+              required
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Update Resource</Button>
+            <Button type="submit">Upload Resource</Button>
           </DialogFooter>
         </form>
       </DialogContent>
