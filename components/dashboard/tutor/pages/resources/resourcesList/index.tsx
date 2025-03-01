@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Download, Search, Calendar, Plus, Edit, Eye } from "lucide-react"
+import { Search, Calendar, Plus, Edit, Eye } from "lucide-react"
 import { format } from "date-fns"
 import { CreateResourceModal } from "../createResourceModal"
 import { EditResourceModal } from "../editresourcesModal"
@@ -158,7 +158,7 @@ export default function ResourcesList() {
         onSubmit={handleUpdateResource}
         resource={selectedResource}
       />
-      
+
     </div>
   )
 }
