@@ -45,8 +45,7 @@ const SAMPLE_STUDENTS: Student[] = [
     course: "Chemistry",
     dateJoined: "2023-09-10",
     status: "Suspended",
-  },
-  // Add more sample students as needed
+  }, 
 ]
 
 export function StudentList() {
@@ -88,7 +87,7 @@ export function StudentList() {
   }
 
   const handleRowClick = (studentId: string) => {
-    router.push(`/admin/student/${studentId}`)
+    router.push(`/admin/student`)
   }
 
   const filteredStudents = filterStudents()
