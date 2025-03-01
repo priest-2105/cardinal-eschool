@@ -3,7 +3,10 @@
 import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Search, Mail, Phone } from "lucide-react"
+import { Search, 
+  // Mail, 
+  // Phone 
+} from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface Student {
