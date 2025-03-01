@@ -152,9 +152,12 @@ export default function AssessmentsList() {
     console.log(`Assessment ID: ${id} graded with ${grade}`)
   }
 
-  const handleCreateAssessment = (newAssessment: Omit<Assessment, "id">) => {
-    const id = (assessments.length + 1).toString()
-    setAssessments([...assessments, { ...newAssessment, id }])
+  const handleCreateAssessment = (newAssessments: Omit<Assessment, "id">[]) => {
+    const createdAssessments = newAssessments.map((assessment, index) => ({
+      ...assessment,
+      id: (assessments.length + index + 1).toString(),
+    }))
+    setAssessments([...assessments, ...createdAssessments])
     setIsCreateModalOpen(false)
   }
 
@@ -162,6 +165,12 @@ export default function AssessmentsList() {
     const updatedAssessments = assessments.map((assessment) =>
       assessment.id === updatedAssessment.id ? updatedAssessment : assessment,
     )
+    setAssessments(updatedAssessments)
+    setIsEditModalOpen(false)
+  }
+
+  const handleDeleteAssessment = (id: string) => {
+    const updatedAssessments = assessments.filter((assessment) => assessment.id !== id)
     setAssessments(updatedAssessments)
     setIsEditModalOpen(false)
   }
@@ -285,6 +294,7 @@ export default function AssessmentsList() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdateAssessment}
+        onDelete={handleDeleteAssessment}
         assessment={selectedAssessment}
         students={SAMPLE_STUDENTS}
       />
