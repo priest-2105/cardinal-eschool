@@ -63,7 +63,7 @@ export default function StudentList() {
  
 
   const filterStudents = (term: string) => {
-    let filteredStudents = SAMPLE_STUDENTS.filter(
+    const filteredStudents = SAMPLE_STUDENTS.filter(
       (student) =>
         student.name.toLowerCase().includes(term.toLowerCase()) 
       // ||
