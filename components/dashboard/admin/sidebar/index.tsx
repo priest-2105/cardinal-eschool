@@ -70,6 +70,16 @@ const navigation = [
     ],
   },
   {
+    name: "Manage Students",
+    href: cardinalConfig.routes.dashboard.admin.adminManageStudents,
+    icon: AdminSupportIcon,
+    iconLight: AdminSupportLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageStudents,
+      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+    ],
+  },
+  {
     name: "Manage Tutors",
     href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
     icon: AdminSupportIcon,

@@ -94,6 +94,8 @@ const cardinalConfig = {
         adminMakePayment: "/admin/managepayment",
         adminPaymentHistory: "/admin/paymenthistory",
         adminTransactionDetails: "/admin/transactiondetails",
+        adminManageStudents: "/admin/students",
+        adminStudentDetails: "/admin/studentdetails",
         adminManageTutors: "/admin/tutors",
         adminTutorDetails: "/admin/tutordetails",
         adminAnnouncements: "/admin/announcements",

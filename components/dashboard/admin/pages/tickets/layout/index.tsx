@@ -29,7 +29,7 @@ export default function TicketLayout({
   return (
     <div className="flex flex-col w-full mx-auto px-4">
       <div className=" ">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+        {/* <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = tab.exact 
               ? pathname === tab.href
@@ -50,7 +50,7 @@ export default function TicketLayout({
               </Link>
             )
           })}
-        </nav>
+        </nav> */}
       </div>
       <div className="mt-6">
         {children}

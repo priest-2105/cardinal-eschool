@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/admin/ui/select"
 import { FilterModal } from "../ticketfilter/index"
 import { Search } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 
 const SAMPLE_TICKETS: Ticket[] = [
@@ -193,7 +194,11 @@ export function TicketList() {
                     <TableCell>{ticket.subject}</TableCell>
                     <TableCell>{ticket.department}</TableCell>
                     <TableCell>{ticket.lastUpdated}</TableCell>
-                    <TableCell>{ticket.status}</TableCell>
+                    <TableCell>
+                    <Button variant={ticket.status === "Open" ? "default" : "danger"} size="sm">
+                          {ticket.status}
+                        </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
