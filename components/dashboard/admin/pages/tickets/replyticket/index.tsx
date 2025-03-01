@@ -18,7 +18,7 @@ interface FormData {
   message: string
 }
 
-export default function CreateTicketForm() {
+export default function ReplyTicketForm() {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",

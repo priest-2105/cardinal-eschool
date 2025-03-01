@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import type { Ticket } from "../types"
 import { Input } from "@/components/dashboard/admin/ui/input"
-import { Button } from "@/components/dashboard/admin/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/admin/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/admin/ui/select"
 import { FilterModal } from "../ticketfilter/index"
 import { Search } from "lucide-react"
+
 
 const SAMPLE_TICKETS: Ticket[] = [
   {
@@ -100,6 +101,7 @@ const SAMPLE_TICKETS: Ticket[] = [
   },
 ]
 
+
 interface FilterValues {
   departments?: string[]
   dateRange?: { from: Date | undefined; to: Date | undefined }
@@ -109,6 +111,7 @@ interface FilterValues {
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
+  const router = useRouter()
 
   const sortedTickets = [...SAMPLE_TICKETS].sort((a, b) => {
     if (sortBy === "latest") {
@@ -129,11 +132,15 @@ export function TicketList() {
     console.log("Filters applied:", filters)
   }
 
+  const handleRowClick = (ticketId: string) => {
+    router.push(`/admin/ticketdetails`)
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-4 p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-xl sm:text-2xl font-semibold">My tickets</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">Manage tickets</h2>
           <p className="text-sm text-muted-foreground">View and update tickets</p>
         </div>
 
@@ -165,44 +172,32 @@ export function TicketList() {
       <div className="flex-1 overflow-hidden">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
-            <div className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[120px]">Ticket ID</TableHead>
-                    <TableHead className="w-[200px]">Description</TableHead>
-                    <TableHead className="w-[180px] hidden md:table-cell">Department</TableHead>
-                    <TableHead className="w-[140px] hidden lg:table-cell">Last Updated</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[120px]">Action</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[20%]">Ticket ID</TableHead>
+                  <TableHead className="w-[20%]">Description</TableHead>
+                  <TableHead className="w-[20%]">Department</TableHead>
+                  <TableHead className="w-[20%]">Last Updated</TableHead>
+                  <TableHead className="w-[20%]">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTickets.map((ticket) => (
+                  <TableRow
+                    key={ticket.id}
+                    onClick={() => handleRowClick(ticket.id)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <TableCell className="font-medium">{ticket.id}</TableCell>
+                    <TableCell>{ticket.subject}</TableCell>
+                    <TableCell>{ticket.department}</TableCell>
+                    <TableCell>{ticket.lastUpdated}</TableCell>
+                    <TableCell>{ticket.status}</TableCell>
                   </TableRow>
-                </TableHeader>
-              </Table>
-            </div>
-            <div className="overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
-              <Table>
-                <TableBody>
-                  {filteredTickets.map((ticket) => (
-                    <TableRow key={ticket.id}>
-                      <TableCell className="font-medium">{ticket.id}</TableCell>
-                      <TableCell>{ticket.subject}</TableCell>
-                      <TableCell className="hidden md:table-cell">{ticket.department}</TableCell>
-                      <TableCell className="hidden lg:table-cell">{ticket.lastUpdated}</TableCell>
-                      <TableCell>
-                        <Button variant="outline" size="sm">
-                          {ticket.status}
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>
