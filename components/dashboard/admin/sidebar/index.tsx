@@ -15,6 +15,12 @@ import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
 import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
+import ManageTutorsIcon from "@/public/assets/icons/user-multiple3x.png"
+import ManageTutorsLightIcon from "@/public/assets/icons/user-multiplelight.png"
+import ManageStudentsIcon from "@/public/assets/icons/user-star-013x.png"
+import ManageStudentsLightIcon from "@/public/assets/icons/user-star-01light.png"
+import AnnouncementIcon from "@/public/assets/icons/volume-high3x.png"
+import AnnouncementLightIcon from "@/public/assets/icons/volume-highlight.png"
 import cardinalConfig from "@/config"
 import type React from "react" 
 
@@ -66,14 +72,14 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
       cardinalConfig.routes.dashboard.admin.courseDetails,
-      // cardinalConfig.routes.dashboard.admin.adminticketdetails,
+      // cardinalConfig.routes.dashboard.admin.adm,
     ],
   },
   {
     name: "Manage Students",
     href: cardinalConfig.routes.dashboard.admin.adminManageStudents,
-    icon: AdminSupportIcon,
-    iconLight: AdminSupportLightIcon,
+    icon:  ManageStudentsIcon,
+    iconLight: ManageStudentsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
@@ -82,8 +88,8 @@ const navigation = [
   {
     name: "Manage Tutors",
     href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
-    icon: AdminSupportIcon,
-    iconLight: AdminSupportLightIcon,
+    icon:  ManageTutorsIcon,
+    iconLight: ManageTutorsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
@@ -92,8 +98,8 @@ const navigation = [
   {
     name: "Announcements",
     href: cardinalConfig.routes.dashboard.admin.adminAnnouncements,
-    icon: AdminSupportIcon,
-    iconLight: AdminSupportLightIcon,
+    icon: AnnouncementIcon,
+    iconLight: AnnouncementLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminAnnouncements,
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
