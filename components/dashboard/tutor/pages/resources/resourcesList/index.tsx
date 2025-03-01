@@ -79,6 +79,12 @@ export default function ResourcesList() {
     setIsEditModalOpen(true)
   }
 
+  const handleDeleteResource = (id: string) => {
+    const updatedResources = resources.filter((resource) => resource.id !== id)
+    setResources(updatedResources)
+    setIsEditModalOpen(false)
+  }
+
   const handleUpdateResource = (updatedResource: Resource) => {
     const updatedResources = resources.map((resource) =>
       resource.id === updatedResource.id ? updatedResource : resource,
@@ -142,6 +148,7 @@ export default function ResourcesList() {
       <EditResourceModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
+        onDelete={handleDeleteResource}
         onSubmit={handleUpdateResource}
         resource={selectedResource}
       />

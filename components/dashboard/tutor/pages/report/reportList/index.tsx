@@ -81,6 +81,12 @@ export default function ReportsList() {
     filterReports(searchTerm, dateFilter, value)
   }
 
+  const handleDeleteReport = (id: string) => {
+    const updatedReports = reports.filter((report) => report.id !== id)
+    setReports(updatedReports)
+    setIsEditModalOpen(false)
+  }
+
   const filterReports = (term: string, date: string, student: string) => {
     let filteredReports = SAMPLE_REPORTS.filter(
       (report) =>
@@ -228,6 +234,7 @@ export default function ReportsList() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdateReport}
+        onDelete={handleDeleteReport}
         report={selectedReport}
         students={SAMPLE_STUDENTS}
       />
