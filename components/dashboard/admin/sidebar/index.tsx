@@ -72,7 +72,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
       cardinalConfig.routes.dashboard.admin.courseDetails,
-      // cardinalConfig.routes.dashboard.admin.adm,
+      cardinalConfig.routes.dashboard.admin.courseDetails,      
     ],
   },
   {
