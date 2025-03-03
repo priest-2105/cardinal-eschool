@@ -7,7 +7,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Course } from "../types"
 
@@ -19,8 +18,7 @@ interface CreateCourseModalProps {
 
 export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseModalProps) {
   const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [tutor, setTutor] = useState("")
+  const [noOfStudent, setNoOfStudent] = useState(0)
   const [schedule, setSchedule] = useState("")
   const [status, setStatus] = useState<Course["status"]>("Upcoming")
 
@@ -28,11 +26,9 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
     e.preventDefault()
     const newCourse: Omit<Course, "id"> = {
       name,
-      description,
-      tutor,
+      noOfStudent,
       schedule,
       status,
-      noOfStudent: 0,
       dateAdded: new Date().toISOString().split("T")[0],
     }
     onSubmit(newCourse)
@@ -41,8 +37,7 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
 
   const resetForm = () => {
     setName("")
-    setDescription("")
-    setTutor("")
+    setNoOfStudent(0)
     setSchedule("")
     setStatus("Upcoming")
   }
@@ -59,24 +54,20 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
               <Label htmlFor="name" className="text-right">
                 Name
               </Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" required />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
+              <Label htmlFor="noOfStudent" className="text-right">
+                Number of Students
               </Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+              <Input
+                id="noOfStudent"
+                type="number"
+                value={noOfStudent}
+                onChange={(e) => setNoOfStudent(Number.parseInt(e.target.value))}
                 className="col-span-3"
+                required
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="tutor" className="text-right">
-                Tutor
-              </Label>
-              <Input id="tutor" value={tutor} onChange={(e) => setTutor(e.target.value)} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="schedule" className="text-right">
@@ -87,6 +78,7 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
                 value={schedule}
                 onChange={(e) => setSchedule(e.target.value)}
                 className="col-span-3"
+                required
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">

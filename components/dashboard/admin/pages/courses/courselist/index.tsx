@@ -11,20 +11,20 @@ import { CreateCourseModal } from "../createCourseModal/index"
 
 const COURSES_DATA: Course[] = [
   {
-    id: "1",
-    title: "Introduction to Programming",
-    tutor: "John Doe",
-    startDate: new Date("2024-03-01"),
-    endDate: new Date("2024-05-31"),
-    status: "active",
+    id: 1,
+    name: "Introduction to Programming",
+    noOfStudent: 20,
+    schedule: "Monday, Wednesday 10:00 AM - 11:30 AM",
+    status: "Active",
+    dateAdded: "2024-03-01",
   },
   {
-    id: "2",
-    title: "Advanced JavaScript",
-    tutor: "Jane Smith",
-    startDate: new Date("2024-04-15"),
-    endDate: new Date("2024-07-15"),
-    status: "upcoming",
+    id: 2,
+    name: "Advanced JavaScript",
+    noOfStudent: 15,
+    schedule: "Tuesday, Thursday 2:00 PM - 3:30 PM",
+    status: "Upcoming",
+    dateAdded: "2024-04-15",
   },
   // ... more courses
 ]
@@ -47,24 +47,26 @@ export function CourseList() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const filteredCourses = COURSES_DATA.filter((course) => {
-    const titleMatch = course.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const tutorMatch = course.tutor.toLowerCase().includes(searchQuery.toLowerCase())
-    return titleMatch || tutorMatch
+    const nameMatch = course.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const scheduleMatch = course.schedule.toLowerCase().includes(searchQuery.toLowerCase())
+    return nameMatch || scheduleMatch
   })
 
   const handleFilterChange = (newFilters: FilterValues) => {
     setFilters(newFilters)
   }
 
-  const uniqueCourses = [...new Set(filteredCourses.map((course) => course.title))]
+  const uniqueCourses = [...new Set(filteredCourses.map((course) => course.name))]
 
   const visibleCourses = filteredCourses.slice(0, visibleCount)
   const hasMore = visibleCourses.length < filteredCourses.length
 
   const handleCreateCourse = (newCourse: Omit<Course, "id">) => {
+    const id = Math.max(...COURSES_DATA.map((c) => c.id)) + 1
+    const courseWithId = { ...newCourse, id }
     // In a real application, you would send this to your backend
     // and then update the local state with the new course
-    console.log("Creating new course:", newCourse)
+    console.log("Creating new course:", courseWithId)
     setIsCreateModalOpen(false)
   }
 
