@@ -55,7 +55,7 @@ export function AnnouncementsList() {
   }
 
   const handleAnnouncementClick = (id: string) => {
-    router.push(`/admin/announcements/${id}`)
+    router.push(`/admin/announcementdetails`)
   }
 
   return (
