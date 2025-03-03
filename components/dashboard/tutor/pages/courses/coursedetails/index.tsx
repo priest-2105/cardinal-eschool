@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, FileText, Edit, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import ResourcesList from "../../resources/resourcesList"
@@ -12,8 +12,6 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -34,16 +32,14 @@ const SAMPLE_SCHEDULES: Schedule[] = [
 export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [schedules, setSchedules] = useState<Schedule[]>(SAMPLE_SCHEDULES)
-  const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", time: "" })
   const route = useRouter()
 
   const tabs = [
-    { id: "description", label: "Description", icon: BookOpen },
-    { id: "resources", label: "Resources", icon: FileText },
-    { id: "reports", label: "Reports", icon: BarChart },
-    { id: "assessments", label: "Assessments", icon: FileText },
-    { id: "students", label: "Students", icon: Users },
+    { id: "description", label: "Description" },
+    { id: "resources", label: "Resources" },
+    { id: "reports", label: "Reports" },
+    { id: "assessments", label: "Assessments" },
+    { id: "students", label: "Students" },
   ]
 
   const handleback = () => {
@@ -53,18 +49,6 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
     window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
-  }
-
-  const handleAddSchedule = () => {
-    if (newSchedule.day && newSchedule.time) {
-      setSchedules([...schedules, newSchedule])
-      setNewSchedule({ day: "", time: "" })
-    }
-  }
-
-  const handleRemoveSchedule = (index: number) => {
-    const updatedSchedules = schedules.filter((_, i) => i !== index)
-    setSchedules(updatedSchedules)
   }
 
   return (
@@ -88,13 +72,12 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
               key={tab.id}
               onClick={() => setActiveTab(tab.id as Tab)}
               className={cn(
-                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
+                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap",
                 activeTab === tab.id
                   ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
                   : "text-gray-500 hover:text-gray-700",
               )}
             >
-              <tab.icon className="h-4 w-4" />
               {tab.label}
             </button>
           ))}
@@ -129,13 +112,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {/* Course Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Course Information</h3>
-                <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
                   <AvatarFallback> PHY301</AvatarFallback>
@@ -152,12 +129,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {/* Class Statistics */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Class Statistics</h3>
-                <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
+              <h3 className="font-semibold text-lg">Class Statistics</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
@@ -184,64 +156,25 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           </Card>
 
           {/* Class Schedule */}
-          <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Class Schedule</h3>
-                <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="space-y-2">
-                {schedules.map((schedule, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
-                      <span className="font-medium">{schedule.day}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-600">{schedule.time}</span>
-                      <Button variant="ghost" size="sm" onClick={() => handleRemoveSchedule(index)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={newSchedule.day}
-                  onValueChange={(value) => setNewSchedule({ ...newSchedule, day: value })}
+          <div className="space-y-4">
+            <label className="text-sm font-medium text-gray-700">Class Schedule</label>
+            <div className="space-y-2">
+              {SAMPLE_SCHEDULES.map((schedule, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                 >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Monday">Monday</SelectItem>
-                    <SelectItem value="Tuesday">Tuesday</SelectItem>
-                    <SelectItem value="Wednesday">Wednesday</SelectItem>
-                    <SelectItem value="Thursday">Thursday</SelectItem>
-                    <SelectItem value="Friday">Friday</SelectItem>
-                    <SelectItem value="Saturday">Saturday</SelectItem>
-                    <SelectItem value="Sunday">Sunday</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="time"
-                  value={newSchedule.time}
-                  onChange={(e) => setNewSchedule({ ...newSchedule, time: e.target.value })}
-                  className="w-[120px]"
-                />
-                <Button onClick={handleAddSchedule}>
-                  <Plus className="h-4 w-4 mr-2" /> Add
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
+                    <span className="font-medium">{schedule.day}</span>
+                  </div>
+                  <span className="text-gray-600">{schedule.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+         </div>
       </div>
     </div>
   )

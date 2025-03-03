@@ -1,54 +1,50 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/dashboard/admin/ui/card"
+import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, Edit } from "lucide-react"
+import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, FileText, Edit, Plus, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import ResourcesList from "../../resources/resourcesList"
 import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import { EditCourseModal } from "../editCourseModal/index"
-import { AssignStudentModal } from "../assignStudentModal/index"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
-interface Course {
-  id: string
-  name: string
-  description: string
-  tutor: string
-  schedule: string
-  status: string
-  noOfStudent: number
-  dateAdded: string
+interface Schedule {
+  day: string
+  time: string
 }
 
 interface CourseDetailsComponentProps {
-  courseName: string
+  courseName?: string
 }
+
+const SAMPLE_SCHEDULES: Schedule[] = [
+  { day: "Monday", time: "10:00 AM - 11:30 AM" },
+  { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
+]
 
 export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isAssignStudentModalOpen, setIsAssignStudentModalOpen] = useState(false)
+  const [schedules, setSchedules] = useState<Schedule[]>(SAMPLE_SCHEDULES)
+  const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", time: "" })
   const route = useRouter()
 
   const tabs = [
-    { label: "Description", value: "description", icon: BookOpen },
-    { label: "Resources", value: "resources", icon: BarChart },
-    { label: "Reports", value: "reports", icon: Clock },
-    { label: "Assessments", value: "assessments", icon: Users },
-    { label: "Students", value: "students", icon: Users },
+    { id: "description", label: "Description", icon: BookOpen },
+    { id: "resources", label: "Resources", icon: FileText },
+    { id: "reports", label: "Reports", icon: BarChart },
+    { id: "assessments", label: "Assessments", icon: FileText },
+    { id: "students", label: "Students", icon: Users },
   ]
-
-  const handleTabChange = (tab: Tab) => {
-    setActiveTab(tab)
-  }
 
   const handleback = () => {
     route.back()
@@ -56,18 +52,19 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
+    window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
   }
 
-  const handleEditCourse = (updatedCourse: Course) => {
-    // In a real application, you would send this update to your backend
-    console.log("Updating course:", updatedCourse)
-    setIsEditModalOpen(false)
+  const handleAddSchedule = () => {
+    if (newSchedule.day && newSchedule.time) {
+      setSchedules([...schedules, newSchedule])
+      setNewSchedule({ day: "", time: "" })
+    }
   }
 
-  const handleAssignStudent = (studentEmail: string) => {
-    // In a real application, you would send this to your backend
-    console.log("Assigning student:", studentEmail)
-    setIsAssignStudentModalOpen(false)
+  const handleRemoveSchedule = (index: number) => {
+    const updatedSchedules = schedules.filter((_, i) => i !== index)
+    setSchedules(updatedSchedules)
   }
 
   return (
@@ -78,84 +75,174 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {courseName}</h1>
-        <Button variant="ghost" size="icon" className="rounded-full ml-auto" onClick={() => setIsEditModalOpen(true)}>
-          <Edit className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="rounded-full lg:hidden" onClick={toggleSidebar}>
+        <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-4">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.value}
-            variant={activeTab === tab.value ? "default" : "ghost"}
-            onClick={() => handleTabChange(tab.value)}
-            className="flex items-center gap-2"
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </Button>
-        ))}
+      <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+        <div className="flex space-x-4 md:space-x-8 pb-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as Tab)}
+              className={cn(
+                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
+                activeTab === tab.id
+                  ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tab Content */}
-      {activeTab === "description" && <CourseDescription />}
-      {activeTab === "resources" && <ResourcesList />}
-      {activeTab === "reports" && <ReportsList />}
-      {activeTab === "assessments" && <AssessmentsList />}
-      {activeTab === "students" && <StudentList />}
-
-      {/* Sidebar */}
-      <div
-        className={cn(
-          "w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2",
-          "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
-          "lg:relative lg:inset-auto lg:transform-none lg:transition-none",
-          isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
-        )}
-      >
-        <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
-          <X className="h-5 w-5" />
-        </Button>
-
-        {/* Sidebar Content */}
-        <Card>
-          <CardContent>{/* Add more sidebar content here */}</CardContent>
+      {/* Content */}
+      <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
+        <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
+          <CardContent className="h-[calc(100vh-200px)] p-0">
+            {activeTab === "description" && <CourseDescription />}
+            {activeTab === "resources" && <ResourcesList />}
+            {activeTab === "reports" && <ReportsList />}
+            {activeTab === "assessments" && <AssessmentsList />}
+            {activeTab === "students" && <StudentList />}
+          </CardContent>
         </Card>
 
-        {/* Add Student Button */}
-        <Button
-          className="w-full bg-[#1BC2C2] hover:bg-[#15A3A3] text-white"
-          onClick={() => setIsAssignStudentModalOpen(true)}
+        {/* Sidebar */}
+        <div
+          className={cn(
+            "w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2",
+            "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
+            "lg:relative lg:inset-auto lg:transform-none lg:transition-none",
+            isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
+          )}
         >
-          Assign Student
-        </Button>
+          <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
+            <X className="h-5 w-5" />
+          </Button>
+
+          {/* Course Info */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">Course Information</h3>
+                <Button variant="ghost" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12 md:h-16 md:w-16">
+                  <AvatarImage src="/placeholder.svg" />
+                  <AvatarFallback> PHY301</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-semibold">Course Code: PHY301</h4>
+                  <p className="text-sm text-gray-500">Department: Physics</p>
+                  <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Class Statistics */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">Class Statistics</h3>
+                <Button variant="ghost" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Users className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Enrolled Students</p>
+                  <p className="font-medium">25</p>
+                </div>
+                <div className="space-y-2">
+                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Hours Taught</p>
+                  <p className="font-medium">36 / 48</p>
+                </div>
+                <div className="space-y-2">
+                  <BarChart className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Avg. Performance</p>
+                  <p className="font-medium">78%</p>
+                </div>
+                <div className="space-y-2">
+                  <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Assignments</p>
+                  <p className="font-medium">8 / 12</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Class Schedule */}
+          <Card className="p-4 bg-gray-50">
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-lg">Class Schedule</h3>
+                <Button variant="ghost" size="sm">
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {schedules.map((schedule, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
+                      <span className="font-medium">{schedule.day}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-600">{schedule.time}</span>
+                      <Button variant="ghost" size="sm" onClick={() => handleRemoveSchedule(index)}>
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={newSchedule.day}
+                  onValueChange={(value) => setNewSchedule({ ...newSchedule, day: value })}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select day" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Monday">Monday</SelectItem>
+                    <SelectItem value="Tuesday">Tuesday</SelectItem>
+                    <SelectItem value="Wednesday">Wednesday</SelectItem>
+                    <SelectItem value="Thursday">Thursday</SelectItem>
+                    <SelectItem value="Friday">Friday</SelectItem>
+                    <SelectItem value="Saturday">Saturday</SelectItem>
+                    <SelectItem value="Sunday">Sunday</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="time"
+                  value={newSchedule.time}
+                  onChange={(e) => setNewSchedule({ ...newSchedule, time: e.target.value })}
+                  className="w-[120px]"
+                />
+                <Button onClick={handleAddSchedule}>
+                  <Plus className="h-4 w-4 mr-2" /> Add
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <EditCourseModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSubmit={handleEditCourse}
-        course={{
-          id: "1",
-          name: courseName,
-          description: "Sample description",
-          tutor: "John Doe",
-          schedule: "Monday 10:00 AM - 11:30 AM",
-          status: "Active",
-          noOfStudent: 25,
-          dateAdded: "2023-09-01",
-        }}
-      />
-
-      <AssignStudentModal
-        isOpen={isAssignStudentModalOpen}
-        onClose={() => setIsAssignStudentModalOpen(false)}
-        onSubmit={handleAssignStudent}
-      />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CourseDescriptionModal } from "../courseDescriptionModal"
+import { Edit } from "lucide-react"
 
 interface CourseDescriptionProps {
   adminName?: string
@@ -20,6 +21,8 @@ Key Topics:
 
 Admins will participate in weekly laboratory sessions and group discussions to reinforce their understanding of scientific concepts.`
 
+const PREREQUISITES = `Completion of Grade 5 Science or equivalent`
+
 const LEARNING_OUTCOMES = `Upon completion, admins will be able to:
 • Apply scientific method to solve problems
 • Understand basic principles of matter and energy
@@ -27,8 +30,9 @@ const LEARNING_OUTCOMES = `Upon completion, admins will be able to:
 • Explain fundamental concepts in biology, chemistry, and physics
 • Develop critical thinking and analytical skills`
 
-export default function CourseDescription({ }: CourseDescriptionProps) {
+export default function CourseDescription({}: CourseDescriptionProps) {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false)
+  const [isPrerequisitesModalOpen, setIsPrerequisitesModalOpen] = useState(false)
   const [isILOModalOpen, setIsILOModalOpen] = useState(false)
 
   const truncateText = (text: string, maxLength: number) => {
@@ -56,7 +60,12 @@ export default function CourseDescription({ }: CourseDescriptionProps) {
 
       {/* Course Description */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Course Description</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700">Course Description</label>
+          <Button variant="ghost" size="sm" onClick={() => setIsDescriptionModalOpen(true)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+        </div>
         <div className="bg-gray-50 border-gray-200 rounded-md p-4">
           <p className="text-sm text-gray-700">{truncateText(COURSE_DESCRIPTION, 150)}</p>
           <Button
@@ -70,15 +79,25 @@ export default function CourseDescription({ }: CourseDescriptionProps) {
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Prerequisites</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700">Prerequisites</label>
+          <Button variant="ghost" size="sm" onClick={() => setIsPrerequisitesModalOpen(true)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+        </div>
         <div className="bg-gray-50 border-gray-200 rounded-md p-4">
-          <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
+          <p className="text-sm text-gray-700">{PREREQUISITES}</p>
         </div>
       </div>
 
       {/* Learning Outcomes */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Learning Outcomes</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700">Learning Outcomes</label>
+          <Button variant="ghost" size="sm" onClick={() => setIsILOModalOpen(true)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+        </div>
         <div className="bg-gray-50 border-gray-200 rounded-md p-4">
           <p className="text-sm text-gray-700">{truncateText(LEARNING_OUTCOMES, 150)}</p>
           <Button variant="link" onClick={() => setIsILOModalOpen(true)} className="mt-2 p-0 h-auto text-[#1BC2C2]">
@@ -93,6 +112,14 @@ export default function CourseDescription({ }: CourseDescriptionProps) {
         onClose={() => setIsDescriptionModalOpen(false)}
         title="Course Description"
         description={COURSE_DESCRIPTION}
+      />
+
+      {/* Prerequisites Modal */}
+      <CourseDescriptionModal
+        isOpen={isPrerequisitesModalOpen}
+        onClose={() => setIsPrerequisitesModalOpen(false)}
+        title="Prerequisites"
+        description={PREREQUISITES}
       />
 
       {/* Learning Outcomes Modal */}
