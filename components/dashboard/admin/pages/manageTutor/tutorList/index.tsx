@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Search, Plus } from "lucide-react"
-import { AddTutorModal } from "./AddTutorModal"
+import { AddTutorModal } from "../addTutorModal/index"
 
 interface Tutor {
   id: string

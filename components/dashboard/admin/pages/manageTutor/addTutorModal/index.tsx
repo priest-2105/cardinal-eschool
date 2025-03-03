@@ -85,8 +85,7 @@ export function AddTutorModal({ isOpen, onClose, onAddTutor }: AddTutorModalProp
                 <SelectContent>
                   <SelectItem value="Mathematics">Mathematics</SelectItem>
                   <SelectItem value="Physics">Physics</SelectItem>
-                  <SelectItem value="Chemistry">Chemistry</SelectItem>
-                  {/* Add more subjects as needed */}
+                  <SelectItem value="Chemistry">Chemistry</SelectItem> 
                 </SelectContent>
               </Select>
             </div>
