@@ -6,54 +6,51 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
+import { Search, Plus } from "lucide-react"
+import { AddTutorModal } from "./AddTutorModal"
 
 interface Tutor {
   id: string
   name: string
   email: string
-  grade: string
-  course: string
+  subject: string
   dateJoined: string
   status: "Active" | "Suspended" | "Inactive"
 }
 
-const SAMPLE_STUDENTS: Tutor[] = [
+const SAMPLE_TUTORS: Tutor[] = [
   {
-    id: "STU001",
+    id: "TUT001",
     name: "John Doe",
     email: "john.doe@example.com",
-    grade: "A",
-    course: "Mathematics",
+    subject: "Mathematics",
     dateJoined: "2023-09-01",
     status: "Active",
   },
   {
-    id: "STU002",
+    id: "TUT002",
     name: "Jane Smith",
     email: "jane.smith@example.com",
-    grade: "B",
-    course: "Physics",
+    subject: "Physics",
     dateJoined: "2023-08-15",
     status: "Active",
   },
   {
-    id: "STU003",
+    id: "TUT003",
     name: "Alice Johnson",
     email: "alice.johnson@example.com",
-    grade: "C",
-    course: "Chemistry",
+    subject: "Chemistry",
     dateJoined: "2023-09-10",
     status: "Suspended",
-  }, 
+  },
 ]
 
 export function TutorList() {
-  const [tutors, setTutors] = useState<Tutor[]>(SAMPLE_STUDENTS)
+  const [tutors, setTutors] = useState<Tutor[]>(SAMPLE_TUTORS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [gradeFilter, setGradeFilter] = useState("all")
-  const [courseFilter, setCourseFilter] = useState("all")
+  const [subjectFilter, setSubjectFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
+  const [isAddTutorModalOpen, setIsAddTutorModalOpen] = useState(false)
   const router = useRouter()
 
   const filterTutors = () => {
@@ -63,8 +60,7 @@ export function TutorList() {
         tutor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tutor.id.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesGrade = gradeFilter === "all" || tutor.grade === gradeFilter
-      const matchesCourse = courseFilter === "all" || tutor.course === courseFilter
+      const matchesSubject = subjectFilter === "all" || tutor.subject === subjectFilter
 
       let matchesDate = true
       if (dateFilter !== "all") {
@@ -82,12 +78,18 @@ export function TutorList() {
         }
       }
 
-      return matchesSearch && matchesGrade && matchesCourse && matchesDate
+      return matchesSearch && matchesSubject && matchesDate
     })
   }
 
   const handleRowClick = (tutorId: string) => {
-    router.push(`/admin/tutor`)
+    router.push(`/admin/tutor/${tutorId}`)
+  }
+
+  const handleAddTutor = (newTutor: Omit<Tutor, "id">) => {
+    const id = `TUT${(tutors.length + 1).toString().padStart(3, "0")}`
+    setTutors([...tutors, { ...newTutor, id }])
+    setIsAddTutorModalOpen(false)
   }
 
   const filteredTutors = filterTutors()
@@ -97,34 +99,23 @@ export function TutorList() {
       <div className="space-y-4 p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl sm:text-2xl font-semibold">Manage Tutors</h2>
-          <p className="text-sm text-muted-foreground">View and manage tutor accounts</p>
+          <Button onClick={() => setIsAddTutorModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Add Tutor
+          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-            <Select value={gradeFilter} onValueChange={setGradeFilter}>
-              <SelectTrigger className="w-full sm:w-[120px]">
-                <SelectValue placeholder="Grade" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Grades</SelectItem>
-                <SelectItem value="A">Grade A</SelectItem>
-                <SelectItem value="B">Grade B</SelectItem>
-                <SelectItem value="C">Grade C</SelectItem>
-                <SelectItem value="D">Grade D</SelectItem>
-                <SelectItem value="F">Grade F</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
+            <Select value={subjectFilter} onValueChange={setSubjectFilter}>
               <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="Course" />
+                <SelectValue placeholder="Subject" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Courses</SelectItem>
+                <SelectItem value="all">All Subjects</SelectItem>
                 <SelectItem value="Mathematics">Mathematics</SelectItem>
                 <SelectItem value="Physics">Physics</SelectItem>
                 <SelectItem value="Chemistry">Chemistry</SelectItem>
-                {/* Add more courses as needed */}
+                {/* Add more subjects as needed */}
               </SelectContent>
             </Select>
             <Select value={dateFilter} onValueChange={setDateFilter}>
@@ -154,43 +145,55 @@ export function TutorList() {
       <div className="flex-1 overflow-hidden">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[15%]">Tutor ID</TableHead>
-                  <TableHead className="w-[20%]">Name</TableHead>
-                  <TableHead className="w-[20%]">Email</TableHead>
-                  <TableHead className="w-[10%]">Grade</TableHead>
-                  <TableHead className="w-[15%]">Course</TableHead>
-                  <TableHead className="w-[10%]">Date Joined</TableHead>
-                  <TableHead className="w-[10%]">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTutors.map((tutor) => (
-                  <TableRow
-                    key={tutor.id}
-                    onClick={() => handleRowClick(tutor.id)}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    <TableCell className="font-medium">{tutor.id}</TableCell>
-                    <TableCell>{tutor.name}</TableCell>
-                    <TableCell>{tutor.email}</TableCell>
-                    <TableCell>{tutor.grade}</TableCell>
-                    <TableCell>{tutor.course}</TableCell>
-                    <TableCell>{tutor.dateJoined}</TableCell>
-                    <TableCell>
-                      <Button variant={tutor.status === "Active" ? "default" : "danger"} size="sm">
-                        {tutor.status}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+              <div className="min-w-full divide-y divide-gray-300">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[15%]">Tutor ID</TableHead>
+                      <TableHead className="w-[20%]">Name</TableHead>
+                      <TableHead className="w-[20%]">Email</TableHead>
+                      <TableHead className="w-[15%]">Subject</TableHead>
+                      <TableHead className="w-[15%]">Date Joined</TableHead>
+                      <TableHead className="w-[15%]">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+              </div>
+              <div className="overflow-auto max-h-[calc(100vh-300px)]">
+                <Table>
+                  <TableBody>
+                    {filteredTutors.map((tutor) => (
+                      <TableRow
+                        key={tutor.id}
+                        onClick={() => handleRowClick(tutor.id)}
+                        className="cursor-pointer hover:bg-gray-100"
+                      >
+                        <TableCell className="font-medium">{tutor.id}</TableCell>
+                        <TableCell>{tutor.name}</TableCell>
+                        <TableCell>{tutor.email}</TableCell>
+                        <TableCell>{tutor.subject}</TableCell>
+                        <TableCell>{tutor.dateJoined}</TableCell>
+                        <TableCell>
+                          <Button variant={tutor.status === "Active" ? "default" : "destructive"} size="sm">
+                            {tutor.status}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <AddTutorModal
+        isOpen={isAddTutorModalOpen}
+        onClose={() => setIsAddTutorModalOpen(false)}
+        onAddTutor={handleAddTutor}
+      />
     </div>
   )
 }
