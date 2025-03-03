@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Edit } from "lucide-react"
 import { EditDescriptionModal } from "../editDescriptionModal/index"
 import { EditPrerequisitesModal } from "../editperequsites/index"
-import { EditLearningOutcomesModal } from "./EditLearningOutcomesModal"
+import { EditLearningOutcomesModal } from "../editLearningOutcomeModal/index"
 
 interface CourseDescriptionProps {
   adminName?: string

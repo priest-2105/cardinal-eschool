@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, FileText, Edit, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, FileText, Edit } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import ResourcesList from "../../resources/resourcesList"
@@ -12,14 +12,22 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { EditCourseInfoModal } from "./EditCourseInfoModal"
+import { EditClassScheduleModal } from "./EditClassScheduleModal"
+import { EditCourseNameModal } from "./EditCourseNameModal"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
 interface Schedule {
   day: string
-  time: string
+  fromTime: string
+  toTime: string
+}
+
+interface CourseInfo {
+  code: string
+  department: string
+  semester: string
 }
 
 interface CourseDetailsComponentProps {
@@ -27,15 +35,24 @@ interface CourseDetailsComponentProps {
 }
 
 const SAMPLE_SCHEDULES: Schedule[] = [
-  { day: "Monday", time: "10:00 AM - 11:30 AM" },
-  { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
+  { day: "Monday", fromTime: "10:00", toTime: "11:30" },
+  { day: "Wednesday", fromTime: "14:00", toTime: "15:30" },
 ]
 
 export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [schedules, setSchedules] = useState<Schedule[]>(SAMPLE_SCHEDULES)
-  const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", time: "" })
+  const [courseInfo, setCourseInfo] = useState<CourseInfo>({
+    code: "PHY301",
+    department: "Physics",
+    semester: "Fall 2023",
+  })
+  const [isEditCourseInfoModalOpen, setIsEditCourseInfoModalOpen] = useState(false)
+  const [isEditClassScheduleModalOpen, setIsEditClassScheduleModalOpen] = useState(false)
+  const [isEditCourseNameModalOpen, setIsEditCourseNameModalOpen] = useState(false)
+  const [currentCourseName, setCurrentCourseName] = useState(courseName)
+  const [joinClassLink, setJoinClassLink] = useState("https://example.com/join-class")
   const route = useRouter()
 
   const tabs = [
@@ -55,18 +72,6 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
     window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
   }
 
-  const handleAddSchedule = () => {
-    if (newSchedule.day && newSchedule.time) {
-      setSchedules([...schedules, newSchedule])
-      setNewSchedule({ day: "", time: "" })
-    }
-  }
-
-  const handleRemoveSchedule = (index: number) => {
-    const updatedSchedules = schedules.filter((_, i) => i !== index)
-    setSchedules(updatedSchedules)
-  }
-
   return (
     <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
       {/* Back Button and Title */}
@@ -74,10 +79,21 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {courseName}</h1>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {currentCourseName}</h1>
         <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
+      </div>
+
+      {/* Course Name and Join Class */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">{currentCourseName}</h2>
+        <div className="flex items-center gap-2">
+          <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
+          <Button variant="outline" size="icon" onClick={() => setIsEditCourseNameModalOpen(true)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -131,19 +147,19 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg">Course Information</h3>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => setIsEditCourseInfoModalOpen(true)}>
                   <Edit className="h-4 w-4" />
                 </Button>
               </div>
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback> PHY301</AvatarFallback>
+                  <AvatarFallback>{courseInfo.code}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold">Course Code: PHY301</h4>
-                  <p className="text-sm text-gray-500">Department: Physics</p>
-                  <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+                  <h4 className="font-semibold">Course Code: {courseInfo.code}</h4>
+                  <p className="text-sm text-gray-500">Department: {courseInfo.department}</p>
+                  <p className="text-sm text-gray-500">Semester: {courseInfo.semester}</p>
                 </div>
               </div>
             </CardContent>
@@ -188,7 +204,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg">Class Schedule</h3>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" onClick={() => setIsEditClassScheduleModalOpen(true)}>
                   <Edit className="h-4 w-4" />
                 </Button>
               </div>
@@ -202,47 +218,49 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
                       <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
                       <span className="font-medium">{schedule.day}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-600">{schedule.time}</span>
-                      <Button variant="ghost" size="sm" onClick={() => handleRemoveSchedule(index)}>
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
+                    <span className="text-gray-600">
+                      {schedule.fromTime} - {schedule.toTime}
+                    </span>
                   </div>
                 ))}
-              </div>
-              <div className="flex items-center gap-2">
-                <Select
-                  value={newSchedule.day}
-                  onValueChange={(value) => setNewSchedule({ ...newSchedule, day: value })}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select day" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Monday">Monday</SelectItem>
-                    <SelectItem value="Tuesday">Tuesday</SelectItem>
-                    <SelectItem value="Wednesday">Wednesday</SelectItem>
-                    <SelectItem value="Thursday">Thursday</SelectItem>
-                    <SelectItem value="Friday">Friday</SelectItem>
-                    <SelectItem value="Saturday">Saturday</SelectItem>
-                    <SelectItem value="Sunday">Sunday</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="time"
-                  value={newSchedule.time}
-                  onChange={(e) => setNewSchedule({ ...newSchedule, time: e.target.value })}
-                  className="w-[120px]"
-                />
-                <Button onClick={handleAddSchedule}>
-                  <Plus className="h-4 w-4 mr-2" /> Add
-                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Edit Modals */}
+      <EditCourseInfoModal
+        isOpen={isEditCourseInfoModalOpen}
+        onClose={() => setIsEditCourseInfoModalOpen(false)}
+        courseInfo={courseInfo}
+        onSave={(newCourseInfo) => {
+          setCourseInfo(newCourseInfo)
+          setIsEditCourseInfoModalOpen(false)
+        }}
+      />
+
+      <EditClassScheduleModal
+        isOpen={isEditClassScheduleModalOpen}
+        onClose={() => setIsEditClassScheduleModalOpen(false)}
+        schedules={schedules}
+        onSave={(newSchedules) => {
+          setSchedules(newSchedules)
+          setIsEditClassScheduleModalOpen(false)
+        }}
+      />
+
+      <EditCourseNameModal
+        isOpen={isEditCourseNameModalOpen}
+        onClose={() => setIsEditCourseNameModalOpen(false)}
+        courseName={currentCourseName}
+        joinClassLink={joinClassLink}
+        onSave={(newCourseName, newJoinClassLink) => {
+          setCurrentCourseName(newCourseName)
+          setJoinClassLink(newJoinClassLink)
+          setIsEditCourseNameModalOpen(false)
+        }}
+      />
     </div>
   )
 }
