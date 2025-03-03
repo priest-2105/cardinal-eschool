@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Search, Plus } from "lucide-react"
-import { AddTutorModal } from "../addTutorModal/index"
+import { AddTutorModal } from "./AddTutorModal"
 
 interface Tutor {
   id: string
@@ -83,7 +83,7 @@ export function TutorList() {
   }
 
   const handleRowClick = (tutorId: string) => {
-    router.push(`/admin/tutor`)
+    router.push(`/admin/tutor/${tutorId}`)
   }
 
   const handleAddTutor = (newTutor: Omit<Tutor, "id">) => {
@@ -146,44 +146,38 @@ export function TutorList() {
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-              <div className="min-w-full divide-y divide-gray-300">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[15%]">Tutor ID</TableHead>
-                      <TableHead className="w-[20%]">Name</TableHead>
-                      <TableHead className="w-[20%]">Email</TableHead>
-                      <TableHead className="w-[15%]">Subject</TableHead>
-                      <TableHead className="w-[15%]">Date Joined</TableHead>
-                      <TableHead className="w-[15%]">Status</TableHead>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[16.67%]">Tutor ID</TableHead>
+                    <TableHead className="w-[16.67%]">Name</TableHead>
+                    <TableHead className="w-[16.67%]">Email</TableHead>
+                    <TableHead className="w-[16.67%]">Subject</TableHead>
+                    <TableHead className="w-[16.67%]">Date Joined</TableHead>
+                    <TableHead className="w-[16.67%]">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTutors.map((tutor) => (
+                    <TableRow
+                      key={tutor.id}
+                      onClick={() => handleRowClick(tutor.id)}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
+                      <TableCell className="w-[16.67%]">{tutor.id}</TableCell>
+                      <TableCell className="w-[16.67%]">{tutor.name}</TableCell>
+                      <TableCell className="w-[16.67%]">{tutor.email}</TableCell>
+                      <TableCell className="w-[16.67%]">{tutor.subject}</TableCell>
+                      <TableCell className="w-[16.67%]">{tutor.dateJoined}</TableCell>
+                      <TableCell className="w-[16.67%]">
+                        <Button variant={tutor.status === "Active" ? "default" : "destructive"} size="sm">
+                          {tutor.status}
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                </Table>
-              </div>
-              <div className="overflow-auto max-h-[calc(100vh-300px)]">
-                <Table>
-                  <TableBody>
-                    {filteredTutors.map((tutor) => (
-                      <TableRow
-                        key={tutor.id}
-                        onClick={() => handleRowClick(tutor.id)}
-                        className="cursor-pointer hover:bg-gray-100"
-                      >
-                        <TableCell className="font-medium">{tutor.id}</TableCell>
-                        <TableCell>{tutor.name}</TableCell>
-                        <TableCell>{tutor.email}</TableCell>
-                        <TableCell>{tutor.subject}</TableCell>
-                        <TableCell>{tutor.dateJoined}</TableCell>
-                        <TableCell>
-                          <Button variant={tutor.status === "Active" ? "default" : "danger"} size="sm">
-                            {tutor.status}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         </div>
