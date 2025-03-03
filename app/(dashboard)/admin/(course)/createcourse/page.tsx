@@ -1,11 +1,11 @@
 "use client"
 
 
-import { AnnouncementsList } from "@/components/dashboard/admin/pages/announcement/announcementList"
+import CreateCoursePage from "@/components/dashboard/admin/pages/courses/createcourse"
 import { useState, useEffect } from "react"
 
 
-export default function AdminAnnouncementList() {
+export default function CreateCourse() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -24,8 +24,8 @@ export default function AdminAnnouncementList() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <AnnouncementsList />
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    <CreateCoursePage/>
     </div>
   )
 }

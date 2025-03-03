@@ -18,7 +18,7 @@ function PublicFooter() {
           <div className="max-w-screen-2xl px-4 pt-32 pb-8 mx-auto sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               <div>
-              <h3 className='text-4xl font-bold'>Ready To Get Started ? </h3>
+              <h3 className='text-4xl font-bold'>Ready To Get Started?</h3>
                 <p className="max-w-xs mt-4 text-sm">
                 Cardinal E-School, where education knows no borders. Our innovative platform connects learners worldwide, providing personalized education for a brighter future. 
                 </p>

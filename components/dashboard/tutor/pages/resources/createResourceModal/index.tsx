@@ -18,7 +18,7 @@ export interface Student {
   export interface Resource {
     id: string
     title: string
-    type: string
+    // type: string
     size: string
     dateUploaded: Date
     fileUrl: string
@@ -34,7 +34,7 @@ interface CreateResourceModalProps {
 
 export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourceModalProps) {
   const [title, setTitle] = useState("")
-  const [type, setType] = useState("")
+  // const [type, setType] = useState("")
   const [file, setFile] = useState<File | null>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,7 +42,7 @@ export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourc
     if (file) {
       const newResource: Omit<Resource, "id"> = {
         title,
-        type,
+        // type,
         size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
         dateUploaded: new Date(),
         fileUrl: URL.createObjectURL(file),
@@ -54,7 +54,7 @@ export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourc
 
   const resetForm = () => {
     setTitle("")
-    setType("")
+    // setType("")
     setFile(null)
   }
 
@@ -69,10 +69,10 @@ export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourc
             <Label htmlFor="title">Title</Label>
             <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
-          <div>
+          {/* <div>
             <Label htmlFor="type">Type</Label>
             <Input id="type" value={type} onChange={(e) => setType(e.target.value)} required />
-          </div>
+          </div> */}
           <div>
             <Label htmlFor="file">File</Label>
             <Input

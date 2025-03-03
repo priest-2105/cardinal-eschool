@@ -51,6 +51,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminMakePayment,
       cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+      cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
   }, 
   {
@@ -72,7 +73,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
       cardinalConfig.routes.dashboard.admin.courseDetails,
-      // cardinalConfig.routes.dashboard.admin.adm,
+      cardinalConfig.routes.dashboard.admin.courseDetails,      
     ],
   },
   {
@@ -82,7 +83,7 @@ const navigation = [
     iconLight: ManageStudentsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
-      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+      cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
   },
   {
@@ -91,6 +92,7 @@ const navigation = [
     icon:  ManageTutorsIcon,
     iconLight: ManageTutorsLightIcon,
     activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
@@ -103,6 +105,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminAnnouncements,
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
+      cardinalConfig.routes.dashboard.admin.adminCreateAnnouncement,
     ],
   },
 ]

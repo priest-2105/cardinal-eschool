@@ -1,10 +1,11 @@
 "use client"
 
 
+import { CreateAnnouncement } from "@/components/dashboard/admin/pages/announcement/createAnnouncement"
 import { useState, useEffect } from "react"
 
 
-export default function StudentDetailsPage() {
+export default function AdminCreateAnnouncement() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function StudentDetailsPage() {
 
   return (
     <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        Create Annoucements
+      <CreateAnnouncement/>
     </div>
   )
 }
