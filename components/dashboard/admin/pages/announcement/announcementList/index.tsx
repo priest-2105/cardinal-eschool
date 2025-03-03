@@ -51,7 +51,7 @@ export function AnnouncementsList() {
   })
 
   const handleCreateAnnouncement = () => {
-    router.push("/admin/announcements/create")
+    router.push("/admin/createannouncement")
   }
 
   const handleAnnouncementClick = (id: string) => {
