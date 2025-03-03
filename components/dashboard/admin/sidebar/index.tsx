@@ -103,6 +103,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminAnnouncements,
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
+      cardinalConfig.routes.dashboard.admin.adminCreateAnnouncement,
     ],
   },
 ]

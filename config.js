@@ -100,6 +100,7 @@ const cardinalConfig = {
         adminTutorDetails: "/admin/tutordetails",
         adminAnnouncements: "/admin/announcements",
         adminAnnouncementDetails: "/admin/announcementdetails",
+        adminCreateAnnouncement: "/admin/createannouncement",
       },
     },
   },

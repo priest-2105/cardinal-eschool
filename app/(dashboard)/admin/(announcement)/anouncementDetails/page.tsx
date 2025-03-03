@@ -1,7 +1,7 @@
 "use client"
 
 
-import { AnnouncementDetails } from "@/components/dashboard/admin/pages/announcement/announcementDetails"
+import { AnnouncementDetails } from "@/components/dashboard/admin/pages/announcement/announcementdetails"
 import { useState, useEffect } from "react"
 
 
