@@ -7,6 +7,8 @@ import { Edit } from "lucide-react"
 import { EditDescriptionModal } from "../editDescriptionModal/index"
 import { EditPrerequisitesModal } from "../editperequsites/index"
 import { EditLearningOutcomesModal } from "../editLearningOutcomeModal/index"
+import { EditCourseNameModal } from "../editCourseNameModal/index"
+
 
 interface CourseDescriptionProps {
   adminName?: string
@@ -33,12 +35,22 @@ const INITIAL_LEARNING_OUTCOMES = `Upon completion, admins will be able to:
 • Develop critical thinking and analytical skills`
 
 export default function CourseDescription({}: CourseDescriptionProps) {
+
+  const courseName = "Advanced Physics"
+
+
   const [courseDescription, setCourseDescription] = useState(INITIAL_COURSE_DESCRIPTION)
   const [prerequisites, setPrerequisites] = useState(INITIAL_PREREQUISITES)
   const [learningOutcomes, setLearningOutcomes] = useState(INITIAL_LEARNING_OUTCOMES)
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false)
   const [isPrerequisitesModalOpen, setIsPrerequisitesModalOpen] = useState(false)
   const [isLearningOutcomesModalOpen, setIsLearningOutcomesModalOpen] = useState(false)
+  const [isEditCourseNameModalOpen, setIsEditCourseNameModalOpen] = useState(false)
+  const [currentCourseName, setCurrentCourseName] = useState(courseName)
+  const [joinClassLink, setJoinClassLink] = useState("https://example.com/join-class")
+
+
+
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text
@@ -60,7 +72,12 @@ export default function CourseDescription({}: CourseDescriptionProps) {
             </Badge>
           </div>
         </div>
+        <div>
+        <Button variant="outline" size="icon" onClick={() => setIsEditCourseNameModalOpen(true)}>
+            <Edit className="h-4 w-4" />
+          </Button>
         <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto">Join Class</Button>
+        </div>
       </div>
 
       {/* Course Description */}
@@ -136,6 +153,18 @@ export default function CourseDescription({}: CourseDescriptionProps) {
           setIsPrerequisitesModalOpen(false)
         }}
       />
+
+      <EditCourseNameModal
+        isOpen={isEditCourseNameModalOpen}
+        onClose={() => setIsEditCourseNameModalOpen(false)}
+        courseName={currentCourseName}
+        joinClassLink={joinClassLink}
+        onSave={(newCourseName, newJoinClassLink) => {
+          setCurrentCourseName(newCourseName)
+          setJoinClassLink(newJoinClassLink)
+          setIsEditCourseNameModalOpen(false)
+        }}
+        />
 
       <EditLearningOutcomesModal
         isOpen={isLearningOutcomesModalOpen}

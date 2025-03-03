@@ -12,9 +12,9 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import { EditCourseInfoModal } from "./EditCourseInfoModal"
-import { EditClassScheduleModal } from "./EditClassScheduleModal"
-import { EditCourseNameModal } from "./EditCourseNameModal"
+import { EditCourseInfoModal } from "../editCourseInfo/index"
+import { EditClassScheduleModal } from "../editClassSchedule/index"
+import { EditCourseNameModal } from "../editCourseNameModal/index"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
