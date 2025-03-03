@@ -175,7 +175,7 @@ export function TutorList() {
                         <TableCell>{tutor.subject}</TableCell>
                         <TableCell>{tutor.dateJoined}</TableCell>
                         <TableCell>
-                          <Button variant={tutor.status === "Active" ? "default" : "destructive"} size="sm">
+                          <Button variant={tutor.status === "Active" ? "default" : "danger"} size="sm">
                             {tutor.status}
                           </Button>
                         </TableCell>
