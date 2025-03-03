@@ -33,7 +33,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   className,
 }) => {
   return (
-    <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
+    <SelectPrimitive.Root   value={value} onValueChange={onChange} disabled={disabled}>
       <SelectPrimitive.Trigger
         className={cn(
           "flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
