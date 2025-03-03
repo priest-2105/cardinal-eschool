@@ -82,7 +82,7 @@ const navigation = [
     iconLight: ManageStudentsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
-      cardinalConfig.routes.dashboard.admin.adminTutorDetails,
+      cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
   },
   {
@@ -91,6 +91,7 @@ const navigation = [
     icon:  ManageTutorsIcon,
     iconLight: ManageTutorsLightIcon,
     activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
