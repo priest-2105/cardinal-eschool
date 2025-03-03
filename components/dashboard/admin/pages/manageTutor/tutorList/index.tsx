@@ -83,7 +83,7 @@ export function TutorList() {
   }
 
   const handleRowClick = (tutorId: string) => {
-    router.push(`/admin/tutor/${tutorId}`)
+    router.push(`/admin/tutor`)
   }
 
   const handleAddTutor = (newTutor: Omit<Tutor, "id">) => {
