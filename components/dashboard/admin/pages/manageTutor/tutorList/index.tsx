@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Search, Plus } from "lucide-react"
-import { AddTutorModal } from "./AddTutorModal"
+import { AddTutorModal } from "../addTutorModal/index"
 
 interface Tutor {
   id: string
@@ -170,7 +170,7 @@ export function TutorList() {
                       <TableCell className="w-[16.67%]">{tutor.subject}</TableCell>
                       <TableCell className="w-[16.67%]">{tutor.dateJoined}</TableCell>
                       <TableCell className="w-[16.67%]">
-                        <Button variant={tutor.status === "Active" ? "default" : "destructive"} size="sm">
+                        <Button variant={tutor.status === "Active" ? "default" : "danger"} size="sm">
                           {tutor.status}
                         </Button>
                       </TableCell>
