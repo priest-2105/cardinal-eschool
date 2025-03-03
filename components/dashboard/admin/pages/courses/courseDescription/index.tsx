@@ -4,8 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Edit } from "lucide-react"
-import { EditDescriptionModal } from "../EditDescriptionModal/index"
-import { EditPrerequisitesModal } from "./EditPrerequisitesModal"
+import { EditDescriptionModal } from "../editDescriptionModal/index"
+import { EditPrerequisitesModal } from "../editperequsites/index"
 import { EditLearningOutcomesModal } from "./EditLearningOutcomesModal"
 
 interface CourseDescriptionProps {
