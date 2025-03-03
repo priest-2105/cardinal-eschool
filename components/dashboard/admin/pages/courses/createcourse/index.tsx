@@ -10,12 +10,24 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, User, Users } from "lucide-react"
+import { AssignTutorModal } from "../assignTutorModal/index"
+import { AssignStudentsModal } from "../assignStudentModal/index"
 
 interface Schedule {
   day: string
   fromTime: string
   toTime: string
+}
+
+interface Tutor {
+  id: string
+  name: string
+}
+
+interface Student {
+  id: string
+  name: string
 }
 
 export default function CreateCoursePage() {
@@ -30,6 +42,10 @@ export default function CreateCoursePage() {
   const [joinClassLink, setJoinClassLink] = useState("")
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" })
+  const [assignedTutor, setAssignedTutor] = useState<Tutor | null>(null)
+  const [assignedStudents, setAssignedStudents] = useState<Student[]>([])
+  const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
+  const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.fromTime && newSchedule.toTime) {
@@ -41,6 +57,16 @@ export default function CreateCoursePage() {
   const handleRemoveSchedule = (index: number) => {
     const updatedSchedules = schedules.filter((_, i) => i !== index)
     setSchedules(updatedSchedules)
+  }
+
+  const handleAssignTutor = (tutor: Tutor) => {
+    setAssignedTutor(tutor)
+    setIsAssignTutorModalOpen(false)
+  }
+
+  const handleAssignStudents = (students: Student[]) => {
+    setAssignedStudents(students)
+    setIsAssignStudentsModalOpen(false)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -56,6 +82,8 @@ export default function CreateCoursePage() {
       learningOutcomes,
       joinClassLink,
       schedules,
+      assignedTutor,
+      assignedStudents,
     })
     // After successful creation, navigate back to the courses list
     router.push("/admin/courses")
@@ -173,26 +201,32 @@ export default function CreateCoursePage() {
                     <SelectItem value="Sunday">Sunday</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input
-                  type="time"
-                  value={schedule.fromTime}
-                  onChange={(e) => {
-                    const updatedSchedules = [...schedules]
-                    updatedSchedules[index].fromTime = e.target.value
-                    setSchedules(updatedSchedules)
-                  }}
-                  className="w-[120px]"
-                />
-                <Input
-                  type="time"
-                  value={schedule.toTime}
-                  onChange={(e) => {
-                    const updatedSchedules = [...schedules]
-                    updatedSchedules[index].toTime = e.target.value
-                    setSchedules(updatedSchedules)
-                  }}
-                  className="w-[120px]"
-                />
+                <div className="flex items-center space-x-2">
+                  <span>From:</span>
+                  <Input
+                    type="time"
+                    value={schedule.fromTime}
+                    onChange={(e) => {
+                      const updatedSchedules = [...schedules]
+                      updatedSchedules[index].fromTime = e.target.value
+                      setSchedules(updatedSchedules)
+                    }}
+                    className="w-[120px]"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span>To:</span>
+                  <Input
+                    type="time"
+                    value={schedule.toTime}
+                    onChange={(e) => {
+                      const updatedSchedules = [...schedules]
+                      updatedSchedules[index].toTime = e.target.value
+                      setSchedules(updatedSchedules)
+                    }}
+                    className="w-[120px]"
+                  />
+                </div>
                 <Button variant="ghost" size="sm" onClick={() => handleRemoveSchedule(index)}>
                   <Trash2 className="h-4 w-4 text-red-500" />
                 </Button>
@@ -213,21 +247,63 @@ export default function CreateCoursePage() {
                   <SelectItem value="Sunday">Sunday</SelectItem>
                 </SelectContent>
               </Select>
-              <Input
-                type="time"
-                value={newSchedule.fromTime}
-                onChange={(e) => setNewSchedule({ ...newSchedule, fromTime: e.target.value })}
-                className="w-[120px]"
-              />
-              <Input
-                type="time"
-                value={newSchedule.toTime}
-                onChange={(e) => setNewSchedule({ ...newSchedule, toTime: e.target.value })}
-                className="w-[120px]"
-              />
+              <div className="flex items-center space-x-2">
+                <span>From:</span>
+                <Input
+                  type="time"
+                  value={newSchedule.fromTime}
+                  onChange={(e) => setNewSchedule({ ...newSchedule, fromTime: e.target.value })}
+                  className="w-[120px]"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>To:</span>
+                <Input
+                  type="time"
+                  value={newSchedule.toTime}
+                  onChange={(e) => setNewSchedule({ ...newSchedule, toTime: e.target.value })}
+                  className="w-[120px]"
+                />
+              </div>
               <Button variant="outline" size="sm" onClick={handleAddSchedule}>
                 <Plus className="h-4 w-4 mr-2" /> Add
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Assign Tutor and Students</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Assigned Tutor</Label>
+              <div className="flex items-center space-x-2">
+                {assignedTutor ? (
+                  <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded">
+                    <User className="h-4 w-4" />
+                    <span>{assignedTutor.name}</span>
+                  </div>
+                ) : (
+                  <span className="text-gray-500">No tutor assigned</span>
+                )}
+                <Button type="button" onClick={() => setIsAssignTutorModalOpen(true)}>
+                  {assignedTutor ? "Change Tutor" : "Assign Tutor"}
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Assigned Students</Label>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 bg-gray-100 p-2 rounded">
+                  <Users className="h-4 w-4" />
+                  <span>{assignedStudents.length} students assigned</span>
+                </div>
+                <Button type="button" onClick={() => setIsAssignStudentsModalOpen(true)}>
+                  {assignedStudents.length > 0 ? "Edit Students" : "Assign Students"}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -239,6 +315,20 @@ export default function CreateCoursePage() {
           <Button type="submit">Create Course</Button>
         </div>
       </form>
+
+      <AssignTutorModal
+        isOpen={isAssignTutorModalOpen}
+        onClose={() => setIsAssignTutorModalOpen(false)}
+        onAssign={handleAssignTutor}
+        currentTutor={assignedTutor}
+      />
+
+      <AssignStudentsModal
+        isOpen={isAssignStudentsModalOpen}
+        onClose={() => setIsAssignStudentsModalOpen(false)}
+        onAssign={handleAssignStudents}
+        currentStudents={assignedStudents}
+      />
     </div>
   )
 }

@@ -51,6 +51,7 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminMakePayment,
       cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+      cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
   }, 
   {
