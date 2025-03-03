@@ -5,32 +5,31 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/drodown"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, ArrowLeft } from "lucide-react"
 
 interface Tutor {
   id: string
   name: string
   email: string
-  grade: string
-  course: string
+  subject: string
   dateJoined: string
-  status: "Active" | "Suspended" | "Inactive" 
+  status: "Active" | "Suspended" | "Inactive"
+  // Add more fields as needed
 }
 
-const SAMPLE_STUDENT: Tutor = {
-  id: "STU001",
+const SAMPLE_TUTOR: Tutor = {
+  id: "TUT001",
   name: "John Doe",
   email: "john.doe@example.com",
-  grade: "A",
-  course: "Mathematics",
+  subject: "Mathematics",
   dateJoined: "2023-09-01",
   status: "Active",
   // Add more sample data as needed
 }
 
 export function TutorDetails() {
-  const [tutor, setTutor] = useState<Tutor>(SAMPLE_STUDENT)
+  const [tutor, setTutor] = useState<Tutor>(SAMPLE_TUTOR)
   const router = useRouter()
 
   const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
@@ -43,7 +42,7 @@ export function TutorDetails() {
   }
 
   return (
-    <div className="max-w-4xl p-6">
+    <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -82,12 +81,8 @@ export function TutorDetails() {
               <p>{tutor.email}</p>
             </div>
             <div>
-              <Label className="font-semibold">Grade</Label>
-              <p>{tutor.grade}</p>
-            </div>
-            <div>
-              <Label className="font-semibold">Course</Label>
-              <p>{tutor.course}</p>
+              <Label className="font-semibold">Subject</Label>
+              <p>{tutor.subject}</p>
             </div>
             <div>
               <Label className="font-semibold">Date Joined</Label>
@@ -100,6 +95,7 @@ export function TutorDetails() {
           </div>
         </CardContent>
       </Card>
+
 
     </div>
   )
