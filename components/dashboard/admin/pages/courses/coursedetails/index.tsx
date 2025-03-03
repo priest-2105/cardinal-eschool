@@ -89,10 +89,10 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">{currentCourseName}</h2>
         <div className="flex items-center gap-2">
-          <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
+          {/* <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
           <Button variant="outline" size="icon" onClick={() => setIsEditCourseNameModalOpen(true)}>
             <Edit className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 

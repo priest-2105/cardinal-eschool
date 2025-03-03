@@ -189,7 +189,7 @@ export function TicketList() {
                       <TableCell className="hidden md:table-cell">{ticket.department}</TableCell>
                       <TableCell className="hidden lg:table-cell">{ticket.lastUpdated}</TableCell>
                       <TableCell>
-                        <Button variant={ticket.status === "closed" ? "default" : "danger"} size="sm">
+                        <Button variant={ticket.status === "Open" ? "default" : "danger"} size="sm">
                           {ticket.status}
                         </Button>
                       </TableCell>

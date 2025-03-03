@@ -8,6 +8,8 @@ import { CourseTable } from "../coursetable/index"
 import { Search, Plus } from "lucide-react"
 import type { Course, FilterValues } from "../types"
 import { CreateCourseModal } from "../createCourseModal/index"
+import { useRouter } from "next/navigation"
+
 
 const COURSES_DATA: Course[] = [
   {
@@ -45,7 +47,7 @@ export function CourseList() {
     status: [],
   })
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-
+  const router = useRouter()
   const filteredCourses = COURSES_DATA.filter((course) => {
     const nameMatch = course.name.toLowerCase().includes(searchQuery.toLowerCase())
     const scheduleMatch = course.schedule.toLowerCase().includes(searchQuery.toLowerCase())
@@ -61,13 +63,8 @@ export function CourseList() {
   const visibleCourses = filteredCourses.slice(0, visibleCount)
   const hasMore = visibleCourses.length < filteredCourses.length
 
-  const handleCreateCourse = (newCourse: Omit<Course, "id">) => {
-    const id = Math.max(...COURSES_DATA.map((c) => c.id)) + 1
-    const courseWithId = { ...newCourse, id }
-    // In a real application, you would send this to your backend
-    // and then update the local state with the new course
-    console.log("Creating new course:", courseWithId)
-    setIsCreateModalOpen(false)
+  const handleCreateCourse = () => {
+    router.push("/admin/createcourse")
   }
 
   return (
@@ -78,7 +75,7 @@ export function CourseList() {
           <p className="text-sm text-muted-foreground">Create, view, and manage courses</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => setIsCreateModalOpen(true)}>
+          <Button onClick={handleCreateCourse}>
             <Plus className="mr-2 h-4 w-4" /> Create Course
           </Button>
           <div className="relative">

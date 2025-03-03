@@ -13,7 +13,7 @@ export function CourseTable({ courses }: CourseTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[30%]">Class</TableHead>
+              <TableHead className="w-[30%]">Course</TableHead>
               <TableHead className="w-[15%] hidden md:table-cell">No of Students</TableHead>
               <TableHead className="w-[25%] hidden lg:table-cell">Schedule</TableHead>
               <TableHead className="w-[15%]">Status</TableHead>
