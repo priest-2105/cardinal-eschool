@@ -216,7 +216,7 @@ export function StudentDetails() {
                 onClick={() => setActiveTab("overview")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "overview"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -226,7 +226,7 @@ export function StudentDetails() {
                 onClick={() => setActiveTab("academic")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "academic"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -236,7 +236,7 @@ export function StudentDetails() {
                 onClick={() => setActiveTab("exams")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "exams"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -246,7 +246,7 @@ export function StudentDetails() {
                 onClick={() => setActiveTab("reports")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "reports"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
