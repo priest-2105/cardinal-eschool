@@ -77,7 +77,7 @@ export default function CouponsList() {
 
   const handleEditCoupon = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    router.push(`/admin/coupons/${id}/edit`)
+    router.push(`/admin/editcoupon/${id}`)
   }
 
   const handleDeleteCoupon = (coupon: Coupon, e: React.MouseEvent) => {

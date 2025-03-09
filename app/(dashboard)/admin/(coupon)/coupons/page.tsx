@@ -2,6 +2,7 @@
 
 
 import CouponsList from "@/components/dashboard/admin/pages/manageCoupons/couponlist"
+import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function CouponList() {
@@ -21,6 +22,7 @@ export default function CouponList() {
 
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
 
   return (
     <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>

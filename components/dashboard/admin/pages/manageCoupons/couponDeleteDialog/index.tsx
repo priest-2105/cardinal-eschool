@@ -47,7 +47,7 @@ export default function CouponDeleteDialog({ isOpen, coupon, onClose, onConfirm 
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Coupon</AlertDialogTitle>
           <AlertDialogDescription>
@@ -59,7 +59,7 @@ export default function CouponDeleteDialog({ isOpen, coupon, onClose, onConfirm 
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-[#da3f39eb3] text-destructive-foreground hover:bg-[#da3e39c13]"
           >
             Delete
           </AlertDialogAction>
