@@ -233,16 +233,7 @@ export function StudentDetails() {
               >
                 Academic
               </button>
-              <button
-                onClick={() => setActiveTab("exams")}
-                className={`px-4 py-2 font-medium ${
-                  activeTab === "exams"
-                    ? "border-b-2 border-[#1BC2C2] text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Exam Scores
-              </button>
+              
               <button
                 onClick={() => setActiveTab("reports")}
                 className={`px-4 py-2 font-medium ${
@@ -355,82 +346,6 @@ export function StudentDetails() {
                 </div>
               </CardContent>
             </Card>
-          )}
-
-          {activeTab === "exams" && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>SAT Scores</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {student.examScores?.sat ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Reading</span>
-                        <span className="text-2xl font-bold">{student.examScores.sat.reading}</span>
-                        <span className="text-xs text-muted-foreground">out of 800</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Math</span>
-                        <span className="text-2xl font-bold">{student.examScores.sat.math}</span>
-                        <span className="text-xs text-muted-foreground">out of 800</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Total</span>
-                        <span className="text-2xl font-bold">{student.examScores.sat.total}</span>
-                        <span className="text-xs text-muted-foreground">out of 1600</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No SAT scores available</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>IELTS Scores</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {student.examScores?.ielts ? (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Listening</span>
-                        <span className="text-2xl font-bold">{student.examScores.ielts.listening}</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Reading</span>
-                        <span className="text-2xl font-bold">{student.examScores.ielts.reading}</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Writing</span>
-                        <span className="text-2xl font-bold">{student.examScores.ielts.writing}</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Speaking</span>
-                        <span className="text-2xl font-bold">{student.examScores.ielts.speaking}</span>
-                      </div>
-                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-muted-foreground">Overall</span>
-                        <span className="text-2xl font-bold">{student.examScores.ielts.overall}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No IELTS scores available</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Other Exams</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">Other exam scores will be displayed here</p>
-                </CardContent>
-              </Card>
-            </div>
           )}
 
           {activeTab === "reports" && (

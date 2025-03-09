@@ -183,9 +183,7 @@ export default function ReportsList() {
                 <Calendar size={12} className="mr-1" />
                 {format(report.dateSubmitted, "MMM d, yyyy")}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Student: {SAMPLE_STUDENTS.find((s) => s.id === report.studentId)?.name}
-              </p>
+              
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
               <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
