@@ -41,12 +41,12 @@ const SAMPLE_ANNOUNCEMENTS: Announcement[] = [
 export function AnnouncementsList() {
   const [announcements, setAnnouncements] = useState(SAMPLE_ANNOUNCEMENTS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [recipientFilter, setRecipientFilter] = useState("all")
+  const [recipientFilter, setRecipientFilter] = useState("both")
   const router = useRouter()
 
   const filteredAnnouncements = announcements.filter((announcement) => {
     const matchesSearch = announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesRecipient = recipientFilter === "all" || announcement.recipients === recipientFilter
+    const matchesRecipient = recipientFilter === "both" || announcement.recipients === recipientFilter
     return matchesSearch && matchesRecipient
   })
 
@@ -82,7 +82,7 @@ export function AnnouncementsList() {
             <SelectValue placeholder="Filter by recipient" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Recipients</SelectItem>
+            {/* <SelectItem value="all">All Recipients</SelectItem> */}
             <SelectItem value="students">Students Only</SelectItem>
             <SelectItem value="tutors">Tutors Only</SelectItem>
             <SelectItem value="both">Both</SelectItem>
