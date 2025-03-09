@@ -6,7 +6,7 @@ import { TutorList } from "@/components/dashboard/admin/pages/manageTutor/tutorL
 import { useState, useEffect } from "react"
 
 
-export default function ManageStudentsPage() {
+export default function ManageTutorsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {

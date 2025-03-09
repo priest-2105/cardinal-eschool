@@ -1,12 +1,9 @@
 "use client"
 
 
-
-import { TutorDetails } from "@/components/dashboard/admin/pages/manageTutor/tutorDetails"
 import { useState, useEffect } from "react"
 
-
-export default function TutorDetailsPage() {
+export default function CreateCoupon() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -25,8 +22,8 @@ export default function TutorDetailsPage() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <TutorDetails/>
+    <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    
     </div>
   )
 }
