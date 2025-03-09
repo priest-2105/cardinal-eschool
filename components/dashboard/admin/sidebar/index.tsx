@@ -72,7 +72,7 @@ const navigation = [
     iconLight: CoursesLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
-      cardinalConfig.routes.dashboard.admin.courseDetails,
+      cardinalConfig.routes.dashboard.admin.admincreatecourse,
       cardinalConfig.routes.dashboard.admin.courseDetails,      
     ],
   },
