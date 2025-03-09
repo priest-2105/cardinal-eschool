@@ -276,25 +276,6 @@ export function StudentDetails() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Current Courses</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {student.currentCourses?.map((course) => (
-                      <div key={course.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{course.name}</span>
-                          <span className="text-sm">{course.progress}%</span>
-                        </div>
-                        <Progress value={course.progress} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -314,7 +295,26 @@ export function StudentDetails() {
           )}
 
           {activeTab === "academic" && (
-            <Card>
+           <>
+             <Card className="my-3">
+                <CardHeader>
+                  <CardTitle>Current Courses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {student.currentCourses?.map((course) => (
+                      <div key={course.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{course.name}</span>
+                          <span className="text-sm">{course.progress}%</span>
+                        </div>
+                        <Progress value={course.progress} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+           <Card className="my-3">
               <CardHeader>
                 <CardTitle>Academic Information</CardTitle>
               </CardHeader>
@@ -346,6 +346,7 @@ export function StudentDetails() {
                 </div>
               </CardContent>
             </Card>
+            </>
           )}
 
           {activeTab === "reports" && (
