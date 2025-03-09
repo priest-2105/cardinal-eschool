@@ -191,11 +191,7 @@ export default function ReportsList() {
               <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
                 <FileText size={16} className="mr-2" />
                 View
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleEditReport(report)}>
-                <Edit size={16} className="mr-2" />
-                Edit
-              </Button>
+              </Button> 
             </div>
           </div>
         ))}
