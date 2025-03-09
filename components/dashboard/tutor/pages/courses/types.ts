@@ -1,5 +1,6 @@
 export interface Course {
     id: number;
+    grade: number,
     name: string;
     noOfStudent: number,
     schedule: string;
