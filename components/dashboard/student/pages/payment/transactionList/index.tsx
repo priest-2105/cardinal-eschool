@@ -1,28 +1,144 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/admin/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/admin/ui/select"
-import { Button } from "@/components/dashboard/admin/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
-import { X } from "lucide-react"
+import { X, Search } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+
+interface Student {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+}
 
 interface Transaction {
+  id: string
   date: string
   status: "Success" | "Pending" | "Failed"
   package: string
   amount: string
+  student: Student
+  paymentMethod: string
 }
 
 const SAMPLE_TRANSACTIONS: Transaction[] = [
-  { date: "11/23/2025", status: "Success", package: "Premium Plan", amount: "$120" },
-  { date: "10/15/2025", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "09/10/2025", status: "Failed", package: "Standard Plan", amount: "$90" },
-  { date: "08/05/2025", status: "Success", package: "Group Sessions", amount: "$40" },
-  { date: "12/01/2024", status: "Success", package: "Premium Plan", amount: "$120" },
-  { date: "11/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "01/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "51/20/204", status: "Pending", package: "Basic Plan", amount: "$60" },
+  {
+    id: "TRX-123456",
+    date: "11/23/2025",
+    status: "Success",
+    package: "Premium Plan",
+    amount: "$120",
+    student: {
+      id: "STU001",
+      name: "Alice Johnson",
+      email: "alice@example.com",
+      avatar: "https://i.pravatar.cc/150?img=1",
+    },
+    paymentMethod: "Credit Card",
+  },
+  {
+    id: "TRX-123457",
+    date: "10/15/2025",
+    status: "Pending",
+    package: "Basic Plan",
+    amount: "$60",
+    student: {
+      id: "STU002",
+      name: "Bob Smith",
+      email: "bob@example.com",
+      avatar: "https://i.pravatar.cc/150?img=2",
+    },
+    paymentMethod: "PayPal",
+  },
+  {
+    id: "TRX-123458",
+    date: "09/10/2025",
+    status: "Failed",
+    package: "Standard Plan",
+    amount: "$90",
+    student: {
+      id: "STU003",
+      name: "Charlie Brown",
+      email: "charlie@example.com",
+      avatar: "https://i.pravatar.cc/150?img=3",
+    },
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    id: "TRX-123459",
+    date: "08/05/2025",
+    status: "Success",
+    package: "Group Sessions",
+    amount: "$40",
+    student: {
+      id: "STU004",
+      name: "Diana Ross",
+      email: "diana@example.com",
+      avatar: "https://i.pravatar.cc/150?img=4",
+    },
+    paymentMethod: "Credit Card",
+  },
+  {
+    id: "TRX-123460",
+    date: "12/01/2024",
+    status: "Success",
+    package: "Premium Plan",
+    amount: "$120",
+    student: {
+      id: "STU001",
+      name: "Alice Johnson",
+      email: "alice@example.com",
+      avatar: "https://i.pravatar.cc/150?img=1",
+    },
+    paymentMethod: "Credit Card",
+  },
+  {
+    id: "TRX-123461",
+    date: "11/20/2024",
+    status: "Pending",
+    package: "Basic Plan",
+    amount: "$60",
+    student: {
+      id: "STU005",
+      name: "Ethan Hunt",
+      email: "ethan@example.com",
+      avatar: "https://i.pravatar.cc/150?img=5",
+    },
+    paymentMethod: "PayPal",
+  },
+  {
+    id: "TRX-123462",
+    date: "01/20/2024",
+    status: "Pending",
+    package: "Basic Plan",
+    amount: "$60",
+    student: {
+      id: "STU006",
+      name: "Fiona Gallagher",
+      email: "fiona@example.com",
+      avatar: "https://i.pravatar.cc/150?img=6",
+    },
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    id: "TRX-123463",
+    date: "05/20/2024",
+    status: "Success",
+    package: "Premium Plan",
+    amount: "$120",
+    student: {
+      id: "STU007",
+      name: "George Miller",
+      email: "george@example.com",
+      avatar: "https://i.pravatar.cc/150?img=7",
+    },
+    paymentMethod: "Credit Card",
+  },
 ]
 
 const MONTHS = [
@@ -46,6 +162,7 @@ export default function TransactionList() {
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const router = useRouter()
 
   const clearMonths = () => {
@@ -58,17 +175,27 @@ export default function TransactionList() {
 
   const filteredTransactions = useMemo(() => {
     return SAMPLE_TRANSACTIONS.filter((transaction) => {
+      // Date filters
       const transactionDate = new Date(transaction.date)
       const monthMatch =
         selectedMonths.includes("all") || selectedMonths.includes(transactionDate.getMonth().toString())
       const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
       const statusMatch = selectedStatus === "all" || transaction.status === selectedStatus
-      return monthMatch && yearMatch && statusMatch
-    })
-  }, [selectedMonths, selectedYear, selectedStatus])
 
-  const handleTransactionClick = () => {
-    router.push("/admin/transactiondetails")
+      // Student search
+      const searchLower = searchQuery.toLowerCase()
+      const studentMatch =
+        searchQuery === "" ||
+        transaction.student.name.toLowerCase().includes(searchLower) ||
+        transaction.student.email.toLowerCase().includes(searchLower) ||
+        transaction.student.id.toLowerCase().includes(searchLower)
+
+      return monthMatch && yearMatch && statusMatch && studentMatch
+    })
+  }, [selectedMonths, selectedYear, selectedStatus, searchQuery])
+
+  const handleTransactionClick = (transactionId: string) => {
+    router.push(`/admin/transactiondetails/${transactionId}`)
   }
 
   return (
@@ -78,7 +205,7 @@ export default function TransactionList() {
         <p className="text-sm text-muted-foreground">View and filter your transaction history</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 mb-4">
         <div className="relative w-full sm:w-auto">
           <Select value={selectedMonths} onValueChange={setSelectedMonths}>
             <SelectTrigger className="w-full sm:w-[180px]">
@@ -140,54 +267,78 @@ export default function TransactionList() {
             <SelectItem value="Failed">Failed</SelectItem>
           </SelectContent>
         </Select>
+
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by student name, ID or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 w-full"
+          />
+        </div>
       </div>
 
-      <div className="rounded-md border overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full align-middle">
-            <div className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="bg-muted/50 font-semibold">Date</TableHead>
-                    <TableHead className="bg-muted/50 font-semibold">Transaction Status</TableHead>
-                    <TableHead className="bg-muted/50 font-semibold">Package</TableHead>
-                    <TableHead className="bg-muted/50 font-semibold">Amount</TableHead>
+      <div className="rounded-md border">
+        <div className="overflow-hidden">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-[15%] font-semibold">Transaction ID</TableHead>
+                <TableHead className="w-[15%] font-semibold">Date</TableHead>
+                <TableHead className="w-[25%] font-semibold">Student</TableHead>
+                <TableHead className="w-[15%] font-semibold">Status</TableHead>
+                <TableHead className="w-[15%] font-semibold">Package</TableHead>
+                <TableHead className="w-[15%] font-semibold">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+          </Table>
+          <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
+            <Table>
+              <TableBody>
+                {filteredTransactions.map((transaction) => (
+                  <TableRow
+                    key={transaction.id}
+                    className="hover:bg-slate-100 cursor-pointer"
+                    onClick={() => handleTransactionClick(transaction.id)}
+                  >
+                    <TableCell className="w-[15%] font-medium">{transaction.id}</TableCell>
+                    <TableCell className="w-[15%]">{transaction.date}</TableCell>
+                    <TableCell className="w-[25%]">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={transaction.student.avatar} alt={transaction.student.name} />
+                          <AvatarFallback>{transaction.student.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{transaction.student.name}</div>
+                          <div className="text-xs text-muted-foreground flex items-center space-x-1">
+                            <span>{transaction.student.id}</span>
+                            <span>•</span>
+                            <span>{transaction.student.email}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="w-[15%]">
+                      <Badge
+                        className={`${
+                          transaction.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+                            : transaction.status === "Success"
+                              ? "bg-green-100 text-green-800 hover:bg-green-100"
+                              : "bg-red-100 text-red-800 hover:bg-red-100"
+                        }`}
+                      >
+                        {transaction.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="w-[15%]">{transaction.package}</TableCell>
+                    <TableCell className="w-[15%] font-medium">{transaction.amount}</TableCell>
                   </TableRow>
-                </TableHeader>
-              </Table>
-            </div>
-            <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
-              <Table>
-                <TableBody>
-                  {filteredTransactions.map((transaction, index) => (
-                    <TableRow
-                      key={index}
-                      className="hover:bg-slate-100 cursor-pointer"
-                      onClick={handleTransactionClick}
-                    >
-                      <TableCell className="font-medium">{transaction.date}</TableCell>
-                      <TableCell>
-                        <Button
-                          size="sm"
-                          className={`${
-                            transaction.status === "Pending"
-                              ? "bg-yellow-200 hover:bg-yellow-300"
-                              : transaction.status === "Success"
-                                ? "bg-[#0FFF0378] hover:bg-[#0FFF0399]"
-                                : "bg-red-300 hover:bg-red-400"
-                          } text-gray-700`}
-                        >
-                          {transaction.status}
-                        </Button>
-                      </TableCell>
-                      <TableCell>{transaction.package}</TableCell>
-                      <TableCell>{transaction.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

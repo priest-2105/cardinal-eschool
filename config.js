@@ -81,6 +81,7 @@ const cardinalConfig = {
       },
       admin: {
         home: "/admin",
+        admincreatecourse: "/admin/createcourse",        
         adminmanagecourses: "/admin/courses",
         courseDetails: (courseId) => `/admin/course/${courseId}`,
         assignments: "/admin/assignments",
