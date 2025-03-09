@@ -170,9 +170,9 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-lg">Class Statistics</h3>
-                <Button variant="ghost" size="sm">
+                {/* <Button variant="ghost" size="sm">
                   <Edit className="h-4 w-4" />
-                </Button>
+                </Button> */}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
