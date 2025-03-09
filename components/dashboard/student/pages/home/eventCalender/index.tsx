@@ -11,7 +11,7 @@ interface Event {
   start: string
   end: string
   description: string
-  type: "class" | "assignment" | "quiz" | "project"
+  type: "class" | "assessment" | "quiz" | "project"
   color: string
 }
 
@@ -36,11 +36,11 @@ const SAMPLE_EVENTS: Event[] = [
   },
   {
     id: "3",
-    title: "Assignment Deadline",
+    title: "Assessment Deadline",
     start: "12:30",
     end: "13:00",
     description: "Submit Mathematics homework",
-    type: "assignment",
+    type: "assessment",
     color: "bg-orange-100 border-orange-300",
   },
   {

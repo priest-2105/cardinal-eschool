@@ -11,6 +11,7 @@ import { Course, FilterValues } from '../types'
 const COURSES_DATA: Course[] = [
   {
     id: 1,
+    grade: 10,
     name: "Social Studies",
     noOfStudent: 14,
     schedule: "Wednesday 11th Jan 2025",
@@ -18,6 +19,7 @@ const COURSES_DATA: Course[] = [
     dateAdded: "January 5, 2025"
   },
   {
+    grade: 10,
     id: 2,
     name: "Mathematics",
     noOfStudent: 14,
@@ -26,6 +28,7 @@ const COURSES_DATA: Course[] = [
     dateAdded: "January 5, 2025"
   },
   {
+    grade: 10,
     id: 3,
     name: "English Studies",
     noOfStudent: 14,
@@ -34,6 +37,7 @@ const COURSES_DATA: Course[] = [
     dateAdded: "March 5, 2025"
   },
   {
+    grade: 10,
     id: 4,
     name: "Econommics",
     noOfStudent: 12,
@@ -41,6 +45,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 5,
     name: "Econommics",
     noOfStudent: 14,
@@ -48,6 +53,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 6,
     name: "Econommics",
     noOfStudent: 6,
@@ -55,6 +61,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 7,
     name: "Econommics",    
     noOfStudent: 9,
@@ -62,6 +69,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 8,
     name: "Econommics",
     noOfStudent: 7,
@@ -69,6 +77,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 9,
     name: "Econommics",
     noOfStudent: 4,
@@ -76,6 +85,7 @@ const COURSES_DATA: Course[] = [
     status: "Completed",
     dateAdded: "March 5, 2025"
   }, {
+    grade: 10,
     id: 10,
     name: "Econommics",
     noOfStudent: 14,

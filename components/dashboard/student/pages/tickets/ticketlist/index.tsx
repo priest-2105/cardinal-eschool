@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { FilterModal } from "../ticketfilter/index"
 import { Search } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const SAMPLE_TICKETS: Ticket[] = [
   {
@@ -109,6 +110,7 @@ interface FilterValues {
 export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
+  const router = useRouter()
 
   const sortedTickets = [...SAMPLE_TICKETS].sort((a, b) => {
     if (sortBy === "latest") {
@@ -127,6 +129,11 @@ export function TicketList() {
   const handleFilterChange = (filters: FilterValues) => {
     // Implement filter logic here
     console.log("Filters applied:", filters)
+  }
+
+  
+  const handleRowClick = (ticketId: string) => {
+    router.push(`/student/ticketdetails`)
   }
 
   return (
@@ -165,44 +172,36 @@ export function TicketList() {
       <div className="flex-1 overflow-hidden">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
-            <div className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[120px]">Ticket ID</TableHead>
-                    <TableHead className="w-[200px]">Description</TableHead>
-                    <TableHead className="w-[180px] hidden md:table-cell">Department</TableHead>
-                    <TableHead className="w-[140px] hidden lg:table-cell">Last Updated</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                    <TableHead className="w-[120px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-              </Table>
-            </div>
-            <div className="overflow-y-auto max-h-[calc(100vh-300px)] custom-scrollbar">
-              <Table>
-                <TableBody>
-                  {filteredTickets.map((ticket) => (
-                    <TableRow key={ticket.id}>
-                      <TableCell className="font-medium">{ticket.id}</TableCell>
-                      <TableCell>{ticket.subject}</TableCell>
-                      <TableCell className="hidden md:table-cell">{ticket.department}</TableCell>
-                      <TableCell className="hidden lg:table-cell">{ticket.lastUpdated}</TableCell>
-                      <TableCell>
-                      <Button variant={ticket.status === "closed" ? "default" : "danger"} size="sm">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[20%]">Ticket ID</TableHead>
+                  <TableHead className="w-[20%]">Description</TableHead>
+                  <TableHead className="w-[20%]">Department</TableHead>
+                  <TableHead className="w-[20%]">Last Updated</TableHead>
+                  <TableHead className="w-[20%]">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredTickets.map((ticket) => (
+                  <TableRow
+                    key={ticket.id}
+                    onClick={() => handleRowClick(ticket.id)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <TableCell className="font-medium">{ticket.id}</TableCell>
+                    <TableCell>{ticket.subject}</TableCell>
+                    <TableCell>{ticket.department}</TableCell>
+                    <TableCell>{ticket.lastUpdated}</TableCell>
+                    <TableCell>
+                    <Button variant={ticket.status === "Open" ? "default" : "danger"} size="sm">
                           {ticket.status}
                         </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

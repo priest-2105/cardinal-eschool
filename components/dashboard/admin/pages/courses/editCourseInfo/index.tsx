@@ -33,8 +33,8 @@ export function EditCourseInfoModal({ isOpen, onClose, courseInfo, onSave }: Edi
           <DialogTitle>Edit Course Information</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="code" className="text-right">
+          <div className="grid items-center gap-4">
+            <Label htmlFor="code" className="text-left">
               Course Code
             </Label>
             <Input
@@ -44,8 +44,8 @@ export function EditCourseInfoModal({ isOpen, onClose, courseInfo, onSave }: Edi
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="department" className="text-right">
+          <div className="grid items-center gap-4">
+            <Label htmlFor="department" className="text-left">
               Department
             </Label>
             <Input
@@ -55,8 +55,8 @@ export function EditCourseInfoModal({ isOpen, onClose, courseInfo, onSave }: Edi
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="semester" className="text-right">
+          <div className="grid items-center gap-4">
+            <Label htmlFor="semester" className="text-left">
               Semester
             </Label>
             <Input

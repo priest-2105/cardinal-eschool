@@ -29,8 +29,8 @@ export function EditCourseNameModal({ isOpen, onClose, courseName, joinClassLink
           <DialogTitle>Edit Course Name and Join Link</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="courseName" className="text-right">
+          <div className="grid items-center gap-4">
+            <Label htmlFor="courseName" className="text-left">
               Course Name
             </Label>
             <Input
@@ -40,8 +40,8 @@ export function EditCourseNameModal({ isOpen, onClose, courseName, joinClassLink
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="joinClassLink" className="text-right">
+          <div className="grid items-center gap-4">
+            <Label htmlFor="joinClassLink" className="text-left">
               Join Class Link
             </Label>
             <Input

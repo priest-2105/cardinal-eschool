@@ -10,7 +10,7 @@ import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 
 const notifications = [
-  { message: "New assignment available", time: "2 hours ago" },
+  { message: "New assessment available", time: "2 hours ago" },
   { message: "Class rescheduled", time: "1 day ago" },
   { message: "New message from instructor", time: "3 days ago" },
 ]

@@ -15,6 +15,7 @@ const COURSES_DATA: Course[] = [
   {
     id: 1,
     name: "Introduction to Programming",
+    grade: 10,
     noOfStudent: 20,
     schedule: "Monday, Wednesday 10:00 AM - 11:30 AM",
     status: "Active",
@@ -23,12 +24,12 @@ const COURSES_DATA: Course[] = [
   {
     id: 2,
     name: "Advanced JavaScript",
+    grade: 10,
     noOfStudent: 15,
     schedule: "Tuesday, Thursday 2:00 PM - 3:30 PM",
     status: "Upcoming",
     dateAdded: "2024-04-15",
   },
-  // ... more courses
 ]
 
 const INITIAL_LOAD = 10
