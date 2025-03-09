@@ -1,6 +1,7 @@
 "use client"
 
 
+import CouponDetailsPage from "@/components/dashboard/admin/pages/manageCoupons/couponDetails"
 import { useState, useEffect } from "react"
 
 
@@ -25,7 +26,7 @@ export default function CouponDetails() {
 
   return (
     <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-     
+     <CouponDetailsPage/>
     </div>
   )
 }

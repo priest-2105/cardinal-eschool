@@ -1,7 +1,8 @@
 "use client"
 
 
-import CreateCouponPage from "@/components/dashboard/admin/pages/manageCoupons/createCoupon"
+
+import EditCouponPage from "@/components/dashboard/admin/pages/manageCoupons/editCoupon"
 import { useState, useEffect } from "react"
 
 export default function CreateCoupon() {
@@ -24,7 +25,7 @@ export default function CreateCoupon() {
 
   return (
     <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <CreateCouponPage/>
+      <EditCouponPage />
     </div>
   )
 }

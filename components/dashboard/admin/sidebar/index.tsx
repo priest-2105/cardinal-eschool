@@ -21,6 +21,8 @@ import ManageStudentsIcon from "@/public/assets/icons/user-star-013x.png"
 import ManageStudentsLightIcon from "@/public/assets/icons/user-star-01light.png"
 import AnnouncementIcon from "@/public/assets/icons/volume-high3x.png"
 import AnnouncementLightIcon from "@/public/assets/icons/volume-highlight.png"
+import CouponIcon from "@/public/assets/icons/coupon-icon.png"
+import CouponLightIcon from "@/public/assets/icons/coupon-icon-light.png"
 import cardinalConfig from "@/config"
 import type React from "react" 
 
@@ -106,6 +108,18 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminAnnouncements,
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
       cardinalConfig.routes.dashboard.admin.adminCreateAnnouncement,
+    ],
+  },
+  {
+    name: "Manage Coupons",
+    href: cardinalConfig.routes.dashboard.admin.adminCouponList,
+    icon: CouponIcon,
+    iconLight: CouponLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminCouponList,
+      cardinalConfig.routes.dashboard.admin.adminCouponDetails,
+      cardinalConfig.routes.dashboard.admin.adminEditCoupon,
+      cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
   },
 ]
