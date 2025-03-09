@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import Announcements from "@/components/dashboard/admin/pages/home/announcements"
-import Assignments from "@/components/dashboard/admin/pages/home/assignments"
+import Assessments from "@/components/dashboard/admin/pages/home/assessments"
 import UpcomingClasses from "@/components/dashboard/admin/pages/home/upcomingClasses"
 
 
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
         <div className="">
         <Announcements />
-        <Assignments/>
+        <Assessments/>
         </div>
       </div>
     </div>
