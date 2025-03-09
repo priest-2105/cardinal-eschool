@@ -144,9 +144,6 @@ export default function ReportsList() {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Student Reports</h2>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Create Report
-        </Button>
       </div>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
@@ -169,20 +166,7 @@ export default function ReportsList() {
             <SelectItem value="month">Past month</SelectItem>
             <SelectItem value="year">Past year</SelectItem>
           </SelectContent>
-        </Select>
-        <Select onValueChange={handleStudentFilter} defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filter by student" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All students</SelectItem>
-            {SAMPLE_STUDENTS.map((student) => (
-              <SelectItem key={student.id} value={student.id}>
-                {student.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        </Select> 
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {reports.map((report) => (

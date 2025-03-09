@@ -434,10 +434,7 @@ export function StudentDetails() {
           )}
 
           {activeTab === "reports" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Student Reports</CardTitle>
-              </CardHeader>
+            <Card className="py-5">
               <CardContent>
                 <ReportsList/>
               </CardContent>
