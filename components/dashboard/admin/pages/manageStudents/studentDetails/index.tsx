@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Progress } from "@/components/ui/progress"
+import ReportsList from "../reportList"
 
 interface Student {
   id: string
@@ -438,7 +439,7 @@ export function StudentDetails() {
                 <CardTitle>Student Reports</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Student reports will be displayed here</p>
+                <ReportsList/>
               </CardContent>
             </Card>
           )}
