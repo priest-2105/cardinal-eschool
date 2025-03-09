@@ -184,7 +184,7 @@ export function TutorDetails() {
                 onClick={() => setActiveTab("overview")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "overview"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -194,7 +194,7 @@ export function TutorDetails() {
                 onClick={() => setActiveTab("classes")}
                 className={`px-4 py-2 font-medium ${
                   activeTab === "classes"
-                    ? "border-b-2 border-primary text-primary"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
