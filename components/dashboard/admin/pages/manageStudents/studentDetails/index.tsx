@@ -3,20 +3,34 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/drodown"
-import { MoreHorizontal, ArrowLeft, Mail, Calendar, GraduationCap, Clock, BookOpen } from "lucide-react"
+import {
+  MoreHorizontal,
+  ArrowLeft,
+  Mail,
+  Calendar,
+  GraduationCap,
+  Clock,
+  BookOpen,
+  Award,
+  User,
+  Phone,
+} from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/dashboard/student/ui/ta"
 import { format } from "date-fns"
+import { Progress } from "@/components/ui/progress"
 
 interface Student {
   id: string
   name: string
   email: string
+  phone: string
+  address: string
+  dateOfBirth: string
   grade: string
-  course: string
+  program: string
   dateJoined: string
   lastLogin: string
   status: "Active" | "Suspended" | "Inactive"
@@ -24,14 +38,36 @@ interface Student {
   totalCourses?: number
   averageGrade?: string
   attendance?: number
+  examScores?: {
+    sat?: {
+      reading: number
+      math: number
+      total: number
+    }
+    ielts?: {
+      listening: number
+      reading: number
+      writing: number
+      speaking: number
+      overall: number
+    }
+  }
+  currentCourses?: Array<{
+    id: string
+    name: string
+    progress: number
+  }>
 }
 
 const SAMPLE_STUDENT: Student = {
   id: "STU001",
   name: "John Doe",
   email: "john.doe@example.com",
+  phone: "+1 (555) 123-4567",
+  address: "123 Main St, Anytown, USA",
+  dateOfBirth: "2000-05-15",
   grade: "A",
-  course: "Mathematics",
+  program: "Advanced Mathematics",
   dateJoined: "2023-09-01",
   lastLogin: "2024-03-09T10:30:00",
   status: "Active",
@@ -39,10 +75,30 @@ const SAMPLE_STUDENT: Student = {
   totalCourses: 5,
   averageGrade: "A-",
   attendance: 95,
+  examScores: {
+    sat: {
+      reading: 680,
+      math: 720,
+      total: 1400,
+    },
+    ielts: {
+      listening: 8.5,
+      reading: 8.0,
+      writing: 7.5,
+      speaking: 8.0,
+      overall: 8.0,
+    },
+  },
+  currentCourses: [
+    { id: "C001", name: "Advanced Calculus", progress: 75 },
+    { id: "C002", name: "Physics 101", progress: 60 },
+    { id: "C003", name: "English Literature", progress: 90 },
+  ],
 }
 
 export function StudentDetails() {
   const [student, setStudent] = useState<Student>(SAMPLE_STUDENT)
+  const [activeTab, setActiveTab] = useState("overview")
   const router = useRouter()
 
   const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
@@ -79,10 +135,26 @@ export function StudentDetails() {
             <div className="w-full space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <span className="flex items-center text-sm text-muted-foreground">
+                  <User className="mr-2 h-4 w-4" />
+                  Student ID
+                </span>
+                <span className="text-sm font-medium">{student.id}</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center text-sm text-muted-foreground">
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </span>
                 <span className="text-sm font-medium">{student.email}</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="flex items-center text-sm text-muted-foreground">
+                  <Phone className="mr-2 h-4 w-4" />
+                  Phone
+                </span>
+                <span className="text-sm font-medium">{student.phone}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -96,9 +168,9 @@ export function StudentDetails() {
               <div className="flex items-center justify-between">
                 <span className="flex items-center text-sm text-muted-foreground">
                   <BookOpen className="mr-2 h-4 w-4" />
-                  Course
+                  Program
                 </span>
-                <span className="text-sm font-medium">{student.course}</span>
+                <span className="text-sm font-medium">{student.program}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -138,70 +210,238 @@ export function StudentDetails() {
 
         {/* Main Content Area */}
         <div className="md:col-span-2">
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="w-full">
-              <TabsTrigger value="overview" className="flex-1">
+          <div className="mb-6">
+            <div className="flex space-x-2 border-b">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`px-4 py-2 font-medium ${
+                  activeTab === "overview"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
                 Overview
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="flex-1">
+              </button>
+              <button
+                onClick={() => setActiveTab("academic")}
+                className={`px-4 py-2 font-medium ${
+                  activeTab === "academic"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Academic
+              </button>
+              <button
+                onClick={() => setActiveTab("exams")}
+                className={`px-4 py-2 font-medium ${
+                  activeTab === "exams"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Exam Scores
+              </button>
+              <button
+                onClick={() => setActiveTab("reports")}
+                className={`px-4 py-2 font-medium ${
+                  activeTab === "reports"
+                    ? "border-b-2 border-primary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
                 Reports
-              </TabsTrigger>
-              <TabsTrigger value="attendance" className="flex-1">
-                Attendance
-              </TabsTrigger>
-              <TabsTrigger value="courses" className="flex-1">
-                Courses
-              </TabsTrigger>
-            </TabsList>
+              </button>
+            </div>
+          </div>
 
-            <TabsContent value="overview">
+          {activeTab === "overview" && (
+            <div className="space-y-6">
               <Card>
-                <CardContent className="p-6">
+                <CardHeader>
+                  <CardTitle>Student Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                      <BookOpen className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Total Courses</span>
                       <span className="text-2xl font-bold">{student.totalCourses}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                      <Award className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Average Grade</span>
                       <span className="text-2xl font-bold">{student.averageGrade}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                      <Calendar className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Attendance</span>
                       <span className="text-2xl font-bold">{student.attendance}%</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
 
-            <TabsContent value="reports">
               <Card>
-                <CardContent className="p-6">
-                  {/* Add ReportsList component here */}
-                  <p>Student reports will be displayed here</p>
+                <CardHeader>
+                  <CardTitle>Current Courses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {student.currentCourses?.map((course) => (
+                      <div key={course.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{course.name}</span>
+                          <span className="text-sm">{course.progress}%</span>
+                        </div>
+                        <Progress value={course.progress} className="h-2" />
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
-            </TabsContent>
 
-            <TabsContent value="attendance">
               <Card>
-                <CardContent className="p-6">
-                  {/* Add AttendanceList component here */}
-                  <p>Student attendance records will be displayed here</p>
+                <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Date of Birth</h3>
+                      <p>{format(new Date(student.dateOfBirth), "MMMM d, yyyy")}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
+                      <p>{student.address}</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="courses">
+          {activeTab === "academic" && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Academic Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Program Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Program</h4>
+                        <p>{student.program}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Grade</h4>
+                        <p>{student.grade}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Course History</h3>
+                    <p className="text-muted-foreground">Course history will be displayed here</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Academic Achievements</h3>
+                    <p className="text-muted-foreground">Academic achievements will be displayed here</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === "exams" && (
+            <div className="space-y-6">
               <Card>
-                <CardContent className="p-6">
-                  {/* Add CoursesList component here */}
-                  <p>Enrolled courses will be displayed here</p>
+                <CardHeader>
+                  <CardTitle>SAT Scores</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {student.examScores?.sat ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Reading</span>
+                        <span className="text-2xl font-bold">{student.examScores.sat.reading}</span>
+                        <span className="text-xs text-muted-foreground">out of 800</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Math</span>
+                        <span className="text-2xl font-bold">{student.examScores.sat.math}</span>
+                        <span className="text-xs text-muted-foreground">out of 800</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Total</span>
+                        <span className="text-2xl font-bold">{student.examScores.sat.total}</span>
+                        <span className="text-xs text-muted-foreground">out of 1600</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No SAT scores available</p>
+                  )}
                 </CardContent>
               </Card>
-            </TabsContent>
-          </Tabs>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>IELTS Scores</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {student.examScores?.ielts ? (
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Listening</span>
+                        <span className="text-2xl font-bold">{student.examScores.ielts.listening}</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Reading</span>
+                        <span className="text-2xl font-bold">{student.examScores.ielts.reading}</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Writing</span>
+                        <span className="text-2xl font-bold">{student.examScores.ielts.writing}</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Speaking</span>
+                        <span className="text-2xl font-bold">{student.examScores.ielts.speaking}</span>
+                      </div>
+                      <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
+                        <span className="text-sm text-muted-foreground">Overall</span>
+                        <span className="text-2xl font-bold">{student.examScores.ielts.overall}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No IELTS scores available</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Other Exams</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Other exam scores will be displayed here</p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {activeTab === "reports" && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Student Reports</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">Student reports will be displayed here</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
