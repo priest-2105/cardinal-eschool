@@ -45,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <title>Cardinal E School || Student</title>
         <link rel="shortcut icon" href="/assets/img/favicon-logo.png" type="image/x-icon" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
