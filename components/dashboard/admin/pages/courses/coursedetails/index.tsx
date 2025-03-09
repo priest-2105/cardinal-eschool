@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart, FileText, Edit } from "lucide-react"
+import { ArrowLeft, Users, BookOpen, Menu, X, BarChart, FileText, Edit } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import ResourcesList from "../../resources/resourcesList"
@@ -181,19 +181,19 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
                   <p className="font-medium">25</p>
                 </div>
                 <div className="space-y-2">
-                  <Clock className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Hours Taught</p>
-                  <p className="font-medium">36 / 48</p>
+                  <FileText className="h-5 w-5 text-[#1BC2C2]" />
+                  <p className="text-sm text-gray-500">Resources</p>
+                  <p className="font-medium">48</p>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Avg. Performance</p>
-                  <p className="font-medium">78%</p>
+                  <p className="text-sm text-gray-500">Reports</p>
+                  <p className="font-medium">34</p>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Assignments</p>
-                  <p className="font-medium">8 / 12</p>
+                  <p className="text-sm text-gray-500">Assessments</p>
+                  <p className="font-medium">12</p>
                 </div>
               </div>
             </CardContent>
