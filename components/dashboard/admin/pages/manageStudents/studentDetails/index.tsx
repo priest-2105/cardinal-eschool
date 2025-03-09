@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Progress } from "@/components/ui/progress"
 import ReportsList from "../reportList"
+import TransactionList from "../studentTransactionList"
 
 interface Student {
   id: string
@@ -369,7 +370,7 @@ export function StudentDetails() {
            {activeTab === "payments" && (
             <Card className="py-5">
               <CardContent>
-                <ReportsList/>
+                <TransactionList/>
               </CardContent>
             </Card>
           )}
