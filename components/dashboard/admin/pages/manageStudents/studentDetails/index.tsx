@@ -244,6 +244,16 @@ export function StudentDetails() {
               >
                 Reports
               </button>
+              <button
+                onClick={() => setActiveTab("payments")}
+                className={`px-4 py-2 font-medium ${
+                  activeTab === "payments"
+                    ? "border-b-2 border-[#1BC2C2] text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Payment
+              </button>
             </div>
           </div>
 
@@ -350,6 +360,13 @@ export function StudentDetails() {
           )}
 
           {activeTab === "reports" && (
+            <Card className="py-5">
+              <CardContent>
+                <ReportsList/>
+              </CardContent>
+            </Card>
+          )}
+           {activeTab === "payments" && (
             <Card className="py-5">
               <CardContent>
                 <ReportsList/>
