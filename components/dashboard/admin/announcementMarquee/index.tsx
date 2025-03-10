@@ -8,14 +8,14 @@ interface Announcement {
   id: string
   title: string
   content: string
+  status?: string
 }
 
 interface AnnouncementMarqueeProps {
   announcements: Announcement[]
-  speed?: number
 }
 
-export function AnnouncementMarquee({ announcements, speed = 30 }: AnnouncementMarqueeProps) {
+export function AnnouncementMarquee({ announcements }: AnnouncementMarqueeProps) {
   const [isPaused, setIsPaused] = useState(false)
   const marqueeRef = useRef<HTMLDivElement>(null)
 
@@ -35,16 +35,12 @@ export function AnnouncementMarquee({ announcements, speed = 30 }: AnnouncementM
     }
   }, [isPaused])
 
-  // Calculate animation duration based on content length and speed
-  const calculateDuration = () => {
-    const totalLength = announcements.reduce((acc, announcement) => acc + announcement.title.length, 0)
-    // Adjust this formula as needed to get the right speed
-    return Math.max((totalLength / speed) * 2, 10) // Minimum 10 seconds
-  }
+  // Filter active announcements
+  const activeAnnouncements = announcements.filter(
+    (announcement) => !announcement.status || announcement.status === "active",
+  )
 
-  const duration = calculateDuration()
-
-  if (!announcements.length) {
+  if (!activeAnnouncements.length) {
     return null
   }
 
@@ -54,16 +50,16 @@ export function AnnouncementMarquee({ announcements, speed = 30 }: AnnouncementM
         ref={marqueeRef}
         className="whitespace-nowrap inline-block animate-marquee"
         style={{
-          animationDuration: `${duration}s`,
+          animationDuration: "30s", // Fixed duration regardless of content length
           animationTimingFunction: "linear",
           animationIterationCount: "infinite",
         }}
       >
-        {announcements.map((announcement, index) => (
+        {activeAnnouncements.map((announcement, index) => (
           <span key={announcement.id} className="inline-block">
             <span className="font-medium">{announcement.title}</span>
             <span className="font-medium"> - {announcement.content}</span>
-            {index < announcements.length - 1 && (
+            {index < activeAnnouncements.length - 1 && (
               <span className="mx-6 inline-flex items-center">
                 <span className="h-2 w-2 rounded-full bg-teal-600"></span>
               </span>
