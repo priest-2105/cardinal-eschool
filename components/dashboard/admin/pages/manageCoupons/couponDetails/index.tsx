@@ -9,60 +9,48 @@ import { ArrowLeft, Tag, Edit, Trash2, Users, ShoppingBag, DollarSign, Clock } f
 import { format } from "date-fns"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
-import CouponDeleteDialog from "../couponDeleteDialog/index"
-import { SAMPLE_COUPONS } from "../samplecoupon/index"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { SAMPLE_COUPONS, type Coupon } from "../samplecoupon"
 
-export interface Coupon {
-    id: string
-    code: string
-    name: string
-    description?: string
-    discountType: "percentage" | "fixed"
-    discountValue: number
-    startDate: Date | string
-    endDate: Date | string
-    maxUses: number
-    usageCount: number
-    minOrderValue?: number
-    individualUse: boolean
-    excludeSaleItems: boolean
-    productRestrictions: "none" | "specific_products" | "specific_categories"
-    specificProducts?: string
-    specificCategories?: string
-    createdAt: string
-    updatedAt: string
-  }
-  
-  
-
-export default function CouponDetailsPage({ params }: { params: { id: string } }) {
+export default function CouponDetailsPage({ id }: { id: string }) {
   const router = useRouter()
   const [coupon, setCoupon] = useState<Coupon | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [usageByDate, setUsageByDate] = useState<{ date: string; count: number }[]>([])
 
   useEffect(() => {
-    const foundCoupon = SAMPLE_COUPONS.find((c) => c.id === params.id)
-    if (foundCoupon) {
-      setCoupon(foundCoupon)
+    if (id) {
+      const foundCoupon = SAMPLE_COUPONS.find((c) => c.id === id)
+      if (foundCoupon) {
+        setCoupon(foundCoupon)
 
-      // Generate sample usage data for demonstration
-      const startDate = new Date(foundCoupon.startDate)
-      const endDate = new Date(foundCoupon.endDate)
-      const days = Math.min(7, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
+        // Generate sample usage data for demonstration
+        const startDate = new Date(foundCoupon.startDate)
+        const endDate = new Date(foundCoupon.endDate)
+        const days = Math.min(7, Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)))
 
-      const usageData = []
-      for (let i = 0; i < days; i++) {
-        const date = new Date(startDate)
-        date.setDate(date.getDate() + i)
-        usageData.push({
-          date: format(date, "MMM d"),
-          count: Math.floor(Math.random() * (foundCoupon.usageCount / days) * 2),
-        })
+        const usageData = []
+        for (let i = 0; i < days; i++) {
+          const date = new Date(startDate)
+          date.setDate(date.getDate() + i)
+          usageData.push({
+            date: format(date, "MMM d"),
+            count: Math.floor(Math.random() * (foundCoupon.usageCount / days) * 2),
+          })
+        }
+        setUsageByDate(usageData)
       }
-      setUsageByDate(usageData)
     }
-  }, [params.id])
+  }, [id])
 
   const handleDelete = () => {
     setIsDeleteDialogOpen(true)
@@ -70,6 +58,7 @@ export default function CouponDetailsPage({ params }: { params: { id: string } }
 
   const confirmDelete = () => {
     // In a real application, you would delete the coupon via API
+    alert(`Coupon ${coupon?.code} has been deleted successfully.`)
     router.push("/admin/coupons")
   }
 
@@ -140,12 +129,12 @@ export default function CouponDetailsPage({ params }: { params: { id: string } }
           <Button
             variant="outline"
             className="flex items-center gap-1"
-            onClick={() => router.push(`/admin/coupons/${coupon.id}/edit`)}
+            onClick={() => router.push(`/admin/editcoupon/${coupon.id}`)}
           >
             <Edit className="h-4 w-4 mr-1" />
             Edit
           </Button>
-          <Button variant="danger" className="flex items-center gap-1" onClick={handleDelete}>
+          <Button variant="destructive" className="flex items-center gap-1" onClick={handleDelete}>
             <Trash2 className="h-4 w-4 mr-1" />
             Delete
           </Button>
@@ -327,12 +316,26 @@ export default function CouponDetailsPage({ params }: { params: { id: string } }
         </Card>
       </div>
 
-      <CouponDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        coupon={coupon}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={confirmDelete}
-      />
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Coupon</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the <strong>{coupon.code}</strong> coupon? This action cannot be undone
+              and any customers currently using this coupon will no longer be able to apply it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

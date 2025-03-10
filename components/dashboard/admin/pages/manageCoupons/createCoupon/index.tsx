@@ -65,7 +65,7 @@ export default function CreateCouponPage() {
     if (!formData.discountValue) {
       newErrors.discountValue = "Discount value is required"
     } else {
-      const value = Number.parseFloat(formData.discountValue)
+      const value = Number.parseFloat(formData.discountValue.toString())
       if (isNaN(value) || value <= 0) {
         newErrors.discountValue = "Discount must be a positive number"
       } else if (formData.discountType === "percentage" && value > 100) {
@@ -79,11 +79,11 @@ export default function CreateCouponPage() {
 
     if (!formData.maxUses) {
       newErrors.maxUses = "Maximum uses is required"
-    } else if (Number.parseInt(formData.maxUses) <= 0) {
+    } else if (Number.parseInt(formData.maxUses.toString()) <= 0) {
       newErrors.maxUses = "Maximum uses must be a positive number"
     }
 
-    if (formData.minOrderValue && Number.parseFloat(formData.minOrderValue) < 0) {
+    if (formData.minOrderValue && Number.parseFloat(formData.minOrderValue.toString()) < 0) {
       newErrors.minOrderValue = "Minimum order value cannot be negative"
     }
 
@@ -98,9 +98,11 @@ export default function CreateCouponPage() {
       // In a real app, you would send this data to your backend
       console.log("Form data to submit:", formData)
 
+      alert(`Coupon ${formData.code} has been created successfully.`)
+
       router.push("/admin/coupons")
     } else {
-      
+      alert("Please correct the errors in the form.")
     }
   }
 

@@ -2,12 +2,15 @@
 
 
 import CouponDetailsPage from "@/components/dashboard/admin/pages/manageCoupons/couponDetails"
+import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 
 
 export default function CouponDetails() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const params = useParams()
+  const id = params?.id as string
 
   useEffect(() => {
     const handleResize = () => {
@@ -26,7 +29,7 @@ export default function CouponDetails() {
 
   return (
     <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-     <CouponDetailsPage/>
+     <CouponDetailsPage id={id}/>
     </div>
   )
 }

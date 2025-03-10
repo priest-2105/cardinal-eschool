@@ -1,11 +1,14 @@
 "use client"
 
-
 import CreateCouponPage from "@/components/dashboard/admin/pages/manageCoupons/createCoupon"
+import EditCouponPage from "@/components/dashboard/admin/pages/manageCoupons/editCoupon"
+import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function CreateCoupon() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { id } = useParams()
+  const couponId = typeof id === 'string' ? id : ''
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,4 +31,3 @@ export default function CreateCoupon() {
     </div>
   )
 }
-

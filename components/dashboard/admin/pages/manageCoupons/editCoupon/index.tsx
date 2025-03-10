@@ -14,39 +14,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, InfoIcon } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { DatePicker } from "@/components/ui/date-picker"
-import { SAMPLE_COUPONS } from "../samplecoupon/index"
+import { SAMPLE_COUPONS, type Coupon } from "../samplecoupon"
 
-export interface Coupon {
-    id: string
-    code: string
-    name: string
-    description?: string
-    discountType: "percentage" | "fixed"
-    discountValue: number
-    startDate: Date | string
-    endDate: Date | string
-    maxUses: number
-    usageCount: number
-    minOrderValue?: number
-    individualUse: boolean
-    excludeSaleItems: boolean
-    productRestrictions: "none" | "specific_products" | "specific_categories"
-    specificProducts?: string
-    specificCategories?: string
-    createdAt: string
-    updatedAt: string
-  }
-  
-  
-
-export default function EditCouponPage({ params }: { params: { id: string } }) {
-  const router = useRouter() 
+export default function EditCouponPage({ id }: { id: string }) {
+  const router = useRouter()
 
   const [formData, setFormData] = useState<Coupon | null>(null)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
-    const coupon = SAMPLE_COUPONS.find((c) => c.id === params.id)
+    console.log("Coupon ID:", id)
+    const coupon = SAMPLE_COUPONS.find((c) => c.id === id)
+    console.log("Found Coupon:", coupon)
     if (coupon) {
       setFormData({
         ...coupon,
@@ -54,7 +33,7 @@ export default function EditCouponPage({ params }: { params: { id: string } }) {
         endDate: new Date(coupon.endDate),
       })
     }
-  }, [params.id])
+  }, [id])
 
   const handleChange = (field: string, value: any) => {
     if (!formData) return
@@ -124,10 +103,12 @@ export default function EditCouponPage({ params }: { params: { id: string } }) {
     if (validateForm()) {
       // In a real app, you would send this data to your backend
       console.log("Form data to submit:", formData)
- 
-      router.push(`/admin/coupons/${params.id}`)
+
+      alert(`Coupon ${formData?.code} has been updated successfully.`)
+
+      router.push(`/admin/coupons`)
     } else {
-    
+      alert("Please correct the errors in the form.")
     }
   }
 

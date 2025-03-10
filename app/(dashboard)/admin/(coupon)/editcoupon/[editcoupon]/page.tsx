@@ -6,8 +6,10 @@ import EditCouponPage from "@/components/dashboard/admin/pages/manageCoupons/edi
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
-export default function CreateCoupon() {
+export default function EditCoupon() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const params = useParams()
+  const id = params?.id as string
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,7 +26,6 @@ export default function CreateCoupon() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  const { id } = useParams()
 
 
   return (

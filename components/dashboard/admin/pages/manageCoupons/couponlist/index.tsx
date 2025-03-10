@@ -72,7 +72,7 @@ export default function CouponsList() {
   })
 
   const handleViewCoupon = (id: string) => {
-    router.push(`/admin/coupons/${id}`)
+    router.push(`/admin/coupon/${id}`)
   }
 
   const handleEditCoupon = (id: string, e: React.MouseEvent) => {
@@ -127,7 +127,7 @@ export default function CouponsList() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Coupons</h1>
-        <Button onClick={() => router.push("/admin/coupons/create")} className="flex items-center gap-2">
+        <Button onClick={() => router.push("/admin/coupon/createcoupon")} className="flex items-center gap-2">
           <Plus size={16} /> Create Coupon
         </Button>
       </div>
