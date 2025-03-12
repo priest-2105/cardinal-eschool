@@ -133,7 +133,7 @@ export function TicketList() {
   }
 
   
-  const handleRowClick = (ticketId: string) => {
+  const handleRowClick = () => {
     router.push(`/tutor/ticketdetails`)
   }
 
