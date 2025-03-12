@@ -37,13 +37,14 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newAssessments: Omit<Assessment, "id">[] = selectedStudents.map((studentId) => ({
+      title: topic, 
       topic,
       subject,
       dueDate: new Date(dueDate),
       status: "pending",
       description,
       studentIds: [studentId],
-    }))
+    }));    
     onSubmit(newAssessments)
     resetForm()
   }
