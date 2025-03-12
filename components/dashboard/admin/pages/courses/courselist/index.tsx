@@ -61,7 +61,9 @@ export function CourseList() {
     setFilters(newFilters)
   }
 
-  const uniqueCourses = [...new Set(filteredCourses.map((course) => course.name))]
+  const uniqueCourses = [
+    ...new Map(filteredCourses.map((course) => [course.name, { id: course.id, name: course.name }])).values(),
+  ]
 
   const visibleCourses = filteredCourses.slice(0, visibleCount)
   const hasMore = visibleCourses.length < filteredCourses.length
