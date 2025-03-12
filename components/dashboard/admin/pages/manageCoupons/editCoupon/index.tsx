@@ -35,7 +35,7 @@ export default function EditCouponPage({ id }: { id: string }) {
     }
   }, [id])
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: unknown) => {
     if (!formData) return
 
     setFormData((prev) => {

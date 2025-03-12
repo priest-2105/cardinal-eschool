@@ -37,7 +37,7 @@ export default function CreateCouponPage() {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
     // Clear error when field is updated
     if (errors[field]) {
