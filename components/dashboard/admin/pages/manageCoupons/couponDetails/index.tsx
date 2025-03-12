@@ -243,12 +243,12 @@ export default function CouponDetailsPage({ id }: { id: string }) {
               <p>{coupon.excludeSaleItems ? "Yes" : "No"}</p>
             </div>
 
-            {coupon.minOrderValue > 0 && (
+            {/* {coupon.minOrderValue > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-1">Minimum Order Value</h4>
                 <p>${coupon.minOrderValue.toFixed(2)}</p>
               </div>
-            )}
+            )} */}
 
             <div>
               <h4 className="text-sm font-medium mb-1">Product Restrictions</h4>
