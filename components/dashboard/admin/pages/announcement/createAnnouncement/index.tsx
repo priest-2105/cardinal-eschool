@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calender"
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, ArrowLeft } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
@@ -21,6 +21,7 @@ interface Announcement {
   title: string
   content: string
   recipients: "students" | "tutors" | "both"
+  status: "active" | "inactive" | "draft"
   expirationDate?: Date
   createdAt: Date
   updatedAt: Date
@@ -30,6 +31,7 @@ export function CreateAnnouncement() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [recipients, setRecipients] = useState<"students" | "tutors" | "both">("both")
+  const [status, setStatus] = useState<"active" | "inactive" | "draft">("draft")
   const [expirationDate, setExpirationDate] = useState<Date>()
   const router = useRouter()
 
@@ -40,6 +42,7 @@ export function CreateAnnouncement() {
       title,
       content,
       recipients,
+      status,
       expirationDate,
     }
 
@@ -51,7 +54,15 @@ export function CreateAnnouncement() {
   }
 
   return (
-    <div className="max-w-4xl p-6">
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center mb-6">
+        <Button variant="ghost" onClick={() => router.back()} className="mr-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-2xl font-bold">Create Announcement</h1>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Create Announcement</CardTitle>
@@ -67,6 +78,24 @@ export function CreateAnnouncement() {
                 placeholder="Enter announcement title"
                 required
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={status} onValueChange={(value: "active" | "inactive" | "draft") => setStatus(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Draft announcements are not visible to users. Active announcements are visible to the selected
+                recipients.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -105,6 +134,9 @@ export function CreateAnnouncement() {
                   <Calendar mode="single" selected={expirationDate} onSelect={setExpirationDate} initialFocus />
                 </PopoverContent>
               </Popover>
+              <p className="text-sm text-muted-foreground">
+                If set, the announcement will automatically become inactive after this date.
+              </p>
             </div>
 
             <div className="space-y-2">

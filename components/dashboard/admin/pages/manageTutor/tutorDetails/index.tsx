@@ -166,10 +166,10 @@ export function TutorDetails() {
                     <MoreHorizontal className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  <DropdownMenuItem onClick={() => handleStatusChange("Active")}>Set as Active</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange("Suspended")}>Suspend Tutor</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange("Inactive")}>Set as Inactive</DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-[200px] bg-white py-2 ">
+                  <DropdownMenuItem className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Active")}>Set as Active</DropdownMenuItem>
+                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Suspended")}>Suspend Tutor</DropdownMenuItem>
+                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Inactive")}>Set as Inactive</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

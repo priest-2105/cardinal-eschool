@@ -19,7 +19,7 @@ export interface Student {
 
 export interface Assessment {
   id: string
-  title: string
+  topic: string
   subject: string
   dueDate: Date
   status: "pending" | "submitted" | "graded"
@@ -38,7 +38,7 @@ interface CreateAssessmentModalProps {
 
 
 export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: CreateAssessmentModalProps) {
-  const [title, setTitle] = useState("")
+  const [topic, setTopic] = useState("")
   const [subject, setSubject] = useState("")
   const [dueDate, setDueDate] = useState("")
   const [description, setDescription] = useState("")
@@ -47,7 +47,7 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newAssessments: Omit<Assessment, "id">[] = selectedStudents.map((studentId) => ({
-      title,
+      topic,
       subject,
       dueDate: new Date(dueDate),
       status: "pending",
@@ -59,7 +59,7 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
   }
 
   const resetForm = () => {
-    setTitle("")
+    setTopic("")
     setSubject("")
     setDueDate("")
     setDescription("")
@@ -80,12 +80,12 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
-          <div>
             <Label htmlFor="subject">Subject</Label>
             <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="topic">Topic</Label>
+            <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="dueDate">Due Date</Label>

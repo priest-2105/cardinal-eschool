@@ -76,7 +76,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
 export const DropdownMenuDemo: React.FC = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <div className="bg-white p-4">
+         <DropdownMenuTrigger asChild>
         <button className="p-2 rounded-md hover:bg-gray-100">
           <MoreHorizontal size={16} />
         </button>
@@ -92,6 +93,7 @@ export const DropdownMenuDemo: React.FC = () => {
           Edit Information
         </DropdownMenuItem>
       </DropdownMenuContent>
+      </div>
     </DropdownMenu>
   )
 }

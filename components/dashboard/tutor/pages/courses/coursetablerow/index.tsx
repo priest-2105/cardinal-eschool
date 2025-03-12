@@ -20,7 +20,8 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
 
   return (
     <TableRow className="hover:bg-slate-100 cursor-pointer text-sm md:text-base" onClick={handleCourseDetails}>
-      <TableCell className="w-[30%] font-medium">{course.name}</TableCell>
+      <TableCell className="w-[25%] font-medium">{course.name}</TableCell>
+      <TableCell className="w-[10%] font-medium">{course.grade}</TableCell>
       <TableCell className="w-[15%] hidden md:table-cell">
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 md:h-8 md:w-8">
@@ -28,7 +29,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
           </Avatar>
         </div>
       </TableCell>
-      <TableCell className="w-[25%] hidden lg:table-cell">{course.schedule}</TableCell>
+      <TableCell className="w-[20%] hidden lg:table-cell">{course.schedule}</TableCell>
       <TableCell className="w-[15%]">
         <span
           className={cn(

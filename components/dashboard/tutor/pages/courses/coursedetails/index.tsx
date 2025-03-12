@@ -11,6 +11,7 @@ import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
+import { FileText} from "lucide-react"
 import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
@@ -34,13 +35,15 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
 
+
   const tabs = [
-    { id: "description", label: "Description" },
-    { id: "resources", label: "Resources" },
-    { id: "reports", label: "Reports" },
-    { id: "assessments", label: "Assessments" },
-    { id: "students", label: "Students" },
+    { id: "description", label: "Description", icon: BookOpen },
+    { id: "resources", label: "Resources", icon: FileText },
+    { id: "reports", label: "Reports", icon: BarChart },
+    { id: "assessments", label: "Assessments", icon: FileText },
+    { id: "students", label: "Students", icon: Users },
   ]
+
 
   const handleback = () => {
     route.back()
@@ -66,23 +69,24 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
 
       {/* Tabs */}
       <div className="border-b mb-4 md:mb-6 overflow-x-auto">
-        <div className="flex space-x-4 md:space-x-8 pb-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as Tab)}
-              className={cn(
-                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap",
-                activeTab === tab.id
-                  ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
-                  : "text-gray-500 hover:text-gray-700",
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+           <div className="flex space-x-4 md:space-x-8 pb-2">
+             {tabs.map((tab) => (
+               <button
+                 key={tab.id}
+                 onClick={() => setActiveTab(tab.id as Tab)}
+                 className={cn(
+                   "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
+                   activeTab === tab.id
+                     ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
+                     : "text-gray-500 hover:text-gray-700",
+                 )}
+               >
+                 <tab.icon className="h-4 w-4" />
+                 {tab.label}
+               </button>
+             ))}
+           </div>
+         </div>
 
       {/* Content */}
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
@@ -138,18 +142,18 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
                 </div>
                 <div className="space-y-2">
                   <Clock className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Hours Taught</p>
-                  <p className="font-medium">36 / 48</p>
+                  <p className="text-sm text-gray-500">Resources</p>
+                  <p className="font-medium">348</p>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Avg. Performance</p>
-                  <p className="font-medium">78%</p>
+                  <p className="text-sm text-gray-500">Reports</p>
+                  <p className="font-medium">78</p>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
-                  <p className="text-sm text-gray-500">Assignments</p>
-                  <p className="font-medium">8 / 12</p>
+                  <p className="text-sm text-gray-500">Assessments</p>
+                  <p className="font-medium">12</p>
                 </div>
               </div>
             </CardContent>

@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import StudentEventCalendar from "@/components/dashboard/student/pages/home/eventCalender"
 import Announcements from "@/components/dashboard/student/pages/home/announcements"
-import Assignments from "@/components/dashboard/student/pages/home/assignments"
+import Assessments from "@/components/dashboard/student/pages/home/assessments"
 import UpcomingClasses from "@/components/dashboard/student/pages/home/upcomingClasses"
 
 
@@ -38,7 +38,7 @@ export default function StudentDashboard() {
 
         <div className="">
         <Announcements />
-        <Assignments/>
+        <Assessments/>
         </div>
       </div>
     </div>

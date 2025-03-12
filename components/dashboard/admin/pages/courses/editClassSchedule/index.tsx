@@ -40,7 +40,7 @@ export function EditClassScheduleModal({ isOpen, onClose, schedules, onSave }: E
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-fit">
         <DialogHeader>
           <DialogTitle>Edit Class Schedule</DialogTitle>
         </DialogHeader>

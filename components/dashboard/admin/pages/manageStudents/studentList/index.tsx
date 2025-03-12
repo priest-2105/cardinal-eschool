@@ -12,7 +12,7 @@ interface Student {
   id: string
   name: string
   email: string
-  grade: string
+  grade: number
   course: string
   dateJoined: string
   status: "Active" | "Suspended" | "Inactive"
@@ -23,7 +23,7 @@ const SAMPLE_STUDENTS: Student[] = [
     id: "STU001",
     name: "John Doe",
     email: "john.doe@example.com",
-    grade: "A",
+    grade: 1,
     course: "Mathematics",
     dateJoined: "2023-09-01",
     status: "Active",
@@ -32,7 +32,7 @@ const SAMPLE_STUDENTS: Student[] = [
     id: "STU002",
     name: "Jane Smith",
     email: "jane.smith@example.com",
-    grade: "B",
+    grade: 12,
     course: "Physics",
     dateJoined: "2023-08-15",
     status: "Active",
@@ -41,7 +41,7 @@ const SAMPLE_STUDENTS: Student[] = [
     id: "STU003",
     name: "Alice Johnson",
     email: "alice.johnson@example.com",
-    grade: "C",
+    grade: 3,
     course: "Chemistry",
     dateJoined: "2023-09-10",
     status: "Suspended",
@@ -51,7 +51,7 @@ const SAMPLE_STUDENTS: Student[] = [
 export function StudentList() {
   const [students, setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [gradeFilter, setGradeFilter] = useState("all")
+  const [gradeFilter, setGradeFilter] = useState(1)
   const [courseFilter, setCourseFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
   const router = useRouter()
@@ -63,7 +63,7 @@ export function StudentList() {
         student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.id.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesGrade = gradeFilter === "all" || student.grade === gradeFilter
+      const matchesGrade = gradeFilter === 1 || student.grade === gradeFilter
       const matchesCourse = courseFilter === "all" || student.course === courseFilter
 
       let matchesDate = true
@@ -107,12 +107,17 @@ export function StudentList() {
                 <SelectValue placeholder="Grade" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Grades</SelectItem>
-                <SelectItem value="A">Grade A</SelectItem>
-                <SelectItem value="B">Grade B</SelectItem>
-                <SelectItem value="C">Grade C</SelectItem>
-                <SelectItem value="D">Grade D</SelectItem>
-                <SelectItem value="F">Grade F</SelectItem>
+                <SelectItem value="0">All Grades</SelectItem>
+                <SelectItem value="1">Grade 1</SelectItem>
+                <SelectItem value="2">Grade 2</SelectItem>
+                <SelectItem value="3">Grade 3</SelectItem>
+                <SelectItem value="4">Grade 4</SelectItem>
+                <SelectItem value="5">Grade 5</SelectItem>
+                <SelectItem value="6">Grade 6</SelectItem>
+                <SelectItem value="7">Grade 7</SelectItem>
+                <SelectItem value="8">Grade 8</SelectItem>
+                <SelectItem value="9">Grade 9</SelectItem>
+                <SelectItem value="10">Grade 10</SelectItem>
               </SelectContent>
             </Select>
             <Select value={courseFilter} onValueChange={setCourseFilter}>

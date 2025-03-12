@@ -80,12 +80,12 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="topic">Topic</Label>
-            <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} required />
-          </div>
-          <div>
             <Label htmlFor="subject">Subject</Label>
             <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="topic">Topic</Label>
+            <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} required />
           </div>
           <div>
             <Label htmlFor="dueDate">Due Date</Label>
