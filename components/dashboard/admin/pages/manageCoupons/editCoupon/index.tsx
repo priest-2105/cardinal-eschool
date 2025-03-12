@@ -122,7 +122,7 @@ export default function EditCouponPage({ id }: { id: string }) {
           </Button>
           <h1 className="text-2xl font-bold">Coupon Not Found</h1>
         </div>
-        <p>The coupon you're trying to edit doesn't exist or has been deleted.</p>
+        <p>The coupon you&apos;re trying to edit doesn&apos;t exist or has been deleted.</p>
       </div>
     )
   }
