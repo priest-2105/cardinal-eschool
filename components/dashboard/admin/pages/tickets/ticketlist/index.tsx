@@ -133,7 +133,7 @@ export function TicketList() {
     console.log("Filters applied:", filters)
   }
 
-  const handleRowClick = (ticketId: string) => {
+  const handleRowClick = () => {
     router.push(`/admin/ticketdetails`)
   }
 
