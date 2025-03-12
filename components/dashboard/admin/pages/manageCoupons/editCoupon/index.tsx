@@ -38,10 +38,17 @@ export default function EditCouponPage({ id }: { id: string }) {
   const handleChange = (field: string, value: unknown) => {
     if (!formData) return
 
-    setFormData((prev) => {
-      if (!prev) return prev
-      return { ...prev, [field]: value }
-    })
+    if (field === "startDate" || field === "endDate") {
+      setFormData((prev) => {
+        if (!prev) return null
+        return { ...prev, [field]: value instanceof Date ? value : null }
+      })
+    } else {
+      setFormData((prev) => {
+        if (!prev) return null
+        return { ...prev, [field]: value }
+      })
+    }
 
     // Clear error when field is updated
     if (errors[field]) {
@@ -251,11 +258,11 @@ export default function EditCouponPage({ id }: { id: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date</Label>
-                <DatePicker selected={formData.startDate} setDate={(date) => handleChange("startDate", date)} />
+                <DatePicker selected={formData.startDate} onChange={(date) => handleChange("startDate", date)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="endDate">End Date</Label>
-                <DatePicker selected={formData.endDate} setDate={(date) => handleChange("endDate", date)} />
+                <DatePicker selected={formData.endDate} onChange={(date) => handleChange("endDate", date)} />
                 {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
               </div>
             </div>
