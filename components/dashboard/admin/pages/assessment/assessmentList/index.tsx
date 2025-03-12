@@ -11,24 +11,12 @@ import { Badge } from "@/components/ui/badge"
 import { AssessmentModal } from "../assessmentModal/index"
 import { CreateAssessmentModal } from "../createassessmentModal/index"
 import { EditAssessmentModal } from "../editAssessmentModal/index"
-
+import Assessment from "@/types/dashboard/admin/course/assessment/index"
 
 export interface Student {
   id: string
   name: string
   email: string
-}
-
-export interface Assessment {
-  id: string
-  title: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
 }
 
 

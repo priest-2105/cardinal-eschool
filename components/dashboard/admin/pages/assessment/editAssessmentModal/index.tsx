@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 // import { Checkbox } from "@/components/ui/checkbox"
+import { Assessment } from "@/types/dashboard/admin/course/assessment/index"
 
 
 
@@ -15,18 +16,6 @@ export interface Student {
     id: string
     name: string
     email: string
-  }
-  
-  export interface Assessment {
-    id: string
-    topic: string
-    subject: string
-    dueDate: Date
-    status: "pending" | "submitted" | "graded"
-    description?: string
-    submittedFile?: string
-    studentIds: string[]
-    grade?: number
   }
   
  
