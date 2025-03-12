@@ -134,7 +134,7 @@ export default function CouponDetailsPage({ id }: { id: string }) {
             <Edit className="h-4 w-4 mr-1" />
             Edit
           </Button>
-          <Button variant="destructive" className="flex items-center gap-1" onClick={handleDelete}>
+          <Button variant="danger" className="flex items-center gap-1" onClick={handleDelete}>
             <Trash2 className="h-4 w-4 mr-1" />
             Delete
           </Button>
