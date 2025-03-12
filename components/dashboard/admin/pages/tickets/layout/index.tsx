@@ -1,10 +1,6 @@
 'use client'
 
 
-import { usePathname } from 'next/navigation'
-import cardinalConfig from '@/config'
-
-
 export default function TicketLayout({
   children
 }: {
