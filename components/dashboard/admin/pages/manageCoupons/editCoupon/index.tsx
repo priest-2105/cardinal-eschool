@@ -251,11 +251,11 @@ export default function EditCouponPage({ id }: { id: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate">Start Date</Label>
-                <DatePicker date={formData.startDate} setDate={(date) => handleChange("startDate", date)} />
+                <DatePicker selected={formData.startDate} setDate={(date) => handleChange("startDate", date)} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="endDate">End Date</Label>
-                <DatePicker date={formData.endDate} setDate={(date) => handleChange("endDate", date)} />
+                <DatePicker selected={formData.endDate} setDate={(date) => handleChange("endDate", date)} />
                 {errors.endDate && <p className="text-sm text-destructive">{errors.endDate}</p>}
               </div>
             </div>
