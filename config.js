@@ -4,8 +4,8 @@ const cardinalConfig = {
   description: "A modern e-learning platform for seamless school management.",
   apiBaseURL: "",
   contactInfo: {
-    phone: "+234 811 181 1995",
-    email: "online@cardinalschools.com",
+    phone: "+234 813 9295 906",
+    email: "cardinaleschool@gmail.com",
     address: "3, Olalekan Adekoya Street, Off Liasu Road, Egbe-Idimu, Lagos.",
   },
   socialInfo: {
