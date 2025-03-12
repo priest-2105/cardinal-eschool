@@ -1,11 +1,12 @@
 import PrivacyPolicyPage from "@/components/public/pages/privacy-policy/prviacyDocumentation";
+import TermsAndConditionsPage from "@/components/public/pages/terms";
 
-function PrivacyPolicy() {
+function Terms() {
   return (
     <>
-    Termsn and conditions
+    <TermsAndConditionsPage/>
     </>
   )
 }
 
-export default PrivacyPolicy;
+export default Terms;

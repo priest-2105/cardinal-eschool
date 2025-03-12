@@ -1,6 +1,6 @@
 import RefundPolicyPage from "@/components/public/pages/refund-policy";
 
-function PrivacyPolicy() {
+function refundPolicy() {
   return (
     <>
     <RefundPolicyPage/>
@@ -8,4 +8,4 @@ function PrivacyPolicy() {
   )
 }
 
-export default PrivacyPolicy;
+export default refundPolicy;
