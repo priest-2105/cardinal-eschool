@@ -2,7 +2,6 @@
 
 
 import CouponsList from "@/components/dashboard/admin/pages/manageCoupons/couponlist"
-import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function CouponList() {
