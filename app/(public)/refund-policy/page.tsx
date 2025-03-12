@@ -1,9 +1,9 @@
-import PrivacyPolicyPage from "@/components/public/pages/privacy-policy/prviacyDocumentation";
+import RefundPolicyPage from "@/components/public/pages/refund-policy";
 
 function PrivacyPolicy() {
   return (
     <>
-    <PrivacyPolicyPage/>
+    <RefundPolicyPage/>
     </>
   )
 }
