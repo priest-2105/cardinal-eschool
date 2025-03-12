@@ -1,7 +1,7 @@
 
 export interface Assessment {
     id: string
-    title: string
+    topic: string
     subject: string
     dueDate: Date
     status: "pending" | "submitted" | "graded"
