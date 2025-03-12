@@ -8,9 +8,9 @@ export default function TermsAndConditionsPage() {
       <div className="relative h-[300px] overflow-hidden">
         <div className="absolute inset-0 bg-gray-900">
           <img 
-            src="/assets/img/pages/terms-and-conditions/pexels-scottwebb-430208.jpg" 
+            src="/assets/img/pages/terms/pexels-rdne-7821937.jpg" 
             alt="Terms and Conditions" 
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover bg-bottom opacity-50"
           />
         </div>
         <div className="relative z-10 h-full flex items-center justify-center">

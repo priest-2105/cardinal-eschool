@@ -8,7 +8,7 @@ export default function RefundPolicyPage() {
       <div className="relative h-[300px] overflow-hidden">
         <div className="absolute inset-0 bg-gray-900">
           <img 
-            src="/assets/img/pages/refund-policy/refund.jpg" 
+            src="/assets/img/pages/refundpolicy/pexels-mikhail-nilov-7731335.jpg" 
             alt="Refund Policy" 
             className="w-full h-full object-cover opacity-50"
           />
