@@ -1,7 +1,6 @@
 "use client"
 
 import CreateCouponPage from "@/components/dashboard/admin/pages/manageCoupons/createCoupon"
-import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function CreateCoupon() {
