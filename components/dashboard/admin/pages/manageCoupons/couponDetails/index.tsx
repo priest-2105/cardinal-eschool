@@ -103,7 +103,7 @@ export default function CouponDetailsPage({ id }: { id: string }) {
           <h1 className="text-2xl font-bold">Coupon Not Found</h1>
         </div>
         <Alert>
-          <AlertDescription>The coupon you're looking for doesn't exist or has been deleted.</AlertDescription>
+          <AlertDescription>The coupon you&apos;re looking for doesn&apos;t exist or has been deleted.</AlertDescription>
         </Alert>
       </div>
     )
