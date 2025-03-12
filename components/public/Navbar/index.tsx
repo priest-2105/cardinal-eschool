@@ -51,7 +51,8 @@ function PublicNavbar() {
       <div className="max-w-screen-2xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Image onDragStart={(event) => event.preventDefault()}  src={logo} alt="Cardinal Logo" width={180} height={90} />
+            {/* <Image onDragStart={(event) => event.preventDefault()}  src={logo} alt="Cardinal Logo" width={180} height={90} /> */}
+            <img onDragStart={(event) => event.preventDefault()}  src={logo.src} alt="Cardinal Logo" width={180} height={90} />
           </div>
           
           {/* Desktop menu */}
