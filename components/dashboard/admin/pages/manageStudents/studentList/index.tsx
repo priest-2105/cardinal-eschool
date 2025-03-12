@@ -49,7 +49,7 @@ const SAMPLE_STUDENTS: Student[] = [
 ]
 
 export function StudentList() {
-  const [students, setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
+  const [students, _setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
   const [searchQuery, setSearchQuery] = useState("")
   const [gradeFilter, setGradeFilter] = useState(1)
   const [courseFilter, setCourseFilter] = useState("all")
@@ -86,7 +86,7 @@ export function StudentList() {
     })
   }
 
-  const handleRowClick = (studentId: string) => {
+  const handleRowClick = () => {
     router.push(`/admin/student`)
   }
 

@@ -57,7 +57,7 @@ export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
-  const [studentFilter, setStudentFilter] = useState("all")
+  const [studentFilter, _setStudentFilter] = useState("all")
   // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
