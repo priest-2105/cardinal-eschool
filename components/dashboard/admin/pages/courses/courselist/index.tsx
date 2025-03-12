@@ -42,6 +42,7 @@ export function CourseList() {
   const [_filters, setFilters] = useState<FilterValues>({
     courses: [],
     tutors: [],
+    admins: [], // Add this line
     dateRange: {
       from: undefined,
       to: undefined,
