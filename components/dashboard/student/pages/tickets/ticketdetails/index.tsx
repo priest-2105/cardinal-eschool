@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { Textarea } from "@/components/dashboard/student/ui/textarea"
 import { Button } from "@/components/dashboard/student/ui/button"
 import { Label } from "@/components/dashboard/student/ui/label"
@@ -68,8 +68,8 @@ export default function TicketDetailsComponent() {
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const router = useRouter()
+  const [_showConfirmModal, setShowConfirmModal] = useState(false)
+  // const router = useRouter()
 
   useEffect(() => {
     // Here you would typically fetch the ticket details from an API
