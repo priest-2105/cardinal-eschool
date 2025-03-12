@@ -45,7 +45,8 @@ const cardinalConfig = {
     members: "/team/#ourteam",
     faq: "/faq",
     dashboard: "/dashboard",
-    privacyPolicy: "/privacy-policy",
+    refundPolicy: "/refund-policy",
+    terms: "/terms",
     dashboard: {
       student: {
         home: "/student",
