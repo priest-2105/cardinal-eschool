@@ -100,18 +100,18 @@ export default function TicketDetailsComponent() {
     setShowConfirmModal(true)
   }
 
-  const confirmCloseTicket = async () => {
-    // Here you would typically send a request to close the ticket
-    // await closeTicket(ticket.id);
-    setTicket({ ...ticket, status: "Closed" })
-    setShowConfirmModal(false)
-    setPopupMessage("The ticket has been closed successfully.")
-    setShowPopup(true)
-    setTimeout(() => {
-      setShowPopup(false)
-      router.push("/admin/tickets")
-    }, 2000)
-  }
+  // const confirmCloseTicket = async () => {
+  //   // Here you would typically send a request to close the ticket
+  //   // await closeTicket(ticket.id);
+  //   setTicket({ ...ticket, status: "Closed" })
+  //   setShowConfirmModal(false)
+  //   setPopupMessage("The ticket has been closed successfully.")
+  //   setShowPopup(true)
+  //   setTimeout(() => {
+  //     setShowPopup(false)
+  //     router.push("/admin/tickets")
+  //   }, 2000)
+  // }
 
   return (
     <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
