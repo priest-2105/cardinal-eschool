@@ -57,6 +57,7 @@ export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [studentFilter, _setStudentFilter] = useState("all")
   // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)

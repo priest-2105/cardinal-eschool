@@ -82,7 +82,7 @@ export function TutorList() {
     })
   }
 
-  const handleRowClick = (tutorId: string) => {
+  const handleRowClick = () => {
     router.push(`/admin/tutor`)
   }
 

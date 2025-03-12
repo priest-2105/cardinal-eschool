@@ -68,6 +68,7 @@ export default function TicketDetailsComponent() {
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_showConfirmModal, setShowConfirmModal] = useState(false)
   // const router = useRouter()
 

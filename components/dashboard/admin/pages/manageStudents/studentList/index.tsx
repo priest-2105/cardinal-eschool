@@ -49,6 +49,7 @@ const SAMPLE_STUDENTS: Student[] = [
 ]
 
 export function StudentList() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [students, _setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
   const [searchQuery, setSearchQuery] = useState("")
   const [gradeFilter, setGradeFilter] = useState(1)

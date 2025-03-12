@@ -38,6 +38,7 @@ const LOAD_MORE_COUNT = 5
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_filters, setFilters] = useState<FilterValues>({
     courses: [],
     tutors: [],

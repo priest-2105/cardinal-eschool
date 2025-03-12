@@ -54,6 +54,7 @@ const TRANSACTION: TransactionDetails = {
 export default function TransactionDetailsPage() {
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [transaction, _setTransaction] = useState<TransactionDetails>(TRANSACTION);
 
   useEffect(() => {
