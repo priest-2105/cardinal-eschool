@@ -79,6 +79,7 @@ export default function AdminDashboard() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
       <AnnouncementMarquee announcements={announcements} />
