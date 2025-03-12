@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { AssessmentModal } from "../assessmentModal/index"
 import { CreateAssessmentModal } from "../createassessmentModal/index"
 import { EditAssessmentModal } from "../editAssessmentModal/index"
-import Assessment from "@/types/dashboard/admin/course/assessment/index"
+import { Assessment } from "@/types/dashboard/admin/course/assessment/index"
 
 export interface Student {
   id: string
