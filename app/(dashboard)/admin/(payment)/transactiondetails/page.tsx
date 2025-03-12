@@ -54,7 +54,7 @@ const TRANSACTION: TransactionDetails = {
 export default function TransactionDetailsPage() {
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [transaction, setTransaction] = useState<TransactionDetails>(TRANSACTION)
+  const [transaction, _setTransaction] = useState<TransactionDetails>(TRANSACTION);
 
   useEffect(() => {
     const handleResize = () => {

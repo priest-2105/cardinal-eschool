@@ -6,7 +6,6 @@ import { useState, useEffect } from "react"
 
 export default function CreateCoupon() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const { id } = useParams()
 
   useEffect(() => {
     const handleResize = () => {

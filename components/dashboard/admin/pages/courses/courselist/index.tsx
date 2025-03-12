@@ -38,7 +38,7 @@ const LOAD_MORE_COUNT = 5
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
-  const [filters, setFilters] = useState<FilterValues>({
+  const [_filters, setFilters] = useState<FilterValues>({
     courses: [],
     tutors: [],
     dateRange: {
