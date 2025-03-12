@@ -18,6 +18,7 @@ interface CreateCourseModalProps {
 
 export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseModalProps) {
   const [name, setName] = useState("")
+  const [grade, setGrade] = useState(0)
   const [noOfStudent, setNoOfStudent] = useState(0)
   const [schedule, setSchedule] = useState("")
   const [status, setStatus] = useState<Course["status"]>("Upcoming")
@@ -26,6 +27,7 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
     e.preventDefault()
     const newCourse: Omit<Course, "id"> = {
       name,
+      grade,
       noOfStudent,
       schedule,
       status,
@@ -37,6 +39,7 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
 
   const resetForm = () => {
     setName("")
+    setGrade(0)
     setNoOfStudent(0)
     setSchedule("")
     setStatus("Upcoming")
@@ -55,6 +58,19 @@ export function CreateCourseModal({ isOpen, onClose, onSubmit }: CreateCourseMod
                 Name
               </Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" required />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="grade" className="text-right">
+                Grade
+              </Label>
+              <Input
+                id="grade"
+                type="number"
+                value={grade}
+                onChange={(e) => setGrade(Number.parseInt(e.target.value))}
+                className="col-span-3"
+                required
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="noOfStudent" className="text-right">
