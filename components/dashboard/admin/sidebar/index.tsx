@@ -33,6 +33,7 @@ const navigation = [
     icon: HomeIcon,
     iconLight: HomeLightIcon,
     activePaths: [cardinalConfig.routes.dashboard.admin.home],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Profile",
@@ -44,6 +45,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.admininformation,
       cardinalConfig.routes.dashboard.admin.adminprofilesettings,
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Payments",
@@ -55,6 +57,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
       cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
+    dynamicPath: null, // Add this line
   }, 
   {
     name: "Support Tickets",
@@ -66,6 +69,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminreplyticket,
       cardinalConfig.routes.dashboard.admin.adminticketdetails,
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Manage Courses",
@@ -77,6 +81,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.admincreatecourse,
       cardinalConfig.routes.dashboard.admin.courseDetails,      
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Manage Students",
@@ -87,6 +92,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Manage Tutors",
@@ -98,6 +104,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Announcements",
@@ -109,6 +116,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
       cardinalConfig.routes.dashboard.admin.adminCreateAnnouncement,
     ],
+    dynamicPath: null, // Add this line
   },
   {
     name: "Manage Coupons",
@@ -121,6 +129,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminEditCoupon,
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
+    dynamicPath: null, // Add this line
   },
 ]
 
