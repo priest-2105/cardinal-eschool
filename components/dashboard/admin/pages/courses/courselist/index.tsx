@@ -38,9 +38,11 @@ const LOAD_MORE_COUNT = 5
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
-  const [filters, setFilters] = useState<FilterValues>({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_filters, setFilters] = useState<FilterValues>({
     courses: [],
     tutors: [],
+    admins: [], // Add this line
     dateRange: {
       from: undefined,
       to: undefined,
@@ -59,7 +61,9 @@ export function CourseList() {
     setFilters(newFilters)
   }
 
-  const uniqueCourses = [...new Set(filteredCourses.map((course) => course.name))]
+  const uniqueCourses = [
+    ...new Map(filteredCourses.map((course) => [course.name, { id: course.id, name: course.name }])).values(),
+  ]
 
   const visibleCourses = filteredCourses.slice(0, visibleCount)
   const hasMore = visibleCourses.length < filteredCourses.length

@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, Plus, Edit } from "lucide-react"
+import { Search, Calendar, FileText } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select" 
 import { ViewReportModal } from "../viewStudentReportModal/index" 
@@ -57,11 +57,12 @@ export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
-  const [studentFilter, setStudentFilter] = useState("all")
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [studentFilter, _setStudentFilter] = useState("all")
+  // const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  // const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -74,16 +75,6 @@ export default function ReportsList() {
     filterReports(searchTerm, value, studentFilter)
   }
 
-  const handleStudentFilter = (value: string) => {
-    setStudentFilter(value)
-    filterReports(searchTerm, dateFilter, value)
-  }
-
-  const handleDeleteReport = (id: string) => {
-    const updatedReports = reports.filter((report) => report.id !== id)
-    setReports(updatedReports)
-    setIsEditModalOpen(false)
-  }
 
   const filterReports = (term: string, date: string, student: string) => {
     let filteredReports = SAMPLE_REPORTS.filter(
@@ -117,28 +108,13 @@ export default function ReportsList() {
 
     setReports(filteredReports)
   }
-
-  const handleCreateReport = (newReport: Omit<Report, "id">) => {
-    const id = (reports.length + 1).toString()
-    setReports([...reports, { ...newReport, id }])
-    setIsCreateModalOpen(false)
-  }
+  
 
   const handleViewReport = (report: Report) => {
     setSelectedReport(report)
     setIsViewModalOpen(true)
   }
 
-  const handleEditReport = (report: Report) => {
-    setSelectedReport(report)
-    setIsEditModalOpen(true)
-  }
-
-  const handleUpdateReport = (updatedReport: Report) => {
-    const updatedReports = reports.map((report) => (report.id === updatedReport.id ? updatedReport : report))
-    setReports(updatedReports)
-    setIsEditModalOpen(false)
-  }
 
   return (
     <div className="h-full flex flex-col">

@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import { Calendar } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { Assessment } from "../types"
 
 export interface Student {
   id: string
@@ -14,17 +14,6 @@ export interface Student {
   email: string
 }
 
-export interface Assessment {
-  id: string
-  title: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
-}
 
 interface AssessmentModalProps {
   assessment: Assessment | null
@@ -52,7 +41,7 @@ export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
-          <DialogTitle>{assessment.title}</DialogTitle>
+          <DialogTitle>{assessment.topic}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-2">

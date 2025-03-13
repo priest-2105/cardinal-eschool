@@ -1,15 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-
-
+import type { Assessment } from "@/types/dashboard/admin/course/assessment/index"
 
 export interface Student {
   id: string
@@ -17,36 +16,36 @@ export interface Student {
   email: string
 }
 
-export interface Assessment {
-  id: string
-  topic: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
-}
-
 interface CreateAssessmentModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (assessments: Omit<Assessment, "id">[]) => void
   students: Student[]
+  assessment?: Assessment // Make this optional since it might not always be provided
 }
 
-
-export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: CreateAssessmentModalProps) {
+export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students, assessment }: CreateAssessmentModalProps) {
   const [topic, setTopic] = useState("")
   const [subject, setSubject] = useState("")
   const [dueDate, setDueDate] = useState("")
   const [description, setDescription] = useState("")
   const [selectedStudents, setSelectedStudents] = useState<string[]>([])
 
+  
+  useEffect(() => {
+    if (assessment) {
+      setTopic(assessment.topic)
+      setSubject(assessment.subject)
+      setDueDate(assessment.dueDate.toISOString().split("T")[0])
+      setDescription(assessment.description || "")
+      setSelectedStudents(assessment.studentIds)
+    }
+  }, [assessment])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const newAssessments: Omit<Assessment, "id">[] = selectedStudents.map((studentId) => ({
+      title: topic,
       topic,
       subject,
       dueDate: new Date(dueDate),
@@ -76,7 +75,7 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
-          <DialogTitle>Create New Assessment</DialogTitle>
+          <DialogTitle>{assessment ? "Edit" : "Create New"} Assessment</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -114,7 +113,7 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Create Assessment</Button>
+            <Button type="submit">{assessment ? "Update" : "Create"} Assessment</Button>
           </DialogFooter>
         </form>
       </DialogContent>

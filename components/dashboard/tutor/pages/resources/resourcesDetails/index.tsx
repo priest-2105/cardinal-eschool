@@ -18,7 +18,7 @@ export interface Student {
   export interface Resource {
     id: string
     title: string
-    // type: string
+    type: string
     size: string
     dateUploaded: Date
     fileUrl: string
@@ -34,13 +34,13 @@ interface ViewResourceModalProps {
 
 export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewResourceModalProps) {
   const [title, setTitle] = useState("")
-  // const [type, setType] = useState("")
+  const [type, setType] = useState("")
   const [file, setFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (resource) {
       setTitle(resource.title)
-      // setType(resource.type)
+      setType(resource.type)
     }
   }, [resource])
 
@@ -50,7 +50,7 @@ export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewR
       const updatedResource: Resource = {
         ...resource,
         title,
-        // type,
+        type,
         size: file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : resource.size,
         fileUrl: file ? URL.createObjectURL(file) : resource.fileUrl,
       }
@@ -71,10 +71,10 @@ export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewR
             <Label htmlFor="title">Title</Label>
             <Input readOnly id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
           </div>
-          {/* <div>
+          <div>
             <Label htmlFor="type">Type</Label>
             <Input readOnly id="type" value={type} onChange={(e) => setType(e.target.value)} required />
-          </div> */}
+          </div>
           <div>
             <Label htmlFor="file">File </Label>
             <Input readOnly id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />

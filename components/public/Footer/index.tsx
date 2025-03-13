@@ -47,7 +47,8 @@ function PublicFooter() {
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.careers}`}> <span>Careers</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.contactUs}`}> <span>Contact Us</span> </a>
-                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.faq}`}> <span>FAQs</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.faq}`}> <span>FAQs</span> </a>                    
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.terms}`}> <span>Terms and Conditions</span> </a>
                 
                   </nav>
                 </div>
@@ -56,7 +57,7 @@ function PublicFooter() {
                     Support
                   </p>
                   <nav className="flex flex-col mt-4 space-y-2 text-sm text-white">
-                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.privacyPolicy}`}>  <span>Privacy Policy</span> </a>
+                    <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`${cardinalConfig.routes.refundPolicy}`}>  <span>Refund Policy</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`tel: ${cardinalConfig.contactInfo.phone}`}><Phone /> <span>{cardinalConfig.contactInfo.phone}</span> </a>
                     <a className="flex items-center space-x-2 hover:opacity-75 font-medium py-2" href={`mailto: ${cardinalConfig.contactInfo.email}`}><Mail /> <span>{cardinalConfig.contactInfo.email}</span> </a> 
                     <div className='flex items-center space-x-2 py-2'>

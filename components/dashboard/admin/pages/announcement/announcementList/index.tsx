@@ -224,7 +224,7 @@ export function AnnouncementsList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the announcement "{announcementToDelete?.title}"? This action cannot be
+              Are you sure you want to delete the announcement &quot;{announcementToDelete?.title}&quot;? This action cannot be
               undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

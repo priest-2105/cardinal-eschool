@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
+// import { useRouter } from "next/navigation"
 import { Textarea } from "@/components/dashboard/tutor/ui/textarea"
 import { Button } from "@/components/dashboard/tutor/ui/button"
 import { Label } from "@/components/dashboard/tutor/ui/label"
@@ -68,14 +68,11 @@ export default function TicketDetailsComponent() {
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const router = useRouter()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_showConfirmModal, setShowConfirmModal] = useState(false)
+  // const router = useRouter()
 
-  useEffect(() => {
-    // Here you would typically fetch the ticket details from an API
-    // For now, we're using the sample ticket
-    // fetchTicketDetails(ticketId).then(data => setTicket(data));
-  }, [])
+ 
 
   const handleReply = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -100,18 +97,18 @@ export default function TicketDetailsComponent() {
     setShowConfirmModal(true)
   }
 
-  const confirmCloseTicket = async () => {
-    // Here you would typically send a request to close the ticket
-    // await closeTicket(ticket.id);
-    setTicket({ ...ticket, status: "Closed" })
-    setShowConfirmModal(false)
-    setPopupMessage("The ticket has been closed successfully.")
-    setShowPopup(true)
-    setTimeout(() => {
-      setShowPopup(false)
-      router.push("/admin/tickets")
-    }, 2000)
-  }
+  // const confirmCloseTicket = async () => {
+  //   // Here you would typically send a request to close the ticket
+  //   // await closeTicket(ticket.id);
+  //   setTicket({ ...ticket, status: "Closed" })
+  //   setShowConfirmModal(false)
+  //   setPopupMessage("The ticket has been closed successfully.")
+  //   setShowPopup(true)
+  //   setTimeout(() => {
+  //     setShowPopup(false)
+  //     router.push("/admin/tickets")
+  //   }, 2000)
+  // }
 
   return (
     <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">

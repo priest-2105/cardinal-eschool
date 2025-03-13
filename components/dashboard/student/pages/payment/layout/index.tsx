@@ -1,8 +1,8 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { cn } from "@/lib/utils"
+// import Link from 'next/link'
+// import { usePathname } from 'next/navigation'
+// import { cn } from "@/lib/utils"
 // import cardinalConfig from '@/config'
 
 // const tabs = [
@@ -23,7 +23,7 @@ export default function PaymentLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
+  // const pathname = usePathname()
 
   return (
     <div className="flex flex-col w-full mx-auto px-4">

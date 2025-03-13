@@ -11,6 +11,7 @@ export interface Course {
 export interface FilterValues {
   courses: string[]
   admins: string[]
+  tutors: Array<string>
   dateRange: {
     from: Date | undefined
     to: Date | undefined

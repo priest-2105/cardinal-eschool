@@ -34,6 +34,7 @@ export function FilterModal({ courses,  onFilterChange }: FilterModalProps) {
     onFilterChange({
       courses: selectedCourses,
       admins: selectedAdmins,
+      tutors: [], 
       dateRange,
       status: selectedStatuses,
     })

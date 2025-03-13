@@ -103,7 +103,7 @@ export default function CouponDetailsPage({ id }: { id: string }) {
           <h1 className="text-2xl font-bold">Coupon Not Found</h1>
         </div>
         <Alert>
-          <AlertDescription>The coupon you're looking for doesn't exist or has been deleted.</AlertDescription>
+          <AlertDescription>The coupon you&apos;re looking for doesn&apos;t exist or has been deleted.</AlertDescription>
         </Alert>
       </div>
     )
@@ -134,7 +134,7 @@ export default function CouponDetailsPage({ id }: { id: string }) {
             <Edit className="h-4 w-4 mr-1" />
             Edit
           </Button>
-          <Button variant="destructive" className="flex items-center gap-1" onClick={handleDelete}>
+          <Button variant="danger" className="flex items-center gap-1" onClick={handleDelete}>
             <Trash2 className="h-4 w-4 mr-1" />
             Delete
           </Button>
@@ -243,12 +243,12 @@ export default function CouponDetailsPage({ id }: { id: string }) {
               <p>{coupon.excludeSaleItems ? "Yes" : "No"}</p>
             </div>
 
-            {coupon.minOrderValue > 0 && (
+            {/* {coupon.minOrderValue > 0 && (
               <div>
                 <h4 className="text-sm font-medium mb-1">Minimum Order Value</h4>
                 <p>${coupon.minOrderValue.toFixed(2)}</p>
               </div>
-            )}
+            )} */}
 
             <div>
               <h4 className="text-sm font-medium mb-1">Product Restrictions</h4>

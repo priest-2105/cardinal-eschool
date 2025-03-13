@@ -11,24 +11,12 @@ import { Badge } from "@/components/ui/badge"
 import { AssessmentModal } from "../assessmentModal/index"
 import { CreateAssessmentModal } from "../createassessmentModal/index"
 import { EditAssessmentModal } from "../editAssessmentModal/index"
-
+import { Assessment } from "@/types/dashboard/admin/course/assessment/index"
 
 export interface Student {
   id: string
   name: string
   email: string
-}
-
-export interface Assessment {
-  id: string
-  title: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
 }
 
 
@@ -41,7 +29,7 @@ const SAMPLE_STUDENTS: Student[] = [
 const SAMPLE_ASSESSMENTS: Assessment[] = [
   {
     id: "1",
-    title: "Scientific Method Essay",
+    topic: "Scientific Method Essay",
     subject: "Basic Science",
     dueDate: new Date(2023, 7, 15),
     status: "pending",
@@ -51,7 +39,7 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
   },
   {
     id: "2",
-    title: "Energy Conservation Lab Report",
+    topic: "Energy Conservation Lab Report",
     subject: "Physics",
     dueDate: new Date(2023, 7, 20),
     status: "submitted",
@@ -96,7 +84,7 @@ export default function AssessmentsList() {
   const filterAssessments = (term: string, status: string, date: string, student: string) => {
     let filteredAssessments = SAMPLE_ASSESSMENTS.filter(
       (assessment) =>
-        assessment.title.toLowerCase().includes(term.toLowerCase()) ||
+        assessment.topic.toLowerCase().includes(term.toLowerCase()) ||
         assessment.subject.toLowerCase().includes(term.toLowerCase()),
     )
 
@@ -248,7 +236,7 @@ export default function AssessmentsList() {
                 <Clock className="text-yellow-500" size={24} />
               )}
               <div>
-                <h3 className="font-medium">{assessment.title}</h3>
+                <h3 className="font-medium">{assessment.topic}</h3>
                 <p className="text-sm text-gray-500">{assessment.subject}</p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
                   <Calendar size={12} className="mr-1" />

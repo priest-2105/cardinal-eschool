@@ -16,7 +16,7 @@ export interface Student {
 
 export interface Assessment {
   id: string
-  title: string
+  topic: string
   subject: string
   dueDate: Date
   status: "pending" | "submitted" | "graded"
@@ -52,7 +52,7 @@ export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
-          <DialogTitle>{assessment.title}</DialogTitle>
+          <DialogTitle>{assessment.topic}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-2">

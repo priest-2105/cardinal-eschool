@@ -133,7 +133,7 @@ export function TicketList() {
     console.log("Filters applied:", filters)
   }
 
-  const handleRowClick = (ticketId: string) => {
+  const handleRowClick = () => {
     router.push(`/admin/ticketdetails`)
   }
 
@@ -187,7 +187,7 @@ export function TicketList() {
                 {filteredTickets.map((ticket) => (
                   <TableRow
                     key={ticket.id}
-                    onClick={() => handleRowClick(ticket.id)}
+                    onClick={() => handleRowClick()}
                     className="cursor-pointer hover:bg-gray-100"
                   >
                     <TableCell className="font-medium">{ticket.id}</TableCell>

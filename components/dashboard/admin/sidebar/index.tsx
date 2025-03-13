@@ -33,6 +33,7 @@ const navigation = [
     icon: HomeIcon,
     iconLight: HomeLightIcon,
     activePaths: [cardinalConfig.routes.dashboard.admin.home],
+    dynamicPath: null,
   },
   {
     name: "Profile",
@@ -44,6 +45,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.admininformation,
       cardinalConfig.routes.dashboard.admin.adminprofilesettings,
     ],
+    dynamicPath: null,
   },
   {
     name: "Payments",
@@ -55,6 +57,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
       cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
+    dynamicPath: null,
   }, 
   {
     name: "Support Tickets",
@@ -66,6 +69,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminreplyticket,
       cardinalConfig.routes.dashboard.admin.adminticketdetails,
     ],
+    dynamicPath: null,
   },
   {
     name: "Manage Courses",
@@ -77,6 +81,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.admincreatecourse,
       cardinalConfig.routes.dashboard.admin.courseDetails,      
     ],
+    dynamicPath: null,
   },
   {
     name: "Manage Students",
@@ -87,6 +92,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
+    dynamicPath: null,
   },
   {
     name: "Manage Tutors",
@@ -98,6 +104,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
+    dynamicPath: null,
   },
   {
     name: "Announcements",
@@ -109,6 +116,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminAnnouncementDetails,
       cardinalConfig.routes.dashboard.admin.adminCreateAnnouncement,
     ],
+    dynamicPath: null,
   },
   {
     name: "Manage Coupons",
@@ -121,6 +129,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminEditCoupon,
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
+    dynamicPath: null,  
   },
 ]
 

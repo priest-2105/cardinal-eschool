@@ -49,9 +49,10 @@ const SAMPLE_STUDENTS: Student[] = [
 ]
 
 export function StudentList() {
-  const [students, setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [students, _setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
   const [searchQuery, setSearchQuery] = useState("")
-  const [gradeFilter, setGradeFilter] = useState(1)
+  const [gradeFilter, setGradeFilter] = useState("1")
   const [courseFilter, setCourseFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
   const router = useRouter()
@@ -63,7 +64,7 @@ export function StudentList() {
         student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.id.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesGrade = gradeFilter === 1 || student.grade === gradeFilter
+      const matchesGrade = gradeFilter === "0" || student.grade === parseInt(gradeFilter)
       const matchesCourse = courseFilter === "all" || student.course === courseFilter
 
       let matchesDate = true
@@ -86,7 +87,7 @@ export function StudentList() {
     })
   }
 
-  const handleRowClick = (studentId: string) => {
+  const handleRowClick = () => {
     router.push(`/admin/student`)
   }
 
@@ -102,7 +103,7 @@ export function StudentList() {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-            <Select value={gradeFilter} onValueChange={setGradeFilter}>
+            <Select value={gradeFilter} onValueChange={(value) => setGradeFilter(value)}>
               <SelectTrigger className="w-full sm:w-[120px]">
                 <SelectValue placeholder="Grade" />
               </SelectTrigger>
@@ -175,7 +176,7 @@ export function StudentList() {
                 {filteredStudents.map((student) => (
                   <TableRow
                     key={student.id}
-                    onClick={() => handleRowClick(student.id)}
+                    onClick={() => handleRowClick()}
                     className="cursor-pointer hover:bg-gray-100"
                   >
                     <TableCell className="font-medium">{student.id}</TableCell>
