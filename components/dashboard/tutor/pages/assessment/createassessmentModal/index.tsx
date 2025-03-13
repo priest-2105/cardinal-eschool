@@ -8,25 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-
-
+import type { Assessment } from "../types" // Import the Assessment type
 
 export interface Student {
   id: string
   name: string
   email: string
-}
-
-export interface Assessment {
-  id: string
-  topic: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
 }
 
 interface CreateAssessmentModalProps {
@@ -35,7 +22,6 @@ interface CreateAssessmentModalProps {
   onSubmit: (assessments: Omit<Assessment, "id">[]) => void
   students: Student[]
 }
-
 
 export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: CreateAssessmentModalProps) {
   const [topic, setTopic] = useState("")
