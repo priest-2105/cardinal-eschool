@@ -161,7 +161,7 @@ export function TutorList() {
                   {filteredTutors.map((tutor) => (
                     <TableRow
                       key={tutor.id}
-                      onClick={() => handleRowClick(tutor.id)}
+                      onClick={() => handleRowClick()}
                       className="cursor-pointer hover:bg-gray-100"
                     >
                       <TableCell className="w-[16.67%]">{tutor.id}</TableCell>
