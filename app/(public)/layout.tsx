@@ -2,6 +2,7 @@ import "../globals.css";
 import PublicNavbar from "@/components/public/Navbar";
 import PublicFooter from "@/components/public/Footer"; 
 import { Metadata } from "next";
+import { Providers } from "../providers";
 
 
 export const metadata: Metadata = {
@@ -25,7 +26,9 @@ export default function RootLayout({
       >
         <PublicNavbar/>
         <div className="min-h-screen">
+        <Providers>
         {children}
+        </Providers>
         </div>
         <PublicFooter/>
       </body>

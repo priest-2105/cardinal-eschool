@@ -3,16 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Youtube, Eye, EyeIcon as EyeClosed } from "lucide-react"
-import XIcon from "@/public/assets/icons/x-dark.png"
-import TiktokIcon from "@/public/assets/icons/tiktok-dark.png"
-import WhatsappIcon from "@/public/assets/icons/whatsapp-dark.png"
-
-import cardinalConfig from "@/config"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
