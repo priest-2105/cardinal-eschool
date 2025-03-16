@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Youtube, Eye, EyeIcon as EyeClosed } from "lucide-react"
+import { Eye, EyeIcon as EyeClosed } from "lucide-react"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({

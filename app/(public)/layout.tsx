@@ -2,7 +2,7 @@ import "../globals.css";
 import PublicNavbar from "@/components/public/Navbar";
 import PublicFooter from "@/components/public/Footer"; 
 import { Metadata } from "next";
-import { Providers } from "../providers";
+import  Providers  from "../providers";
 
 
 export const metadata: Metadata = {
