@@ -1,8 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useAppDispatch } from '@/lib/hooks'
+import { setAuthState } from '@/lib/authSlice'
+import { login } from '@/lib/api/admin/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeIcon as EyeClosed } from "lucide-react"
@@ -13,11 +15,25 @@ export default function LoginPage() {
     password: "",
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const dispatch = useAppDispatch()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formData)
-    // Handle form submission
+    setIsSubmitting(true)
+    try {
+      const response = await login(formData.email, formData.password)
+      console.log('Response:', response)  
+      dispatch(setAuthState({
+        token: response.data.token,
+        user: response.data.user,
+      }))
+      console.log('Login successful')
+    } catch (error) {
+      console.error('Login failed', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -54,7 +70,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <Button type="submit" className="w-full" size="lg">
-                  Submit
+                  {isSubmitting ? 'Submitting' : 'Submit'}
                 </Button>
               </form>
             </div>
@@ -64,4 +80,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
