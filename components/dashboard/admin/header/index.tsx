@@ -66,7 +66,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 hover:bg-gray-100">
+              <li key={index} className="px-4 py-2 hover:bg-gray-100" onClick={item.onClick}>
                 {"href" in item ? (
                   <Link href={item.href}>{item.name}</Link>
                 ) : (
