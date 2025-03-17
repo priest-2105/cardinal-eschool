@@ -3,13 +3,17 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+ 
+
+
 const alertVariants = cva(
-  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  "relative w-[300px] h-fit rounded-lg border p-4 flex flex-col justify-center",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
-        destructive: "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+        default: "bg-background text-foreground border-byy-[#1BC2C2]",
+        danger: "border-b-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive border-b-4 border-b-[#c21b1b]",
+        warning: "border-b-warning/50 text-warning dark:border-warning [&>svg]:text-warning border-b-4 border-b-[#FFC107]",
       },
     },
     defaultVariants: {
@@ -18,11 +22,15 @@ const alertVariants = cva(
   },
 )
 
+ 
+
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
 >(({ className, variant, ...props }, ref) => (
-  <div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props} />
+  <div ref={ref} role="alert" className={cn(alertVariants({ variant }), className)} {...props}>
+    {/* <div className={`absolute bottom-0 left-0 w-full h-1 ${variant === 'default' ? 'bg-[#1BC2C2]' : variant === 'danger' ? 'bg-[#c21b1b]' : 'bg-[#FFC107]'}`} /> */}
+  </div>
 ))
 Alert.displayName = "Alert"
 
@@ -41,4 +49,14 @@ const AlertDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttrib
 AlertDescription.displayName = "AlertDescription"
 
 export { Alert, AlertTitle, AlertDescription }
+
+
+
+
+
+
+
+
+
+
 

@@ -7,7 +7,9 @@ import { setAuthState } from '@/lib/authSlice'
 import { login } from '@/lib/api/admin/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeIcon as EyeClosed } from "lucide-react"
+import { Eye, EyeIcon as EyeClosed } from "lucide-react" 
+import { useRouter } from "next/navigation"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -16,11 +18,14 @@ export default function LoginPage() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setAlert(null)
     try {
       const response = await login(formData.email, formData.password)
       console.log('Response:', response)  
@@ -29,8 +34,11 @@ export default function LoginPage() {
         user: response.data.user,
       }))
       console.log('Login successful')
+      setAlert({ type: 'success', message: 'Login successful' })
+      router.push('/admin')
     } catch (error) {
       console.error('Login failed', error)
+      setAlert({ type: 'error', message: error.message })
     } finally {
       setIsSubmitting(false)
     }
@@ -47,6 +55,12 @@ export default function LoginPage() {
               <p className="text-gray-600 font-semibold mb-8">
                 Enter your email address and password to securely log in to Cardinal E-School Admin portal
               </p>
+              {alert && (
+                <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-4 right-4">
+                  <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+                  <AlertDescription>{alert.message}</AlertDescription>
+                </Alert>
+              )}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Input
                   type="email"
