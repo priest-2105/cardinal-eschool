@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { fetchAdminProfile, logout } from "@/lib/api/admin/api"
 import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
+import { useRouter } from "next/navigation"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -92,6 +93,7 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const dispatch = useDispatch();
   const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     const getProfile = async () => {
@@ -113,11 +115,11 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
       if (token) {
         await logout(token);
         dispatch(clearAuthState());
-        window.location.href = 'admin/login';
       }
     } catch (error) {
       console.error("Logout failed", error);
     }
+    router.push("/admin/login")
   };
 
   return (
@@ -173,12 +175,12 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
         </div>
       </div>
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0   w-full flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4">Confirm Logout</h2>
             <p className="mb-4">Are you sure you want to logout?</p>
             <div className="flex justify-end gap-4">
-              <Button variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
               <Button variant="danger" onClick={handleLogout}>Confirm</Button>
             </div>
           </div>

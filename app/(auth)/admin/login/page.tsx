@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeIcon as EyeClosed } from "lucide-react" 
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -87,6 +88,7 @@ export default function LoginPage() {
                 <Button type="submit" className="w-full" size="lg">
                   {isSubmitting ? 'Submitting' : 'Submit'}
                 </Button>
+              <div className="text-center mr-auto mt-10">Forgot Password ? <Link className="text-[#1BC2C2]" href="/admin/resetpassword">Click here</Link></div>
               </form>
             </div>
           </div>

@@ -1,11 +1,16 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useAppDispatch } from '@/lib/hooks'
+import { setAuthState } from '@/lib/authSlice'
+import { login } from '@/lib/api/admin/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Eye, EyeIcon as EyeClosed } from "lucide-react"
+import { Eye, EyeIcon as EyeClosed } from "lucide-react" 
+import { useRouter } from "next/navigation"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -13,11 +18,32 @@ export default function LoginPage() {
     password: "",
   })
   const [showPassword, setShowPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const dispatch = useAppDispatch()
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formData)
-    // Handle form submission
+    setIsSubmitting(true)
+    setAlert(null)
+    try {
+      const response = await login(formData.email, formData.password)
+      console.log('Response:', response)  
+      dispatch(setAuthState({
+        token: response.data.token,
+        user: response.data.user,
+      }))
+      console.log('Login successful')
+      setAlert({ type: 'success', message: 'Login successful' })
+      router.push('/admin')
+    } catch (error) {
+      console.error('Login failed', error)
+      const errorMessage = (error as any).response?.data?.message || (error as any).message
+      setAlert({ type: 'error', message: errorMessage })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -27,10 +53,16 @@ export default function LoginPage() {
           <div className="max-w-lg flex mx-auto items-center align-middle self-center">
             <div></div>
             <div>
-              <h2 className="text-3xl font-bold mb-2">Tutor Log In</h2>
+              <h2 className="text-3xl font-bold mb-2">Admin Log In</h2>
               <p className="text-gray-600 font-semibold mb-8">
-                Enter your email address and password to securely log in to Cardinal E-School Tutor portal
+                Enter your email address and password to securely log in to Cardinal E-School Admin portal
               </p>
+              {alert && (
+                <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-4 right-4">
+                  <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+                  <AlertDescription>{alert.message}</AlertDescription>
+                </Alert>
+              )}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Input
                   type="email"
@@ -54,8 +86,9 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <Button type="submit" className="w-full" size="lg">
-                  Submit
+                  {isSubmitting ? 'Submitting' : 'Submit'}
                 </Button>
+              <div className="text-center mr-auto mt-10">Forgot Password ? <Link className="text-[#1BC2C2]" href="/admin/resetpassword">Click here</Link></div>
               </form>
             </div>
           </div>
@@ -64,4 +97,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

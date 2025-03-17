@@ -39,7 +39,7 @@ export async function logout(token: string) {
 }
 
 export async function fetchAdminProfile(token: string) {
-    const response = await fetch(`${apiUrl}/admin/profile`, {
+    const response = await fetch(`${apiUrl}/tutor/profile`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
