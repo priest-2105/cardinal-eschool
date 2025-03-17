@@ -1,8 +1,8 @@
 import "../globals.css";
 import PublicNavbar from "@/components/public/Navbar";
 import PublicFooter from "@/components/public/Footer"; 
-import { Metadata } from "next";
-import  Providers  from "../providers";
+import { Metadata } from "next"; 
+// import StoreProvider from "../providers";
 
 
 export const metadata: Metadata = {
@@ -25,10 +25,8 @@ export default function RootLayout({
         className={`antialiased`}
       >
         <PublicNavbar/>
-        <div className="min-h-screen">
-        <Providers>
-        {children}
-        </Providers>
+        <div className="min-h-screen"> 
+        {children} 
         </div>
         <PublicFooter/>
       </body>

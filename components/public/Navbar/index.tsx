@@ -5,12 +5,16 @@ import logo from '@/public/assets/img/logo.png';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react'; 
 import cardinalConfig from '@/config';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store';
 
 function PublicNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+  const user = useSelector((state: RootState) => state.auth?.user);
+  const router = useRouter();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -46,6 +50,30 @@ function PublicNavbar() {
     { menuItem: 'Career', Link: `${cardinalConfig.routes.careers}`},
   ]
 
+  const handleButtonClick = () => {
+    if (!user) {
+      // If the user is not logged in, navigate to the login page.
+      router.push("/login");
+    } else {
+      // Navigate based on the user's role.
+      switch (user.role) {
+        case "admin":
+          router.push("/admin");
+          break;
+        case "tutor":
+          router.push("/tutor");
+          break;
+        case "student":
+          router.push("/student");
+          break;
+        default:
+          // Fallback route if role doesn't match expected values.
+          router.push("/");
+      }
+    }
+  };
+
+
   return (
     <nav className="bg-white">
       <div className="max-w-screen-2xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
@@ -74,11 +102,15 @@ function PublicNavbar() {
               )
             })}
           </div>
-          
+          {user ?
+           (<div className="hidden lg:flex items-center">
+            <button onClick={handleButtonClick} className="mx-2 px-8 py-2 rounded-3xl text-sm font-bold text-[#fff] border-2 bg-[#1BC2C2] border-[#1BC2C2]  hover:bg-[#fff]  hover:text-[#1BC2C2]">Dashboard</button>
+          </div>) : (
           <div className="hidden lg:flex items-center">
             <Link href="/login" className="mx-2 px-8 py-2 rounded-3xl text-sm font-bold text-[#1BC2C2] border-2 border-[#1BC2C2] hover:bg-[#1BC2C2] hover:text-[#fff]">Log In</Link>
             <Link href="/signup" className="mx-2 px-8 py-2 rounded-3xl text-sm font-bold text-[#fff] border-2 bg-[#1BC2C2] border-[#1BC2C2]  hover:bg-[#fff]  hover:text-[#1BC2C2]">Sign Up</Link>
-          </div>
+          </div>)
+          }
           
           {/* Mobile and Tablet menu button */}
           <div className="lg:hidden flex items-center">
