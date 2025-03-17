@@ -163,7 +163,7 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
                   </Avatar>
                   <div>
                     <h3 className="font-bold text-sm">{profile.firstname} {profile.lastname}</h3>
-                    <p className="text-xs text-gray-500">{profile.email}</p>
+                    {/* <p className="text-xs text-gray-500">{profile.email}</p> */}
                   </div>
                   <FaAngleDown />
                 </Button>
