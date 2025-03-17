@@ -38,7 +38,7 @@ export default function LoginPage() {
       router.push('/admin')
     } catch (error) {
       console.error('Login failed', error)
-      const errorMessage = error.response?.data?.message || error.message
+      const errorMessage = (error as any).response?.data?.message || (error as any).message
       setAlert({ type: 'error', message: errorMessage })
     } finally {
       setIsSubmitting(false)
