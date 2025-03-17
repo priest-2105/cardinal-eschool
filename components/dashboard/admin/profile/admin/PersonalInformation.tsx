@@ -23,9 +23,9 @@ export default function PersonalInformation() {
     lastname: '',
     email: '',
     phone_number: '',
-    address: '',
-    country: '',
-    state: '',
+    home_address: '',
+    country_of_residence: '',
+    state_of_residence: '',
     position: 'Admin'
   })
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
@@ -50,14 +50,22 @@ export default function PersonalInformation() {
     setIsEditing(true);
     try {
       if (token) {
-        const response = await updateAdminProfile(token, { ...profile, phone_number: phoneNumber });
+        const response = await updateAdminProfile(token, {
+          firstname: profile.firstname,
+          lastname: profile.lastname,
+          phone_number: phoneNumber,
+          address: profile.home_address,
+          country: profile.country_of_residence,
+          state: profile.state_of_residence,
+          position: profile.position
+        });
         setAlert({ type: 'success', message: 'Profile updated successfully' });
         setIsEditable(false);
         dispatch(setUser(response.data));
       }
     } catch (error) {
       console.error("Profile update failed", error);
-      setAlert({ type: 'error', message: error.message });
+      setAlert({ type: 'error', message: (error as Error).message });
     } finally {
       setIsEditing(false);
     }
@@ -129,29 +137,29 @@ export default function PersonalInformation() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Home Address</Label>
+            <Label htmlFor="home_address">Home Address</Label>
             <Input
-              id="address"
-              value={profile.address}
-              onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+              id="home_address"
+              value={profile.home_address}
+              onChange={(e) => setProfile({ ...profile, home_address: e.target.value })}
               readOnly={!isEditable}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="country">Country of Residence</Label>
+            <Label htmlFor="country_of_residence">Country of Residence</Label>
             <Input
-              id="country"
-              value={profile.country}
-              onChange={(e) => setProfile({ ...profile, country: e.target.value })}
+              id="country_of_residence"
+              value={profile.country_of_residence}
+              onChange={(e) => setProfile({ ...profile, country_of_residence: e.target.value })}
               readOnly={!isEditable}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="state">State of Residence</Label>
+            <Label htmlFor="state_of_residence">State of Residence</Label>
             <Input
-              id="state"
-              value={profile.state}
-              onChange={(e) => setProfile({ ...profile, state: e.target.value })}
+              id="state_of_residence"
+              value={profile.state_of_residence}
+              onChange={(e) => setProfile({ ...profile, state_of_residence: e.target.value })}
               readOnly={!isEditable}
             />
           </div>
