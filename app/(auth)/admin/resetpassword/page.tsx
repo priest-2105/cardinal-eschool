@@ -4,14 +4,14 @@ import type React from "react"
 import { useState } from "react"
 import { useAppDispatch } from '@/lib/hooks'
 import { setAuthState } from '@/lib/authSlice'
-import { login } from '@/lib/api/admin/api'
+import { resetPassword } from '@/lib/api/admin/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeIcon as EyeClosed } from "lucide-react" 
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -27,19 +27,18 @@ export default function LoginPage() {
     setIsSubmitting(true)
     setAlert(null)
     try {
-      const response = await login(formData.email, formData.password)
+      const response = await resetPassword(formData.email, formData.password)
       console.log('Response:', response)  
       dispatch(setAuthState({
         token: response.data.token,
         user: response.data.user,
       }))
-      console.log('Login successful')
-      setAlert({ type: 'success', message: 'Login successful' })
+      console.log('ResetPassword successful')
+      setAlert({ type: 'success', message: 'ResetPassword successful' })
       router.push('/admin')
     } catch (error) {
-      console.error('Login failed', error)
-      const errorMessage = error.response?.data?.message || error.message
-      setAlert({ type: 'error', message: errorMessage })
+      console.error('ResetPassword failed', error)
+      setAlert({ type: 'error', message: error.message })
     } finally {
       setIsSubmitting(false)
     }
