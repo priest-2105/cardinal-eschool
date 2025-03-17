@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function ResetPasswordPage() {
   const [formData, setFormData] = useState({
@@ -63,6 +64,8 @@ export default function ResetPasswordPage() {
                   {isSubmitting ? 'Resetting' : 'Reset'}
                 </Button>
               </form>
+              
+              <div className="text-center mr-auto mt-10">Back to login ? <Link className="text-[#1BC2C2]" href="/admin/login">Click here</Link></div>
             </div>
           </div>
         </div>
