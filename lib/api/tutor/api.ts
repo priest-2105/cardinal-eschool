@@ -23,13 +23,6 @@ export * from "./ticket/tickedetails";
 
 
 
-// Tutor Ticket API EXPORT
-export * from "./ticket/createticket";
-export * from "./ticket/fetchtickets";
-export * from "./ticket/tickedetails";
-
-
-
 // Tutor Notification API EXPORT
 export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
