@@ -28,7 +28,7 @@ const Alert = React.forwardRef<
     const timer = setTimeout(() => {
       setIsVisible(false);
       if (onClose) {
-        setTimeout(onClose, 1000); // Wait for the transition to complete
+        setTimeout(onClose, 1000);
       }
     }, 4000);
     return () => clearTimeout(timer);

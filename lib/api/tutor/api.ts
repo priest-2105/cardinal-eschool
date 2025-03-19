@@ -221,6 +221,8 @@ export async function fetchTicketDetails(token: string, ticketCodec: string) {
 }
 
 
+
+
 export async function fetchNotifications(token: string, page: number = 1, perPage: number = 20) {
     const response = await fetch(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
         method: 'GET',
@@ -240,57 +242,72 @@ export async function fetchNotifications(token: string, page: number = 1, perPag
 }
 
 
+
 export async function markNotificationAsRead(token: string, notificationId: number) {
-    const response = await fetch(`${apiUrl}/notifications/${notificationId}/read`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-    });
+    try {
+        const response = await fetch(`${apiUrl}/notifications/${notificationId}/read`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to mark notification as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Failed to mark notification as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Error in markNotificationAsRead:", error);
+        throw error;
     }
-
-    return response.json();
 }
 
-
 export async function markAllNotificationsAsRead(token: string) {
-    const response = await fetch(`${apiUrl}/notifications/read-all`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-    });
+    try {
+        const response = await fetch(`${apiUrl}/notifications/read-all`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to mark all notifications as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Failed to mark all notifications as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Error in markAllNotificationsAsRead:", error);
+        throw error;
     }
-
-    return response.json();
 }
 
 export async function deleteNotification(token: string, notificationId: number) {
-    const response = await fetch(`${apiUrl}/notifications/${notificationId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-    });
+    try {
+        const response = await fetch(`${apiUrl}/notifications/${notificationId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to delete notification: ${response.status} ${response.statusText} - ${errorMessage}`);
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(`Failed to delete notification: ${response.status} ${response.statusText} - ${errorMessage}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("Error in deleteNotification:", error);
+        throw error;
     }
-
-    return response.json();
 }
