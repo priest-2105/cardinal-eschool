@@ -8,7 +8,7 @@ import PhoneInputField from "../../ui/phoneInputFeild"
 import { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "@/lib/store"
-import { fetchTutorProfile, updateTutorProfile } from "@/lib/api/tutor/api"
+import { fetchTutorProfile, updateTutorProfile, updateTutorProfilePicture } from "@/lib/api/tutor/api"
 import { setUser } from "@/store/userSlice"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
 
@@ -23,12 +23,16 @@ export default function PersonalInformation() {
     lastname: '',
     email: '',
     phone_number: '',
+    profile_picture: '',
     home_address: '',
     country_of_residence: '',
     state_of_residence: '',
     qualification: ''
   })
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/tutor/Ellipse 2034.png");
+  const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
+  const [isPictureEditing, setIsPictureEditing] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -37,6 +41,7 @@ export default function PersonalInformation() {
           const response = await fetchTutorProfile(token);
           setProfile(response.data);
           setPhoneNumber(response.data.phone_number);
+          setProfilePicture(response.data.profile_picture);
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -71,24 +76,60 @@ export default function PersonalInformation() {
     }
   };
 
+  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setTempProfilePicture(previewUrl);
+      setIsPictureEditing(true);
+    }
+  };
+
+  const handleSaveProfilePicture = async () => {
+    if (tempProfilePicture && token) {
+      try {
+        const fileInput = document.getElementById("profile-picture-upload") as HTMLInputElement;
+        const file = fileInput?.files?.[0];
+        if (file) {
+          const response = await updateTutorProfilePicture(token, file);
+          setProfilePicture(response.data.dp_url);
+          setAlert({ type: 'success', message: 'Profile picture updated successfully' });
+        }
+      } catch (error) {
+        console.error("Profile picture update failed", error);
+        setAlert({ type: 'error', message: (error as Error).message });
+      } finally {
+        setTempProfilePicture(null);
+        setIsPictureEditing(false);
+      }
+    }
+  };
+
+  const handleCancelProfilePicture = () => {
+    setTempProfilePicture(null);
+    setIsPictureEditing(false);
+  };
+
   return (
     <Card className="p-6">
       <div className="space-y-8">
         <div className="sm:flex max-sm:block items-center gap-8">
           <div className="relative w-fit">
             <img
-              src="/assets/img/dashboard/tutor/Ellipse 2034.png"
+              src={profile.profile_picture || profilePicture}
               alt="Profile"
-              className="w-24 h-24 rounded-full "
+              className="w-24 h-24 rounded-full"
             />
-            <Button
-              size="icon"
-              variant="outline"
-              className="absolute bottom-0 right-0 rounded-full bg-white"
-              onClick={() => setIsEditable(true)}
-            >
+            <label htmlFor="profile-picture-upload" className="absolute bottom-0 right-0 rounded-full bg-white cursor-pointer">
               <PencilIcon className="h-4 w-4" />
-            </Button>
+            </label>
+            <input
+              id="profile-picture-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleProfilePictureChange}
+            />
           </div>
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold">Personal Information</h2>
@@ -97,6 +138,13 @@ export default function PersonalInformation() {
             </p>
           </div>
         </div>
+
+        {isPictureEditing && (
+          <div className="flex gap-4 mt-4">
+            <Button variant="outline" onClick={handleCancelProfilePicture}>Cancel</Button>
+            <Button variant="default" onClick={handleSaveProfilePicture}>Save</Button>
+          </div>
+        )}
 
         {alert && (
           <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-12 z-50 bg-white right-4">

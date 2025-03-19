@@ -38,24 +38,6 @@ export async function logout(token: string) {
     return response.json();
 }
 
-export async function fetchTutorProfile(token: string) {
-    const response = await fetch(`${apiUrl}/tutor/profile`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-    });
-
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
-
-    return response.json();
-}
 
 export async function resetPasswordEmail(email: string) {
     const response = await fetch(`${apiUrl}/forgot-password`, {
@@ -76,6 +58,52 @@ export async function resetPasswordEmail(email: string) {
     return response.json();
 }
 
+
+
+export async function changePassword(token: string, currentPassword: string, newPassword: string, newPasswordConfirmation: string) {
+    const response = await fetch(`${apiUrl}/change-password`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword,
+            new_password_confirmation: newPasswordConfirmation,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Password change failed: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+
+
+export async function fetchTutorProfile(token: string) {
+    const response = await fetch(`${apiUrl}/tutor/profile`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
 
 
 
@@ -107,25 +135,23 @@ export async function updateTutorProfile(token: string, profileData: {
     return response.json();
 }
 
-export async function changePassword(token: string, currentPassword: string, newPassword: string, newPasswordConfirmation: string) {
-    const response = await fetch(`${apiUrl}/change-password`, {
+
+
+export async function updateTutorProfilePicture(token: string, file: File) {
+    const formData = new FormData();
+    formData.append("profile_picture", file);
+
+    const response = await fetch(`${apiUrl}/tutor/profile/update-picture`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
-        body: JSON.stringify({
-            current_password: currentPassword,
-            new_password: newPassword,
-            new_password_confirmation: newPasswordConfirmation,
-        }),
+        body: formData,
     });
 
     if (!response.ok) {
         const errorMessage = await response.text();
-        throw new Error(`Password change failed: ${response.status} ${response.statusText} - ${errorMessage}`);
+        throw new Error(`Profile picture update failed: ${response.status} ${response.statusText} - ${errorMessage}`);
     }
 
     return response.json();
