@@ -27,8 +27,13 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
     },
+    handleTokenExpiration(state) {
+      // Clear state when token expires
+      state.token = null;
+      state.user = null;
+    },
   },
 });
 
-export const { setAuthState, clearAuthState } = authSlice.actions;
+export const { setAuthState, clearAuthState, handleTokenExpiration } = authSlice.actions;
 export default authSlice.reducer;

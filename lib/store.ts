@@ -1,4 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { Reducer } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { encryptTransform } from 'redux-persist-transform-encrypt';  
@@ -17,6 +18,13 @@ const persistConfig = {
   transforms: [encryptor],  
 };
 
+interface AuthState {
+  isAuthenticated: boolean;
+  user: {
+    id: string;
+  } | null;
+}
+
 const rootReducer = combineReducers({
   auth: authReducer,
 });
@@ -31,6 +39,9 @@ export const makeStore = () => {
 
 export const store = makeStore();
 export const persistor = persistStore(store);
+
+// Export store for use in fetchWithAuth
+// (Removed redundant export to avoid conflicts)
 
 // Infer the type of makeStore
 export type AppStore = ReturnType<typeof makeStore>;

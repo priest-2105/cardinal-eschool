@@ -1,7 +1,23 @@
+import { store } from "../../store"; // Import the Redux store
+import { clearAuthState } from "../../authSlice"; // Import the action to clear auth state
+
 const apiUrl = process.env.NEXT_PUBLIC_CARDINAL_APP_API_URL;
 
+// Utility function to handle API requests with token expiration handling
+async function fetchWithAuth(input: RequestInfo, init?: RequestInit) {
+    const response = await fetch(input, init);
+
+    if (response.status === 401) {
+        // If token is invalid, clear auth state and redirect to login
+        store.dispatch(clearAuthState());
+        throw new Error("Unauthorized: Token expired or invalid.");
+    }
+
+    return response;
+}
+
 export async function login(email: string, password: string) {
-    const response = await fetch(`${apiUrl}/login`, {
+    const response = await fetchWithAuth(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -20,7 +36,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout(token: string) {
-    const response = await fetch(`${apiUrl}/logout`, {
+    const response = await fetchWithAuth(`${apiUrl}/logout`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,9 +54,8 @@ export async function logout(token: string) {
     return response.json();
 }
 
-
 export async function resetPasswordEmail(email: string) {
-    const response = await fetch(`${apiUrl}/forgot-password`, {
+    const response = await fetchWithAuth(`${apiUrl}/forgot-password`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -58,10 +73,8 @@ export async function resetPasswordEmail(email: string) {
     return response.json();
 }
 
-
-
 export async function changePassword(token: string, currentPassword: string, newPassword: string, newPasswordConfirmation: string) {
-    const response = await fetch(`${apiUrl}/change-password`, {
+    const response = await fetchWithAuth(`${apiUrl}/change-password`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -84,10 +97,8 @@ export async function changePassword(token: string, currentPassword: string, new
     return response.json();
 }
 
-
-
 export async function fetchTutorProfile(token: string) {
-    const response = await fetch(`${apiUrl}/tutor/profile`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/profile`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -105,8 +116,6 @@ export async function fetchTutorProfile(token: string) {
     return response.json();
 }
 
-
-
 export async function updateTutorProfile(token: string, profileData: {
     firstname: string;
     lastname: string;
@@ -116,7 +125,7 @@ export async function updateTutorProfile(token: string, profileData: {
     state: string;
     qualification: string;
 }) {
-    const response = await fetch(`${apiUrl}/tutor/profile/update`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/profile/update`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -135,14 +144,11 @@ export async function updateTutorProfile(token: string, profileData: {
     return response.json();
 }
 
-
-
-
 export async function updateTutorProfilePicture(token: string, file: File) {
     const formData = new FormData();
     formData.append("profile_picture", file);
 
-    const response = await fetch(`${apiUrl}/tutor/profile/update-picture`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/profile/update-picture`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -158,11 +164,8 @@ export async function updateTutorProfilePicture(token: string, file: File) {
     return response.json();
 }
 
-
-
-
 export async function fetchTicketList(token: string, page: number = 1, perPage: number = 15) {
-    const response = await fetch(`${apiUrl}/tutor/tickets?page=${page}&per_page=${perPage}`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/tickets?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -179,11 +182,8 @@ export async function fetchTicketList(token: string, page: number = 1, perPage: 
     return response.json();
 }
 
-
-
-
 export async function createTicket(token: string, ticketData: { subject: string; department: string; body: string }) {
-    const response = await fetch(`${apiUrl}/tutor/tickets/store`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/tickets/store`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -201,9 +201,8 @@ export async function createTicket(token: string, ticketData: { subject: string;
     return response.json();
 }
 
-
 export async function fetchTicketDetails(token: string, ticketCodec: string) {
-    const response = await fetch(`${apiUrl}/tutor/tickets/${ticketCodec}`, {
+    const response = await fetchWithAuth(`${apiUrl}/tutor/tickets/${ticketCodec}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -220,11 +219,8 @@ export async function fetchTicketDetails(token: string, ticketCodec: string) {
     return response.json();
 }
 
-
-
-
 export async function fetchNotifications(token: string, page: number = 1, perPage: number = 20) {
-    const response = await fetch(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
+    const response = await fetchWithAuth(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -241,11 +237,9 @@ export async function fetchNotifications(token: string, page: number = 1, perPag
     return response.json();
 }
 
-
-
 export async function markNotificationAsRead(token: string, notificationId: number) {
     try {
-        const response = await fetch(`${apiUrl}/notifications/${notificationId}/read`, {
+        const response = await fetchWithAuth(`${apiUrl}/notifications/${notificationId}/read`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -268,7 +262,7 @@ export async function markNotificationAsRead(token: string, notificationId: numb
 
 export async function markAllNotificationsAsRead(token: string) {
     try {
-        const response = await fetch(`${apiUrl}/notifications/read-all`, {
+        const response = await fetchWithAuth(`${apiUrl}/notifications/read-all`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -291,7 +285,7 @@ export async function markAllNotificationsAsRead(token: string) {
 
 export async function deleteNotification(token: string, notificationId: number) {
     try {
-        const response = await fetch(`${apiUrl}/notifications/${notificationId}`, {
+        const response = await fetchWithAuth(`${apiUrl}/notifications/${notificationId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
