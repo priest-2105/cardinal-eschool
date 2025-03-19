@@ -1,8 +1,8 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 
-export async function createTicket(token: string, ticketData: { subject: string; department: string; body: string }) {
-    const response = await fetchWithAuth(`${apiUrl}/admin/tickets/store`, {
+export async function ReplyTicket(token: string, ticketData: { subject: string; department: string; body: string }) {
+    const response = await fetchWithAuth(`${apiUrl}/admin/tickets/reponse`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

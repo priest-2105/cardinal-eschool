@@ -14,7 +14,7 @@ export * from "./profile/updateteadminProfile";
 
 
 // Admin Ticket API EXPORT
-export * from "./ticket/createticket";
+export * from "./ticket/replyticket";
 export * from "./ticket/fetchtickets";
 export * from "./ticket/tickedetails";
 
