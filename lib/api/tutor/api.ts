@@ -156,3 +156,62 @@ export async function updateTutorProfilePicture(token: string, file: File) {
 
     return response.json();
 }
+
+
+
+
+export async function fetchTicketList(token: string, page: number = 1, perPage: number = 15) {
+    const response = await fetch(`${apiUrl}/tutor/tickets?page=${page}&per_page=${perPage}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to fetch ticket list: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+
+export async function createTicket(token: string, ticketData: { subject: string; department: string; body: string }) {
+    const response = await fetch(`${apiUrl}/tutor/tickets/store`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(ticketData),
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Ticket creation failed: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+export async function fetchTicketDetails(token: string, ticketCodec: string) {
+    const response = await fetch(`${apiUrl}/tutor/tickets/${ticketCodec}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to fetch ticket details: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}

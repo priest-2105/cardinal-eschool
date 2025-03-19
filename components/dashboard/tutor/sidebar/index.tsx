@@ -55,6 +55,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.tutor.tutorcreateticket,
       cardinalConfig.routes.dashboard.tutor.tutorticketdetails,
     ],
+    dynamicPath: "/tutor/ticket/",
   },
 ]
 

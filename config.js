@@ -76,7 +76,7 @@ const cardinalConfig = {
         tutorprofilesettings: "/tutor/settings",
         tutorticketlist: "/tutor/ticketlist",
         tutorcreateticket: "/tutor/createticket",
-        tutorticketdetails: "/tutor/ticketdetails",
+        tutorticketdetails: (ticketId) => `/tutor/ticket/${ticketId}`,
         tutorMakePayment: "/tutor/makepayment",
         tutorPaymentHistory: "/tutor/paymenthistory",
         tutorTransactionDetails: "/tutor/transactiondetails",

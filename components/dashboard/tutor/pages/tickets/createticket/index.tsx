@@ -8,6 +8,9 @@ import { Button } from "@/components/dashboard/tutor/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/tutor/ui/select"
 import { Label } from "@/components/dashboard/tutor/ui/label"
 import Popup from "@/components/dashboard/tutor/ui/Popup"
+import { createTicket } from "@/lib/api/tutor/api";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 interface FormData {
   name: string
@@ -19,6 +22,7 @@ interface FormData {
 }
 
 export default function CreateTicketForm() {
+  const token = useSelector((state: RootState) => state.auth?.token);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -26,23 +30,40 @@ export default function CreateTicketForm() {
     issue: "",
     subject: "",
     message: ""
-  })
-  const [showPopup, setShowPopup] = useState(false)
-  const router = useRouter()
+  });
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault() 
-    setTimeout(() => {
-      setShowPopup(true)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) {
+      setPopupMessage("You must be logged in to create a ticket.");
+      setShowPopup(true);
+      return;
+    }
+
+    try {
+      const response = await createTicket(token, {
+        subject: formData.subject,
+        department: formData.department,
+        body: formData.message,
+      });
+      setPopupMessage(response.message || "Ticket created successfully.");
+      setShowPopup(true);
       setTimeout(() => {
-        setShowPopup(false)
-        router.push("/tutor/ticketdetails")
-      }, 3000)
-    }, 1000)
-  }
+        setShowPopup(false);
+        router.push("/tutor/ticketdetails");
+      }, 3000);
+    } catch (error) {
+      console.error("Ticket creation failed:", error);
+      setPopupMessage((error as Error).message || "Failed to create ticket.");
+      setShowPopup(true);
+    }
+  };
 
   return (
-    <div className="max-w-4xl  p-6 bg-white rounded-lg">
+    <div className="max-w-4xl p-6 bg-white rounded-lg">
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name */}
@@ -73,7 +94,6 @@ export default function CreateTicketForm() {
         <div className="space-y-2">
           <Label htmlFor="department">Department</Label>
           <Select
-            // id="department"
             value={formData.department}
             onValueChange={(value) => setFormData({ ...formData, department: value })}
             required
@@ -102,7 +122,6 @@ export default function CreateTicketForm() {
           />
         </div>
 
-
         {/* Subject */}
         <div className="space-y-2">
           <Label htmlFor="subject">Subject</Label>
@@ -130,7 +149,7 @@ export default function CreateTicketForm() {
           Submit Ticket
         </Button>
       </form>
-      {showPopup && <Popup message="Your ticket has been successfully submitted." onClose={() => setShowPopup(false)} />}
+      {showPopup && <Popup message={popupMessage} onClose={() => setShowPopup(false)} />}
     </div>
-  )
+  );
 }
