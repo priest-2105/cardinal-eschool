@@ -23,8 +23,12 @@ import AnnouncementIcon from "@/public/assets/icons/volume-high3x.png"
 import AnnouncementLightIcon from "@/public/assets/icons/volume-highlight.png"
 import CouponIcon from "@/public/assets/icons/coupon-icon.png"
 import CouponLightIcon from "@/public/assets/icons/coupon-icon-light.png"
+import NotificationIcon from "@/public/assets/icons/notification-03.png"
+import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 import cardinalConfig from "@/config"
 import type React from "react" 
+
+
 
 const navigation = [
   {
@@ -130,6 +134,16 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
     dynamicPath: null,  
+  },
+  {
+    name: "Notification",
+    href: cardinalConfig.routes.dashboard.admin.adminNotifications,
+    icon: NotificationIcon,
+    iconLight: NotificationLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminNotifications,
+    ],
+    dynamicPath: "/admin/notifications/",
   },
 ]
 
