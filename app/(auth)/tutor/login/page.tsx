@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useAppDispatch } from '@/lib/hooks'
 import { setAuthState } from '@/lib/authSlice'
-import { login } from '@/lib/api/admin/api'
+import { login } from '@/lib/api/tutor/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeIcon as EyeClosed } from "lucide-react" 
@@ -36,7 +36,7 @@ export default function LoginPage() {
       }))
       console.log('Login successful')
       setAlert({ type: 'success', message: 'Login successful' })
-      router.push('/admin')
+      router.push('/tutor')
     } catch (error) {
       console.error('Login failed', error)
       const errorMessage = (error as any).response?.data?.message || (error as any).message
@@ -53,9 +53,9 @@ export default function LoginPage() {
           <div className="max-w-lg flex mx-auto items-center align-middle self-center">
             <div></div>
             <div>
-              <h2 className="text-3xl font-bold mb-2">Admin Log In</h2>
+              <h2 className="text-3xl font-bold mb-2">Tutor Log In</h2>
               <p className="text-gray-600 font-semibold mb-8">
-                Enter your email address and password to securely log in to Cardinal E-School Admin portal
+                Enter your email address and password to securely log in to Cardinal E-School Tutor portal
               </p>
               {alert && (
                 <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-4 right-4">
@@ -88,7 +88,7 @@ export default function LoginPage() {
                 <Button type="submit" className="w-full" size="lg">
                   {isSubmitting ? 'Submitting' : 'Submit'}
                 </Button>
-              <div className="text-center mr-auto mt-10">Forgot Password ? <Link className="text-[#1BC2C2]" href="/admin/resetpassword">Click here</Link></div>
+              <div className="text-center mr-auto mt-10">Forgot Password ? <Link className="text-[#1BC2C2]" href="/tutor/resetpassword">Click here</Link></div>
               </form>
             </div>
           </div>

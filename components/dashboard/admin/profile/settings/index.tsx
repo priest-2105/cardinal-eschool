@@ -58,7 +58,11 @@ export default function AdminSettings() {
         </div>
 
         {alert && (
-          <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-12 z-50 bg-white right-4">
+          <Alert
+            variant={alert.type === 'success' ? 'default' : 'danger'}
+            className="absolute top-12 z-50 bg-white right-4"
+            onClose={() => setAlert(null)}
+          >
             <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
             <AlertDescription>{alert.message}</AlertDescription>
           </Alert>

@@ -38,7 +38,7 @@ export async function logout(token: string) {
     return response.json();
 }
 
-export async function fetchAdminProfile(token: string) {
+export async function fetchTutorProfile(token: string) {
     const response = await fetch(`${apiUrl}/tutor/profile`, {
         method: 'GET',
         headers: {
