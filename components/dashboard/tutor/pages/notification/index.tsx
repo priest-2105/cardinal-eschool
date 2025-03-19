@@ -26,6 +26,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
+import { fetchNotifications, markNotificationAsRead, markAllNotificationsAsRead, deleteNotification } from "@/lib/api/tutor/api";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 // Notification type definition
 interface Notification {
@@ -82,11 +86,12 @@ const SAMPLE_NOTIFICATIONS: Notification[] = [
 ]
 
 export function NotificationList() {
-  // State for notifications and UI
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
   const [selectedNotifications, setSelectedNotifications] = useState<Set<string>>(new Set())
-  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -94,20 +99,69 @@ export function NotificationList() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [notificationsToDelete, setNotificationsToDelete] = useState<string[]>([])
 
-  // Load notifications
   useEffect(() => {
-    // Simulate API call
     const loadNotifications = async () => {
-      setIsLoading(true)
-      // In a real app, you would fetch from an API
-      setTimeout(() => {
-        setNotifications(SAMPLE_NOTIFICATIONS)
-        setIsLoading(false)
-      }, 1000)
-    }
+      if (!token) return;
+      try {
+        setIsLoading(true);
+        const response = await fetchNotifications(token);
+        const notificationsWithDates = response.data.notifications.map((notification: any) => ({
+          ...notification,
+          createdAt: new Date(notification.created_at), 
+        }));
+        setNotifications(notificationsWithDates);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+        setAlert({ type: 'error', message: "Failed to load notifications." });
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    loadNotifications()
-  }, [])
+    loadNotifications();
+  }, [token]);
+
+  const handleMarkAsRead = async (id: number) => {
+    if (!token) return;
+    try {
+      await markNotificationAsRead(token, id);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id.toString() ? { ...notification, read_at: new Date().toISOString() } : notification
+        )
+      );
+      setAlert({ type: 'success', message: "Notification marked as read." });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      setAlert({ type: 'error', message: "Failed to mark notification as read." });
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!token) return;
+    try {
+      await markAllNotificationsAsRead(token);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
+      );
+      setAlert({ type: 'success', message: "All notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+      setAlert({ type: 'error', message: "Failed to mark all notifications as read." });
+    }
+  };
+
+  const handleDeleteNotification = async (id: number) => {
+    if (!token) return;
+    try {
+      await deleteNotification(token, id);
+      setNotifications((prev) => prev.filter((notification) => notification.id !== id.toString()));
+      setAlert({ type: 'success', message: "Notification deleted successfully." });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      setAlert({ type: 'error', message: "Failed to delete notification." });
+    }
+  };
 
   // Apply filters and sorting
   useEffect(() => {
@@ -118,7 +172,7 @@ export function NotificationList() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (notification) =>
-          notification.title.toLowerCase().includes(query) || notification.message.toLowerCase().includes(query),
+          notification.title.toLowerCase().includes(query) || notification.message.toLowerCase().includes(query)
       )
     }
 
@@ -146,7 +200,6 @@ export function NotificationList() {
         return a.createdAt.getTime() - b.createdAt.getTime()
       }
     })
-
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
@@ -183,7 +236,7 @@ export function NotificationList() {
           return { ...notification, isRead: true }
         }
         return notification
-      }),
+      })
     )
   }
 
@@ -194,7 +247,7 @@ export function NotificationList() {
           return { ...notification, isRead: false }
         }
         return notification
-      }),
+      })
     )
   }
 
@@ -205,7 +258,7 @@ export function NotificationList() {
           return { ...notification, isDone: true }
         }
         return notification
-      }),
+      })
     )
   }
 
@@ -216,7 +269,7 @@ export function NotificationList() {
           return { ...notification, isDone: false }
         }
         return notification
-      }),
+      })
     )
   }
 
@@ -242,7 +295,6 @@ export function NotificationList() {
   const handleBulkAction = (action: string) => {
     const selectedIds = Array.from(selectedNotifications)
     if (selectedIds.length === 0) return
-
     switch (action) {
       case "mark-read":
         markAsRead(selectedIds)
@@ -518,7 +570,7 @@ export function NotificationList() {
                     <Checkbox
                       checked={selectedNotifications.has(notification.id)}
                       onCheckedChange={() => toggleSelectNotification(notification.id)}
-                      id={`notification-${notification.id}`}
+                      id={`select-${notification.id}`}
                       className="mt-1"
                     />
                     <div className="flex-1 min-w-0">
@@ -571,7 +623,7 @@ export function NotificationList() {
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {renderTypeBadge(notification.type)}
                         <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
+                          {/* {formatDistanceToNow(notification.createdAt, { addSuffix: true })} */}
                         </span>
                         {notification.isDone && (
                           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
@@ -591,8 +643,8 @@ export function NotificationList() {
         </div>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog  open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent className="bg-white">
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent className="bg-white mt-8">
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Notification{notificationsToDelete.length > 1 ? "s" : ""}</AlertDialogTitle>
               <AlertDialogDescription>
@@ -612,6 +664,13 @@ export function NotificationList() {
           </AlertDialogContent>
         </AlertDialog>
       </CardContent>
+
+      {alert && (
+        <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="absolute top-4 right-4">
+          <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
     </Card>
   )
 }

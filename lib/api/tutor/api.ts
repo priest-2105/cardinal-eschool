@@ -137,6 +137,7 @@ export async function updateTutorProfile(token: string, profileData: {
 
 
 
+
 export async function updateTutorProfilePicture(token: string, file: File) {
     const formData = new FormData();
     formData.append("profile_picture", file);
@@ -179,6 +180,8 @@ export async function fetchTicketList(token: string, page: number = 1, perPage: 
 }
 
 
+
+
 export async function createTicket(token: string, ticketData: { subject: string; department: string; body: string }) {
     const response = await fetch(`${apiUrl}/tutor/tickets/store`, {
         method: 'POST',
@@ -198,6 +201,7 @@ export async function createTicket(token: string, ticketData: { subject: string;
     return response.json();
 }
 
+
 export async function fetchTicketDetails(token: string, ticketCodec: string) {
     const response = await fetch(`${apiUrl}/tutor/tickets/${ticketCodec}`, {
         method: 'GET',
@@ -211,6 +215,81 @@ export async function fetchTicketDetails(token: string, ticketCodec: string) {
     if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Failed to fetch ticket details: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+
+export async function fetchNotifications(token: string, page: number = 1, perPage: number = 20) {
+    const response = await fetch(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to fetch notifications: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+
+export async function markNotificationAsRead(token: string, notificationId: number) {
+    const response = await fetch(`${apiUrl}/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to mark notification as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+
+export async function markAllNotificationsAsRead(token: string) {
+    const response = await fetch(`${apiUrl}/notifications/read-all`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to mark all notifications as read: ${response.status} ${response.statusText} - ${errorMessage}`);
+    }
+
+    return response.json();
+}
+
+export async function deleteNotification(token: string, notificationId: number) {
+    const response = await fetch(`${apiUrl}/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to delete notification: ${response.status} ${response.statusText} - ${errorMessage}`);
     }
 
     return response.json();
