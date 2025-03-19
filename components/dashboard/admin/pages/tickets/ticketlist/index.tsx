@@ -35,10 +35,9 @@ export function TicketList() {
                     return;
                 }
 
-                // Pass only explicitly set filters
                 const response = await fetchTicketList(token, 1, 15, {
-                    status: filters.status?.[0] || undefined,
-                    department: filters.departments?.[0] || undefined,
+                    status: filters.status?.[0],
+                    department: filters.departments?.[0],
                     ticket_id: searchQuery || undefined,
                 });
 

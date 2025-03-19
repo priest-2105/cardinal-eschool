@@ -12,23 +12,18 @@ export async function fetchTicketList(
     perPage: number = 15,
     filters: TicketFilters = {}
 ) {
-    const queryParams = new URLSearchParams({
-        page: page.toString(),
-        per_page: perPage.toString(),
-    });
-
-    // Add filters only if they are defined
-    if (filters.status) queryParams.append("status", filters.status);
-    if (filters.ticket_id) queryParams.append("ticket_id", filters.ticket_id);
-    if (filters.department) queryParams.append("department", filters.department);
-
-    const response = await fetchWithAuth(`${apiUrl}/admin/tickets?${queryParams.toString()}`, {
-        method: 'GET',
+    const response = await fetchWithAuth(`${apiUrl}/admin/tickets`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify({
+            ...filters,
+            page,
+            per_page: perPage,
+        }),
     });
 
     if (!response.ok) {
