@@ -8,6 +8,11 @@ import { Button } from "@/components/dashboard/tutor/ui/button"
 import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
+import { useSelector, useDispatch } from "react-redux"
+import { fetchTutorProfile, logout } from "@/lib/api/tutor/api"
+import { RootState } from "@/lib/store"
+import { clearAuthState } from "@/lib/authSlice"
+import { useRouter } from "next/navigation"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -19,7 +24,7 @@ const profileOptions = [
   { name: "Profile", href: "/tutor/profile" },
   { name: "Settings", href: "/tutor/settings" },
   { name: "Support", href: "/tutor/support" },
-  { name: "Logout", href: "/tutor/logout" },
+  { name: "Logout", href: "#" },
 ]
 
 interface Notification {
@@ -62,7 +67,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 hover:bg-gray-100">
+              <li key={index} className="px-4 py-2 hover:bg-gray-100" onClick={item.onClick}>
                 {"href" in item ? (
                   <Link href={item.href}>{item.name}</Link>
                 ) : (
@@ -84,6 +89,39 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   toggleSidebar,
   isSidebarOpen,
 }) => {
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const dispatch = useDispatch();
+  const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter()
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        if (token) {
+          const response = await fetchTutorProfile(token);
+          setProfile(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    getProfile();
+  }, [token]);
+
+  const handleLogout = async () => {
+    try {
+      if (token) {
+        await logout(token);
+        dispatch(clearAuthState());
+      }
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+    router.push("/tutor/login")
+  };
+
   return (
     <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-40 shadow-md">
       <div className="border-b">
@@ -115,14 +153,20 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
               }
             />
             <Dropdown
-              items={profileOptions}
+              items={profileOptions.map(option => ({
+                ...option,
+                onClick: option.name === "Logout" ? () => setIsModalOpen(true) : undefined
+              }))}
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/assets/img/dashboard/tutor/Ellipse 2034.png" alt="User" />
                     <AvatarFallback>TD</AvatarFallback>
                   </Avatar>
-                  <h3 className="font-bold text-sm">Hanah Olumide</h3>
+                  <div>
+                    <h3 className="font-bold text-sm">{profile.firstname} {profile.lastname}</h3>
+                    {/* <p className="text-xs text-gray-500">{profile.email}</p> */}
+                  </div>
                   <FaAngleDown />
                 </Button>
               }
@@ -130,6 +174,18 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
           </div>
         </div>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0   w-full flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Confirm Logout</h2>
+            <p className="mb-4">Are you sure you want to logout?</p>
+            <div className="flex justify-end gap-4">
+              <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+              <Button variant="danger" onClick={handleLogout}>Confirm</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
