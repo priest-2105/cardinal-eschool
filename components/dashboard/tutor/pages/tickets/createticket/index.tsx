@@ -7,10 +7,11 @@ import { Textarea } from "@/components/dashboard/tutor/ui/textarea"
 import { Button } from "@/components/dashboard/tutor/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/tutor/ui/select"
 import { Label } from "@/components/dashboard/tutor/ui/label"
-import Popup from "@/components/dashboard/tutor/ui/Popup"
-import { createTicket } from "@/lib/api/tutor/api";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
+import { createTicket, fetchTutorProfile } from "@/lib/api/tutor/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { useEffect } from "react";
 
 interface FormData {
   name: string
@@ -31,34 +32,52 @@ export default function CreateTicketForm() {
     subject: "",
     message: ""
   });
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (token) {
+        try {
+          const response = await fetchTutorProfile(token);
+          setFormData((prev) => ({
+            ...prev,
+            name: response.data.firstname + " " + response.data.lastname,
+            email: response.data.email,
+          }));
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
+    };
+
+    loadUserProfile();
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
-      setPopupMessage("You must be logged in to create a ticket.");
-      setShowPopup(true);
+      setAlert({ type: 'error', message: "You must be logged in to create a ticket." });
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const response = await createTicket(token, {
         subject: formData.subject,
         department: formData.department,
         body: formData.message,
       });
-      setPopupMessage(response.message || "Ticket created successfully.");
-      setShowPopup(true);
+      setAlert({ type: 'success', message: response.message || "Ticket created successfully." });
       setTimeout(() => {
-        setShowPopup(false);
-        router.push("/tutor/ticketdetails");
-      }, 3000);
+        router.push(`/tutor/ticket/${response.data.codec}`);
+      }, 2000);
     } catch (error) {
       console.error("Ticket creation failed:", error);
-      setPopupMessage((error as Error).message || "Failed to create ticket.");
-      setShowPopup(true);
+      setAlert({ type: 'error', message: (error as Error).message || "Failed to create ticket." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -72,7 +91,7 @@ export default function CreateTicketForm() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              readOnly
               required
             />
           </div>
@@ -84,7 +103,7 @@ export default function CreateTicketForm() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              readOnly
               required
             />
           </div>
@@ -145,11 +164,17 @@ export default function CreateTicketForm() {
           />
         </div>
 
-        <Button type="submit" size="lg">
-          Submit Ticket
+        <Button type="submit" size="lg" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit Ticket"}
         </Button>
       </form>
-      {showPopup && <Popup message={popupMessage} onClose={() => setShowPopup(false)} />}
+
+      {alert && (
+        <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mt-4">
+          <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
