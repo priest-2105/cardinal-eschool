@@ -2,11 +2,12 @@
 
 import type React from "react"
 import { useState } from "react"
-import { resetPasswordEmail } from '@/lib/api/admin/api'
+import { resetPasswordEmail } from '@/lib/api/tutor/api'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function ResetPasswordPage() {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ export default function ResetPasswordPage() {
       console.log('Response:', response)  
       console.log('Reset password email sent')
       setAlert({ type: 'success', message: 'Password reset email sent. Link expires in 30 minutes.' })
-      router.push('/admin')
+      // router.push('/tutor')
     } catch (error) {
       console.error('Reset password email failed', error)
       const errorMessage = (error as any).response?.data?.message || (error as any).message
@@ -42,7 +43,7 @@ export default function ResetPasswordPage() {
           <div className="max-w-lg flex mx-auto items-center align-middle self-center">
             <div></div>
             <div>
-              <h2 className="text-3xl font-bold mb-2">Admin Reset Password</h2>
+              <h2 className="text-3xl font-bold mb-2">Tutor Reset Password</h2>
               <p className="text-gray-600 font-semibold mb-8">
                 Enter your email address to reset your password
               </p>
@@ -63,6 +64,7 @@ export default function ResetPasswordPage() {
                   {isSubmitting ? 'Resetting' : 'Reset'}
                 </Button>
               </form>
+              <div className="text-center mr-auto mt-10"> <Link className="text-[#1BC2C2]" href="/tutor/login">Back to login</Link></div>
             </div>
           </div>
         </div>
