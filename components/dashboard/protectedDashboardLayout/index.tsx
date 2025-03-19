@@ -21,7 +21,7 @@ export default function ProtectedDashboardLayout({
   useEffect(() => {
     if (!user || user.role !== allowedRole) {
       // Redirect if the user's role doesn't match the allowed role
-      router.replace("/404");
+      router.replace("/");
     }
   }, [user, allowedRole, router]);
 
