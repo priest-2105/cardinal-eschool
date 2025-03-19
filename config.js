@@ -69,8 +69,7 @@ const cardinalConfig = {
         home: "/tutor",
         courses: "/tutor/courses",
         courseDetails: (courseId) => `/tutor/course/${courseId}`,
-        assessments: "/tutor/assessments",
-        notifications: "/tutor/notifications",
+        assessments: "/tutor/assessments", 
         tutorinformation: "/tutor/tutorinformation",
         guardianinformation: "/tutor/guardianinformation",
         tutorprofilesettings: "/tutor/settings",
@@ -80,6 +79,7 @@ const cardinalConfig = {
         tutorMakePayment: "/tutor/makepayment",
         tutorPaymentHistory: "/tutor/paymenthistory",
         tutorTransactionDetails: "/tutor/transactiondetails",
+        tutorNotifications: "/tutor/notifications", 
       },
       admin: {
         home: "/admin",
