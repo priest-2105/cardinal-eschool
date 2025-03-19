@@ -20,7 +20,7 @@ interface FilterValues {
 }
 
 export function TicketList() {
-    const token = useSelector((state: RootState) => state.auth?.token);  
+    const token = useSelector((state: RootState) => state.auth?.token);
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("latest");
@@ -34,19 +34,23 @@ export function TicketList() {
                     console.error("Token is missing");
                     return;
                 }
+
+                // Pass only explicitly set filters
                 const response = await fetchTicketList(token, 1, 15, {
-                    status: filters.status?.[0],
-                    department: filters.departments?.[0],
-                    ticket_id: searchQuery,
+                    status: filters.status?.[0] || undefined,
+                    department: filters.departments?.[0] || undefined,
+                    ticket_id: searchQuery || undefined,
                 });
-                setTickets(response.data.tickets);
+
+                console.log("Fetched tickets response:", response); // Log the full response
+                setTickets(response.data.tickets || []); // Ensure tickets are set correctly
             } catch (error) {
                 console.error("Error fetching tickets:", error);
             }
         };
 
         fetchTickets();
-    }, [filters, searchQuery, token]);  
+    }, [filters, searchQuery, token]);
 
     const handleFilterChange = (newFilters: FilterValues) => {
         setFilters(newFilters);
@@ -55,6 +59,12 @@ export function TicketList() {
     const handleRowClick = (ticketId: string) => {
         router.push(`/admin/ticket/${ticketId}`);
     };
+
+    const filteredTickets = tickets.filter((ticket) =>
+        ticket.ticket_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.department.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="flex flex-col h-full">
@@ -95,24 +105,31 @@ export function TicketList() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[20%]">Ticket ID</TableHead>
+                                    <TableHead className="w-[15%]">Ticket ID</TableHead>
+                                    <TableHead className="w-[20%]">User</TableHead>
                                     <TableHead className="w-[20%]">Description</TableHead>
-                                    <TableHead className="w-[20%]">Department</TableHead>
-                                    <TableHead className="w-[20%]">Last Updated</TableHead>
-                                    <TableHead className="w-[20%]">Status</TableHead>
+                                    <TableHead className="w-[15%]">Department</TableHead>
+                                    <TableHead className="w-[15%]">Last Updated</TableHead>
+                                    <TableHead className="w-[15%]">Status</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {tickets.map((ticket) => (
+                                {filteredTickets.map((ticket) => (
                                     <TableRow
                                         key={ticket.ticket_id}
                                         onClick={() => handleRowClick(ticket.ticket_id)}
                                         className="cursor-pointer hover:bg-gray-100"
                                     >
                                         <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
+                                        <TableCell>
+                                            <div>
+                                                <p className="font-medium">{ticket.name}</p>
+                                                <p className="text-sm text-muted-foreground">{ticket.email}</p>
+                                            </div>
+                                        </TableCell>
                                         <TableCell>{ticket.subject}</TableCell>
                                         <TableCell>{ticket.department}</TableCell>
-                                        <TableCell>{ticket.created_at}</TableCell>
+                                        <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
                                         <TableCell>
                                             <Button variant={ticket.status === "open" ? "default" : "danger"} size="sm">
                                                 {ticket.status}

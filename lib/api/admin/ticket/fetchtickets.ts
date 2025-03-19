@@ -15,8 +15,12 @@ export async function fetchTicketList(
     const queryParams = new URLSearchParams({
         page: page.toString(),
         per_page: perPage.toString(),
-        ...filters,
     });
+
+    // Add filters only if they are defined
+    if (filters.status) queryParams.append("status", filters.status);
+    if (filters.ticket_id) queryParams.append("ticket_id", filters.ticket_id);
+    if (filters.department) queryParams.append("department", filters.department);
 
     const response = await fetchWithAuth(`${apiUrl}/admin/tickets?${queryParams.toString()}`, {
         method: 'GET',
