@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { fetchGuardianProfile, updateGuardianProfile } from "@/lib/api/student/profile/fetchguardiandetails";
+import { fetchGuardianProfile, updateGuardianProfile } from "@/lib/api/student/api";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
 import { Button } from "@/components/dashboard/student/ui/button";
 import { Input } from "@/components/dashboard/student/ui/input";
 import { Label } from "@/components/dashboard/student/ui/label";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/dashboard/student/ui/select";
 
 export default function GuardianInformation() {
   const token = useSelector((state: RootState) => state.auth?.token);
@@ -75,14 +76,14 @@ export default function GuardianInformation() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-white border rounded-lg">     
       {alertMessage && (
-        <Alert variant={alertVariant} className="fixed top-4 right-4" onClose={() => setAlertMessage(null)}>
+        <Alert variant={alertVariant} className="fixed top-16 bg-white right-4" onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       )}
-      <h2 className="text-2xl font-bold mb-4">Guardian Information</h2>
+      <h2 className="text-2xl font-bold  mb-4">Guardian Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="guardian_name">Name</Label>
@@ -115,12 +116,19 @@ export default function GuardianInformation() {
         </div>
         <div>
           <Label htmlFor="guardian_gender">Gender</Label>
-          <Input
-            id="guardian_gender"
+          <Select
             value={profile.guardian_gender}
-            onChange={(e) => setProfile({ ...profile, guardian_gender: e.target.value })}
-            readOnly={!isEditable}
-          />
+            onValueChange={(value) => setProfile({ ...profile, guardian_gender: value })}
+            disabled={!isEditable}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label htmlFor="guardian_country">Country</Label>
@@ -153,7 +161,7 @@ export default function GuardianInformation() {
       <div className="flex justify-end mt-4">
         {isEditable ? (
           <>
-            <Button variant="outline" onClick={() => setIsEditable(false)}>
+            <Button variant="outline" className="mr-4" onClick={() => setIsEditable(false)}>
               Cancel
             </Button>
             <Button variant="default" onClick={handleUpdate} disabled={isUpdating}>

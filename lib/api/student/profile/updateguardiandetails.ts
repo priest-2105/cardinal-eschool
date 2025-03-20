@@ -9,7 +9,7 @@ export async function updateGuardianProfile(token: string, profileData: {
   guardian_state: string;
   guardian_address: string;
 }) {
-  const response = await fetchWithAuth(`${apiUrl}/guardian/profile/update`, {
+  const response = await fetchWithAuth(`${apiUrl}/student/guardian/profile/update`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
