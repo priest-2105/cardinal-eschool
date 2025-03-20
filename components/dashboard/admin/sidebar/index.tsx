@@ -5,6 +5,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
+import Logo from "@/public/assets/img/logo.png"
+import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
 import HomeLightIcon from "@/public/assets/icons/home-01-light.png"
 import ProfileIcon from "@/public/assets/icons/user.png"
@@ -194,10 +196,10 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
           )}
         </button>
         {isOpen ? (
-          <Image src="/assets/img/logo.png" alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
+          <Image src={Logo} alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
         ) : (
           <Image
-            src="/assets/img/favicon-logo.png"
+            src={favIconLogo}
             alt="Cardinal E-School"
             width={30}
             height={10}
