@@ -64,6 +64,7 @@ const cardinalConfig = {
         studentMakePayment: "/student/makepayment",
         studentPaymentHistory: "/student/paymenthistory",
         StudentTransactionDetails: "/student/transactiondetails",
+        studentNotifications: "/student/notifications", 
       },
       tutor: {
         home: "/tutor",

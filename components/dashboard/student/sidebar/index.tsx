@@ -18,7 +18,9 @@ import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import cardinalConfig from "@/config"
-import type React from "react" // Added import for React
+import type React from "react" 
+import NotificationIcon from "@/public/assets/icons/notification-03.png"
+import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 
 const navigation = [
   {
@@ -67,6 +69,16 @@ const navigation = [
       cardinalConfig.routes.dashboard.student.studentcreateticket,
       cardinalConfig.routes.dashboard.student.studentticketdetails,
     ],
+  },
+  {
+    name: "Notification",
+    href: cardinalConfig.routes.dashboard.student.studentNotifications,
+    icon: NotificationIcon,
+    iconLight: NotificationLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.student.studentNotifications,
+    ],
+    dynamicPath: "/student/notifications/",
   },
 ]
 

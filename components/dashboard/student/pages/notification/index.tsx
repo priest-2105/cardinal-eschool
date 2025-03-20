@@ -24,8 +24,8 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
-} from "@/lib/api/admin/api"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+} from "@/lib/api/tutor/api"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 
