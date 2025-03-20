@@ -1,10 +1,10 @@
 "use client"
 
-import TicketDetailsComponent from "@/components/dashboard/admin/pages/tickets/ticketdetails"
-import TicketDetailsLayout from "@/components/dashboard/admin/pages/tickets/ticketdetailslayout"
+
+import { NotificationList } from "@/components/dashboard/admin/pages/notification"
 import { useState, useEffect } from "react"
 
-export default function TicketDetailsPage() {
+export default function NotificationsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -23,10 +23,8 @@ export default function TicketDetailsPage() {
   }, [])
 
   return (
-    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <TicketDetailsLayout>
-        <TicketDetailsComponent />
-      </TicketDetailsLayout>
+    <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+        <NotificationList/>
     </div>
   )
 }

@@ -1,11 +1,15 @@
 "use client"
 
-import TicketDetailsComponent from "@/components/dashboard/tutor/pages/tickets/ticketdetails"
-import TicketDetailsLayout from "@/components/dashboard/tutor/pages/tickets/ticketdetailslayout"
+import TicketDetailsComponent from "@/components/dashboard/admin/pages/tickets/ticketdetails"
+import TicketDetailsLayout from "@/components/dashboard/admin/pages/tickets/ticketdetailslayout"
+import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
 export default function TicketDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const params = useParams()
+  const ticketId = decodeURIComponent(params?.ticketdetails?.toString() || ""); // Decode the ticket ID
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -25,7 +29,7 @@ export default function TicketDetailsPage() {
   return (
     <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
       <TicketDetailsLayout>
-        <TicketDetailsComponent />
+        <TicketDetailsComponent ticketId={ticketId} />
       </TicketDetailsLayout>
     </div>
   )

@@ -1,0 +1,30 @@
+
+
+// Authentication  API EXPORT
+
+export * from "./auth/login";
+export * from "./auth//resetpassword";
+export * from "./auth/changepassword";
+export * from "./auth/logout";
+
+
+
+// Student Profile API EXPORT 
+export * from "./profile/fetchuserProfile";
+export * from "./profile/updateStudentDP";
+export * from "./profile/updatestudentProfile";
+
+
+
+// Student Ticket API EXPORT
+export * from "./ticket/createticket";
+export * from "./ticket/fetchtickets";
+export * from "./ticket/tickedetails";
+
+
+
+// Student Notification API EXPORT
+export * from "./notifcation/fetchnotification";
+export * from "./notifcation/marknotificationasread";
+export * from "./notifcation/markallnotificationasread";
+export * from "./notifcation/deletenotification"; 
