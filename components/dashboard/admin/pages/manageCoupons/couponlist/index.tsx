@@ -59,6 +59,7 @@ export default function CouponsList() {
 
     try {
       const response = await deactivateCoupon(token, couponToDeactivate.coupon_codec);
+      console.log("Deactivate API Response:", response); // Log the API response
       setCoupons((prevCoupons) =>
         prevCoupons.map((coupon) =>
           coupon.coupon_codec === couponToDeactivate.coupon_codec
@@ -85,9 +86,9 @@ export default function CouponsList() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 ">
       {alertMessage && (
-        <Alert variant={alertVariant} onClose={() => setAlertMessage(null)}>
+        <Alert className="fixed top-18 bg-white right-4" variant={alertVariant} onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
@@ -116,7 +117,7 @@ export default function CouponsList() {
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="expired">Expired</SelectItem>
+            <SelectItem value="deactivated">Deactivated</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -136,7 +137,14 @@ export default function CouponsList() {
                       {coupon.percentage}% Off
                     </p>
                   </div>
-                  <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className={
+                      coupon.status === "deactivated"
+                        ? "bg-gray-50 text-red-600 border-red-200"
+                        : "bg-green-50 text-green-600 border-green-200"
+                    }
+                  >
                     {coupon.status}
                   </Badge>
                 </div>
@@ -162,7 +170,7 @@ export default function CouponsList() {
         </div>
       )}
       {couponToDeactivate && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed -inset-8 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-bold mb-4">Confirm Deactivation</h3>
             <p className="text-sm text-muted-foreground mb-6">
