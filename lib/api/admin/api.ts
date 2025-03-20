@@ -29,4 +29,7 @@ export * from "./managetutor/fetchtutors";
 export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
 export * from "./notifcation/markallnotificationasread";
-export * from "./notifcation/deletenotification"; 
+export * from "./notifcation/deletenotification";
+
+// Admin Coupon API EXPORT
+export * from "./coupon/fetchCoupons";

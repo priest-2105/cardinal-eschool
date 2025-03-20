@@ -133,7 +133,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminEditCoupon,
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
-    dynamicPath: null,  
+    dynamicPath: "/admin/coupon",  
   },
   {
     name: "Notification",
