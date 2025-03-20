@@ -8,7 +8,7 @@ import { useState, useEffect } from "react"
 export default function TicketDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const params = useParams()
-  const ticketId = params?.ticketdetails?.toString();  
+  const ticketId = decodeURIComponent(params?.ticketdetails?.toString() || ""); // Decode the ticket ID
   
 
   useEffect(() => {

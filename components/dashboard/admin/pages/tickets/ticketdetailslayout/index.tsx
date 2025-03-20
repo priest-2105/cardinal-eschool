@@ -24,7 +24,7 @@ export default function TicketDetailsLayout({
       </button>
       
       </div>
-      <div className="mt-6">
+      <div className="mt-6 w-full">
         {children}
       </div>
     </div>

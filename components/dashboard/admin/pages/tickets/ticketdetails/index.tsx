@@ -11,6 +11,7 @@ import { ConfirmationModal } from "../confirmationModal/index";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { ReplyTicket } from "@/lib/api/admin/api";
+import { DeleteTicket } from "@/lib/api/admin/ticket/deleteticket";
 
 interface Ticket {
     ticket_id: string;
@@ -41,12 +42,18 @@ interface ConfirmationModalState {
   showConfirmModal: boolean;
 }
 
+interface DeleteModalState {
+  showDeleteModal: boolean;
+}
+
 export default function TicketDetailsComponent({ ticketId }: TicketDetailsComponentProps) {
+  const decodedTicketId = decodeURIComponent(ticketId); // Decode the ticket ID
   const token: string | null = useSelector((state: RootState) => state.auth?.token);
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [alertState, setAlertState] = useState<AlertState>({ showAlert: false, message: "", variant: "default" });
   const [confirmModalState, setConfirmModalState] = useState<ConfirmationModalState>({ showConfirmModal: false });
-  const [responseMessage, setResponseMessage] = useState("");
+  const [deleteModalState, setDeleteModalState] = useState<DeleteModalState>({ showDeleteModal: false });
+  const [responseMessage, setResponseMessage] = useState(""); // Initialize with an empty string
   const [responseStatus, setResponseStatus] = useState<"in_progress" | "resolved" | "closed">("in_progress");
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submitting response
   const router = useRouter();
@@ -54,11 +61,12 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        if (token && ticketId) {
-          const response = await fetchTicketDetails(token, ticketId);
+        if (token && decodedTicketId) {
+          const response = await fetchTicketDetails(token, decodedTicketId);
           setTicket(response.data);
+          setResponseMessage(response.data.ticket_response || ""); // Set default responseMessage
         } else {
-          console.error("Token or Ticket ID is missing.", token, ticketId);
+          console.error("Token or Ticket ID is missing.", token, decodedTicketId);
         }
       } catch (error) {
         console.error("Error fetching ticket details:", error);
@@ -66,7 +74,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     };
 
     fetchDetails();
-  }, [ticketId, token]); // Triggered when ticketId or token changes
+  }, [decodedTicketId, token]); // Triggered when ticketId or token changes
 
   const handleCloseTicket = async () => {
     setConfirmModalState({ showConfirmModal: true });
@@ -83,17 +91,17 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
   };
 
   const handleReplyTicket = async () => {
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Set loading state
     try {
-      if (token && ticketId) {
-        const response = await ReplyTicket(token, ticketId, {
+      if (token && decodedTicketId) {
+        const response = await ReplyTicket(token, decodedTicketId, {
           ticket_response: responseMessage,
           status: responseStatus,
         });
-        console.log("ReplyTicket API Response:", response);
+        console.log("ReplyTicket API Response:", response); // Log the API response
         setTicket(response.data); 
         setAlertState({ showAlert: true, message: "Response added successfully.", variant: "default" });
-        setResponseMessage(""); 
+        setResponseMessage(response.data.ticket_response || ""); // Update responseMessage with the latest value
         setResponseStatus("in_progress"); 
       } else {
         console.error("Token or Ticket ID is missing.");
@@ -103,14 +111,35 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
       setAlertState({ showAlert: true, message: "Failed to add response.", variant: "danger" });
     } finally {
       setIsSubmitting(false); 
-     
       const fetchDetails = async () => {
-        if (token && ticketId) {
-          const response = await fetchTicketDetails(token, ticketId);
+        if (token && decodedTicketId) {
+          const response = await fetchTicketDetails(token, decodedTicketId);
           setTicket(response.data);
         }
       };
       fetchDetails();
+    }
+  };
+
+  const handleDeleteTicket = async () => {
+    setIsSubmitting(true); // Set loading state
+    try {
+      if (token && decodedTicketId) {
+        const response = await DeleteTicket(token, decodedTicketId); // Use the decoded ticket ID
+        console.log("DeleteTicket API Response:", response); // Log the API response
+        setAlertState({ showAlert: true, message: "Ticket deleted successfully.", variant: "default" });
+        setTimeout(() => {
+          router.push("/admin/tickets"); // Navigate to ticket list
+        }, 2000);
+      } else {
+        console.error("Token or Ticket ID is missing.");
+      }
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      setAlertState({ showAlert: true, message: "Failed to delete ticket.", variant: "danger" });
+    } finally {
+      setIsSubmitting(false); // Reset loading state
+      setDeleteModalState({ showDeleteModal: false }); // Close the delete modal
     }
   };
 
@@ -119,12 +148,13 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
   }
 
   return (
-    <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
+    <div>
       {/* Alert Notification */}
       {alertState.showAlert && (
         <Alert
           variant={alertState.variant}
           onClose={() => setAlertState({ ...alertState, showAlert: false })}
+          className="fixed top-12 bg-white right-4 z-50"
         >
           <AlertTitle>{alertState.variant === "danger" ? "Error" : "Success"}</AlertTitle>
           <AlertDescription>{alertState.message}</AlertDescription>
@@ -133,10 +163,25 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Ticket #{ticket.ticket_id}</h2>
-        {/* <Button onClick={handleCloseTicket} variant="danger">
-          Close Ticket
-        </Button> */}
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setDeleteModalState({ showDeleteModal: true })}
+            variant="danger"
+            disabled={isSubmitting}
+          >
+            Delete Ticket
+          </Button>
+        </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteModalState.showDeleteModal}
+        onClose={() => setDeleteModalState({ showDeleteModal: false })}
+        onConfirm={handleDeleteTicket}
+        title="Delete Ticket"
+        description="Are you sure you want to delete this ticket? This action cannot be undone."
+      />
 
       <Card className="mb-6">
         <CardHeader>
@@ -199,7 +244,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
           <textarea
             className="w-full p-2 outline-none border rounded-md"
             placeholder="Enter your response here..."
-            value={responseMessage}
+            value={responseMessage} // Pre-fill with the default value
             onChange={(e) => setResponseMessage(e.target.value)}
             disabled={isSubmitting} 
           />
