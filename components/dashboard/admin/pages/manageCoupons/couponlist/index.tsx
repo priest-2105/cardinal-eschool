@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/lib/store";
-import { fetchCoupons } from "@/lib/api/admin/coupon/fetchCoupons";
+import { deactivateCoupon, fetchCoupons } from "@/lib/api/admin/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Plus, Tag, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Tag, Trash2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/dashboard/admin/ui/alert";
 
 export interface Coupon {
   coupon_codec: string;
@@ -28,6 +29,10 @@ export default function CouponsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
+  const [couponToDeactivate, setCouponToDeactivate] = useState<Coupon | null>(null);
+  const [isDeactivating, setIsDeactivating] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default");
 
   useEffect(() => {
     const fetchAllCoupons = async () => {
@@ -46,6 +51,33 @@ export default function CouponsList() {
     fetchAllCoupons();
   }, [token]);
 
+  const handleDeactivateCoupon = async () => {
+    if (!couponToDeactivate || !token) return;
+
+    setIsDeactivating(true);
+    setAlertMessage(null);
+
+    try {
+      const response = await deactivateCoupon(token, couponToDeactivate.coupon_codec);
+      setCoupons((prevCoupons) =>
+        prevCoupons.map((coupon) =>
+          coupon.coupon_codec === couponToDeactivate.coupon_codec
+            ? { ...coupon, status: "deactivated" }
+            : coupon
+        )
+      );
+      setAlertMessage("Coupon deactivated successfully!");
+      setAlertVariant("default");
+    } catch (error) {
+      console.error("Failed to deactivate coupon:", error);
+      setAlertMessage("Failed to deactivate coupon. Please try again.");
+      setAlertVariant("danger");
+    } finally {
+      setIsDeactivating(false);
+      setCouponToDeactivate(null);
+    }
+  };
+
   const filteredCoupons = coupons.filter((coupon) => {
     const matchesSearch = coupon.coupon_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || statusFilter === coupon.status.toLowerCase();
@@ -54,6 +86,12 @@ export default function CouponsList() {
 
   return (
     <div className="p-6 space-y-6">
+      {alertMessage && (
+        <Alert variant={alertVariant} onClose={() => setAlertMessage(null)}>
+          <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
+          <AlertDescription>{alertMessage}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Coupons</h1>
         <Button onClick={() => router.push("/admin/coupon/createcoupon")} className="flex items-center gap-2">
@@ -103,6 +141,16 @@ export default function CouponsList() {
                   </Badge>
                 </div>
                 <div className="text-sm text-muted-foreground">Usage: {coupon.usage_info}</div>
+                <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setCouponToDeactivate(coupon)}
+                    disabled={coupon.status === "deactivated"}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -111,6 +159,24 @@ export default function CouponsList() {
         <div className="text-center py-12 bg-muted/20 rounded-lg">
           <h3 className="font-medium text-lg mb-2">No coupons found</h3>
           <p className="text-muted-foreground">Try adjusting your search or filters, or create a new coupon.</p>
+        </div>
+      )}
+      {couponToDeactivate && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4">Confirm Deactivation</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Are you sure you want to deactivate the coupon "{couponToDeactivate.coupon_code}"?
+            </p>
+            <div className="flex justify-end gap-4">
+              <Button variant="outline" onClick={() => setCouponToDeactivate(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleDeactivateCoupon} disabled={isDeactivating}>
+                {isDeactivating ? "Deactivating..." : "Confirm"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

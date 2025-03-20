@@ -24,6 +24,13 @@ export * from "./managetutor/createtutor";
 export * from "./managetutor/fetchtutors";
 
 
+//  Admin Manage Coupon API
+
+export * from "./coupon/createcoupon";
+export * from "./coupon/fetchCoupons";
+export * from "./coupon/deactivatecoupon";
+
+
 
 // Admin Notification API EXPORT
 export * from "./notifcation/fetchnotification";
@@ -33,3 +40,4 @@ export * from "./notifcation/deletenotification";
 
 // Admin Coupon API EXPORT
 export * from "./coupon/fetchCoupons";
+export * from "./coupon/deactivatecoupon";
