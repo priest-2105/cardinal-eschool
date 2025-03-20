@@ -3,6 +3,7 @@
 // Authentication  API EXPORT
 
 export * from "./auth/login";
+export * from "./auth/signnup";
 export * from "./auth//resetpassword";
 export * from "./auth/changepassword";
 export * from "./auth/logout";

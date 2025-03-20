@@ -120,7 +120,7 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
           <Image src={Logo} alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
         ) : (
           <Image
-            src="/assets/img/favicon-logo.png"{favIconLogo}
+            src={favIconLogo}
             alt="Cardinal E-School"
             width={30}
             height={10}
