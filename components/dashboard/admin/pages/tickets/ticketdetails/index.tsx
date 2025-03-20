@@ -6,10 +6,11 @@ import { fetchTicketDetails } from "@/lib/api/admin/ticket/tickedetails";
 import { Button } from "@/components/dashboard/admin/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/dashboard/admin/ui/card";
 import { Label } from "@/components/dashboard/admin/ui/label";
-import Popup from "@/components/dashboard/admin/ui/Popup";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
 import { ConfirmationModal } from "../confirmationModal/index";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { ReplyTicket } from "@/lib/api/admin/api";
 
 interface Ticket {
     ticket_id: string;
@@ -17,6 +18,7 @@ interface Ticket {
     status: string;
     department: string;
     body: string;
+    ticket_response: string;
     created_at: string;
     updated_at: string;
     owner: {
@@ -29,9 +31,10 @@ interface TicketDetailsComponentProps {
   ticketId: string;
 }
 
-interface PopupState {
-  showPopup: boolean;
-  popupMessage: string;
+interface AlertState {
+  showAlert: boolean;
+  message: string;
+  variant: "default" | "danger" | "warning";
 }
 
 interface ConfirmationModalState {
@@ -41,8 +44,11 @@ interface ConfirmationModalState {
 export default function TicketDetailsComponent({ ticketId }: TicketDetailsComponentProps) {
   const token: string | null = useSelector((state: RootState) => state.auth?.token);
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [popupState, setPopupState] = useState<PopupState>({ showPopup: false, popupMessage: "" });
+  const [alertState, setAlertState] = useState<AlertState>({ showAlert: false, message: "", variant: "default" });
   const [confirmModalState, setConfirmModalState] = useState<ConfirmationModalState>({ showConfirmModal: false });
+  const [responseMessage, setResponseMessage] = useState("");
+  const [responseStatus, setResponseStatus] = useState<"in_progress" | "resolved" | "closed">("in_progress");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submitting response
   const router = useRouter();
 
   useEffect(() => {
@@ -60,7 +66,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     };
 
     fetchDetails();
-  }, [ticketId, token]);
+  }, [ticketId, token]); // Triggered when ticketId or token changes
 
   const handleCloseTicket = async () => {
     setConfirmModalState({ showConfirmModal: true });
@@ -69,11 +75,43 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
   const confirmCloseTicket = async () => {
     setTicket((prevTicket) => (prevTicket ? { ...prevTicket, status: "Closed" } : null));
     setConfirmModalState({ showConfirmModal: false });
-    setPopupState({ showPopup: true, popupMessage: "The ticket has been closed successfully." });
+    setAlertState({ showAlert: true, message: "The ticket has been closed successfully.", variant: "default" });
     setTimeout(() => {
-      setPopupState({ showPopup: false, popupMessage: "" });
+      setAlertState({ showAlert: false, message: "", variant: "default" });
       router.push("/admin/tickets");
     }, 2000);
+  };
+
+  const handleReplyTicket = async () => {
+    setIsSubmitting(true);
+    try {
+      if (token && ticketId) {
+        const response = await ReplyTicket(token, ticketId, {
+          ticket_response: responseMessage,
+          status: responseStatus,
+        });
+        console.log("ReplyTicket API Response:", response);
+        setTicket(response.data); 
+        setAlertState({ showAlert: true, message: "Response added successfully.", variant: "default" });
+        setResponseMessage(""); 
+        setResponseStatus("in_progress"); 
+      } else {
+        console.error("Token or Ticket ID is missing.");
+      }
+    } catch (error) {
+      console.error("Error responding to ticket:", error);
+      setAlertState({ showAlert: true, message: "Failed to add response.", variant: "danger" });
+    } finally {
+      setIsSubmitting(false); 
+     
+      const fetchDetails = async () => {
+        if (token && ticketId) {
+          const response = await fetchTicketDetails(token, ticketId);
+          setTicket(response.data);
+        }
+      };
+      fetchDetails();
+    }
   };
 
   if (!ticket) {
@@ -82,11 +120,22 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
 
   return (
     <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
+      {/* Alert Notification */}
+      {alertState.showAlert && (
+        <Alert
+          variant={alertState.variant}
+          onClose={() => setAlertState({ ...alertState, showAlert: false })}
+        >
+          <AlertTitle>{alertState.variant === "danger" ? "Error" : "Success"}</AlertTitle>
+          <AlertDescription>{alertState.message}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Ticket #{ticket.ticket_id}</h2>
-        <Button onClick={handleCloseTicket} variant="danger">
+        {/* <Button onClick={handleCloseTicket} variant="danger">
           Close Ticket
-        </Button>
+        </Button> */}
       </div>
 
       <Card className="mb-6">
@@ -132,7 +181,48 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
         </CardContent>
       </Card>
 
-      {popupState.showPopup && <Popup message={popupState.popupMessage} onClose={() => setPopupState({ ...popupState, showPopup: false })} />}
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Ticket Response</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{ticket?.ticket_response}</p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Respond to Ticket</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <textarea
+            className="w-full p-2 outline-none border rounded-md"
+            placeholder="Enter your response here..."
+            value={responseMessage}
+            onChange={(e) => setResponseMessage(e.target.value)}
+            disabled={isSubmitting} 
+          />
+          <select
+            className="w-full p-2 mt-2 border rounded-md"
+            value={responseStatus}
+            onChange={(e) => setResponseStatus(e.target.value as "in_progress" | "resolved" | "closed")}
+            disabled={isSubmitting} // Disable select while submitting
+          >
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+          <Button
+            onClick={handleReplyTicket}
+            className="mt-4"
+            variant="default"
+            disabled={isSubmitting} // Disable button while submitting
+          >
+            {isSubmitting ? "Submitting..." : "Submit Response"}
+          </Button>
+        </CardContent>
+      </Card>
 
       <ConfirmationModal
         isOpen={confirmModalState.showConfirmModal}
