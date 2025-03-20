@@ -12,20 +12,26 @@ export async function fetchTicketList(
     perPage: number = 15,
     filters: TicketFilters = {}
 ) {
-    const response = await fetchWithAuth(`${apiUrl}/admin/tickets`, {
-        method: 'POST',
+    const queryParams = new URLSearchParams({
+        page: page.toString(),
+        per_page: perPage.toString(),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.ticket_id && { ticket_id: filters.ticket_id }),
+        ...(filters.department && { department: filters.department }),
+    });
+
+    if (filters.status) queryParams.append("status", filters.status);
+    if (filters.ticket_id) queryParams.append("ticket_id", filters.ticket_id);
+    if (filters.department) queryParams.append("department", filters.department);
+
+    const response = await fetchWithAuth(`${apiUrl}/admin/tickets?${queryParams.toString()}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-            ...filters,
-            page,
-            per_page: perPage,
-        }),
     });
-
     if (!response.ok) {
         const errorMessage = await response.text();
         console.error(`Failed to fetch ticket list: ${response.status} ${response.statusText} - ${errorMessage}`);

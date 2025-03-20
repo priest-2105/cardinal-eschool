@@ -73,7 +73,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminreplyticket,
       cardinalConfig.routes.dashboard.admin.adminticketdetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/ticket/",
   },
   {
     name: "Manage Courses",

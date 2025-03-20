@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/dashboard/admin/ui/button"
-import { Calendar } from "@/components/dashboard/admin/ui/calender"
-import { Check } from "@/components/dashboard/admin/ui/check"
+import { useState } from "react";
+import { Button } from "@/components/dashboard/admin/ui/button";
+import { Calendar } from "@/components/dashboard/admin/ui/calender";
+import { Check } from "@/components/dashboard/admin/ui/check";
 import {
   Command,
   CommandEmpty,
@@ -11,40 +11,40 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/dashboard/admin/ui/command"
+} from "@/components/dashboard/admin/ui/command";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/dashboard/admin/ui/dialog"
-import { Label } from "@/components/dashboard/admin/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/admin/ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { CalendarIcon, ChevronsUpDown } from "lucide-react"
-import type { Ticket } from "../types"
+} from "@/components/dashboard/admin/ui/dialog";
+import { Label } from "@/components/dashboard/admin/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/dashboard/admin/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon, ChevronsUpDown } from "lucide-react";
+import type { Ticket } from "../types";
 
 interface FilterValues {
-  departments?: string[]
-  dateRange?: { from: Date | undefined; to: Date | undefined }
-  status?: string[]
+  departments?: string[];
+  dateRange?: { from: Date | undefined; to: Date | undefined };
+  status?: string[];
 }
 
 interface FilterModalProps {
-  tickets?: Ticket[]
-  onFilterChange: (filters: FilterValues) => void
+  tickets?: Ticket[];
+  onFilterChange: (filters: FilterValues) => void;
 }
 
 export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) {
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([])
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
     from: undefined,
     to: undefined,
-  })
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
-  const [open, setOpen] = useState(false)
+  });
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   const handleApplyFilters = () => {
     onFilterChange({
@@ -54,15 +54,15 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
         to: dateRange.to,
       },
       status: selectedStatuses,
-    })
-    setOpen(false)
-  }
+    });
+    setOpen(false); 
+  };
 
   const handleReset = () => {
-    setSelectedDepartments([])
-    setDateRange({ from: undefined, to: undefined })
-    setSelectedStatuses([])
-  }
+    setSelectedDepartments([]);
+    setDateRange({ from: undefined, to: undefined });
+    setSelectedStatuses([]);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -99,14 +99,14 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                             setSelectedDepartments((prev) =>
                               prev.includes(department)
                                 ? prev.filter((name) => name !== department)
-                                : [...prev, department],
-                            )
+                                : [...prev, department]
+                            );
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedDepartments.includes(department) ? "opacity-100" : "opacity-0",
+                              selectedDepartments.includes(department) ? "opacity-100" : "opacity-0"
                             )}
                           />
                           {department}
@@ -129,7 +129,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     variant={"outline"}
                     className={cn(
                       "w-[240px] justify-start text-left font-normal",
-                      !dateRange.from && "text-muted-foreground",
+                      !dateRange.from && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -151,7 +151,7 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                     variant={"outline"}
                     className={cn(
                       "w-[240px] justify-start text-left font-normal",
-                      !dateRange.to && "text-muted-foreground",
+                      !dateRange.to && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -191,14 +191,14 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
                           key={status}
                           onSelect={() => {
                             setSelectedStatuses((prev) =>
-                              prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status],
-                            )
+                              prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
+                            );
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              selectedStatuses.includes(status) ? "opacity-100" : "opacity-0",
+                              selectedStatuses.includes(status) ? "opacity-100" : "opacity-0"
                             )}
                           />
                           {status}
@@ -219,6 +219,6 @@ export function FilterModal({ tickets = [], onFilterChange }: FilterModalProps) 
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 

@@ -41,10 +41,10 @@ export function TicketList() {
                     ticket_id: searchQuery || undefined,
                 });
 
-                console.log("Fetched tickets response:", response); // Log the full response
-                setTickets(response.data.tickets || []); // Ensure tickets are set correctly
+                // console.log("Fetched tickets response:", response);
+                setTickets(response.data.tickets || []);
             } catch (error) {
-                console.error("Error fetching tickets:", error);
+                // console.error("Error fetching tickets:", error);
             }
         };
 
@@ -55,8 +55,8 @@ export function TicketList() {
         setFilters(newFilters);
     };
 
-    const handleRowClick = (ticketId: string) => {
-        router.push(`/admin/ticket/${ticketId}`);
+    const handleRowClick = (codec: string) => {
+        router.push(`/admin/ticket/${codec}`);
     };
 
     const filteredTickets = tickets.filter((ticket) =>
@@ -116,7 +116,7 @@ export function TicketList() {
                                 {filteredTickets.map((ticket) => (
                                     <TableRow
                                         key={ticket.ticket_id}
-                                        onClick={() => handleRowClick(ticket.ticket_id)}
+                                        onClick={() => handleRowClick(ticket.codec)}
                                         className="cursor-pointer hover:bg-gray-100"
                                     >
                                         <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
