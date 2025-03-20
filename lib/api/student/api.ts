@@ -14,6 +14,9 @@ export * from "./auth/logout";
 export * from "./profile/fetchuserProfile";
 export * from "./profile/updateStudentDP";
 export * from "./profile/updatestudentProfile";
+export * from "./profile/fetchStudentAssessment";
+export * from "./profile/updateAssessment";
+export * from "./profile/fetchguardiandetails";
 
 
 
