@@ -1,33 +1,75 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm"
-import Image from "next/image"
-import { ArrowLeft } from "lucide-react"
-import { useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
+import { updateAssessment } from "@/lib/api/student/profile/updateAssessment";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
+import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm";
+import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 
 export default function AssessmentPage() {
-  const router = useRouter()
+  const router = useRouter();
+  const token: string | null = useSelector((state: RootState) => state.auth?.token);
+
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default");
+  const [initialData, setInitialData] = useState<FormData | null>(null);
 
   useEffect(() => {
-    window.dispatchEvent(new Event("load-signup-data"))
-  }, [])
+    const loadAssessment = async () => {
+      if (!token) return;
 
-  const handleSubmit = (formData: FormData) => {
-    const signupData = JSON.parse(localStorage.getItem("signupData") || "{}")
-    const combinedData = { ...signupData, ...formData }
-    localStorage.setItem("signupData", JSON.stringify(combinedData))
-    router.push("/planPick")
-  }
+      try {
+        const response = await fetchStudentsAssessment(token);
+        setInitialData(response.data.Assessment);
+      } catch (error) {
+        console.error("Failed to fetch assessment:", error);
+        setAlertMessage("Failed to load assessment. Please try again.");
+        setAlertVariant("danger");
+      }
+    };
 
-  // const handleBack = () => {
-  //   window.dispatchEvent(new Event("load-signup-data"))
-  //   router.push("/signup")
-  // }
+    loadAssessment();
+  }, [token]);
 
+  const handleSubmit = async (formData: FormData) => {
+    if (!token) return;
+
+    try {
+      const payload = {
+        subscription_plan_id: formData.plan_id,
+        edu_level: formData.education_level,
+        subjects_interested_in: formData.subjects_interested_in,
+        tests_interested_in: formData.tests_interested_in,
+        learning_expectations: formData.learning_expectations,
+        learning_difficulties: formData.learning_difficulties,
+        learning_difficulty_description: formData.learning_difficulty_description,
+        specific_goals: formData.specific_goals,
+      };
+
+      const response = await updateAssessment(token, payload);
+      setAlertMessage(response.message || "Assessment updated successfully!");
+      setAlertVariant("default");
+      router.push("/student");
+    } catch (error) {
+      console.error("Failed to update assessment:", error);
+      setAlertMessage("Failed to update assessment. Please try again.");
+      setAlertVariant("danger");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
+      {alertMessage && (
+        <Alert variant={alertVariant} className="fixed top-4 right-4" onClose={() => setAlertMessage(null)}>
+          <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
+          <AlertDescription>{alertMessage}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex min-h-screen">
         {/* Left Column - Hidden on mobile and tablet */}
         <div className="hidden lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8 fixed h-full">
@@ -48,21 +90,19 @@ export default function AssessmentPage() {
 
         {/* Right Column */}
         <div className="w-full lg:w-1/2 lg:ml-auto px-4 sm:px-6 lg:px-8 py-12 overflow-y-auto">
-          <div className="mx-auto">
-            <button
-              onClick={() => router.push("/signup")}
-              className="text-[#1BC2C2] hover:underline mb-4 flex items-center"
-            >
-              <ArrowLeft className="mr-2" />
-              Back to Signup
-            </button>
-            <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
-            <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>
-            <AssessmentForm onSubmit={handleSubmit} />
-          </div>
+          <button
+            onClick={() => router.push("/signup")}
+            className="text-[#1BC2C2] hover:underline mb-4 flex items-center"
+          >
+            <ArrowLeft className="mr-2" />
+            Back to Signup
+          </button>
+          <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
+          <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>
+          <AssessmentForm onSubmit={handleSubmit} initialData={initialData} />
         </div>
       </div>
     </div>
-  )
+  );
 }
 

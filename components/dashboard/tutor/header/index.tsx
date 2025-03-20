@@ -161,7 +161,7 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/assets/img/dashboard/tutor/Ellipse 2034.png" alt="User" />
-                    <AvatarFallback>TD</AvatarFallback>
+                    <AvatarFallback>{profile.firstname[0]} {profile.lastname[0]}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-bold text-sm">{profile.firstname} {profile.lastname}</h3>

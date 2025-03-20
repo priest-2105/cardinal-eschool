@@ -1,6 +1,5 @@
 "use client";
 
-
 import Image from "next/image"
 import { Youtube,  EyeIcon as EyeClosed } from "lucide-react"
 import XIcon from "@/public/assets/icons/x-dark.png"
@@ -16,6 +15,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/stud
 import { login } from "@/lib/api/student/auth/login";
 import { useAppDispatch } from "@/lib/hooks";
 import { setAuthState } from "@/lib/authSlice";
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -39,8 +39,22 @@ export default function LoginPage() {
             user: response.data.user,
           })
         );
-        setAlert({ type: "success", message: response.message });
-        router.push("/student");
+
+        const assessmentResponse = await fetchStudentsAssessment(response.data.token);
+        const assessment = assessmentResponse.data.Assessment;
+
+        if (
+          !assessment.education_level ||
+          !assessment.subjects_interested_in ||
+          !assessment.tests_interested_in ||
+          !assessment.learning_expectations ||
+          !assessment.specific_goals
+        ) {
+          router.push("/assessment");
+        } else {
+          setAlert({ type: "success", message: response.message });
+          router.push("/student");
+        }
       } else {
         setAlert({ type: "error", message: response.message });
       }
