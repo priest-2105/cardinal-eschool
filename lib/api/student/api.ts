@@ -17,6 +17,7 @@ export * from "./profile/updatestudentProfile";
 export * from "./profile/fetchStudentAssessment";
 export * from "./profile/updateAssessment";
 export * from "./profile/fetchguardiandetails";
+export * from "./profile/updateguardiandetails";
 
 
 

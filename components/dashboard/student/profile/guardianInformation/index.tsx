@@ -1,111 +1,171 @@
-'use client'
+"use client";
 
-import { Button } from "@/components/dashboard/student/ui/button"
-import { Card } from "@/components/dashboard/student/ui/card"
-import { Input } from "@/components/dashboard/student/ui/input"
-import { Label } from "@/components/dashboard/student/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/dashboard/student/ui/select"
-import PhoneInputField from "../../ui/phoneInputFeild"
-import { useState } from "react"
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { fetchGuardianProfile, updateGuardianProfile } from "@/lib/api/student/profile/fetchguardiandetails";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
+import { Button } from "@/components/dashboard/student/ui/button";
+import { Input } from "@/components/dashboard/student/ui/input";
+import { Label } from "@/components/dashboard/student/ui/label";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
-export default function GuardianInformationForm() {
+export default function GuardianInformation() {
+  const token = useSelector((state: RootState) => state.auth?.token);
 
-    const [phoneNumber, setPhoneNumber] = useState("")
-  
+  const [profile, setProfile] = useState({
+    guardian_name: "",
+    guardian_email: "",
+    guardian_phone: "",
+    guardian_gender: "",
+    guardian_country: "",
+    guardian_state: "",
+    guardian_address: "",
+  });
+
+  const [isEditable, setIsEditable] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default");
+
+  useEffect(() => {
+    const loadGuardianProfile = async () => {
+      if (!token) return;
+
+      try {
+        const response = await fetchGuardianProfile(token);
+        setProfile({
+          guardian_name: response.data.name,
+          guardian_email: response.data.email,
+          guardian_phone: response.data.guardian_phone_no,
+          guardian_gender: response.data.gender,
+          guardian_country: response.data.country,
+          guardian_state: response.data.state,
+          guardian_address: response.data.address,
+        });
+      } catch (error) {
+        console.error("Failed to fetch guardian profile:", error);
+        setAlertMessage("Failed to load guardian profile. Please try again.");
+        setAlertVariant("danger");
+      }
+    };
+
+    loadGuardianProfile();
+  }, [token]);
+
+  const handleUpdate = async () => {
+    if (!token) return;
+
+    setIsUpdating(true);
+    setAlertMessage(null);
+
+    try {
+      const response = await updateGuardianProfile(token, profile);
+      setAlertMessage(response.message || "Guardian profile updated successfully!");
+      setAlertVariant("default");
+      setIsEditable(false);
+    } catch (error) {
+      console.error("Failed to update guardian profile:", error);
+      setAlertMessage("Failed to update guardian profile. Please try again.");
+      setAlertVariant("danger");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <Card className="p-6">
-      <div className="space-y-8">
-        <div className="flex items-center gap-8">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold">Guardian Information</h2>
-            <p className="text-sm text-muted-foreground">
-              Update your guardian details and information
-            </p>
-          </div>
+    <div className="p-6">
+      {alertMessage && (
+        <Alert variant={alertVariant} className="fixed top-4 right-4" onClose={() => setAlertMessage(null)}>
+          <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
+          <AlertDescription>{alertMessage}</AlertDescription>
+        </Alert>
+      )}
+      <h2 className="text-2xl font-bold mb-4">Guardian Information</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="guardian_name">Name</Label>
+          <Input
+            id="guardian_name"
+            value={profile.guardian_name}
+            onChange={(e) => setProfile({ ...profile, guardian_name: e.target.value })}
+            readOnly={!isEditable}
+          />
         </div>
-
-        <div className="sm:grid sm:grid-cols-2 gap-6 max-sm:block">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" defaultValue="Temilade Hassan" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender</Label>
-            <Select defaultValue="female">
-              <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-          <Label htmlFor="name">Relationship Status</Label>
-            <Input id="name" defaultValue="Mother" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" defaultValue="hassantemilade@gmail.com" />
-          </div>
-          <div className="space-y-2">
-            {/* <Label htmlFor="phone">Phone Number</Label> */}
-            <PhoneInputField
-            value={phoneNumber}
-            onChange={(phone) => setPhoneNumber(phone)}
-            country="us"
-            // label="Phone Number"
-              />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="address">Home Address</Label>
-            <Input id="address" defaultValue="3 Lawson Street Okeodo, Kwara State" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">Country of Residence</Label>
-            <Input id="country" defaultValue="Nigeria" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State of Residence</Label>
-            <Input id="state" defaultValue="Kwara" />
-          </div>       
+        <div>
+          <Label htmlFor="guardian_email">Email</Label>
+          <Input
+            id="guardian_email"
+            type="email"
+            value={profile.guardian_email}
+            onChange={(e) => setProfile({ ...profile, guardian_email: e.target.value })}
+            readOnly={!isEditable}
+          />
         </div>
-
-        <div className="flex justify-end">
-          <Button className="bg-[#1BC2C2] hover:bg-teal-600">
-            Update Your Profile
-          </Button>
+        <div>
+          <Label htmlFor="guardian_phone">Phone</Label>
+          <PhoneInput
+            country={"us"}
+            value={profile.guardian_phone}
+            onChange={(phone) => setProfile({ ...profile, guardian_phone: phone })}
+            inputClass={!isEditable ? "read-only-input" : ""}
+            disabled={!isEditable}
+          />
+        </div>
+        <div>
+          <Label htmlFor="guardian_gender">Gender</Label>
+          <Input
+            id="guardian_gender"
+            value={profile.guardian_gender}
+            onChange={(e) => setProfile({ ...profile, guardian_gender: e.target.value })}
+            readOnly={!isEditable}
+          />
+        </div>
+        <div>
+          <Label htmlFor="guardian_country">Country</Label>
+          <Input
+            id="guardian_country"
+            value={profile.guardian_country}
+            onChange={(e) => setProfile({ ...profile, guardian_country: e.target.value })}
+            readOnly={!isEditable}
+          />
+        </div>
+        <div>
+          <Label htmlFor="guardian_state">State</Label>
+          <Input
+            id="guardian_state"
+            value={profile.guardian_state}
+            onChange={(e) => setProfile({ ...profile, guardian_state: e.target.value })}
+            readOnly={!isEditable}
+          />
+        </div>
+        <div className="col-span-2">
+          <Label htmlFor="guardian_address">Address</Label>
+          <Input
+            id="guardian_address"
+            value={profile.guardian_address}
+            onChange={(e) => setProfile({ ...profile, guardian_address: e.target.value })}
+            readOnly={!isEditable}
+          />
         </div>
       </div>
-    </Card>
-  )
+      <div className="flex justify-end mt-4">
+        {isEditable ? (
+          <>
+            <Button variant="outline" onClick={() => setIsEditable(false)}>
+              Cancel
+            </Button>
+            <Button variant="default" onClick={handleUpdate} disabled={isUpdating}>
+              {isUpdating ? "Updating..." : "Save"}
+            </Button>
+          </>
+        ) : (
+          <Button variant="default" onClick={() => setIsEditable(true)}>
+            Edit
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 }
-
-// function PencilIcon(props: React.ComponentProps<'svg'>) {
-//   return (
-//     <svg
-//       {...props}
-//       xmlns="http://www.w3.org/2000/svg"
-//       width="24"
-//       height="24"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="currentColor"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     >
-//       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-//       <path d="m15 5 4 4" />
-//     </svg>
-//   )
-// }
