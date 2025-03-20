@@ -69,6 +69,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.student.studentcreateticket,
       cardinalConfig.routes.dashboard.student.studentticketdetails,
     ],
+    dynamicPath: "/student/ticket/",
   },
   {
     name: "Notification",

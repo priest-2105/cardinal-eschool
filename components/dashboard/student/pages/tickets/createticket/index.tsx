@@ -71,7 +71,7 @@ export default function CreateTicketForm() {
       });
       setAlert({ type: 'success', message: response.message || "Ticket created successfully." });
       setTimeout(() => {
-        router.push(`/student/ticket/${response.data.codec}`);
+        router.push(`/student/tickets}`);
       }, 2000);
     } catch (error) {
       console.error("Ticket creation failed:", error);
