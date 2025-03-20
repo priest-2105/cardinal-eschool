@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
       console.log('Response:', response)  
       console.log('Reset password email sent')
       setAlert({ type: 'success', message: 'Password reset email sent. Link expires in 30 minutes.' })
-      router.push('/admin')
+      router.push('/login')
     } catch (error) {
       console.error('Reset password email failed', error)
       const errorMessage = (error as any).response?.data?.message || (error as any).message
@@ -111,7 +111,7 @@ export default function ResetPasswordPage() {
           </div>
             
             <div className="justify-center items-center self-center w-9/12 lg:w-1/2 px-4 mx-auto sm:px-6 lg:px-8 py-12">
-              <h2 className="text-3xl font-bold mb-2">Admin Reset Password</h2>
+              <h2 className="text-3xl font-bold mb-2">Reset Password</h2>
               <p className="text-gray-600 font-semibold mb-8">
                 Enter your email address to reset your password
               </p>
@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
                 </Button>
               </form>
               
-              <div className="text-center mr-auto mt-10">Back to login ? <Link className="text-[#1BC2C2]" href="/admin/login">Click here</Link></div>
+              <div className="text-center mr-auto mt-10">Back to login ? <Link className="text-[#1BC2C2]" href="/login">Click here</Link></div>
             </div>
         </div>
       </div>
