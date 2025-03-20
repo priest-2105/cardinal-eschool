@@ -1,77 +1,30 @@
-const apiUrl = process.env.NEXT_PUBLIC_CARDINAL_APP_API_URL;
 
-export async function login(email: string, password: string) {
-    const response = await fetch(`${apiUrl}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-    });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Login failed: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
+// Authentication  API EXPORT
 
-    return response.json();
-}
+export * from "./auth/login";
+export * from "./auth//resetpassword";
+export * from "./auth/changepassword";
+export * from "./auth/logout";
 
-export async function logout(token: string) {
-    const response = await fetch(`${apiUrl}/logout`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-    });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Logout failed: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
 
-    return response.json();
-}
+// Student Profile API EXPORT 
+export * from "./profile/fetchuserProfile";
+export * from "./profile/updateStudentDP";
+export * from "./profile/updatestudentProfile";
 
-export async function fetchAdminProfile(token: string) {
-    const response = await fetch(`${apiUrl}/admin/profile`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-    });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to fetch profile: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
 
-    return response.json();
-}
+// Student Ticket API EXPORT
+export * from "./ticket/createticket";
+export * from "./ticket/fetchtickets";
+export * from "./ticket/tickedetails";
 
-export async function resetPasswordEmail(email: string) {
-    const response = await fetch(`${apiUrl}/forgot-password`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email }),
-    });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Reset password email failed: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
 
-    return response.json();
-}
+// Student Notification API EXPORT
+export * from "./notifcation/fetchnotification";
+export * from "./notifcation/marknotificationasread";
+export * from "./notifcation/markallnotificationasread";
+export * from "./notifcation/deletenotification"; 
