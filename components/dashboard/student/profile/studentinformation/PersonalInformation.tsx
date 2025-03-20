@@ -27,7 +27,7 @@ export default function PersonalInformation() {
     home_address: '',
     country_of_residence: '',
     state_of_residence: '',
-    qualification: ''
+    employment_status: ''
   })
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/student/Ellipse 2034.png");
@@ -62,7 +62,7 @@ export default function PersonalInformation() {
           address: profile.home_address,
           country: profile.country_of_residence,
           state: profile.state_of_residence,
-          qualification: profile.qualification
+          employment_status: profile.employment_status
         });
         setAlert({ type: 'success', message: 'Profile updated successfully' });
         setIsEditable(false);
@@ -173,11 +173,11 @@ export default function PersonalInformation() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="qualification">Qualification</Label>
+            <Label htmlFor="employment_status">Qualification</Label>
             <Input
-              id="qualification"
-              value={profile.qualification}
-              onChange={(e) => setProfile({ ...profile, qualification: e.target.value })}
+              id="employment_status"
+              value={profile.employment_status}
+              onChange={(e) => setProfile({ ...profile, employment_status: e.target.value })}
               readOnly={!isEditable}
             />
           </div>

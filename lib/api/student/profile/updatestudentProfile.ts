@@ -7,7 +7,7 @@ export async function updateStudentProfile(token: string, profileData: {
     address: string;
     country: string;
     state: string;
-    qualification: string;
+    employment_status: string;
 }) {
     const response = await fetchWithAuth(`${apiUrl}/student/profile/update`, {
         method: 'PUT',
