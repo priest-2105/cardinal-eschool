@@ -71,7 +71,7 @@ export default function CreateTicketForm() {
       });
       setAlert({ type: 'success', message: response.message || "Ticket created successfully." });
       setTimeout(() => {
-        router.push(`/student/tickets}`);
+        router.push(`/student/ticketlist`);
       }, 2000);
     } catch (error) {
       console.error("Ticket creation failed:", error);
@@ -170,7 +170,7 @@ export default function CreateTicketForm() {
       </form>
 
       {alert && (
-        <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mt-4">
+        <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mt-4 bg-white fixed top-14 right-4">
           <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

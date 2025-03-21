@@ -15,7 +15,13 @@ export async function updateAssessment(token: string, payload: any) {
   console.log("Update Assessment Response:", responseData);
 
   if (!response.ok) {
-    throw new Error(`Failed to update assessment: ${response.status} ${response.statusText} - ${responseData.message}`);
+    throw new Error(
+      JSON.stringify({
+        status: responseData.status,
+        message: responseData.message,
+        data: responseData.data,
+      })
+    );
   }
 
   return responseData;

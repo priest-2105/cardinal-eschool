@@ -28,6 +28,7 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+import pusher from "@/utils/pusher"
 
 // Notification type definition
 interface Notification {
@@ -43,6 +44,7 @@ interface Notification {
 
 export function NotificationList() {
   const token = useSelector((state: RootState) => state.auth?.token)
+  const userId = useSelector((state: RootState) => state.auth?.user?.id)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -98,6 +100,47 @@ export function NotificationList() {
 
     loadNotifications()
   }, [token])
+
+  // Subscribe to Pusher channel for real-time notifications
+  useEffect(() => {
+    if (!userId) return
+
+    // Format the channel name correctly
+    const channelName = `private-user.${userId}`
+
+    // Subscribe to the user's private channel
+    const channel = pusher.subscribe(channelName)
+
+    // Listen for the 'notification.created' event
+    channel.bind("notification.created", (data: any) => {
+      // Format the new notification to match our interface
+      const newNotification: Notification = {
+        id: data.id.toString(),
+        title: data.title || "New Notification",
+        message: data.message || data.content || "",
+        type: data.type || "system",
+        isRead: false,
+        isDone: false,
+        createdAt: new Date(data.created_at || Date.now()),
+        link: data.link || undefined,
+      }
+
+      // Add the new notification to the top of the list
+      setNotifications((prev) => [newNotification, ...prev])
+
+      // Show an alert for the new notification
+      setAlert({
+        type: "success",
+        message: `New notification: ${newNotification.title}`,
+      })
+    })
+
+    // Cleanup on unmount
+    return () => {
+      channel.unbind("notification.created")
+      pusher.unsubscribe(channelName)
+    }
+  }, [userId])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -733,7 +776,9 @@ export function NotificationList() {
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {renderTypeBadge(notification.type)}
-                        <span className="text-xs text-muted-foreground">{/* {notification.createdAt} */}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </span>
                         {notification.isDone && (
                           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
                             <CheckCheck className="mr-1 h-3 w-3" />
@@ -766,7 +811,7 @@ export function NotificationList() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-              <Button onClick={confirmDelete} variant="danger" disabled={isDeleting}>
+              <Button onClick={confirmDelete} variant="destructive" disabled={isDeleting}>
                 {isDeleting ? (
                   <span className="flex items-center">
                     <svg
@@ -801,7 +846,10 @@ export function NotificationList() {
       </CardContent>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "default" : "danger"} className="absolute top-12 bg-white right-4">
+        <Alert
+          variant={alert.type === "success" ? "default" : "destructive"}
+          className="absolute top-12 bg-white right-4"
+        >
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

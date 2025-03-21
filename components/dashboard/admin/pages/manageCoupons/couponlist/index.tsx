@@ -17,8 +17,9 @@ export interface Coupon {
   coupon_codec: string;
   coupon_code: string;
   percentage: string;
-  status: string;
+  status:  boolean;
   usage_info: string;
+  expiry_status: string;
 }
 
 export default function CouponsList() {
@@ -59,11 +60,11 @@ export default function CouponsList() {
 
     try {
       const response = await deactivateCoupon(token, couponToDeactivate.coupon_codec);
-      console.log("Deactivate API Response:", response); // Log the API response
+      console.log("Deactivate API Response:", response); 
       setCoupons((prevCoupons) =>
         prevCoupons.map((coupon) =>
           coupon.coupon_codec === couponToDeactivate.coupon_codec
-            ? { ...coupon, status: "deactivated" }
+            ? { ...coupon, status: false }
             : coupon
         )
       );
@@ -81,7 +82,7 @@ export default function CouponsList() {
 
   const filteredCoupons = coupons.filter((coupon) => {
     const matchesSearch = coupon.coupon_code.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || statusFilter === coupon.status.toLowerCase();
+    const matchesStatus = statusFilter === "all" || (statusFilter === "active" ? coupon.status : !coupon.status);
     return matchesSearch && matchesStatus;
   });
 
@@ -140,21 +141,33 @@ export default function CouponsList() {
                   <Badge
                     variant="outline"
                     className={
-                      coupon.status === "deactivated"
+                      coupon.status ?
+                        "bg-green-50 text-green-600 border-green-200"
+                        : "bg-gray-50 text-red-600 border-red-200"
+                    }
+                  >
+                    {coupon.status? "Active" : "Deactivated"}
+  
+                  </Badge>
+                </div>
+                <div className="text-sm text-muted-foreground">Usage: {coupon.usage_info}</div>
+                <Badge
+                    variant="outline"
+                    className={
+                      coupon.expiry_status === "Expired"
                         ? "bg-gray-50 text-red-600 border-red-200"
                         : "bg-green-50 text-green-600 border-green-200"
                     }
                   >
-                    {coupon.status}
+                    {coupon.expiry_status}
                   </Badge>
-                </div>
-                <div className="text-sm text-muted-foreground">Usage: {coupon.usage_info}</div>
+                  
                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setCouponToDeactivate(coupon)}
-                    disabled={coupon.status === "deactivated"}
+                    disabled={coupon.status}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>

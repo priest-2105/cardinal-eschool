@@ -38,23 +38,23 @@ export default function AssessmentPage() {
   }, [token]);
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("FormData received from AssessmentForm:", formData); // Log received formData
+    console.log("FormData received from AssessmentForm:", formData); 
 
     if (!token) return;
 
     try {
       const payload = {
-        subscription_plan_id: formData.plan_id,
+        subscription_plan_id: parseInt(formData.plan_id, 10),  
         edu_level: formData.education_level,
-        subjects_interested_in: formData.subjects_interested_in,
-        tests_interested_in: formData.tests_interested_in,
+        subjects_interested_in: formData.subjects_interested_in, 
+        tests_interested_in: formData.tests_interested_in, 
         learning_expectations: formData.learning_expectations,
         learning_difficulties: formData.learning_difficulties,
         learning_difficulty_description: formData.learning_difficulty_description,
         specific_goals: formData.specific_goals,
       };
 
-      console.log("Payload being sent to backend:", payload); // Log payload
+      console.log("Payload being sent to backend:", payload); 
 
       const response = await updateAssessment(token, payload);
       console.log("API Response:", response);
@@ -69,11 +69,11 @@ export default function AssessmentPage() {
       if (error.message) {
         try {
           const errorData = JSON.parse(error.message);
-          if (errorData.message) {
-            setAlertMessage(errorData.message);
-          } else {
-            setAlertMessage("Failed to update assessment. Please try again.");
-          }
+          setAlertMessage(
+            `${errorData.message} ${
+              errorData.data ? `Details: ${errorData.data}` : ""
+            }`
+          );
         } catch {
           setAlertMessage("Failed to update assessment. Please try again.");
         }
@@ -88,7 +88,7 @@ export default function AssessmentPage() {
   return (
     <div className="min-h-screen bg-white">
       {alertMessage && (
-        <Alert variant={alertVariant} className="fixed top-4 right-4" onClose={() => setAlertMessage(null)}>
+        <Alert variant={alertVariant} className="fixed top-4 right-4 bg-white" onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>

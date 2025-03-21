@@ -130,8 +130,8 @@ export function TicketList() {
                                         <TableCell>{ticket.department}</TableCell>
                                         <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
                                         <TableCell>
-                                            <Button variant={ticket.status === "open" ? "default" : "danger"} size="sm">
-                                                {ticket.status}
+                                        <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                                            {ticket.status}
                                             </Button>
                                         </TableCell>
                                     </TableRow>

@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 export interface FormData {
   plan_id: string;
   education_level: string;
-  subjects_interested_in: string[];
+  subjects_interested_in: number[];
   tests_interested_in: string[];
   learning_expectations: string;
   learning_difficulties: boolean;
@@ -38,6 +38,16 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
     }
   );
 
+  const subjectsOptions = [
+    { label: "Mathematics", value: 1 },
+    { label: "English", value: 2 },
+    { label: "Physics", value: 3 },
+    { label: "Chemistry", value: 4 },
+    { label: "Biology", value: 5 },
+    { label: "Computer Science", value: 6 },
+    { label: "Economics", value: 7 },
+  ];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -47,7 +57,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
     });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name: string, value: string | boolean) => {
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: value };
       console.log("Updated formData:", updatedData); // Log updated formData
@@ -55,13 +65,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
     });
   };
 
-  const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
+  const handleCheckboxChange = (name: string, value: number | string, checked: boolean) => {
     setFormData((prev) => {
       const updatedData = {
         ...prev,
         [name]: checked
-          ? [...prev[name as keyof FormData], value]
-          : (prev[name as keyof FormData] as string[]).filter((item) => item !== value),
+          ? [...(prev[name as keyof FormData] as any[]), value]
+          : (prev[name as keyof FormData] as any[]).filter((item) => item !== value),
       };
       console.log("Updated formData:", updatedData); // Log updated formData
       return updatedData;
@@ -116,14 +126,14 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
       <div>
         <Label>Subjects Interested In</Label>
         <div className="space-y-2">
-          {["Mathematics", "Science", "English", "History", "Art"].map((subject) => (
-            <div key={subject} className="flex items-center space-x-2">
+          {subjectsOptions.map((subject) => (
+            <div key={subject.value} className="flex items-center space-x-2">
               <Checkbox
-                id={subject}
-                checked={formData.subjects_interested_in.includes(subject)}
-                onCheckedChange={(checked) => handleCheckboxChange("subjects_interested_in", subject, checked as boolean)}
+                id={`subject-${subject.value}`}
+                checked={formData.subjects_interested_in.includes(subject.value)}
+                onCheckedChange={(checked) => handleCheckboxChange("subjects_interested_in", subject.value, checked as boolean)}
               />
-              <Label htmlFor={subject}>{subject}</Label>
+              <Label htmlFor={`subject-${subject.value}`}>{subject.label}</Label>
             </div>
           ))}
         </div>
