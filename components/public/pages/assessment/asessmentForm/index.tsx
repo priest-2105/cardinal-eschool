@@ -1,52 +1,51 @@
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Textarea } from "@/components/ui/textarea"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface FormData {
-  gender: string
-  educationLevel: string
-  dateOfBirth: string
-  subjects: string[]
-  testPrep: string[]
-  expectations: string
-  hasLearningDifficulties: string
-  learningDifficultiesDetails: string
-  selectedPlan: string
-  specificGoals: string
+  plan_id: string;
+  education_level: string;
+  subjects_interested_in: string[];
+  tests_interested_in: string[];
+  learning_expectations: string;
+  learning_difficulties: boolean;
+  learning_difficulty_description: string;
+  specific_goals: string;
 }
 
 interface AssessmentFormProps {
-  onSubmit: (formData: FormData) => void
+  onSubmit: (formData: FormData) => void;
+  initialData?: FormData | null;
 }
 
-const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<FormData>({
-    gender: "",
-    educationLevel: "",
-    dateOfBirth: "",
-    subjects: [],
-    testPrep: [],
-    expectations: "",
-    hasLearningDifficulties: "",
-    learningDifficultiesDetails: "",
-    selectedPlan: "",
-    specificGoals: "",
-  })
+const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }) => {
+  const [formData, setFormData] = useState<FormData>(
+    initialData || {
+      plan_id: "",
+      education_level: "",
+      subjects_interested_in: [],
+      tests_interested_in: [],
+      learning_expectations: "",
+      learning_difficulties: false,
+      learning_difficulty_description: "",
+      specific_goals: "",
+    }
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
     setFormData((prev) => ({
@@ -54,44 +53,40 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
       [name]: checked
         ? [...prev[name as keyof FormData], value]
         : (prev[name as keyof FormData] as string[]).filter((item) => item !== value),
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <Label htmlFor="gender">Gender</Label>
-        <RadioGroup
-          name="gender"
-          value={formData.gender}
-          onValueChange={(value) => handleSelectChange("gender", value)}
+        <Label htmlFor="plan_id">Subscription Plan</Label>
+        <Select
+          name="plan_id"
+          value={formData.plan_id}
+          onValueChange={(value) => handleSelectChange("plan_id", value)}
         >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="male" id="male" />
-            <Label htmlFor="male">Male</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="female" id="female" />
-            <Label htmlFor="female">Female</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="other" id="other" />
-            <Label htmlFor="other">Other</Label>
-          </div>
-        </RadioGroup>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a plan" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic Plan</SelectItem>
+            <SelectItem value="standard">Standard Plan</SelectItem>
+            <SelectItem value="premium">Premium Plan</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <Label htmlFor="educationLevel">Education Level</Label>
+        <Label htmlFor="education_level">Education Level</Label>
         <Select
-          name="educationLevel"
-          value={formData.educationLevel}
-          onValueChange={(value) => handleSelectChange("educationLevel", value)}
+          name="education_level"
+          value={formData.education_level}
+          onValueChange={(value) => handleSelectChange("education_level", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select education level" />
@@ -106,19 +101,14 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
       </div>
 
       <div>
-        <Label htmlFor="dateOfBirth">Date of Birth</Label>
-        <Input type="date" id="dateOfBirth" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
-      </div>
-
-      <div>
         <Label>Subjects Interested In</Label>
         <div className="space-y-2">
           {["Mathematics", "Science", "English", "History", "Art"].map((subject) => (
             <div key={subject} className="flex items-center space-x-2">
               <Checkbox
                 id={subject}
-                checked={formData.subjects.includes(subject)}
-                onCheckedChange={(checked) => handleCheckboxChange("subjects", subject, checked as boolean)}
+                checked={formData.subjects_interested_in.includes(subject)}
+                onCheckedChange={(checked) => handleCheckboxChange("subjects_interested_in", subject, checked as boolean)}
               />
               <Label htmlFor={subject}>{subject}</Label>
             </div>
@@ -133,8 +123,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
             <div key={test} className="flex items-center space-x-2">
               <Checkbox
                 id={test}
-                checked={formData.testPrep.includes(test)}
-                onCheckedChange={(checked) => handleCheckboxChange("testPrep", test, checked as boolean)}
+                checked={formData.tests_interested_in.includes(test)}
+                onCheckedChange={(checked) => handleCheckboxChange("tests_interested_in", test, checked as boolean)}
               />
               <Label htmlFor={test}>{test}</Label>
             </div>
@@ -143,22 +133,22 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
       </div>
 
       <div>
-        <Label htmlFor="expectations">What are your expectations from this course?</Label>
+        <Label htmlFor="learning_expectations">What are your expectations from this course?</Label>
         <Textarea
-          id="expectations"
-          name="expectations"
-          value={formData.expectations}
+          id="learning_expectations"
+          name="learning_expectations"
+          value={formData.learning_expectations}
           onChange={handleChange}
           placeholder="Enter your expectations here"
         />
       </div>
 
       <div>
-        <Label htmlFor="hasLearningDifficulties">Do you have any learning difficulties?</Label>
+        <Label htmlFor="learning_difficulties">Do you have any learning difficulties?</Label>
         <RadioGroup
-          name="hasLearningDifficulties"
-          value={formData.hasLearningDifficulties}
-          onValueChange={(value) => handleSelectChange("hasLearningDifficulties", value)}
+          name="learning_difficulties"
+          value={formData.learning_difficulties ? "yes" : "no"}
+          onValueChange={(value) => handleSelectChange("learning_difficulties", value === "yes")}
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="yes" id="yes" />
@@ -171,13 +161,13 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
         </RadioGroup>
       </div>
 
-      {formData.hasLearningDifficulties === "yes" && (
+      {formData.learning_difficulties && (
         <div>
-          <Label htmlFor="learningDifficultiesDetails">Please provide details about your learning difficulties</Label>
+          <Label htmlFor="learning_difficulty_description">Please provide details about your learning difficulties</Label>
           <Textarea
-            id="learningDifficultiesDetails"
-            name="learningDifficultiesDetails"
-            value={formData.learningDifficultiesDetails}
+            id="learning_difficulty_description"
+            name="learning_difficulty_description"
+            value={formData.learning_difficulty_description}
             onChange={handleChange}
             placeholder="Enter details here"
           />
@@ -185,29 +175,11 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
       )}
 
       <div>
-        <Label htmlFor="selectedPlan">Selected Plan</Label>
-        <Select
-          name="selectedPlan"
-          value={formData.selectedPlan}
-          onValueChange={(value) => handleSelectChange("selectedPlan", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a plan" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="basic">Basic Plan</SelectItem>
-            <SelectItem value="standard">Standard Plan</SelectItem>
-            <SelectItem value="premium">Premium Plan</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="specificGoals">Specific Goals</Label>
+        <Label htmlFor="specific_goals">Specific Goals</Label>
         <Textarea
-          id="specificGoals"
-          name="specificGoals"
-          value={formData.specificGoals}
+          id="specific_goals"
+          name="specific_goals"
+          value={formData.specific_goals}
           onChange={handleChange}
           placeholder="Enter your specific goals here"
         />
@@ -217,8 +189,8 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit }) => {
         Submit Assessment
       </Button>
     </form>
-  )
-}
+  );
+};
 
-export default AssessmentForm
+export default AssessmentForm;
 

@@ -10,10 +10,12 @@ export async function fetchStudentsAssessment(token: string) {
     },
   });
 
+  const responseData = await response.json();
+  console.log("Fetch Student Assessment Response:", responseData);
+
   if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Failed to fetch assessment: ${response.status} ${response.statusText} - ${errorMessage}`);
+    throw new Error(`Failed to fetch assessment: ${response.status} ${response.statusText} - ${responseData.message}`);
   }
 
-  return response.json();
+  return responseData;
 }

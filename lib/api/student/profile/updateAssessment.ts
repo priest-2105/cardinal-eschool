@@ -11,10 +11,12 @@ export async function updateAssessment(token: string, payload: any) {
     body: JSON.stringify(payload),
   });
 
+  const responseData = await response.json();
+  console.log("Update Assessment Response:", responseData);
+
   if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Failed to update assessment: ${response.status} ${response.statusText} - ${errorMessage}`);
+    throw new Error(`Failed to update assessment: ${response.status} ${response.statusText} - ${responseData.message}`);
   }
 
-  return response.json();
+  return responseData;
 }

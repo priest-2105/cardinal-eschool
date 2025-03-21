@@ -1,35 +1,37 @@
-'use client'
+'use client';
 
-import { Button } from "@/components/dashboard/student/ui/button"
-import { Card } from "@/components/dashboard/student/ui/card"
-import { Input } from "@/components/dashboard/student/ui/input"
-import { Label } from "@/components/dashboard/student/ui/label"
-import PhoneInputField from "../../ui/phoneInputFeild"
-import { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { RootState } from "@/lib/store"
-import { fetchStudentProfile, updateStudentProfile, updateStudentProfilePicture } from "@/lib/api/student/api"
-import { setUser } from "@/store/userSlice"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
+import { Button } from "@/components/dashboard/student/ui/button";
+import { Card } from "@/components/dashboard/student/ui/card";
+import { Input } from "@/components/dashboard/student/ui/input";
+import { Label } from "@/components/dashboard/student/ui/label";
+import PhoneInputField from "../../ui/phoneInputFeild";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/dashboard/student/ui/select";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/lib/store";
+import { fetchStudentProfile, updateStudentProfile, updateStudentProfilePicture } from "@/lib/api/student/api";
+import { setUser } from "@/store/userSlice";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
 
 export default function PersonalInformation() {
   const token = useSelector((state: RootState) => state.auth?.token);
   const dispatch = useDispatch();
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [isEditable, setIsEditable] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isEditable, setIsEditable] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
-    firstname: '',
-    lastname: '',
-    email: '',
-    phone_number: '',
-    profile_picture: '',
-    home_address: '',
-    country_of_residence: '',
-    state_of_residence: '',
-    employment_status: ''
-  })
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone_number: "",
+    profile_picture: "",
+    home_address: "",
+    edu_level: "",
+    country_of_residence: "",
+    state_of_residence: "",
+    employment_status: "",
+  });
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/student/Ellipse 2034.png");
   const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
   const [isPictureEditing, setIsPictureEditing] = useState(false);
@@ -60,17 +62,18 @@ export default function PersonalInformation() {
           lastname: profile.lastname,
           phone_number: phoneNumber,
           address: profile.home_address,
+          edu_level: profile.edu_level,
           country: profile.country_of_residence,
           state: profile.state_of_residence,
-          employment_status: profile.employment_status
+          employment_status: profile.employment_status,
         });
-        setAlert({ type: 'success', message: 'Profile updated successfully' });
+        setAlert({ type: "success", message: "Profile updated successfully" });
         setIsEditable(false);
         dispatch(setUser(response.data));
       }
     } catch (error) {
       console.error("Profile update failed", error);
-      setAlert({ type: 'error', message: (error as Error).message });
+      setAlert({ type: "error", message: (error as Error).message });
     } finally {
       setIsEditing(false);
     }
@@ -173,17 +176,30 @@ export default function PersonalInformation() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="employment_status">Qualification</Label>
+            <Label htmlFor="edu_level">Education Level</Label>
             <Input
-              id="employment_status"
-              value={profile.employment_status}
-              onChange={(e) => setProfile({ ...profile, employment_status: e.target.value })}
+              id="edu_level"
+              value={profile.edu_level}
+              onChange={(e) => setProfile({ ...profile, edu_level: e.target.value })}
               readOnly={!isEditable}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
-            <Input readOnly id="email" type="email" value={profile.email} />
+            <Label htmlFor="employment_status">Employment Status</Label>
+            <Select
+              value={profile.employment_status}
+              onValueChange={(value) => setProfile({ ...profile, employment_status: value })}
+              disabled={!isEditable}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Employment Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Employed">Employed</SelectItem>
+                <SelectItem value="Unemployed">Unemployed</SelectItem>
+                <SelectItem value="Student">Student</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <PhoneInputField

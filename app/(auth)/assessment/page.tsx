@@ -11,6 +11,7 @@ import AssessmentForm, { type FormData } from "@/components/public/pages/assessm
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 
+
 export default function AssessmentPage() {
   const router = useRouter();
   const token: string | null = useSelector((state: RootState) => state.auth?.token);
@@ -37,6 +38,8 @@ export default function AssessmentPage() {
   }, [token]);
 
   const handleSubmit = async (formData: FormData) => {
+    console.log("FormData received from AssessmentForm:", formData);
+
     if (!token) return;
 
     try {
@@ -51,13 +54,33 @@ export default function AssessmentPage() {
         specific_goals: formData.specific_goals,
       };
 
+      console.log("Payload being sent to backend:", payload);
+
       const response = await updateAssessment(token, payload);
+      console.log("API Response:", response);
+
       setAlertMessage(response.message || "Assessment updated successfully!");
       setAlertVariant("default");
       router.push("/student");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to update assessment:", error);
-      setAlertMessage("Failed to update assessment. Please try again.");
+
+      // Handle API error response
+      if (error.message) {
+        try {
+          const errorData = JSON.parse(error.message);
+          if (errorData.message) {
+            setAlertMessage(errorData.message);
+          } else {
+            setAlertMessage("Failed to update assessment. Please try again.");
+          }
+        } catch {
+          setAlertMessage("Failed to update assessment. Please try again.");
+        }
+      } else {
+        setAlertMessage("Failed to update assessment. Please try again.");
+      }
+
       setAlertVariant("danger");
     }
   };
@@ -91,11 +114,11 @@ export default function AssessmentPage() {
         {/* Right Column */}
         <div className="w-full lg:w-1/2 lg:ml-auto px-4 sm:px-6 lg:px-8 py-12 overflow-y-auto">
           <button
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/login")}
             className="text-[#1BC2C2] hover:underline mb-4 flex items-center"
           >
             <ArrowLeft className="mr-2" />
-            Back to Signup
+            Back to Login
           </button>
           <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
           <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>

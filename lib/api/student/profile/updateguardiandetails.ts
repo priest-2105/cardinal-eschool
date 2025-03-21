@@ -19,11 +19,13 @@ export async function updateGuardianProfile(token: string, profileData: {
     body: JSON.stringify(profileData),
   });
 
+  const responseData = await response.json();
+  console.log("Update Guardian Profile Response:", responseData);
+
   if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Failed to update guardian profile: ${response.status} ${response.statusText} - ${errorMessage}`);
+    throw new Error(`Failed to update guardian profile: ${response.status} ${response.statusText} - ${responseData.message}`);
   }
 
-  return response.json();
+  return responseData;
 }
 

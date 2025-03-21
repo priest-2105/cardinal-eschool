@@ -1,30 +1,32 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 export async function updateStudentProfile(token: string, profileData: {
-    firstname: string;
-    lastname: string;
-    phone_number: string;
-    address: string;
-    country: string;
-    state: string;
-    employment_status: string;
+  firstname: string;
+  lastname: string;
+  phone_number: string;
+  address: string;
+  edu_level: string;
+  country: string;
+  state: string;
+  employment_status: string;
 }) {
-    const response = await fetchWithAuth(`${apiUrl}/student/profile/update`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify(profileData),
-    });
+  const response = await fetchWithAuth(`${apiUrl}/student/profile/update`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(profileData),
+  });
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Profile update failed: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
+  const responseData = await response.json();
+  console.log("Update Student Profile Response:", responseData);
 
-    return response.json();
+  if (!response.ok) {
+    throw new Error(`Profile update failed: ${response.status} ${response.statusText} - ${responseData.message}`);
+  }
+
+  return responseData;
 }
- 
+
