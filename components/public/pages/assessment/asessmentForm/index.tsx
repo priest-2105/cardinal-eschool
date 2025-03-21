@@ -40,24 +40,37 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+      console.log("Updated formData:", updatedData); // Log updated formData
+      return updatedData;
+    });
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+      console.log("Updated formData:", updatedData); // Log updated formData
+      return updatedData;
+    });
   };
 
   const handleCheckboxChange = (name: string, value: string, checked: boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: checked
-        ? [...prev[name as keyof FormData], value]
-        : (prev[name as keyof FormData] as string[]).filter((item) => item !== value),
-    }));
+    setFormData((prev) => {
+      const updatedData = {
+        ...prev,
+        [name]: checked
+          ? [...prev[name as keyof FormData], value]
+          : (prev[name as keyof FormData] as string[]).filter((item) => item !== value),
+      };
+      console.log("Updated formData:", updatedData); // Log updated formData
+      return updatedData;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Final formData being submitted:", formData); // Log final formData
     onSubmit(formData);
   };
 
@@ -74,9 +87,9 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
             <SelectValue placeholder="Select a plan" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="basic">Basic Plan</SelectItem>
-            <SelectItem value="standard">Standard Plan</SelectItem>
-            <SelectItem value="premium">Premium Plan</SelectItem>
+            <SelectItem value="1">Basic Plan</SelectItem>
+            <SelectItem value="2">Standard Plan</SelectItem>
+            <SelectItem value="3">Premium Plan</SelectItem>
           </SelectContent>
         </Select>
       </div>

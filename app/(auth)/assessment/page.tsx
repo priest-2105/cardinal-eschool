@@ -38,7 +38,7 @@ export default function AssessmentPage() {
   }, [token]);
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("FormData received from AssessmentForm:", formData);
+    console.log("FormData received from AssessmentForm:", formData); // Log received formData
 
     if (!token) return;
 
@@ -54,7 +54,7 @@ export default function AssessmentPage() {
         specific_goals: formData.specific_goals,
       };
 
-      console.log("Payload being sent to backend:", payload);
+      console.log("Payload being sent to backend:", payload); // Log payload
 
       const response = await updateAssessment(token, payload);
       console.log("API Response:", response);
