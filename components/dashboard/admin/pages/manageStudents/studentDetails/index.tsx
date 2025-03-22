@@ -14,10 +14,9 @@ import ReportsList from "../reportList"
 import TransactionList from "../studentTransactionList"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { getStudentDetails } from "@/lib/api/admin/api"
+import { getStudentDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
-
-
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 interface Student {
   id: string
@@ -102,9 +101,29 @@ export function StudentDetails({ id }: { id: string }) {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [student, setStudent] = useState<Student>(SAMPLE_STUDENT)
   const [activeTab, setActiveTab] = useState("profileinfo")
-  const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
+  const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null)
+
+  const handleStatusChange = (newStatus: "active" | "suspended" | "banned") => {
     setStudent({ ...student, status: newStatus }) 
   }
+
+  const confirmStatusUpdate = async () => {
+    if (!statusToUpdate || !token) return;
+
+    setLoading(true);
+    try {
+      await updateUserStatus(token, studentId, { status: statusToUpdate });
+      setStudentDetails({ ...studentDetails, status: statusToUpdate });
+      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
+    } catch (error: any) {
+      console.error("Failed to update status:", error.message);
+      setAlert({ type: "danger", message: error.message });
+    } finally {
+      setLoading(false);
+      setAlert(null);
+      setStatusToUpdate(null);
+    }
+  };
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -147,16 +166,17 @@ export function StudentDetails({ id }: { id: string }) {
   }
 
   return (
+    <div>
     <div className="container mx-auto p-6">
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed bg-white top-5 right-5 z-50">
           <Alert variant={alert.type} onClose={() => setAlert(null)}>
             <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
             <AlertDescription>{alert.message}</AlertDescription>
           </Alert>
         </div>
       )}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6"></div>
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Student List
@@ -243,9 +263,9 @@ export function StudentDetails({ id }: { id: string }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                  <DropdownMenuItem onClick={() => handleStatusChange("Active")}>Set as Active</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange("Suspended")}>Suspend Student</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange("Inactive")}>Set as Inactive</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusToUpdate("active")}>Set as Active</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusToUpdate("suspended")}>Suspend Student</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusToUpdate("banned")}>Ban Student</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -526,6 +546,23 @@ export function StudentDetails({ id }: { id: string }) {
           )}
         </div>
       </div>
+
+      <AlertDialog open={!!statusToUpdate} onOpenChange={(open) => !open && setStatusToUpdate(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Status</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStatusUpdate} className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]">
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

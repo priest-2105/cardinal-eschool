@@ -23,9 +23,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { getTutorDetails } from "@/lib/api/admin/api"
+import { getTutorDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
-
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
 
 interface Tutor {
   id: string
@@ -85,9 +86,25 @@ export function TutorDetails({ id }: { id: string }) {
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)  
-  const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
-    setTutor({ ...tutor, status: newStatus })
-  }
+  const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null);
+
+  const confirmStatusUpdate = async () => {
+    if (!statusToUpdate || !token) return;
+
+    setLoading(true);
+    setAlert(null);
+    try {
+      await updateUserStatus(token, tutorId, { status: statusToUpdate });
+      setTutorDetails({ ...tutorDetails, status: statusToUpdate });
+      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
+    } catch (error: any) {
+      console.error("Failed to update status:", error.message);
+      setAlert({ type: "danger", message: error.message });
+    } finally {
+      setLoading(false);
+      setStatusToUpdate(null);
+    }
+  };
 
   useEffect(() => {
     const fetchTutorDetails = async () => {
@@ -131,6 +148,14 @@ export function TutorDetails({ id }: { id: string }) {
 
   return (
     <div className="container mx-auto p-6">
+      {alert && (
+        <div className="fixed top-5 right-5 z-50">
+          <Alert variant={alert.type} onClose={() => setAlert(null)}>
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -210,9 +235,9 @@ export function TutorDetails({ id }: { id: string }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px] bg-white py-2 ">
-                  <DropdownMenuItem className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Active")}>Set as Active</DropdownMenuItem>
-                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Suspended")}>Suspend Tutor</DropdownMenuItem>
-                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => handleStatusChange("Inactive")}>Set as Inactive</DropdownMenuItem>
+                  <DropdownMenuItem className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("active")}>Set as Active</DropdownMenuItem>
+                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("suspended")}>Suspend Tutor</DropdownMenuItem>
+                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("banned")}>Ban Tutor</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -337,6 +362,23 @@ export function TutorDetails({ id }: { id: string }) {
 
         </div>
       </div>
+
+      <AlertDialog open={!!statusToUpdate} onOpenChange={(open) => !open && setStatusToUpdate(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Status</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmStatusUpdate} className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]">
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
