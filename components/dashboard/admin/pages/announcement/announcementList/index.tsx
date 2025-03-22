@@ -33,8 +33,9 @@ interface Announcement {
   target_role: "students" | "tutors" | "both"
   status: "active" | "inactive" | "draft"
   expirationDate?: Date
-  createdAt: Date
-  updatedAt: Date
+  created_at: Date
+  created_by: stirng
+  updated_at: Date
 }
 
 export function AnnouncementsList() {
@@ -180,7 +181,7 @@ export function AnnouncementsList() {
               <p className="text-gray-500">Loading</p>
             </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[60vh] overflow-x-hidden overflow-y-auto custom-scrollbar px-4">
           {filteredAnnouncements.map((announcement) => (
             <div
               key={announcement.id}
@@ -216,6 +217,7 @@ export function AnnouncementsList() {
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
                   {/* Created: {format(announcement.createdAt, "MMM d, yyyy")} */}
+                  Created: {announcement.created_at}
                 </div>
                 {announcement.expirationDate && <div>Expires: {format(announcement.expirationDate, "MMM d, yyyy")}</div>}
               </div>
