@@ -176,13 +176,30 @@ export default function PersonalInformation() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="edu_level">Education Level</Label>
-            <Input
-              id="edu_level"
+            <Label htmlFor="edu_level">Grade</Label>
+            <Select
               value={profile.edu_level}
-              onChange={(e) => setProfile({ ...profile, edu_level: e.target.value })}
-              readOnly={!isEditable}
-            />
+              onValueChange={(value) => setProfile({ ...profile, edu_level: value })}
+              disabled={!isEditable}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select Grade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="one"> Grade One</SelectItem>
+                <SelectItem value="two"> Grade Two</SelectItem>
+                <SelectItem value="three"> Grade Three</SelectItem>
+                <SelectItem value="four"> Grade Four</SelectItem>
+                <SelectItem value="five"> Grade Five</SelectItem>
+                <SelectItem value="six"> Grade Six</SelectItem>
+                <SelectItem value="seven"> Grade Seven</SelectItem>
+                <SelectItem value="eight"> Grade Eight</SelectItem>
+                <SelectItem value="nine"> Grade Nine</SelectItem>
+                <SelectItem value="ten"> Grade Ten</SelectItem>
+                <SelectItem value="eleven"> Grade Eleven</SelectItem>
+                <SelectItem value="twelve"> Grade Twelve</SelectItem>
+                </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="employment_status">Employment Status</Label>

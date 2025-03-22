@@ -13,6 +13,8 @@ import { fetchStudentProfile, logout } from "@/lib/api/student/api"
 import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
+import { getStudentDetails } from "@/lib/api/public/api"
+
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -40,6 +42,8 @@ interface ProfileOption {
 const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode }> = ({ items, icon }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  
+
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
@@ -101,6 +105,7 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
         if (token) {
           const response = await fetchStudentProfile(token);
           setProfile(response.data);
+          console.log('user data', response.data);
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -110,6 +115,8 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
     getProfile();
   }, [token]);
 
+
+  
   const handleLogout = async () => {
     try {
       if (token) {

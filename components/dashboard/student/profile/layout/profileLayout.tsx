@@ -29,6 +29,8 @@ export default function ProfileLayout({
 }) {
   const pathname = usePathname()
 
+  
+
   return (
     <div className="flex flex-col w-full mx-auto px-4 max-sm:w-[100%]">
       <div className="border-b mb-4 md:mb-6 overflow-x-auto">

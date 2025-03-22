@@ -3,3 +3,6 @@
 
 export * from "./gettutorlist"
 export * from "./getstudentlist"
+
+
+export * from "./getstudentdetails"
