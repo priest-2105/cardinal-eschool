@@ -30,7 +30,7 @@ interface Announcement {
   id: string
   title: string
   content: string
-  recipients: "students" | "tutors" | "both"
+  target_role: "students" | "tutors" | "both"
   status: "active" | "inactive" | "draft"
   expirationDate?: Date
   createdAt: Date
@@ -68,7 +68,7 @@ export function AnnouncementsList() {
 
   const filteredAnnouncements = announcements.filter((announcement) => {
     const matchesSearch = announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesRecipient = recipientFilter === "all" || announcement.recipients === recipientFilter
+    const matchesRecipient = recipientFilter === "all" || announcement.target_role === recipientFilter
     const matchesStatus = statusFilter === "all" || announcement.status === statusFilter
     return matchesSearch && matchesRecipient && matchesStatus
   })
@@ -156,12 +156,12 @@ export function AnnouncementsList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Recipients</SelectItem>
-              <SelectItem value="students">Students Only</SelectItem>
-              <SelectItem value="tutors">Tutors Only</SelectItem>
+              <SelectItem value="student">Students Only</SelectItem>
+              <SelectItem value="tutor">Tutors Only</SelectItem>
               <SelectItem value="both">Both</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
@@ -171,7 +171,7 @@ export function AnnouncementsList() {
               <SelectItem value="inactive">Inactive</SelectItem>
               <SelectItem value="draft">Draft</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export function AnnouncementsList() {
                     {getStatusBadge(announcement.status)}
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    {/* Recipients: {announcement.recipients.charAt(0).toUpperCase() + announcement.recipients.slice(1)} */}
+                    Recipients: {announcement.target_role.charAt(0).toUpperCase() + announcement.target_role.slice(1)}
                   </p>
                 </div>
                 <div className="flex gap-1">
