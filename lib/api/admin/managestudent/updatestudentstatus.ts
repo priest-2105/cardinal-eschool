@@ -1,7 +1,7 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-export async function getTutorDetails(token: string, tutorId: string) {
-  const response = await fetchWithAuth(`${apiUrl}/profiles/tutor/${tutorId}`, {
+export async function updateStudentStatus(token: string, studentId: string) {
+  const response = await fetchWithAuth(`${apiUrl}/profiles/student/${studentId}`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -11,7 +11,7 @@ export async function getTutorDetails(token: string, tutorId: string) {
 
   if (!response.ok) {
     const errorMessage = await response.text();
-    throw new Error(`Failed to fetch tutor details: ${response.status} ${response.statusText} - ${errorMessage}`);
+    throw new Error(`Failed to fetch student details: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
 
   const result = await response.json();

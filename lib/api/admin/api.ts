@@ -30,6 +30,11 @@ export * from "./managestudent/getstudentlist"
 export * from "./managestudent/getstudentdetails"
 
 
+// Admin Update User Status
+export * from "./userstatus/updateuserstatus"
+
+
+
 //  Admin Manage Coupon API
 export * from "./coupon/createcoupon";
 export * from "./coupon/fetchCoupons";

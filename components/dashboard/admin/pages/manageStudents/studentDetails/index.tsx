@@ -15,6 +15,9 @@ import TransactionList from "../studentTransactionList"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getStudentDetails } from "@/lib/api/admin/api"
+import { formatDate } from "@/utils/dateformat"
+
+
 
 interface Student {
   id: string
@@ -100,8 +103,7 @@ export function StudentDetails({ id }: { id: string }) {
   const [student, setStudent] = useState<Student>(SAMPLE_STUDENT)
   const [activeTab, setActiveTab] = useState("profileinfo")
   const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
-    setStudent({ ...student, status: newStatus })
-    // In a real application, you would also send this update to your backend
+    setStudent({ ...student, status: newStatus }) 
   }
 
   useEffect(() => {
@@ -220,7 +222,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Calendar className="mr-2 h-4 w-4" />
                   Joined
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.created_at}</span>
+                <span className="text-sm font-medium">{formatDate(studentDetails?.created_at)}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -228,7 +230,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Clock className="mr-2 h-4 w-4" />
                   Last Login
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.updated_at}</span>
+                <span className="text-sm font-medium">{formatDate(studentDetails?.last_login)}</span>
               </div>
             </div>
 

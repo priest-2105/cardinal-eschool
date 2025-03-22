@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,17 +11,21 @@ import {
   Mail,
   Calendar,
   BookOpen,
-  Activity,
   Users,
   Star,
   Clock,
   Phone,
   User,
   Briefcase,
+  LucideBarChart4,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { getTutorDetails } from "@/lib/api/admin/api"
+import { formatDate } from "@/utils/dateformat"
+
 
 interface Tutor {
   id: string
@@ -72,18 +76,57 @@ const SAMPLE_TUTOR: Tutor = {
   ],
 }
 
-export function TutorDetails() {
+export function TutorDetails({ id }: { id: string }) {
   const [tutor, setTutor] = useState<Tutor>(SAMPLE_TUTOR)
   const [activeTab, setActiveTab] = useState("overview")
   const router = useRouter()
-
+  const tutorId = decodeURIComponent(id)
+  const [tutorDetails, setTutorDetails] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)  
   const handleStatusChange = (newStatus: "Active" | "Suspended" | "Inactive") => {
     setTutor({ ...tutor, status: newStatus })
-    // In a real application, you would also send this update to your backend
   }
+
+  useEffect(() => {
+    const fetchTutorDetails = async () => {
+      setLoading(true)
+      try {
+        if (!token) throw new Error("Authentication token is missing")
+        const data = await getTutorDetails(token, tutorId)
+        setTutorDetails(data)
+      } catch (error: any) {
+        console.error("Failed to fetch tutor details:", error.message)
+        console.log("tutor id ", tutorId)
+
+        setAlert({ type: "danger", message: error.message })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTutorDetails()
+  }, [token, tutorId])
 
   const handleBack = () => {
     router.push("/admin/tutors")
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">Loading tutor details...</p>
+      </div>
+    )
+  }
+
+  if (!tutorDetails) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No tutor details found</p>
+      </div>
+    )
   }
 
   return (
@@ -100,12 +143,12 @@ export function TutorDetails() {
         <Card className="md:col-span-1 p-6">
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-32 h-32 mb-4">
-              <AvatarImage src={tutor.avatar} alt={tutor.name} />
-              <AvatarFallback>{tutor.name.charAt(0)}</AvatarFallback>
+              <AvatarImage src={tutorDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"} alt={tutorDetails?.name} />
+              {/* <AvatarFallback>{tutorDetails?.name.charAt(0)}</AvatarFallback> */}
             </Avatar>
-            <h2 className="text-2xl font-bold mb-2">{tutor.name}</h2>
-            <Badge variant={tutor.status === "Active" ? "default" : "destructive"} className="mb-4">
-              {tutor.status}
+            <h2 className="text-2xl font-bold mb-2">{tutorDetails?.first_name} {" "} {tutorDetails?.last_name}</h2>
+            <Badge variant={tutorDetails?.status === "Active" ? "default" : "destructive"} className="mb-4">
+              {tutorDetails?.status}
             </Badge>
 
             <div className="w-full space-y-4 mt-4">
@@ -114,7 +157,7 @@ export function TutorDetails() {
                   <User className="mr-2 h-4 w-4" />
                   Tutor ID
                 </span>
-                <span className="text-sm font-medium">{tutor.id}</span>
+                <span className="text-sm font-medium">{tutorDetails?.id}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -122,7 +165,7 @@ export function TutorDetails() {
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </span>
-                <span className="text-sm font-medium">{tutor.email}</span>
+                <span className="text-sm font-medium">{tutorDetails?.email}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -130,15 +173,15 @@ export function TutorDetails() {
                   <Phone className="mr-2 h-4 w-4" />
                   Phone
                 </span>
-                <span className="text-sm font-medium">{tutor.phone}</span>
+                <span className="text-sm font-medium">{tutorDetails?.phone_number}</span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="flex items-center text-sm text-muted-foreground">
                   <BookOpen className="mr-2 h-4 w-4" />
-                  Subject
+                  Qualification
                 </span>
-                <span className="text-sm font-medium">{tutor.subject}</span>
+                <span className="text-sm font-medium">{tutorDetails?.qualification}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -146,7 +189,7 @@ export function TutorDetails() {
                   <Calendar className="mr-2 h-4 w-4" />
                   Joined
                 </span>
-                <span className="text-sm font-medium">{tutor.dateJoined}</span>
+                <span className="text-sm font-medium">{formatDate(tutorDetails?.created_at)}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -154,7 +197,7 @@ export function TutorDetails() {
                   <Clock className="mr-2 h-4 w-4" />
                   Last Login
                 </span>
-                <span className="text-sm font-medium">{format(new Date(tutor.lastLogin), "MMM d, h:mm a")}</span>
+                <span className="text-sm font-medium"> {formatDate(tutorDetails?.last_login)}</span>
               </div>
             </div>
 
@@ -223,46 +266,40 @@ export function TutorDetails() {
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Star className="h-6 w-6 mb-2 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Average Rating</span>
+                      <span className="text-sm text-muted-foreground">Reports Created</span>
                       <span className="text-2xl font-bold">{tutor.averageRating}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
-                      <Activity className="h-6 w-6 mb-2 text-muted-foreground" />
+                      <LucideBarChart4 className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Classes This Week</span>
                       <span className="text-2xl font-bold">{tutor.classesThisWeek}</span>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2">Bio</h3>
-                    <p className="text-muted-foreground">{tutor.bio}</p>
-                  </div>
-
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2">Professional Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                          <Briefcase className="inline-block mr-2 h-4 w-4" />
-                          Years of Experience
-                        </h4>
-                        <p>{tutor.experience} years</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                          <BookOpen className="inline-block mr-2 h-4 w-4" />
-                          Specializations
-                        </h4>
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {tutor.specializations?.map((spec, index) => (
-                            <Badge key={index} variant="secondary">
-                              {spec}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
+              <Card>
+                <CardHeader>
+                  {/* <CardTitle>Tutor Overview</CardTitle> */}
+                </CardHeader>
+                <CardContent>
+                
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
+                      <p>{tutorDetails?.address || "N/A"}</p>
                     </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">State</h3>
+                      <p>{tutorDetails?.state || "N/A"} </p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Country</h3>
+                      <p>{tutorDetails?.country || "N/A"}</p>
+                    </div>
+               
                   </div>
+
                 </CardContent>
               </Card>
             </div>
