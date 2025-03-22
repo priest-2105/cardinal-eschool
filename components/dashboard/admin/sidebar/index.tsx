@@ -98,7 +98,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/student/",
   },
   {
     name: "Manage Tutors",
@@ -110,7 +110,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/tutor/",
   },
   {
     name: "Announcements",
