@@ -19,9 +19,15 @@ export * from "./ticket/fetchtickets";
 export * from "./ticket/tickedetails";
 
 
-// Admin Manage Tutort API EXPORT
+// Admin Manage Tutor API EXPORT
 export * from "./managetutor/createtutor";
 export * from "./managetutor/fetchtutors";
+export * from "./managetutor/gettutordetails";
+
+
+// Admin Manage Student API EXPORT
+export * from "./managestudent/getstudentlist"
+export * from "./managestudent/getstudentdetails"
 
 
 //  Admin Manage Coupon API

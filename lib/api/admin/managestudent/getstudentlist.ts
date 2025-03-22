@@ -1,14 +1,18 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 export async function getStudentList(token: string, hasSubscription?: boolean) {
-  const response = await fetchWithAuth(`${apiUrl}/admin/getAllStudents`, {
+  const url = new URL(`${apiUrl}/admin/getAllStudents`);
+  if (hasSubscription !== undefined) {
+    url.searchParams.append("has_subscription", String(hasSubscription));
+  }
+
+  const response = await fetchWithAuth(url.toString(), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(hasSubscription !== undefined ? { has_subscription: hasSubscription } : {}),
   });
 
   if (!response.ok) {

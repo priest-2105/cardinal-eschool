@@ -4,19 +4,20 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSelector } from "react-redux"
 import { RootState } from "@/lib/store"
-import { getStudentList } from "@/lib/api/admin/student/getstudentlist"
+import { getStudentList } from "@/lib/api/admin/managestudent/getstudentlist"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
 import { Search } from "lucide-react"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+import { Badge } from "@/components/ui/badge"
 
 interface Student {
   id: string
   name: string
   email: string
   grade: number
+  student_codec: string
   course: string
   dateJoined: string
   status: "Active" | "Suspended" | "Inactive"
@@ -172,32 +173,44 @@ export function StudentList() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full align-middle">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[15%]">Student ID</TableHead>
-                  <TableHead className="w-[20%]">Name</TableHead>
-                  <TableHead className="w-[20%]">Email</TableHead>
-                  <TableHead className="w-[10%]">Subscription</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudents.map((student) => (
-                  <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100">
-                    <TableCell className="font-medium">{student.id}</TableCell>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.email}</TableCell>
-                    <TableCell>
-                      {student.has_subscription ? "Subscribed" : "Unsubscribed"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+        {loading ? (
+          <div className="text-center py-12 border rounded-lg">
+          <p className="text-gray-500">Loading</p>
         </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="text-center py-12 border rounded-lg">
+              <p className="text-gray-500">No Students Found</p>
+            </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[15%]">Student ID</TableHead>
+                    <TableHead className="w-[20%]">Name</TableHead>
+                    <TableHead className="w-[20%]">Email</TableHead>
+                    <TableHead className="w-[10%]">Subscription</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student) => (
+                    <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
+                      <TableCell className="font-medium">{student.id}</TableCell>
+                      <TableCell>{student.name}</TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell> 
+                      <Badge variant={student.has_subscription ? "default" : "warning"}>
+                      {student.has_subscription ? "Subscribed" : "Unsubscribed"}
+                         </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
