@@ -24,7 +24,13 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      setAlert({ type: "error", message: "Both email and password are required." });
+      return;
+    }
+
     setIsSubmitting(true)
     setAlert(null)
     try {

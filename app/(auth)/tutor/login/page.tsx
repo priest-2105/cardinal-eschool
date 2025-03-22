@@ -24,11 +24,17 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setAlert(null)
+    e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      setAlert({ type: "error", message: "Both email and password are required." });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setAlert(null);
     try {
-      const response = await login(formData.email, formData.password)
+      const response = await login(formData.email, formData.password);
       console.log('Response:', response)  
       dispatch(setAuthState({
         token: response.data.token,
