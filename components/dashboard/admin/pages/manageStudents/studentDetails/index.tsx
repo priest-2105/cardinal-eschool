@@ -111,17 +111,17 @@ export function StudentDetails({ id }: { id: string }) {
     if (!statusToUpdate || !token) return;
 
     setLoading(true);
+    setAlert(null);
     try {
       await updateUserStatus(token, studentId, { status: statusToUpdate });
       setStudentDetails({ ...studentDetails, status: statusToUpdate });
       setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
+      setStatusToUpdate(null); // Close the modal after success
     } catch (error: any) {
       console.error("Failed to update status:", error.message);
       setAlert({ type: "danger", message: error.message });
     } finally {
       setLoading(false);
-      setAlert(null);
-      setStatusToUpdate(null);
     }
   };
 
@@ -556,9 +556,13 @@ export function StudentDetails({ id }: { id: string }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmStatusUpdate} className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]">
-              Confirm
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmStatusUpdate}
+              className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

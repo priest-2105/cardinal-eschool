@@ -97,12 +97,12 @@ export function TutorDetails({ id }: { id: string }) {
       await updateUserStatus(token, tutorId, { status: statusToUpdate });
       setTutorDetails({ ...tutorDetails, status: statusToUpdate });
       setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
+      setStatusToUpdate(null); // Close the modal after success
     } catch (error: any) {
       console.error("Failed to update status:", error.message);
       setAlert({ type: "danger", message: error.message });
     } finally {
       setLoading(false);
-      setStatusToUpdate(null);
     }
   };
 
@@ -113,6 +113,7 @@ export function TutorDetails({ id }: { id: string }) {
         if (!token) throw new Error("Authentication token is missing")
         const data = await getTutorDetails(token, tutorId)
         setTutorDetails(data)
+        // console.log(data);     
       } catch (error: any) {
         console.error("Failed to fetch tutor details:", error.message)
         console.log("tutor id ", tutorId)
@@ -149,7 +150,7 @@ export function TutorDetails({ id }: { id: string }) {
   return (
     <div className="container mx-auto p-6">
       {alert && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed bg-white top-5 right-5 z-50">
           <Alert variant={alert.type} onClose={() => setAlert(null)}>
             <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
             <AlertDescription>{alert.message}</AlertDescription>
@@ -372,9 +373,13 @@ export function TutorDetails({ id }: { id: string }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmStatusUpdate} className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]">
-              Confirm
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmStatusUpdate}
+              className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Confirm"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
