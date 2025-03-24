@@ -488,6 +488,35 @@ export function StudentDetails({ id }: { id: string }) {
                   
                 </CardContent>
               </Card>
+
+
+              <Card className="my-3">
+                <CardHeader>
+                  <CardTitle>Current Courses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <div className="space-y-4">
+                  {student?.currentCourses?.map((cls) => (
+                    <div key={cls.id} className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-medium">{cls.name}</h3>
+                        <Badge variant="outline">{cls.id}</Badge>
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {/* <span>{cls.schedule}</span> */}
+                        </div>
+                        <div className="flex items-center">
+                          {/* <Users className="h-4 w-4 mr-2 text-muted-foreground" /> */}
+                          {/* <span>{cls.students} students</span> */}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div> 
+                </CardContent>
+              </Card>
             </>
           )}
 
