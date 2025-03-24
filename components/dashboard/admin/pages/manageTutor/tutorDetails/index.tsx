@@ -173,8 +173,8 @@ export function TutorDetails({ id }: { id: string }) {
               {/* <AvatarFallback>{tutorDetails?.name.charAt(0)}</AvatarFallback> */}
             </Avatar>
             <h2 className="text-2xl font-bold mb-2">{tutorDetails?.user?.name}</h2>
-            <Badge variant={tutorDetails?.status === "Active" ? "default" : "destructive"} className="mb-4">
-              {tutorDetails?.status}
+            <Badge variant={tutorDetails?.user?.account_status === "active" ? "default" : "destructive"} className="mb-4 text-white">
+              {tutorDetails?.user?.account_status[0].toUpperCase()}{tutorDetails?.user?.account_status.slice(1)}
             </Badge>
 
             <div className="w-full space-y-4 mt-4">
@@ -223,7 +223,7 @@ export function TutorDetails({ id }: { id: string }) {
                   <Clock className="mr-2 h-4 w-4" />
                   Last Login
                 </span>
-                <span className="text-sm font-medium"> {formatDate(tutorDetails?.last_login)}</span>
+                <span className="text-sm font-medium"> {formatDate(tutorDetails?.user?.last_login)}</span>
               </div>
             </div>
 
