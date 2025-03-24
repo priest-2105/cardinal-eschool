@@ -1,10 +1,13 @@
 "use client"
 
 import { AnnouncementDetails } from "@/components/dashboard/admin/pages/announcement/announcementDetails"
+import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 
-export default function AdminAnnouncementDetailsPage({ announcementId }) {
+export default function AdminAnnouncementDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const params = useParams()
+    const announcementId = params?.id as string
 
   useEffect(() => {
     const handleResize = () => {

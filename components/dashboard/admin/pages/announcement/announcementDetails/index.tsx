@@ -26,6 +26,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 interface Announcement {
   id: string
@@ -38,9 +40,9 @@ interface Announcement {
   updatedAt: Date
 }
 
-export function AnnouncementDetails() {
-  const { announcementId } = useParams();
+export function AnnouncementDetails({ announcementId }: { announcementId: number }) {
   const router = useRouter();
+  const token = useSelector((state: RootState) => state.auth?.token);
   const [announcement, setAnnouncement] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
@@ -54,7 +56,9 @@ export function AnnouncementDetails() {
   useEffect(() => {
     const fetchAnnouncement = async () => {
       try {
-        const token = ""; // Replace with token from state
+        if (!token) {
+          throw new Error("Token is required to fetch announcement details.");
+        }
         const data = await getAnnouncementDetails(token, Number(announcementId));
         setAnnouncement(data);
         setEditedTitle(data.title);
@@ -65,7 +69,7 @@ export function AnnouncementDetails() {
       }
     };
     fetchAnnouncement();
-  }, [announcementId]);
+  }, [announcementId, token]);
 
   const handleBack = () => {
     router.push("/admin/announcements")
@@ -86,10 +90,10 @@ export function AnnouncementDetails() {
 
   const handleSave = async () => {
     try {
-      const token = ""; // Replace with token from state
       const updatedData = await EditAnnouncement(
         { title: editedTitle, message: editedContent, target_role: editedRecipients },
-        token
+        token,
+        Number(announcementId)
       );
       setAnnouncement(updatedData);
       setIsEditing(false);
@@ -105,7 +109,6 @@ export function AnnouncementDetails() {
 
   const confirmDelete = async () => {
     try {
-      const token = ""; // Replace with token from state
       await deleteAnnouncement(token, Number(announcementId));
       setAlertMessage({ type: "success", message: "Announcement deleted successfully" });
       router.push("/admin/announcements");
