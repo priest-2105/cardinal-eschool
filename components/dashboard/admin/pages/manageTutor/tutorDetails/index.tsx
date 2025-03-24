@@ -97,7 +97,7 @@ export function TutorDetails({ id }: { id: string }) {
       await updateUserStatus(token, tutorId, { status: statusToUpdate });
       setTutorDetails({ ...tutorDetails, status: statusToUpdate });
       setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
-      setStatusToUpdate(null); // Close the modal after success
+      setStatusToUpdate(null);
     } catch (error: any) {
       console.error("Failed to update status:", error.message);
       setAlert({ type: "danger", message: error.message });
@@ -113,7 +113,7 @@ export function TutorDetails({ id }: { id: string }) {
         if (!token) throw new Error("Authentication token is missing")
         const data = await getTutorDetails(token, tutorId)
         setTutorDetails(data)
-        console.log(data);     
+        console.log(data);
       } catch (error: any) {
         console.error("Failed to fetch tutor details:", error.message)
         console.log("tutor id ", tutorId)
@@ -172,18 +172,18 @@ export function TutorDetails({ id }: { id: string }) {
               <AvatarImage src={tutorDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"} alt={tutorDetails?.name} />
               {/* <AvatarFallback>{tutorDetails?.name.charAt(0)}</AvatarFallback> */}
             </Avatar>
-            <h2 className="text-2xl font-bold mb-2">{tutorDetails?.first_name} {" "} {tutorDetails?.last_name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{tutorDetails?.user?.name}</h2>
             <Badge variant={tutorDetails?.status === "Active" ? "default" : "destructive"} className="mb-4">
               {tutorDetails?.status}
             </Badge>
 
             <div className="w-full space-y-4 mt-4">
               <div className="flex items-center justify-between">
-                <span className="flex items-center text-sm text-muted-foreground">
+                {/* <span className="flex items-center text-sm text-muted-foreground">
                   <User className="mr-2 h-4 w-4" />
                   Tutor ID
                 </span>
-                <span className="text-sm font-medium">{tutorDetails?.id}</span>
+                <span className="text-sm font-medium">{tutorDetails?.id}</span> */}
               </div>
 
               <div className="flex items-center justify-between">
@@ -191,7 +191,7 @@ export function TutorDetails({ id }: { id: string }) {
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </span>
-                <span className="text-sm font-medium">{tutorDetails?.email}</span>
+                <span className="text-sm font-medium">{tutorDetails?.user?.email}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -283,27 +283,27 @@ export function TutorDetails({ id }: { id: string }) {
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Users className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Total Students</span>
-                      <span className="text-2xl font-bold">{tutor.totalStudents}</span>
+                      <span className="text-2xl font-bold">{tutor?.tutor_overview?.total_students}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <BookOpen className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Total Classes</span>
-                      <span className="text-2xl font-bold">{tutor.totalClasses}</span>
+                      <span className="text-2xl font-bold">{tutor?.tutor_overview?.total_classes}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Star className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Reports Created</span>
-                      <span className="text-2xl font-bold">{tutor.averageRating}</span>
+                      <span className="text-2xl font-bold">{tutor?.tutor_overview?.total_reports}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <LucideBarChart4 className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Classes This Week</span>
-                      <span className="text-2xl font-bold">{tutor.classesThisWeek}</span>
+                      <span className="text-2xl font-bold">{tutor?.tutor_overview?.classes_this_week}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
+              
               <Card>
                 <CardHeader>
                   {/* <CardTitle>Tutor Overview</CardTitle> */}
