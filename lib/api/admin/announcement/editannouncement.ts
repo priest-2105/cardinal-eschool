@@ -2,7 +2,8 @@ import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 export async function EditAnnouncement(
   payload: { title: string; message: string; target_role: string },
-  token: string
+  token: string,
+  announcementId: number
 ) {
   const response = await fetchWithAuth(`${apiUrl}/admin/announcement/${announcementId}`, {
     method: "POST",
