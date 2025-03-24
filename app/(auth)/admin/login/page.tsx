@@ -25,6 +25,8 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    router.prefetch('/admin')
+
 
     if (!formData.email || !formData.password) {
       setAlert({ type: "error", message: "Both email and password are required." });
