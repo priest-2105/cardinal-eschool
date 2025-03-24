@@ -7,7 +7,8 @@ import { useState, useEffect } from "react"
 export default function AdminAnnouncementDetailsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const params = useParams()
-    const announcementId = params?.id as string
+    const announcementId = parseInt(decodeURIComponent(params?.announcementdetails?.toString() || ""), 10);
+
 
   useEffect(() => {
     const handleResize = () => {

@@ -6,7 +6,7 @@ export async function EditAnnouncement(
   announcementId: number
 ) {
   const response = await fetchWithAuth(`${apiUrl}/admin/announcement/${announcementId}`, {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

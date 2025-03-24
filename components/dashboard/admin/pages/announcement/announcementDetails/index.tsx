@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getAnnouncementDetails, EditAnnouncement, deleteAnnouncement } from "@/lib/api/admin/api";
 import { Alert } from "@/components/dashboard/admin/ui/alert";
 import { Button } from "@/components/ui/button"
@@ -9,11 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calender"
-import { format } from "date-fns"
 import { ArrowLeft, CalendarIcon, Edit, Trash2 } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -28,19 +24,21 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
+import { formatDate } from "@/utils/dateformat";
 
 interface Announcement {
-  id: string
-  title: string
-  content: string
-  recipients: "students" | "tutors" | "both"
-  status: "active" | "inactive" | "draft"
-  expirationDate?: Date
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  title: string;
+  content: string;
+  message: string; 
+  recipients: "students" | "tutors" | "both";
+  target_role: "students" | "tutors" | "both"; 
+  status: "active" | "inactive" | "draft";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export function AnnouncementDetails({ announcementId }: { announcementId: number }) {
+export function AnnouncementDetails({ announcementId }: { announcementId: string }) {
   const router = useRouter();
   const token = useSelector((state: RootState) => state.auth?.token);
   const [announcement, setAnnouncement] = useState(null);
@@ -50,7 +48,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: number
   const [editedRecipients, setEditedRecipients] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
   const [editedStatus, setEditedStatus] = useState("");
-  const [editedExpirationDate, setEditedExpirationDate] = useState<Date | undefined>(undefined);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -85,7 +82,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: number
     setEditedContent(announcement?.content)
     setEditedRecipients(announcement?.recipients)
     setEditedStatus(announcement?.status)
-    setEditedExpirationDate(announcement?.expirationDate)
   }
 
   const handleSave = async () => {
@@ -187,52 +183,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: number
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              {isEditing ? (
-                <Select
-                  value={editedStatus}
-                  onValueChange={(value: "active" | "inactive" | "draft") => setEditedStatus(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="flex gap-2 mt-1">
-                  <Button
-                    variant={announcement?.status === "active" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("active")}
-                    className={announcement?.status === "active" ? "bg-green-600 hover:bg-green-700" : ""}
-                  >
-                    Active
-                  </Button>
-                  <Button
-                    variant={announcement?.status === "inactive" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("inactive")}
-                    className={announcement?.status === "inactive" ? "bg-gray-600 hover:bg-gray-700" : ""}
-                  >
-                    Inactive
-                  </Button>
-                  <Button
-                    variant={announcement?.status === "draft" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("draft")}
-                    className={announcement?.status === "draft" ? "bg-blue-600 hover:bg-blue-700" : ""}
-                  >
-                    Draft
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="recipients">Recipients</Label>
               {isEditing ? (
                 <Select
@@ -249,41 +199,7 @@ export function AnnouncementDetails({ announcementId }: { announcementId: number
                   </SelectContent>
                 </Select>
               ) : (
-                <p>{announcement?.recipients.charAt(0).toUpperCase() + announcement.recipients.slice(1)}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Expiration Date (Optional)</Label>
-              {isEditing ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !editedExpirationDate && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {editedExpirationDate ? format(editedExpirationDate, "PPP") : "Select expiration date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={editedExpirationDate}
-                      onSelect={setEditedExpirationDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <p>
-                  {announcement?.expirationDate
-                    ? format(announcement.expirationDate, "MMMM d, yyyy")
-                    : "No expiration date"}
-                </p>
+                <p>{announcement?.target_role[0].toUppercase()}{announcement?.target_role.slice(1, )}s</p>
               )}
             </div>
 
@@ -298,13 +214,13 @@ export function AnnouncementDetails({ announcementId }: { announcementId: number
                   required
                 />
               ) : (
-                <p className="whitespace-pre-wrap">{announcement?.content}</p>
+                <p className="whitespace-pre-wrap">{announcement?.message}</p>
               )}
             </div>
 
             <div className="text-sm text-gray-500">
-              <p>Created: {format(announcement.createdAt, "MMMM d, yyyy")}</p>
-              <p>Last updated: {format(announcement.updatedAt, "MMMM d, yyyy")}</p>
+              <p><b>Created:</b> {formatDate(announcement?.created_at)}</p>
+              <p><b>Last updated:</b>{formatDate(announcement?.updated_at)}</p>
             </div>
 
             {isEditing && (
