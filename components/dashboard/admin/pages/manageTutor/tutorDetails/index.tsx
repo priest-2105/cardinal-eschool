@@ -15,18 +15,16 @@ import {
   Star,
   Clock,
   Phone,
-  User,
-  Briefcase,
   LucideBarChart4,
+  X,
 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getTutorDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog"
 
 interface Tutor {
   id: string
@@ -85,45 +83,104 @@ export function TutorDetails({ id }: { id: string }) {
   const [tutorDetails, setTutorDetails] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
-  const token = useSelector((state: RootState) => state.auth?.token)  
-  const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token)
+  const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  // Function to fetch tutor details
+  const fetchTutorDetails = async () => {
+    setLoading(true)
+    try {
+      if (!token) throw new Error("Authentication token is missing")
+      const data = await getTutorDetails(token, tutorId)
+      setTutorDetails(data)
+    } catch (error: any) {
+      console.error("Failed to fetch tutor details:", error.message)
+      console.log("tutor id ", tutorId)
+      setAlert({ type: "danger", message: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const openModal = (status: "active" | "suspended" | "banned") => {
+    setStatusToUpdate(status)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    // Use a small delay to ensure smooth animation before resetting the status
+    setTimeout(() => {
+      setStatusToUpdate(null)
+    }, 300)
+  }
 
   const confirmStatusUpdate = async () => {
-    if (!statusToUpdate || !token) return;
+    if (!statusToUpdate || !token) return
 
-    setLoading(true);
-    setAlert(null);
+    setIsUpdating(true)
+
     try {
-      await updateUserStatus(token, tutorId, { status: statusToUpdate });
-      setTutorDetails({ ...tutorDetails, status: statusToUpdate });
-      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
-      setStatusToUpdate(null);
+      await updateUserStatus(token, tutorId, { status: statusToUpdate })
+
+      // Refetch tutor details to get the updated data
+      await fetchTutorDetails()
+
+      // Show success alert
+      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` })
+
+      // Close the modal
+      closeModal()
     } catch (error: any) {
-      console.error("Failed to update status:", error.message);
-      setAlert({ type: "danger", message: error.message });
+      console.error("Failed to update status:", error.message)
+      setAlert({ type: "danger", message: error.message })
     } finally {
-      setLoading(false);
+      setIsUpdating(false)
     }
-  };
+  }
 
   useEffect(() => {
-    const fetchTutorDetails = async () => {
-      setLoading(true)
-      try {
-        if (!token) throw new Error("Authentication token is missing")
-        const data = await getTutorDetails(token, tutorId)
-        setTutorDetails(data)
-        console.log(data);
-      } catch (error: any) {
-        console.error("Failed to fetch tutor details:", error.message)
-        console.log("tutor id ", tutorId)
+    if (alert) {
+      const timer = setTimeout(() => {
+        setAlert(null)
+      }, 3000) // Close alert after 3 seconds
 
-        setAlert({ type: "danger", message: error.message })
-      } finally {
-        setLoading(false)
+      return () => clearTimeout(timer)
+    }
+  }, [alert])
+
+  // Add event listener to handle ESC key press to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isModalOpen) {
+        closeModal()
       }
     }
 
+    window.addEventListener("keydown", handleEscKey)
+
+    return () => {
+      window.removeEventListener("keydown", handleEscKey)
+    }
+  }, [isModalOpen])
+
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [isModalOpen])
+
+  // Initial fetch of tutor details
+  useEffect(() => {
     fetchTutorDetails()
   }, [token, tutorId])
 
@@ -131,7 +188,7 @@ export function TutorDetails({ id }: { id: string }) {
     router.push("/admin/tutors")
   }
 
-  if (loading) {
+  if (loading && !tutorDetails) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Loading tutor details...</p>
@@ -169,23 +226,21 @@ export function TutorDetails({ id }: { id: string }) {
         <Card className="md:col-span-1 p-6">
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-32 h-32 mb-4">
-              <AvatarImage src={tutorDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"} alt={tutorDetails?.name} />
-              {/* <AvatarFallback>{tutorDetails?.name.charAt(0)}</AvatarFallback> */}
+              <AvatarImage
+                src={tutorDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"}
+                alt={tutorDetails?.name}
+              />
             </Avatar>
             <h2 className="text-2xl font-bold mb-2">{tutorDetails?.user?.name}</h2>
-            <Badge variant={tutorDetails?.user?.account_status === "active" ? "default" : "destructive"} className="mb-4 text-white">
-              {tutorDetails?.user?.account_status[0].toUpperCase()}{tutorDetails?.user?.account_status.slice(1)}
+            <Badge
+              variant={tutorDetails?.user?.account_status === "active" ? "default" : "destructive"}
+              className="mb-4 text-white"
+            >
+              {tutorDetails?.user?.account_status[0].toUpperCase()}
+              {tutorDetails?.user?.account_status.slice(1)}
             </Badge>
 
             <div className="w-full space-y-4 mt-4">
-              <div className="flex items-center justify-between">
-                {/* <span className="flex items-center text-sm text-muted-foreground">
-                  <User className="mr-2 h-4 w-4" />
-                  Tutor ID
-                </span>
-                <span className="text-sm font-medium">{tutorDetails?.id}</span> */}
-              </div>
-
               <div className="flex items-center justify-between">
                 <span className="flex items-center text-sm text-muted-foreground">
                   <Mail className="mr-2 h-4 w-4" />
@@ -236,9 +291,24 @@ export function TutorDetails({ id }: { id: string }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px] bg-white py-2 ">
-                  <DropdownMenuItem className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("active")}>Set as Active</DropdownMenuItem>
-                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("suspended")}>Suspend Tutor</DropdownMenuItem>
-                  <DropdownMenuItem className="border-2  border-white hover:border-[#1BC2C2] cursor-pointer border-b" onClick={() => setStatusToUpdate("banned")}>Ban Tutor</DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("active")}
+                  >
+                    Set as Active
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("suspended")}
+                  >
+                    Suspend Tutor
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("banned")}
+                  >
+                    Ban Tutor
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -303,13 +373,10 @@ export function TutorDetails({ id }: { id: string }) {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
-                <CardHeader>
-                  {/* <CardTitle>Tutor Overview</CardTitle> */}
-                </CardHeader>
+                <CardHeader>{/* <CardTitle>Tutor Overview</CardTitle> */}</CardHeader>
                 <CardContent>
-                
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
@@ -323,9 +390,7 @@ export function TutorDetails({ id }: { id: string }) {
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Country</h3>
                       <p>{tutorDetails?.country || "N/A"}</p>
                     </div>
-               
                   </div>
-
                 </CardContent>
               </Card>
             </div>
@@ -360,30 +425,78 @@ export function TutorDetails({ id }: { id: string }) {
               </CardContent>
             </Card>
           )}
-
         </div>
       </div>
 
-      <AlertDialog open={!!statusToUpdate} onOpenChange={(open) => !open && setStatusToUpdate(null)}>
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Update Status</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmStatusUpdate}
-              className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]"
-              disabled={loading}
-            >
-              {loading ? "Updating..." : "Confirm"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Custom Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeModal}></div>
+
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-xl shadow-lg w-full max-w-md mx-4 overflow-hidden transform transition-all">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Update Status</h3>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <p className="text-gray-700">
+                Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+              </p>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t">
+              <Button
+                onClick={closeModal}
+                variant="outline"
+                disabled={isUpdating}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmStatusUpdate}
+                variant="default"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Updating...
+                  </>
+                ) : (
+                  "Confirm"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -44,9 +44,9 @@ export * from "./coupon/deactivatecoupon";
 // Admin Announcement API EXPORT
 export * from "./announcement/announcementlist"
 export * from "./announcement/createannouncement"
-// export * from "./announcement/announcementdetails"
-// export * from "./announcement/updateannouncement"
-// export * from "./announcement/deleteannouncement"
+export * from "./announcement/announcementdetails"
+export * from "./announcement/editannouncement"
+export * from "./announcement/deleteannouncement"
 
 
 // Admin Notification API EXPORT

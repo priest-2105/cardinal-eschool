@@ -5,18 +5,28 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown"
-import { MoreHorizontal, ArrowLeft, Mail, Calendar, GraduationCap, Clock, BookOpen, Award, Phone, User } from "lucide-react"
+import {
+  MoreHorizontal,
+  ArrowLeft,
+  Mail,
+  Calendar,
+  GraduationCap,
+  Clock,
+  BookOpen,
+  Award,
+  Phone,
+  User,
+  X,
+} from "lucide-react"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
-import { Progress } from "@/components/ui/progress"
 import ReportsList from "../reportList"
 import TransactionList from "../studentTransactionList"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getStudentDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
 interface Student {
   id: string
@@ -102,50 +112,102 @@ export function StudentDetails({ id }: { id: string }) {
   const [student, setStudent] = useState<Student>(SAMPLE_STUDENT)
   const [activeTab, setActiveTab] = useState("profileinfo")
   const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
 
-  const handleStatusChange = (newStatus: "active" | "suspended" | "banned") => {
-    setStudent({ ...student, status: newStatus }) 
+  const openModal = (status: "active" | "suspended" | "banned") => {
+    setStatusToUpdate(status)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    // Use a small delay to ensure smooth animation before resetting the status
+    setTimeout(() => {
+      setStatusToUpdate(null)
+    }, 300)
   }
 
   const confirmStatusUpdate = async () => {
-    if (!statusToUpdate || !token) return;
+    if (!statusToUpdate || !token) return
 
-    setLoading(true);
-    setAlert(null);
+    setIsUpdating(true)
+
     try {
-      await updateUserStatus(token, studentId, { status: statusToUpdate });
-      setStudentDetails({ ...studentDetails, status: statusToUpdate });
-      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` });
-      setStatusToUpdate(null); // Close the modal after success
+      await updateUserStatus(token, studentId, { status: statusToUpdate })
+
+      // Refetch student details to get the updated data
+      await fetchStudentDetails()
+
+      // Show success alert
+      setAlert({ type: "success", message: `Status updated to ${statusToUpdate} successfully!` })
+
+      // Close the modal
+      closeModal()
     } catch (error: any) {
-      console.error("Failed to update status:", error.message);
-      setAlert({ type: "danger", message: error.message });
+      console.error("Failed to update status:", error.message)
+      setAlert({ type: "danger", message: error.message })
     } finally {
-      setLoading(false);
+      setIsUpdating(false)
     }
-  };
+  }
+
+  // Function to fetch student details
+  const fetchStudentDetails = async () => {
+    setLoading(true)
+    try {
+      if (!token) throw new Error("Authentication token is missing")
+      const data = await getStudentDetails(token, studentId)
+      setStudentDetails(data)
+    } catch (error: any) {
+      console.error("Failed to fetch student details:", error.message)
+      console.log("student id ", studentId)
+      setAlert({ type: "danger", message: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchStudentDetails = async () => {
-      setLoading(true)
-      console.log("student ", studentDetails)
-      try {
-        if (!token) throw new Error("Authentication token is missing")
-        const data = await getStudentDetails(token, studentId)
-        setStudentDetails(data)
-        console.log("student ", data)
-      } catch (error: any) {
-        console.error("Failed to fetch student details:", error.message)
-        console.log("student id ", studentId)
-        console.log("student ", studentDetails)
+    if (alert) {
+      const timer = setTimeout(() => {
+        setAlert(null)
+      }, 3000) // Close alert after 3 seconds
 
+      return () => clearTimeout(timer)
+    }
+  }, [alert])
 
-        setAlert({ type: "danger", message: error.message })
-      } finally {
-        setLoading(false)
+  // Add event listener to handle ESC key press to close modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isModalOpen) {
+        closeModal()
       }
     }
 
+    window.addEventListener("keydown", handleEscKey)
+
+    return () => {
+      window.removeEventListener("keydown", handleEscKey)
+    }
+  }, [isModalOpen])
+
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [isModalOpen])
+
+  // Initial fetch of student details
+  useEffect(() => {
     fetchStudentDetails()
   }, [token, studentId])
 
@@ -153,7 +215,7 @@ export function StudentDetails({ id }: { id: string }) {
     router.push("/admin/students")
   }
 
-  if (loading) {
+  if (loading && !studentDetails) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">Loading student details...</p>
@@ -170,7 +232,6 @@ export function StudentDetails({ id }: { id: string }) {
   }
 
   return (
-    <div>
     <div className="container mx-auto p-6">
       {alert && (
         <div className="fixed bg-white top-5 right-5 z-50">
@@ -180,7 +241,7 @@ export function StudentDetails({ id }: { id: string }) {
           </Alert>
         </div>
       )}
-      <div className="flex items-center justify-between mb-6"></div>
+      <div className="flex items-center justify-between mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Student List
@@ -192,21 +253,29 @@ export function StudentDetails({ id }: { id: string }) {
         <Card className="md:col-span-1 p-6">
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-32 h-32 mb-4">
-              <AvatarImage src={studentDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"} alt={studentDetails?.name} />
-              {/* <AvatarFallback>{studentDetails?.name[0]}</AvatarFallback> */}
+              <AvatarImage
+                src={studentDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"}
+                alt={studentDetails?.name}
+              />
             </Avatar>
             <h2 className="text-2xl font-bold mb-2">{studentDetails?.name}</h2>
-            <Badge variant={studentDetails?.user?.account_status === "active" ? "default" : "destructive"} className="mb-4">
-              {studentDetails?.user?.account_status[0].toUpperCase()}{studentDetails?.user?.account_status.slice(1)}
+            <Badge
+              variant={studentDetails?.user?.account_status === "active" ? "default" : "destructive"}
+              className="mb-4"
+            >
+              {studentDetails?.user?.account_status[0].toUpperCase()}
+              {studentDetails?.user?.account_status.slice(1)}
             </Badge>
 
             <div className="w-full space-y-4 mt-4">
               <div className="flex items-center justify-between">
                 <span className="flex items-center text-sm text-muted-foreground">
                   <User className="mr-2 h-4 w-4" />
-                 Name
+                  Name
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.user?.firstname}{" "} {studentDetails?.user?.lastname}</span>
+                <span className="text-sm font-medium">
+                  {studentDetails?.user?.firstname} {studentDetails?.user?.lastname}
+                </span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -238,7 +307,10 @@ export function StudentDetails({ id }: { id: string }) {
                   <BookOpen className="mr-2 h-4 w-4" />
                   Program
                 </span>
-                <span className="text-sm font-medium"> {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}</span>
+                <span className="text-sm font-medium">
+                  {" "}
+                  {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}
+                </span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -266,10 +338,25 @@ export function StudentDetails({ id }: { id: string }) {
                     <MoreHorizontal className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  <DropdownMenuItem onClick={() => setStatusToUpdate("active")}>Set as Active</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusToUpdate("suspended")}>Suspend Student</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusToUpdate("banned")}>Ban Student</DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-[200px] bg-white py-2">
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("active")}
+                  >
+                    Set as Active
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("suspended")}
+                  >
+                    Suspend Student
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="border-2 border-white hover:border-[#1BC2C2] cursor-pointer border-b"
+                    onClick={() => openModal("banned")}
+                  >
+                    Ban Student
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -375,45 +462,45 @@ export function StudentDetails({ id }: { id: string }) {
               </Card>
 
               {studentDetails?.guardian && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Guardian Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Name</h3>
-                      <p>{studentDetails?.guardian?.name || "N/A"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Email</h3>
-                      <p>{studentDetails?.guardian?.email || "N/A"} </p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Phone</h3>
-                      <p>{studentDetails?.guardian?.phone || "N/A"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Gender</h3>
-                      <p> {studentDetails?.guardian?.gender || "N/A"}</p>
-                    </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Guardian Information</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Name</h3>
+                        <p>{studentDetails?.guardian?.name || "N/A"}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Email</h3>
+                        <p>{studentDetails?.guardian?.email || "N/A"} </p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Phone</h3>
+                        <p>{studentDetails?.guardian?.phone || "N/A"}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Gender</h3>
+                        <p> {studentDetails?.guardian?.gender || "N/A"}</p>
+                      </div>
 
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Country</h3>
-                      <p>{studentDetails?.guardian?.country || "N/A"}</p>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Country</h3>
+                        <p>{studentDetails?.guardian?.country || "N/A"}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian State</h3>
+                        <p>{studentDetails?.guardian?.state || "N/A"}</p>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Address</h3>
+                        <p>{studentDetails?.guardian?.address || "N/A"}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian State</h3>
-                      <p>{studentDetails?.guardian?.state || "N/A"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Address</h3>
-                      <p>{studentDetails?.guardian?.address || "N/A"}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-          )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
 
@@ -423,40 +510,41 @@ export function StudentDetails({ id }: { id: string }) {
                 <CardTitle>Assessment Information</CardTitle>
               </CardHeader>
               <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Education Level</h3>
-                      <p> {studentDetails?.assessment?.edu_level || "N/A"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Subjects Interested In:</h3>
-                      <p>{studentDetails?.assessment?.subjects_interested_in?.join(", ") || "N/A"} </p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Tests Interested In</h3>
-                      <p>  {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}</p>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Learning Difficulties  </h3>
-                      <p>{studentDetails?.assessment?.learning_difficulties ? "Yes" : "No"}</p>
-                    </div>
-        
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Specific Goals </h3>
-                      <p> {studentDetails?.assessment?.specific_goals || "N/A"}</p>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Education Level</h3>
+                    <p> {studentDetails?.assessment?.edu_level || "N/A"}</p>
                   </div>
-                  
-                  <div className="mt-6">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1"> Learning Expectations</h3>
-                      <p> {studentDetails?.assessment?.learning_expectations || "N/A"}</p>
-                    </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Subjects Interested In:</h3>
+                    <p>{studentDetails?.assessment?.subjects_interested_in?.join(", ") || "N/A"} </p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Tests Interested In</h3>
+                    <p> {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Learning Difficulties </h3>
+                    <p>{studentDetails?.assessment?.learning_difficulties ? "Yes" : "No"}</p>
+                  </div>
 
-                  {studentDetails?.assessment?.learning_difficulty_description && (
-                    <div className="mt-6">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">Difficulty Description:</h3>
-                      <p>{studentDetails?.assessment?.learning_difficulty_description || "N/A"}</p>
-                    </div>)}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Specific Goals </h3>
+                    <p> {studentDetails?.assessment?.specific_goals || "N/A"}</p>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-1"> Learning Expectations</h3>
+                  <p> {studentDetails?.assessment?.learning_expectations || "N/A"}</p>
+                </div>
+
+                {studentDetails?.assessment?.learning_difficulty_description && (
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Difficulty Description:</h3>
+                    <p>{studentDetails?.assessment?.learning_difficulty_description || "N/A"}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -485,36 +573,34 @@ export function StudentDetails({ id }: { id: string }) {
                       <span className="text-2xl font-bold">{studentDetails?.academic_info?.submission_rate}</span>
                     </div>
                   </div>
-                  
                 </CardContent>
               </Card>
-
 
               <Card className="my-3">
                 <CardHeader>
                   <CardTitle>Current Courses</CardTitle>
                 </CardHeader>
                 <CardContent>
-                <div className="space-y-4">
-                  {student?.currentCourses?.map((cls) => (
-                    <div key={cls.id} className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-medium">{cls.name}</h3>
-                        <Badge variant="outline">{cls.id}</Badge>
-                      </div>
-                      <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                          {/* <span>{cls.schedule}</span> */}
+                  <div className="space-y-4">
+                    {student?.currentCourses?.map((cls) => (
+                      <div key={cls.id} className="p-4 border rounded-lg">
+                        <div className="flex justify-between items-center">
+                          <h3 className="font-medium">{cls.name}</h3>
+                          <Badge variant="outline">{cls.id}</Badge>
                         </div>
-                        <div className="flex items-center">
-                          {/* <Users className="h-4 w-4 mr-2 text-muted-foreground" /> */}
-                          {/* <span>{cls.students} students</span> */}
+                        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {/* <span>{cls.schedule}</span> */}
+                          </div>
+                          <div className="flex items-center">
+                            {/* <Users className="h-4 w-4 mr-2 text-muted-foreground" /> */}
+                            {/* <span>{cls.students} students</span> */}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div> 
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </>
@@ -537,26 +623,75 @@ export function StudentDetails({ id }: { id: string }) {
         </div>
       </div>
 
-      <AlertDialog open={!!statusToUpdate} onOpenChange={(open) => !open && setStatusToUpdate(null)}>
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Update Status</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmStatusUpdate}
-              className="bg-[#1BC2C2] text-white hover:bg-[#1bc2c2e5]"
-              disabled={loading}
-            >
-              {loading ? "Updating..." : "Confirm"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Custom Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeModal}></div>
+
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md mx-4 overflow-hidden transform transition-all">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Update Status</h3>
+              <button onClick={closeModal} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <p className="text-gray-700">
+                Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+              </p>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end gap-3 p-4 border-t">
+              <Button
+                onClick={closeModal}
+                variant="outline"
+                disabled={isUpdating}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmStatusUpdate}
+                variant="default"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Updating...
+                  </>
+                ) : (
+                  "Confirm"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
