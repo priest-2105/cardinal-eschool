@@ -199,7 +199,7 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
                   </SelectContent>
                 </Select>
               ) : (
-                <p>{announcement?.target_role[0].toUppercase()}{announcement?.target_role.slice(1, )}s</p>
+                <p>{announcement?.target_role[0].toUpperCase()}{announcement?.target_role.slice(1, )}s</p>
               )}
             </div>
 
