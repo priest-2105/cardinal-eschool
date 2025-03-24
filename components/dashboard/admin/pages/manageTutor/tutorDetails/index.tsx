@@ -113,7 +113,7 @@ export function TutorDetails({ id }: { id: string }) {
         if (!token) throw new Error("Authentication token is missing")
         const data = await getTutorDetails(token, tutorId)
         setTutorDetails(data)
-        // console.log(data);     
+        console.log(data);     
       } catch (error: any) {
         console.error("Failed to fetch tutor details:", error.message)
         console.log("tutor id ", tutorId)

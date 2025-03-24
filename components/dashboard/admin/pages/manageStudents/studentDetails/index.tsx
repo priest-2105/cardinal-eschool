@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown"
 import { MoreHorizontal, ArrowLeft, Mail, Calendar, GraduationCap, Clock, BookOpen, Award, Phone, User } from "lucide-react"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-// import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import ReportsList from "../reportList"
@@ -128,13 +128,17 @@ export function StudentDetails({ id }: { id: string }) {
   useEffect(() => {
     const fetchStudentDetails = async () => {
       setLoading(true)
+      console.log("student ", studentDetails)
       try {
         if (!token) throw new Error("Authentication token is missing")
         const data = await getStudentDetails(token, studentId)
         setStudentDetails(data)
+        console.log("student ", data)
       } catch (error: any) {
         console.error("Failed to fetch student details:", error.message)
         console.log("student id ", studentId)
+        console.log("student ", studentDetails)
+
 
         setAlert({ type: "danger", message: error.message })
       } finally {
@@ -192,9 +196,9 @@ export function StudentDetails({ id }: { id: string }) {
               {/* <AvatarFallback>{studentDetails?.name[0]}</AvatarFallback> */}
             </Avatar>
             <h2 className="text-2xl font-bold mb-2">{studentDetails?.name}</h2>
-            {/* <Badge variant={studentDetails?.status === "Active" ? "default" : "destructive"} className="mb-4">
-              {studentDetails?.status}
-            </Badge> */}
+            <Badge variant={studentDetails?.user?.account_status === "active" ? "default" : "destructive"} className="mb-4">
+              {studentDetails?.user?.account_status[0].toUpperCase()}{studentDetails?.user?.account_status.slice(1)}
+            </Badge>
 
             <div className="w-full space-y-4 mt-4">
               <div className="flex items-center justify-between">
@@ -202,7 +206,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <User className="mr-2 h-4 w-4" />
                  Name
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.first_name}{" "} {studentDetails?.last_name}</span>
+                <span className="text-sm font-medium">{studentDetails?.user?.firstname}{" "} {studentDetails?.user?.lastname}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -210,7 +214,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.email}</span>
+                <span className="text-sm font-medium">{studentDetails?.user?.email}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -250,7 +254,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Clock className="mr-2 h-4 w-4" />
                   Last Login
                 </span>
-                <span className="text-sm font-medium">{formatDate(studentDetails?.last_login)}</span>
+                <span className="text-sm font-medium">{formatDate(studentDetails?.user?.last_login)}</span>
               </div>
             </div>
 
@@ -468,63 +472,20 @@ export function StudentDetails({ id }: { id: string }) {
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <BookOpen className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Total Courses</span>
-                      <span className="text-2xl font-bold">{studentDetails?.totalCourses}</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.total_classes}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Award className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Assigned Assignment </span>
-                      <span className="text-2xl font-bold">{studentDetails?.averageGrade}</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.assigned_assignments}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Calendar className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Attendance</span>
-                      <span className="text-2xl font-bold">{studentDetails?.attendance}%</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.submission_rate}</span>
                     </div>
                   </div>
-
-                  <div className="space-y-4">
-                    {studentDetails?.currentCourses?.map((course) => (
-                      <div key={course.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">{course.name}</span>
-                          <span className="text-sm">{course.progress}%</span>
-                        </div>
-                        <Progress value={course.progress} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="my-3">
-                <CardHeader>
-                  <CardTitle>Academic Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Program Details</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Program</h4>
-                          <p>{studentDetails?.program}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Current Grade</h4>
-                          <p>{studentDetails?.grade}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Course History</h3>
-                      <p className="text-muted-foreground">Course history will be displayed here</p>
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Academic Achievements</h3>
-                      <p className="text-muted-foreground">Academic achievements will be displayed here</p>
-                    </div>
-                  </div>
+                  
                 </CardContent>
               </Card>
             </>
