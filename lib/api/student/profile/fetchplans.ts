@@ -1,7 +1,7 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 export async function getPlans(token: string) {
-    const response = await fetchWithAuth(`${apiUrl}/getplans`, {
+    const response = await fetchWithAuth(`${apiUrl}/getPlans`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
