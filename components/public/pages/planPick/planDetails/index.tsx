@@ -11,6 +11,7 @@ interface Plan {
   price: string;
   duration: string;
   features: string[];
+  sub_id: string; // Add sub_id to the Plan interface
 }
 
 interface UserProfile {
@@ -108,7 +109,11 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
         </div>
         <div className="bg-gray-50 p-6 flex items-center justify-between">
           <div className="text-2xl font-bold">Total: ${calculatePrice()}</div>
-          <CheckoutButton onClick={handleCheckout} />
+          <CheckoutButton
+            subscriptionPlanId={plan.sub_id}
+            quantity={months}
+            couponCode={coupon}
+          />
         </div>
       </motion.div>
     </div>

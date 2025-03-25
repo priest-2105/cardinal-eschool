@@ -12,6 +12,7 @@ interface Plan {
   price: string;
   duration: string;
   features: string[];
+  sub_id?: string; // Include the subscription ID
 }
 
 export default function PlanPick() {
@@ -41,6 +42,7 @@ export default function PlanPick() {
               price: `$${planData.price}`,
               duration: "/ Month",
               features: ["Details of the plan will be displayed here."], // Placeholder for features
+              sub_id: planData.sub_id, // Include the subscription ID
             });
           }
         } catch (error) {

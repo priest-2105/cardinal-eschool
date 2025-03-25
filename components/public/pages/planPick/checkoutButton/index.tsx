@@ -22,6 +22,11 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
       return;
     }
 
+    if (!subscriptionPlanId || quantity <= 0) {
+      setAlert({ type: "error", message: "Invalid subscription plan or quantity." });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -55,7 +60,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
         onClick={handleCheckout}
         className="bg-[#1BC2C2] text-white py-2 px-4 rounded-lg hover:bg-[#17a2a2] transition"
         disabled={isProcessing}
-      >cfvfdgsg
+      >
         {isProcessing ? "Processing..." : "Checkout"}
       </button>
     </div>
