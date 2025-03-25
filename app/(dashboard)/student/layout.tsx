@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "../../globals.css";
@@ -6,6 +6,8 @@ import StudentDashboardHeader from "@/components/dashboard/student/header";
 import StudentDashboardSideBar from "@/components/dashboard/student/sidebar";
 import { useState, useEffect } from "react";
 import ProtectedDashboardLayout from "@/components/dashboard/protectedDashboardLayout";
+import { useAppSelector } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const router = useRouter();
+  const authState = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (authState.user?.role === "student" && !authState.user.has_subscription) {
+      router.push("/planpick");
+    }
+  }, [authState.user, router]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -56,8 +66,8 @@ export default function RootLayout({
             <StudentDashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
             <main className="pt-[104px] sm:px-4 z-90 sm:pb-8 max-sm:px-1  w-[100vw] overflow-x-hidden">
               <ProtectedDashboardLayout allowedRole="student">
-              {children}
-              </ProtectedDashboardLayout> 
+                {children}
+              </ProtectedDashboardLayout>
             </main>
           </div>
         </div>

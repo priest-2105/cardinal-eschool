@@ -7,6 +7,7 @@ interface AuthState {
     name: string;
     role: string;
     user_codec: string;
+    has_subscription: boolean; 
   } | null;
 }
 

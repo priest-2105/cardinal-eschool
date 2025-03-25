@@ -39,27 +39,40 @@ export default function LoginPage() {
       const response = await login(formData.email, formData.password);
 
       if (response.status === "success") {
+        const { token, user } = response.data;
+
         dispatch(
           setAuthState({
-            token: response.data.token,
-            user: response.data.user,
+            token,
+            user: {
+              ...user,
+              has_subscription: user.has_subscription,
+            },
           })
         );
 
-        const assessmentResponse = await fetchStudentsAssessment(response.data.token);
-        const assessment = assessmentResponse.data.Assessment;
+        if (user.role === "student") {
+          if (!user.has_subscription) {
+            router.push("/planpick");
+          } else {
+            const assessmentResponse = await fetchStudentsAssessment(response.data.token);
+            const assessment = assessmentResponse.data.Assessment;
 
-        if (
-          !assessment.education_level ||
-          !assessment.subjects_interested_in ||
-          !assessment.tests_interested_in ||
-          !assessment.learning_expectations ||
-          !assessment.specific_goals
-        ) {
-          router.push("/assessment");
+            if (
+              !assessment.education_level ||
+              !assessment.subjects_interested_in ||
+              !assessment.tests_interested_in ||
+              !assessment.learning_expectations ||
+              !assessment.specific_goals
+            ) {
+              router.push("/assessment");
+            } else {
+              setAlert({ type: "success", message: response.message });
+              router.push("/student");
+            }
+          }
         } else {
-          setAlert({ type: "success", message: response.message });
-          router.push("/student");
+          setAlert({ type: "error", message: "Unauthorized role." });
         }
       } else {
         setAlert({ type: "error", message: response.message });
