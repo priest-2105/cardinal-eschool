@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import PlanList from "@/components/public/pages/planPick/planList"
-import ChosenPlanDetails from "@/components/public/pages/planPick/planDetails"
-import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
-import { useAppSelector } from "@/lib/hooks"
+import { useState, useEffect } from "react";
+import PlanList from "@/components/public/pages/planPick/planList";
+import ChosenPlanDetails from "@/components/public/pages/planPick/planDetails";
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
+import { getPlans } from "@/lib/api/student/profile/fetchsingleplan";
+import { useAppSelector } from "@/lib/hooks";
 
 interface Plan {
   title: string;
@@ -14,43 +15,59 @@ interface Plan {
 }
 
 export default function PlanPick() {
-  const [chosenPlan, setChosenPlan] = useState<Plan | null>(null)
-  const authState = useAppSelector((state) => state.auth) // Assuming auth state contains the token
+  const [chosenPlan, setChosenPlan] = useState<Plan | null>(null);
+  const [userProfile, setUserProfile] = useState<{ firstname: string; lastname: string; email: string } | null>(null);
+  const authState = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const fetchAssessment = async () => {
-      if (authState.token) {
+    const fetchAssessmentAndPlan = async () => {
+      if (authState?.token) {
         try {
-          const response = await fetchStudentsAssessment(authState.token)
-          console.log("User Assessment:", response.data.Assessment)
+          const assessmentResponse = await fetchStudentsAssessment(authState?.token);
+          const assessment = assessmentResponse.data.Assessment;
+
+          setUserProfile({
+            firstname: authState?.user?.name.split(" ")[0] || "",
+            lastname: authState?.user?.name.split(" ")[1] || "",
+            email: authState?.user?.email || "",
+          });
+
+          if (assessment.plan_id) {
+            const planResponse = await getPlans(authState?.token, assessment.plan_id);
+            const planData = planResponse.data.subscription_plan;
+
+            setChosenPlan({
+              title: planData.name,
+              price: `$${planData.price}`,
+              duration: "/ Month",
+              features: ["Details of the plan will be displayed here."], // Placeholder for features
+            });
+          }
         } catch (error) {
-          console.error("Failed to fetch assessment:", error)
+          console.error("Failed to fetch assessment or plan:", error);
         }
       }
-    }
+    };
 
-    fetchAssessment()
-  }, [authState.token])
+    fetchAssessmentAndPlan();
+  }, [authState?.token, authState?.user]);
 
   const handlePlanSelect = (plan: Plan) => {
-    setChosenPlan(plan)
-  }
+    setChosenPlan(plan);
+  };
 
   const handleDeselectPlan = () => {
-    setChosenPlan(null)
-  }
+    setChosenPlan(null);
+  };
 
   return (
     <div>
       {!chosenPlan ? (
         <PlanList onPlanSelect={handlePlanSelect} />
       ) : (
-        <>
-          <ChosenPlanDetails plan={chosenPlan} onDeselect={handleDeselectPlan} />
-          {/* <CheckoutButton /> */}
-        </>
+        <ChosenPlanDetails plan={chosenPlan} userProfile={userProfile} onDeselect={handleDeselectPlan} />
       )}
     </div>
-  )
+  );
 }
 
