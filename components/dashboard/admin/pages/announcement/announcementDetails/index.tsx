@@ -144,7 +144,7 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
 
   return (
     <div className="max-w-4xl p-6">
-      {alertMessage && <Alert variant={alertMessage.type} onClose={() => setAlertMessage(null)}>{alertMessage.message}</Alert>}
+      {alertMessage && <div className="bg-white top-8 right-4"><Alert variant={alertMessage.type} onClose={() => setAlertMessage(null)}>{alertMessage.message}</Alert></div>}
       <div className="flex items-center justify-between mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -236,7 +236,7 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
       </Card>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
             <AlertDialogDescription>
