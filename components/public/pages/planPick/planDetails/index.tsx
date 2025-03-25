@@ -51,10 +51,10 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
         className="bg-white rounded-lg shadow-lg max-w-4xl w-full relative overflow-hidden"
       >
         <div className="flex flex-col md:flex-row ">
-          <div className="md:w-1/2 p-6 bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-            <button onClick={onDeselect} className="absolute top-1 right-1 text-white hover:text-gray-200">
+          <div className="md:w-1/2 p-6 bg-gradient-to-br bg-[#1BC2C2]  text-white">
+            {/* <button onClick={onDeselect} className="absolute top-1 right-1 text-white hover:text-gray-200">
               <X size={34} color="#000" />
-            </button>
+            </button> */}
             <h2 className="text-3xl font-bold mb-4">{plan.title}</h2>
             <p className="text-2xl font-semibold mb-2">
               {plan.price} <span className="text-sm">{plan.duration}</span>
