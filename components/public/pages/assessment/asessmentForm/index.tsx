@@ -100,6 +100,7 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
             <SelectItem value="1">Basic Plan</SelectItem>
             <SelectItem value="2">Standard Plan</SelectItem>
             <SelectItem value="3">Premium Plan</SelectItem>
+            <SelectItem value="3">Group Sessions</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -115,10 +116,19 @@ const AssessmentForm: React.FC<AssessmentFormProps> = ({ onSubmit, initialData }
             <SelectValue placeholder="Select education level" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="highSchool">High School</SelectItem>
-            <SelectItem value="undergraduate">Undergraduate</SelectItem>
-            <SelectItem value="graduate">Graduate</SelectItem>
-            <SelectItem value="postgraduate">Postgraduate</SelectItem>
+            <SelectItem value="one"> Grade One</SelectItem>
+            <SelectItem value="two"> Grade Two</SelectItem>
+            <SelectItem value="three"> Grade Three</SelectItem>
+            <SelectItem value="four"> Grade Four</SelectItem>
+            <SelectItem value="five"> Grade Five</SelectItem>
+            <SelectItem value="six"> Grade Six</SelectItem>
+            <SelectItem value="seven"> Grade Seven</SelectItem>
+            <SelectItem value="eight"> Grade Eight</SelectItem>
+            <SelectItem value="nine"> Grade Nine</SelectItem>
+            <SelectItem value="ten"> Grade Ten</SelectItem>
+            <SelectItem value="eleven"> Grade Eleven</SelectItem>
+            <SelectItem value="twelve"> Grade Twelve</SelectItem>
+            <SelectItem value="other"> other</SelectItem>
           </SelectContent>
         </Select>
       </div>

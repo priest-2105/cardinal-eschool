@@ -198,6 +198,7 @@ export default function PersonalInformation() {
                 <SelectItem value="ten"> Grade Ten</SelectItem>
                 <SelectItem value="eleven"> Grade Eleven</SelectItem>
                 <SelectItem value="twelve"> Grade Twelve</SelectItem>
+                <SelectItem value="other"> other</SelectItem>
                 </SelectContent>
             </Select>
           </div>

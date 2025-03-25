@@ -61,7 +61,7 @@ export default function AssessmentPage() {
 
       setAlertMessage(response.message || "Assessment updated successfully!");
       setAlertVariant("default");
-      router.push("/student");
+      router.push("/planpick");
     } catch (error: any) {
       console.error("Failed to update assessment:", error);
 

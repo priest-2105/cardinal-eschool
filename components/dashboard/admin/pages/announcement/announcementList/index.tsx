@@ -84,7 +84,7 @@ export function AnnouncementsList() {
 
   const handleEditClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
-    router.push(`/admin/announcement/edit/${id}`)
+    router.push(`/admin/announcement/${id}`)
   }
 
   const handleDeleteClick = (e: React.MouseEvent, announcement: Announcement) => {

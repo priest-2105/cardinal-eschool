@@ -92,9 +92,9 @@ export default function SignupPage() {
       gender: formData.gender,
       dob: formData.dateOfBirth?.toISOString().split("T")[0],
       channel: formData.referralChannel,
-      guardian_name: age < 16 ? formData.guardianName : null,
-      guardian_email: age < 16 ? formData.guardianEmail : null,
-      guardian_phone: age < 16 ? formData.guardianPhone : null,
+      guardian_name: age < 16 ? formData.guardianName : "",
+      guardian_email: age < 16 ? formData.guardianEmail : "",
+      guardian_phone: age < 16 ? formData.guardianPhone : "",
     };
 
     try {
@@ -113,11 +113,12 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-white">
-        {alertMessage && (
+        {alertMessage && (<div className="absolute bg-white top-4 right-4">
         <Alert variant={alertVariant} className="fixed right-4 top-8 z-99" onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
+        </div>
       )}
       <div className="flex min-h-screen">
         {/* Left Column - Hidden on mobile and tablet */}

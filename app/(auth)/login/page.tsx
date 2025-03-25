@@ -77,11 +77,12 @@ export default function LoginPage() {
      
      
      
-      {alert && (
-        <Alert variant={alert.type === "success" ? "default" : "danger"} className="absolute bg-white top-4 right-4">
+      {alert && (<div className="absolute bg-white top-4 right-4">
+        <Alert variant={alert.type === "success" ? "default" : "danger"} >
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
+        </div>
       )}
      
      <div className="min-h-screen bg-white">
