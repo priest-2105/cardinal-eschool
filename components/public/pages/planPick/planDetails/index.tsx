@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import CheckoutButton from "@/components/public/pages/planPick/checkoutButton";
+import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
 import { X, Check } from "lucide-react";
 
 interface Plan {
