@@ -1,37 +1,46 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import CheckoutButton from "@/components/public/pages/planPick/checkoutButton"
-import { X, Check } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import CheckoutButton from "@/components/public/pages/planPick/checkoutButton";
+import { X, Check } from "lucide-react";
 
 interface Plan {
-  title: string
-  price: string
-  duration: string
-  features: string[]
+  title: string;
+  price: string;
+  duration: string;
+  features: string[];
 }
 
-const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ plan, onDeselect }) => {
-  const userDetails = JSON.parse(localStorage.getItem("signupData") || "{}")
-  const [months, setMonths] = useState(1)
-  const [coupon, setCoupon] = useState("")
-  const router = useRouter()
+interface UserProfile {
+  firstname: string;
+  lastname: string;
+  email: string;
+}
+
+const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null; onDeselect: () => void }> = ({
+  plan,
+  userProfile,
+  onDeselect,
+}) => {
+  const [months, setMonths] = useState(1);
+  const [coupon, setCoupon] = useState("");
+  const router = useRouter();
 
   const handleCheckout = () => {
-    console.log("Checkout with plan:", plan)
-    console.log("User details:", userDetails)
-    router.push("/student")
-  }
+    console.log("Checkout with plan:", plan);
+    console.log("User profile:", userProfile);
+    router.push("/student");
+  };
 
   const calculatePrice = () => {
-    let price = Number.parseFloat(plan.price.replace("$", "")) * months
+    let price = Number.parseFloat(plan.price.replace("$", "")) * months;
     if (coupon === "SAVE10") {
-      price *= 0.9
+      price *= 0.9;
     }
-    return price.toFixed(2)
-  }
+    return price.toFixed(2);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -61,17 +70,18 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ p
           </div>
           <div className="md:w-1/2 p-6">
             <h3 className="text-xl font-bold mb-4">User Details</h3>
-            <div className="space-y-2 mb-6">
-              <p>
-                <strong>Name:</strong> {userDetails.firstName} {userDetails.lastName}
-              </p>
-              <p>
-                <strong>Email:</strong> {userDetails.email}
-              </p>
-              <p>
-                <strong>Phone:</strong> {userDetails.phone}
-              </p>
-            </div>
+            {userProfile ? (
+              <div className="space-y-2 mb-6">
+                <p>
+                  <strong>Name:</strong> {userProfile.firstname} {userProfile.lastname}
+                </p>
+                <p>
+                  <strong>Email:</strong> {userProfile.email}
+                </p>
+              </div>
+            ) : (
+              <p>Loading user details...</p>
+            )}
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Number of Months</label>
@@ -79,7 +89,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ p
                   type="number"
                   value={months}
                   onChange={(e) => setMonths(Number.parseInt(e.target.value))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-#[#1BC2C2] outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
                   min="1"
                 />
               </div>
@@ -89,7 +99,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ p
                   type="text"
                   value={coupon}
                   onChange={(e) => setCoupon(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-#[#1BC2C2] outline-none focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
                   placeholder="Enter coupon code"
                 />
               </div>
@@ -102,8 +112,8 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; onDeselect: () => void }> = ({ p
         </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default ChosenPlanDetails
+export default ChosenPlanDetails;
 
