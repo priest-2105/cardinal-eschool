@@ -1,5 +1,3 @@
-
-
 // Authentication  API EXPORT
 
 export * from "./auth/login";
@@ -33,4 +31,8 @@ export * from "./ticket/tickedetails";
 export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
 export * from "./notifcation/markallnotificationasread";
-export * from "./notifcation/deletenotification"; 
+export * from "./notifcation/deletenotification";
+
+
+// Student Payment API EXPORT
+export * from "./payment/makepayment";
