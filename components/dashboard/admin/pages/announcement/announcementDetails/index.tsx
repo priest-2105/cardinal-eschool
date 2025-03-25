@@ -193,13 +193,13 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
                     <SelectValue placeholder="Select recipients" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="students">Students</SelectItem>
-                    <SelectItem value="tutors">Tutors</SelectItem>
+                    <SelectItem value="student">Students</SelectItem>
+                    <SelectItem value="tutor">Tutors</SelectItem>
                     <SelectItem value="both">Both</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
-                <p>{announcement?.target_role[0].toUpperCase()}{announcement?.target_role.slice(1, )}s</p>
+                <p>{announcement?.target_role}</p>
               )}
             </div>
 
