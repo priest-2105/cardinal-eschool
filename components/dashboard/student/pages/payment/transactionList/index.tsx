@@ -1,145 +1,14 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { X, Search } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-
-interface Student {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-}
-
-interface Transaction {
-  id: string
-  date: string
-  status: "Success" | "Pending" | "Failed"
-  package: string
-  amount: string
-  student: Student
-  paymentMethod: string
-}
-
-const SAMPLE_TRANSACTIONS: Transaction[] = [
-  {
-    id: "TRX-123456",
-    date: "11/23/2025",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU001",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123457",
-    date: "10/15/2025",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU002",
-      name: "Bob Smith",
-      email: "bob@example.com",
-      avatar: "https://i.pravatar.cc/150?img=2",
-    },
-    paymentMethod: "PayPal",
-  },
-  {
-    id: "TRX-123458",
-    date: "09/10/2025",
-    status: "Failed",
-    package: "Standard Plan",
-    amount: "$90",
-    student: {
-      id: "STU003",
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      avatar: "https://i.pravatar.cc/150?img=3",
-    },
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "TRX-123459",
-    date: "08/05/2025",
-    status: "Success",
-    package: "Group Sessions",
-    amount: "$40",
-    student: {
-      id: "STU004",
-      name: "Diana Ross",
-      email: "diana@example.com",
-      avatar: "https://i.pravatar.cc/150?img=4",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123460",
-    date: "12/01/2024",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU001",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123461",
-    date: "11/20/2024",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU005",
-      name: "Ethan Hunt",
-      email: "ethan@example.com",
-      avatar: "https://i.pravatar.cc/150?img=5",
-    },
-    paymentMethod: "PayPal",
-  },
-  {
-    id: "TRX-123462",
-    date: "01/20/2024",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU006",
-      name: "Fiona Gallagher",
-      email: "fiona@example.com",
-      avatar: "https://i.pravatar.cc/150?img=6",
-    },
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "TRX-123463",
-    date: "05/20/2024",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU007",
-      name: "George Miller",
-      email: "george@example.com",
-      avatar: "https://i.pravatar.cc/150?img=7",
-    },
-    paymentMethod: "Credit Card",
-  },
-]
+import { fetchTransactionHistory } from "@/lib/api/student/payment/fetchTransactionHistory"
+import { useAppSelector } from "@/lib/hooks"
+import { Search, X } from "lucide-react"
+import { formatDate } from "@/utils/dateformat"
 
 const MONTHS = [
   "January",
@@ -154,48 +23,71 @@ const MONTHS = [
   "October",
   "November",
   "December",
-]
+];
 
-const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
+const YEARS = [2023, 2024, 2025]; 
+
+interface Transaction {
+  id: number;
+  subscription_plan_id: number;
+  subscription_plan_name: string;
+  amount: string;
+  quantity: number;
+  discount: string;
+  transaction_ref: string;
+  status: string;
+  coupon_code: string | null;
+  created_at: string;
+}
 
 export default function TransactionList() {
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const authState = useAppSelector((state) => state.auth)
 
-  const clearMonths = () => {
-    setSelectedMonths("all")
-  }
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!authState?.token) return
+      
+      try {
+        const response = await fetchTransactionHistory(authState.token)
+        setTransactions(response.data.data)
+      } catch (error) {
+        console.error("Failed to fetch transactions:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const clearYear = () => {
-    setSelectedYear("all")
-  }
+    fetchTransactions()
+  }, [authState?.token])
 
   const filteredTransactions = useMemo(() => {
-    return SAMPLE_TRANSACTIONS.filter((transaction) => {
-      // Date filters
-      const transactionDate = new Date(transaction.date)
-      const monthMatch =
-        selectedMonths.includes("all") || selectedMonths.includes(transactionDate.getMonth().toString())
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.created_at)
+      const monthMatch = selectedMonths === "all" || transactionDate.getMonth().toString() === selectedMonths
       const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
-      const statusMatch = selectedStatus === "all" || transaction.status === selectedStatus
-
-      // Student search
+      const statusMatch = selectedStatus === "all" || transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+      
       const searchLower = searchQuery.toLowerCase()
-      const studentMatch =
+      const searchMatch = 
         searchQuery === "" ||
-        transaction.student.name.toLowerCase().includes(searchLower) ||
-        transaction.student.email.toLowerCase().includes(searchLower) ||
-        transaction.student.id.toLowerCase().includes(searchLower)
+        transaction.subscription_plan_name.toLowerCase().includes(searchLower) ||
+        transaction.transaction_ref.toLowerCase().includes(searchLower)
 
-      return monthMatch && yearMatch && statusMatch && studentMatch
+      return monthMatch && yearMatch && statusMatch && searchMatch
     })
-  }, [selectedMonths, selectedYear, selectedStatus, searchQuery])
+  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery])
 
-  const handleTransactionClick = (transactionId: string) => {
-    router.push(`/admin/transactiondetails/${transactionId}`)
+  const clearMonths = () => setSelectedMonths("all");
+  const clearYear = () => setSelectedYear("all");
+
+  if (loading) {
+    return <div>Loading transactions...</div>
   }
 
   return (
@@ -280,50 +172,42 @@ export default function TransactionList() {
       </div>
 
       <div className="rounded-md border">
-        <div className="overflow-hidden">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-[15%] font-semibold">Transaction ID</TableHead>
-                <TableHead className="w-[15%] font-semibold">Date</TableHead>
-                <TableHead className="w-[15%] font-semibold">Status</TableHead>
-                <TableHead className="w-[15%] font-semibold">Package</TableHead>
-                <TableHead className="w-[15%] font-semibold">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
-          <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
-            <Table>
-              <TableBody>
-                {filteredTransactions.map((transaction) => (
-                  <TableRow
-                    key={transaction.id}
-                    className="hover:bg-slate-100 cursor-pointer"
-                    onClick={() => handleTransactionClick(transaction.id)}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Transaction Ref</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Plan</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Quantity</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredTransactions.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.transaction_ref}</TableCell>
+                <TableCell>{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>{transaction.subscription_plan_name}</TableCell>
+                <TableCell>${transaction.amount}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`${
+                      transaction.status.toLowerCase() === "pending"
+                        ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+                        : transaction.status.toLowerCase() === "success"
+                        ? "bg-green-100 text-green-800 hover:bg-green-100"
+                        : "bg-red-100 text-red-800 hover:bg-red-100"
+                    }`}
                   >
-                    <TableCell className="w-[15%] font-medium">{transaction.id}</TableCell>
-                    <TableCell className="w-[15%]">{transaction.date}</TableCell>
-                    <TableCell className="w-[15%]">
-                      <Badge
-                        className={`${
-                          transaction.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                            : transaction.status === "Success"
-                              ? "bg-green-100 text-green-800 hover:bg-green-100"
-                              : "bg-red-100 text-red-800 hover:bg-red-100"
-                        }`}
-                      >
-                        {transaction.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="w-[15%]">{transaction.package}</TableCell>
-                    <TableCell className="w-[15%] font-medium">{transaction.amount}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+                    {transaction.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{transaction.quantity}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   )
