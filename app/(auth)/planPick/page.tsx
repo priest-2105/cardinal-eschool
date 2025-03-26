@@ -41,8 +41,8 @@ export default function PlanPick() {
               title: planData.name,
               price: `$${planData.price}`,
               duration: "/ Month",
-              features: ["Details of the plan will be displayed here."], // Placeholder for features
-              sub_id: planData.sub_id, // Include the subscription ID
+              features: ["Details of the plan will be displayed here."],
+              sub_id: planData.sub_id,
             });
           }
         } catch (error) {

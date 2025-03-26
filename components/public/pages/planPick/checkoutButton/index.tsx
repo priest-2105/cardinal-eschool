@@ -4,6 +4,7 @@ import { useState } from "react";
 import { makePayment } from "@/lib/api/student/payment/makepayment";
 import { useAppSelector } from "@/lib/hooks";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
+import { useRouter } from "next/navigation";
 
 interface CheckoutButtonProps {
   subscriptionPlanId: string;
@@ -15,11 +16,11 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
   const [isProcessing, setIsProcessing] = useState(false);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const authState = useAppSelector((state) => state.auth);
+  const router = useRouter()
 
   const handleCheckout = async () => {
     if (!authState?.token) {
-      setAlert({ type: "error", message: "User is not authenticated." });
-      return;
+      router.push("/login")    
     }
 
     if (!subscriptionPlanId || quantity <= 0) {
@@ -30,6 +31,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
     setIsProcessing(true);
 
     try {
+      console.log("Plan Details:", { subscriptionPlanId, quantity, couponCode });  
       const response = await makePayment(authState?.token, {
         subscription_plan_id: subscriptionPlanId,
         quantity,
@@ -37,6 +39,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
       });
 
       console.log("Payment initiated successfully:", response);
+      console.log("Response from server:", response); 
       setAlert({ type: "success", message: "Payment initiated successfully!" });
     } catch (error) {
       console.error("Failed to initiate payment:", error);
@@ -44,10 +47,10 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
     } finally {
       setIsProcessing(false);
     }
-  };
+   };
 
   return (
-    <div className="relative">
+    <div className="">
       {alert && (
         <div className="absolute top-4 right-4 z-[9999] bg-white">
           <Alert variant={alert.type === "success" ? "default" : "danger"} onClose={() => setAlert(null)}>

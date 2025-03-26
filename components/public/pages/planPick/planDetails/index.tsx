@@ -4,14 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
-import { X, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface Plan {
   title: string;
   price: string;
   duration: string;
   features: string[];
-  sub_id: string; // Add sub_id to the Plan interface
+  sub_id: string; 
 }
 
 interface UserProfile {
@@ -29,11 +29,6 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
   const [coupon, setCoupon] = useState("");
   const router = useRouter();
 
-  const handleCheckout = () => {
-    console.log("Checkout with plan:", plan);
-    console.log("User profile:", userProfile);
-    router.push("/student");
-  };
 
   const calculatePrice = () => {
     let price = Number.parseFloat(plan.price.replace("$", "")) * months;
@@ -42,6 +37,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
     }
     return price.toFixed(2);
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
