@@ -9,6 +9,7 @@ import { fetchTransactionHistory } from "@/lib/api/student/payment/fetchTransact
 import { useAppSelector } from "@/lib/hooks"
 import { Search, X } from "lucide-react"
 import { formatDate } from "@/utils/dateformat"
+import { useRouter } from "next/navigation";
 
 const MONTHS = [
   "January",
@@ -33,6 +34,7 @@ function parseTransactionDate(dateString: string) {
 }
 
 export default function TransactionList() {
+  const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
@@ -91,6 +93,10 @@ export default function TransactionList() {
 
   const clearMonths = () => setSelectedMonths("all");
   const clearYear = () => setSelectedYear("all");
+
+  const handleTransactionClick = (transactionRef: string) => {
+    router.push(`/student/transaction/${transactionRef}`);
+  };
 
   if (loading) {
     return <div className="text-center py-12 border rounded-lg">
@@ -199,7 +205,11 @@ export default function TransactionList() {
           </TableHeader>
           <TableBody>
             {filteredTransactions.map((transaction) => (
-              <TableRow key={transaction.id}>
+              <TableRow 
+                key={transaction.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleTransactionClick(transaction.transaction_ref)}
+              >
                 <TableCell>{transaction.transaction_ref}</TableCell>
                 <TableCell>{transaction.created_at}</TableCell>
                 <TableCell>{transaction.subscription_plan_name}</TableCell>

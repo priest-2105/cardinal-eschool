@@ -37,3 +37,4 @@ export * from "./notifcation/deletenotification";
 // Student Payment API EXPORT
 export * from "./payment/makepayment";
 export * from "./payment/fetchTransactionHistory";
+export * from "./payment/transactiondetails";
