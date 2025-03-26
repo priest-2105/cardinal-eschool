@@ -286,7 +286,6 @@ export default function TransactionList() {
               <TableRow>
                 <TableHead className="w-[15%] font-semibold">Transaction ID</TableHead>
                 <TableHead className="w-[15%] font-semibold">Date</TableHead>
-                <TableHead className="w-[25%] font-semibold">Student</TableHead>
                 <TableHead className="w-[15%] font-semibold">Status</TableHead>
                 <TableHead className="w-[15%] font-semibold">Package</TableHead>
                 <TableHead className="w-[15%] font-semibold">Amount</TableHead>
@@ -304,22 +303,6 @@ export default function TransactionList() {
                   >
                     <TableCell className="w-[15%] font-medium">{transaction.id}</TableCell>
                     <TableCell className="w-[15%]">{transaction.date}</TableCell>
-                    <TableCell className="w-[25%]">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={transaction.student.avatar} alt={transaction.student.name} />
-                          <AvatarFallback>{transaction.student.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{transaction.student.name}</div>
-                          <div className="text-xs text-muted-foreground flex items-center space-x-1">
-                            <span>{transaction.student.id}</span>
-                            <span>•</span>
-                            <span>{transaction.student.email}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
                     <TableCell className="w-[15%]">
                       <Badge
                         className={`${

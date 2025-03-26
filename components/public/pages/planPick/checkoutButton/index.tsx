@@ -29,6 +29,8 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
     }
 
     setIsProcessing(true);
+    router.prefetch("/student")    
+
 
     try {
       console.log("Plan Details:", { subscriptionPlanId, quantity, couponCode });  
@@ -41,6 +43,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
       console.log("Payment initiated successfully:", response);
       console.log("Response from server:", response); 
       setAlert({ type: "success", message: "Payment initiated successfully!" });
+      router.push("/student")    
     } catch (error) {
       console.error("Failed to initiate payment:", error);
       setAlert({ type: "error", message: "Failed to initiate payment. Please try again." });

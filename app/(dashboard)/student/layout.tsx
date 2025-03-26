@@ -28,11 +28,11 @@ export default function RootLayout({
   const router = useRouter();
   const authState = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (authState?.user?.role === "student" && !authState?.user.has_subscription) {
-      router.push("/planpick");
-    }
-  }, [authState?.user, router]);
+  // useEffect(() => {
+  //   if (authState?.user?.role === "student" && !authState?.user.has_subscription) {
+  //     router.push("/planpick");
+  //   }
+  // }, [authState?.user, router]);
 
   useEffect(() => {
     const handleResize = () => {
