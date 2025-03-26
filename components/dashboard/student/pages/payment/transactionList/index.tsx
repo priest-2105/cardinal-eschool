@@ -25,19 +25,11 @@ const MONTHS = [
   "December",
 ];
 
-const YEARS = [2023, 2024, 2025]; 
-
-interface Transaction {
-  id: number;
-  subscription_plan_id: number;
-  subscription_plan_name: string;
-  amount: string;
-  quantity: number;
-  discount: string;
-  transaction_ref: string;
-  status: string;
-  coupon_code: string | null;
-  created_at: string;
+function parseTransactionDate(dateString: string) {
+  // Parse date string like "March 26th 2025 at 12:59pm"
+  const monthIndex = MONTHS.findIndex(month => dateString.startsWith(month));
+  const year = parseInt(dateString.match(/\d{4}/)?.[0] || "0");
+  return { month: monthIndex, year };
 }
 
 export default function TransactionList() {
@@ -66,28 +58,50 @@ export default function TransactionList() {
     fetchTransactions()
   }, [authState?.token])
 
+  const availableYears = useMemo(() => {
+    const years = new Set(transactions.map(t => parseTransactionDate(t.created_at).year));
+    return Array.from(years).sort((a, b) => b - a); // Sort descending
+  }, [transactions]);
+
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
-      const transactionDate = new Date(transaction.created_at)
-      const monthMatch = selectedMonths === "all" || transactionDate.getMonth().toString() === selectedMonths
-      const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
-      const statusMatch = selectedStatus === "all" || transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+      const { month, year } = parseTransactionDate(transaction.created_at);
       
-      const searchLower = searchQuery.toLowerCase()
+      const monthMatch = 
+        selectedMonths === "all" || 
+        month.toString() === selectedMonths;
+
+      const yearMatch = 
+        selectedYear === "all" || 
+        year.toString() === selectedYear;
+
+      const statusMatch = 
+        selectedStatus === "all" || 
+        transaction.status.toLowerCase() === selectedStatus.toLowerCase();
+      
+      const searchLower = searchQuery.toLowerCase();
       const searchMatch = 
         searchQuery === "" ||
         transaction.subscription_plan_name.toLowerCase().includes(searchLower) ||
-        transaction.transaction_ref.toLowerCase().includes(searchLower)
+        transaction.transaction_ref.toLowerCase().includes(searchLower);
 
-      return monthMatch && yearMatch && statusMatch && searchMatch
-    })
-  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery])
+      return monthMatch && yearMatch && statusMatch && searchMatch;
+    });
+  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery]);
 
   const clearMonths = () => setSelectedMonths("all");
   const clearYear = () => setSelectedYear("all");
 
   if (loading) {
-    return <div>Loading transactions...</div>
+    return <div className="text-center py-12 border rounded-lg">
+    <p className="text-gray-500">Loading</p>
+  </div>
+  }
+
+  if (!transactions) {
+    return <div className="text-center py-12 border rounded-lg">
+    <p className="text-gray-500">No Transactions</p>
+  </div>
   }
 
   return (
@@ -131,7 +145,7 @@ export default function TransactionList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Years</SelectItem>
-              {YEARS.map((year) => (
+              {availableYears.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
                 </SelectItem>
@@ -187,7 +201,7 @@ export default function TransactionList() {
             {filteredTransactions.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell>{transaction.transaction_ref}</TableCell>
-                <TableCell>{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>{transaction.created_at}</TableCell>
                 <TableCell>{transaction.subscription_plan_name}</TableCell>
                 <TableCell>${transaction.amount}</TableCell>
                 <TableCell>

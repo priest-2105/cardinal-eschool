@@ -10,12 +10,12 @@ const tabs = [
     title: 'Make Payment',
     href: cardinalConfig.routes.dashboard.student.studentMakePayment,
     exact: true,
-    pathname: "/payment"
+    // pathname: "/makepayment"
   },
   {
     title: 'Payment History',
     href: cardinalConfig.routes.dashboard.student.studentPaymentHistory,
-    pathname: "/student/paymenthistory"
+    // pathname: "/paymenthistory"
   },
 
 ]
@@ -25,7 +25,7 @@ export default function PaymentLayout({
 }: {
   children: React.ReactNode
 }) {
-  // const pathname = usePathname()
+  const pathname = usePathname()
 
   return (
     <div className="flex flex-col w-full mx-auto px-4">
@@ -33,8 +33,8 @@ export default function PaymentLayout({
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           {tabs.map((tab) => {
             const isActive = tab.exact 
-              ? tab.pathname === tab.href
-              : tab.pathname?.startsWith(tab.href)
+              ? pathname === tab.href
+              : pathname?.startsWith(tab.href)
 
             return (
               <Link
