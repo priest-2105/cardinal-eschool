@@ -21,6 +21,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
   const handleCheckout = async () => {
     if (!authState?.token) {
       router.push("/login")    
+      return;
     }
 
     if (!subscriptionPlanId || quantity <= 0) {
@@ -29,28 +30,27 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
     }
 
     setIsProcessing(true);
-    router.prefetch("/student")    
-
 
     try {
-      console.log("Plan Details:", { subscriptionPlanId, quantity, couponCode });  
       const response = await makePayment(authState?.token, {
         subscription_plan_id: subscriptionPlanId,
         quantity,
         coupon_code: couponCode || "",
       });
 
-      console.log("Payment initiated successfully:", response);
-      console.log("Response from server:", response); 
-      setAlert({ type: "success", message: "Payment initiated successfully!" });
-      router.push("/student")    
+      if (response.data?.payment_link) {
+        // Redirect to the Flutterwave checkout page
+        window.location.href = response.data.payment_link;
+      } else {
+        setAlert({ type: "error", message: "Payment link not received" });
+      }
     } catch (error) {
       console.error("Failed to initiate payment:", error);
       setAlert({ type: "error", message: "Failed to initiate payment. Please try again." });
     } finally {
       setIsProcessing(false);
     }
-   };
+  };
 
   return (
     <div className="">

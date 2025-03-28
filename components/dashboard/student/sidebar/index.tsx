@@ -57,7 +57,9 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.student.studentMakePayment,
       cardinalConfig.routes.dashboard.student.studentPaymentHistory,
+      cardinalConfig.routes.dashboard.student.studentTransactionDetails,
     ],
+    dynamicPath: "/student/transaction",
   },
   {
     name: "Admin Support",

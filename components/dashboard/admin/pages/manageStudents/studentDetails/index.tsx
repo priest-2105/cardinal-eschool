@@ -159,6 +159,7 @@ export function StudentDetails({ id }: { id: string }) {
       if (!token) throw new Error("Authentication token is missing")
       const data = await getStudentDetails(token, studentId)
       setStudentDetails(data)
+      
     } catch (error: any) {
       console.error("Failed to fetch student details:", error.message)
       console.log("student id ", studentId)
@@ -258,7 +259,7 @@ export function StudentDetails({ id }: { id: string }) {
                 alt={studentDetails?.name}
               />
             </Avatar>
-            <h2 className="text-2xl font-bold mb-2">{studentDetails?.name}</h2>
+            {/* <h2 className="text-2xl font-bold mb-2">{studentDetails?.name}</h2> */}
             <Badge
               variant={studentDetails?.user?.account_status === "active" ? "default" : "destructive"}
               className="mb-4"
@@ -274,7 +275,7 @@ export function StudentDetails({ id }: { id: string }) {
                   Name
                 </span>
                 <span className="text-sm font-medium">
-                  {studentDetails?.user?.firstname} {studentDetails?.user?.lastname}
+                  {studentDetails?.user?.name}
                 </span>
               </div>
 
@@ -469,32 +470,32 @@ export function StudentDetails({ id }: { id: string }) {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Name</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Name</h3>
                         <p>{studentDetails?.guardian?.name || "N/A"}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Email</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
                         <p>{studentDetails?.guardian?.email || "N/A"} </p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Phone</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Phone</h3>
                         <p>{studentDetails?.guardian?.phone || "N/A"}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Gender</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Gender</h3>
                         <p> {studentDetails?.guardian?.gender || "N/A"}</p>
                       </div>
 
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Country</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Country</h3>
                         <p>{studentDetails?.guardian?.country || "N/A"}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian State</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">State</h3>
                         <p>{studentDetails?.guardian?.state || "N/A"}</p>
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Guardian Address</h3>
+                        <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
                         <p>{studentDetails?.guardian?.address || "N/A"}</p>
                       </div>
                     </div>
@@ -569,7 +570,7 @@ export function StudentDetails({ id }: { id: string }) {
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Calendar className="h-6 w-6 mb-2 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Attendance</span>
+                      <span className="text-sm text-muted-foreground">Submission Rate</span>
                       <span className="text-2xl font-bold">{studentDetails?.academic_info?.submission_rate}</span>
                     </div>
                   </div>
@@ -642,7 +643,7 @@ export function StudentDetails({ id }: { id: string }) {
             {/* Modal Body */}
             <div className="p-6">
               <p className="text-gray-700">
-                Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+                Are you sure you want to set the status to "{statusToUpdate}"?
               </p>
             </div>
 

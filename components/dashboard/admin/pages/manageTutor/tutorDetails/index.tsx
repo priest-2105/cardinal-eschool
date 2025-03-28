@@ -447,7 +447,7 @@ export function TutorDetails({ id }: { id: string }) {
             {/* Modal Body */}
             <div className="p-6">
               <p className="text-gray-700">
-                Are you sure you want to set the status to "{statusToUpdate}"? This action cannot be undone.
+                Are you sure you want to set the status to "{statusToUpdate}"?
               </p>
             </div>
 

@@ -47,15 +47,15 @@ interface DeleteModalState {
 }
 
 export default function TicketDetailsComponent({ ticketId }: TicketDetailsComponentProps) {
-  const decodedTicketId = decodeURIComponent(ticketId); // Decode the ticket ID
+  const decodedTicketId = decodeURIComponent(ticketId); 
   const token: string | null = useSelector((state: RootState) => state.auth?.token);
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [alertState, setAlertState] = useState<AlertState>({ showAlert: false, message: "", variant: "default" });
   const [confirmModalState, setConfirmModalState] = useState<ConfirmationModalState>({ showConfirmModal: false });
   const [deleteModalState, setDeleteModalState] = useState<DeleteModalState>({ showDeleteModal: false });
-  const [responseMessage, setResponseMessage] = useState(""); // Initialize with an empty string
+  const [responseMessage, setResponseMessage] = useState(""); 
   const [responseStatus, setResponseStatus] = useState<"in_progress" | "resolved" | "closed">("in_progress");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submitting response
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
         if (token && decodedTicketId) {
           const response = await fetchTicketDetails(token, decodedTicketId);
           setTicket(response.data);
-          setResponseMessage(response.data.ticket_response || ""); // Set default responseMessage
+          setResponseMessage(response.data.ticket_response || "");  
         } else {
           console.error("Token or Ticket ID is missing.", token, decodedTicketId);
         }
@@ -74,7 +74,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     };
 
     fetchDetails();
-  }, [decodedTicketId, token]); // Triggered when ticketId or token changes
+  }, [decodedTicketId, token]);  
 
   const handleCloseTicket = async () => {
     setConfirmModalState({ showConfirmModal: true });
@@ -86,22 +86,22 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     setAlertState({ showAlert: true, message: "The ticket has been closed successfully.", variant: "default" });
     setTimeout(() => {
       setAlertState({ showAlert: false, message: "", variant: "default" });
-      router.push("/admin/tickets");
+      router.push("/admin/ticketlist");
     }, 2000);
   };
 
   const handleReplyTicket = async () => {
-    setIsSubmitting(true); // Set loading state
+    setIsSubmitting(true); 
     try {
       if (token && decodedTicketId) {
         const response = await ReplyTicket(token, decodedTicketId, {
           ticket_response: responseMessage,
           status: responseStatus,
         });
-        console.log("ReplyTicket API Response:", response); // Log the API response
+        console.log("ReplyTicket API Response:", response);  
         setTicket(response.data); 
         setAlertState({ showAlert: true, message: "Response added successfully.", variant: "default" });
-        setResponseMessage(response.data.ticket_response || ""); // Update responseMessage with the latest value
+        setResponseMessage(response.data.ticket_response || ""); 
         setResponseStatus("in_progress"); 
       } else {
         console.error("Token or Ticket ID is missing.");
@@ -122,14 +122,14 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
   };
 
   const handleDeleteTicket = async () => {
-    setIsSubmitting(true); // Set loading state
+    setIsSubmitting(true);
     try {
       if (token && decodedTicketId) {
-        const response = await DeleteTicket(token, decodedTicketId); // Use the decoded ticket ID
-        console.log("DeleteTicket API Response:", response); // Log the API response
+        const response = await DeleteTicket(token, decodedTicketId);
+        console.log("DeleteTicket API Response:", response); 
         setAlertState({ showAlert: true, message: "Ticket deleted successfully.", variant: "default" });
         setTimeout(() => {
-          router.push("/admin/tickets"); // Navigate to ticket list
+          router.push("/admin/ticketlist"); 
         }, 2000);
       } else {
         console.error("Token or Ticket ID is missing.");
@@ -138,8 +138,8 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
       console.error("Error deleting ticket:", error);
       setAlertState({ showAlert: true, message: "Failed to delete ticket.", variant: "danger" });
     } finally {
-      setIsSubmitting(false); // Reset loading state
-      setDeleteModalState({ showDeleteModal: false }); // Close the delete modal
+      setIsSubmitting(false); 
+      setDeleteModalState({ showDeleteModal: false }); 
     }
   };
 
@@ -244,7 +244,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
           <textarea
             className="w-full p-2 outline-none border rounded-md"
             placeholder="Enter your response here..."
-            value={responseMessage} // Pre-fill with the default value
+            value={responseMessage} 
             onChange={(e) => setResponseMessage(e.target.value)}
             disabled={isSubmitting} 
           />
@@ -252,7 +252,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
             className="w-full p-2 mt-2 border rounded-md"
             value={responseStatus}
             onChange={(e) => setResponseStatus(e.target.value as "in_progress" | "resolved" | "closed")}
-            disabled={isSubmitting} // Disable select while submitting
+            disabled={isSubmitting}
           >
             <option value="in_progress">In Progress</option>
             <option value="resolved">Resolved</option>
@@ -262,7 +262,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
             onClick={handleReplyTicket}
             className="mt-4"
             variant="default"
-            disabled={isSubmitting} // Disable button while submitting
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit Response"}
           </Button>
