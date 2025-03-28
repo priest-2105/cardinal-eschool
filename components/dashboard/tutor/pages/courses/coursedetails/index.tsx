@@ -145,7 +145,7 @@ export default function CourseDetailsComponent() {
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
-            {activeTab === "description" && <CourseDescription />}
+            {activeTab === "description" && <CourseDescription coursdetails={courseDetails}/>}
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
