@@ -71,9 +71,12 @@ export default function CreateCoursePage() {
           getTutors(token),
           getStudentForClasses(token)
         ])
-        // Update your state with the fetched data
-        // You'll need to modify your AssignTutorModal and AssignStudentsModal
-        // to work with the actual data structure
+        
+        if (tutorsRes.status === "success" && studentsRes.status === "success") {
+          // The data is now available to pass to the modals
+          console.log("Tutors:", tutorsRes.data)
+          console.log("Students:", studentsRes.data)
+        }
       } catch (error) {
         console.error("Failed to load tutors and students:", error)
         setAlert({
@@ -107,10 +110,12 @@ export default function CreateCoursePage() {
   }
 
   const handleAssignStudents = (students: Student[]) => {
-    setAssignedStudents(students.map(student => ({
-      id: student.student_codec,
-      name: student.name
-    })))
+    setAssignedStudents(
+      students.map(student => ({
+        id: student.student_codec,
+        name: student.name
+      }))
+    )
     setIsAssignStudentsModalOpen(false)
   }
 

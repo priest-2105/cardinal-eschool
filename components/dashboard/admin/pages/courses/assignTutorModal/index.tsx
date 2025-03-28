@@ -55,7 +55,7 @@ export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: As
     setSelectedTutor(currentTutor)
   }, [currentTutor])
 
-  const filteredTutors = tutors.filter((tutor) => 
+  const filteredTutors = tutors.filter((tutor) =>
     tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     tutor.email.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -89,7 +89,9 @@ export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: As
             {filteredTutors.map((tutor) => (
               <div key={tutor.tutor_codec} className="flex items-center space-x-2">
                 <RadioGroupItem value={tutor.tutor_codec} id={`tutor-${tutor.tutor_codec}`} />
-                <Label htmlFor={`tutor-${tutor.tutor_codec}`}>{tutor.name} ({tutor.email})</Label>
+                <Label htmlFor={`tutor-${tutor.tutor_codec}`}>
+                  {tutor.name} ({tutor.email})
+                </Label>
               </div>
             ))}
           </RadioGroup>

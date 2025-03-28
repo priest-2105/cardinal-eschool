@@ -100,7 +100,9 @@ export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents
                     checked={selectedStudents.some((s) => s.student_codec === student.student_codec)}
                     onCheckedChange={() => handleToggleStudent(student)}
                   />
-                  <Label htmlFor={`student-${student.student_codec}`}>{student.name} ({student.email})</Label>
+                  <Label htmlFor={`student-${student.student_codec}`}>
+                    {student.name} ({student.email})
+                  </Label>
                 </div>
               ))
             )}
