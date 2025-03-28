@@ -34,6 +34,10 @@ export * from "./managestudent/getstudentdetails"
 export * from "./userstatus/updateuserstatus"
 
 
+// Admin Course Management
+export * from "./managecourses/createcourse" 
+
+
 
 //  Admin Manage Coupon API
 export * from "./coupon/createcoupon";

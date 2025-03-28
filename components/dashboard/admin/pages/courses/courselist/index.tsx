@@ -104,13 +104,7 @@ export function CourseList() {
             Load More
           </Button>
         </div>
-      )}
-
-      <CreateCourseModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateCourse}
-      />
+      )} 
     </div>
   )
 }

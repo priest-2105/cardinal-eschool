@@ -170,7 +170,7 @@ export default function CreateCoursePage() {
       </div>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "success" : "error"}>
+        <Alert variant={alert.type === "success" ? "success" : "danger"}>
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

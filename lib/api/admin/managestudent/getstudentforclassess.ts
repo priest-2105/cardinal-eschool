@@ -39,8 +39,9 @@ export async function getStudentList(token: string, hasSubscription?: boolean) {
   return result.data.students;
 }
 
+
 export async function getStudentForClasses(token: string): Promise<StudentListResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/admin/getStudentsForClasses`, {
+  const response = await fetchWithAuth(`${apiUrl}/admin/getStudents`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
