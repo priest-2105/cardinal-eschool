@@ -16,26 +16,14 @@ import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
-import { FileText} from "lucide-react"
+import { FileText } from "lucide-react"
 import StudentList from "../../student/studentList"
 
-
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
-
-interface Schedule {
-  day: string
-  time: string
-}
 
 interface CourseDetailsComponentProps {
   courseName?: string
 }
-
-const SAMPLE_SCHEDULES: Schedule[] = [
-  { day: "Monday", time: "10:00 AM - 11:30 AM" },
-  { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
-]
-
 
 export default function CourseDetailsComponent() {
   const params = useParams()
@@ -49,7 +37,6 @@ export default function CourseDetailsComponent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
 
-
   const tabs = [
     { id: "description", label: "Description", icon: BookOpen },
     { id: "resources", label: "Resources", icon: FileText },
@@ -57,7 +44,6 @@ export default function CourseDetailsComponent() {
     { id: "assessments", label: "Assessments", icon: FileText },
     { id: "students", label: "Students", icon: Users },
   ]
-
 
   const handleback = () => {
     route.back()
@@ -68,11 +54,10 @@ export default function CourseDetailsComponent() {
     window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
   }
 
-
   useEffect(() => {
     const fetchCourseDetails = async () => {
       if (!token) return
-      
+
       setLoading(true)
       try {
         const response = await getCourseDetails(token, courseId)
@@ -86,8 +71,6 @@ export default function CourseDetailsComponent() {
 
     fetchCourseDetails()
   }, [courseId, token])
-
-
 
   if (loading) {
     return <div className="text-center py-12">Loading course details...</div>
@@ -106,7 +89,6 @@ export default function CourseDetailsComponent() {
     return <div className="text-center py-12">No course details found</div>
   }
 
-
   return (
     <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
       {/* Back Button and Title */}
@@ -122,30 +104,30 @@ export default function CourseDetailsComponent() {
 
       {/* Tabs */}
       <div className="border-b mb-4 md:mb-6 overflow-x-auto">
-           <div className="flex space-x-4 md:space-x-8 pb-2">
-             {tabs.map((tab) => (
-               <button
-                 key={tab.id}
-                 onClick={() => setActiveTab(tab.id as Tab)}
-                 className={cn(
-                   "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
-                   activeTab === tab.id
-                     ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
-                     : "text-gray-500 hover:text-gray-700",
-                 )}
-               >
-                 <tab.icon className="h-4 w-4" />
-                 {tab.label}
-               </button>
-             ))}
-           </div>
-         </div>
+        <div className="flex space-x-4 md:space-x-8 pb-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as Tab)}
+              className={cn(
+                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
+                activeTab === tab.id
+                  ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Content */}
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
-            {activeTab === "description" && <CourseDescription coursdetails={courseDetails}/>}
+            {activeTab === "description" && <CourseDescription coursdetails={courseDetails} />}
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
@@ -169,7 +151,7 @@ export default function CourseDetailsComponent() {
           {/* Course Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
                   <AvatarFallback> {courseDetails?.code}</AvatarFallback>
@@ -216,22 +198,21 @@ export default function CourseDetailsComponent() {
           <div className="space-y-4">
             <label className="text-sm font-medium text-gray-700">Class Schedule</label>
             <div className="space-y-2">
-              {SAMPLE_SCHEDULES.map((schedule, index) => (
+              {courseDetails.schedule.days.map((day, index) => (
                 <div
                   key={index}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
-                    <span className="font-medium">{schedule.day}</span>
+                    <span className="font-medium">{day}</span>
                   </div>
-                  <span className="text-gray-600">{schedule.time}</span>
+                  <span className="text-gray-600">{courseDetails.schedule.time[index]}:00</span>
                 </div>
               ))}
             </div>
           </div>
-
-         </div>
+        </div>
       </div>
     </div>
   )

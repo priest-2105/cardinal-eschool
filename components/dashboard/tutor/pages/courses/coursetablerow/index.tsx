@@ -23,7 +23,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
   const router = useRouter()
 
   const handleCourseDetails = () => {
-    router.push(`/course/${course.class_id}`)
+    router.push(`/tutor/course/${course.class_id}`)
   }
 
   return (
