@@ -125,12 +125,12 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
               })
             )
           } else {
-            router.push("/student/planPick")
+            router.push("/planpick")
           }
         }
       } catch (error) {
         console.error("Failed to check subscription:", error)
-        router.push("/student/planPick")
+        router.push("/planpick")
       }
     }
 
