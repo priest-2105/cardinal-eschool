@@ -253,13 +253,11 @@ export default function TransactionList() {
                 <TableCell>${transaction.amount}</TableCell>
                 <TableCell>
                   <Badge
-                    className={`${
-                      transaction.status.toLowerCase() === "pending"
-                        ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                        : transaction.status.toLowerCase() === "success"
-                        ? "bg-green-100 text-green-800 hover:bg-green-100"
-                        : "bg-red-100 text-red-800 hover:bg-red-100"
-                    }`}
+                    className={`
+                    ${transaction.status.toLowerCase() === "success"  && "bg-[#1BC2C2] text-[#1BC2C2]-300 hover:bg-[#1BC2C2]-800" }
+                    ${transaction.status.toLowerCase() === "pending"  && "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"  } 
+                    ${transaction.status.toLowerCase() === "failed"  &&  "bg-red-100 text-red-800 hover:bg-red-100"}
+                    `}
                   >
                     {transaction.status}
                   </Badge>
@@ -296,7 +294,7 @@ export default function TransactionList() {
         </Table>
       </div>
       <AlertDialog open={isRequeryModalOpen} onOpenChange={setIsRequeryModalOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Requery Payment</AlertDialogTitle>
             <AlertDialogDescription>
