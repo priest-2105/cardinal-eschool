@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Plus, Trash2, User, Users } from "lucide-react"
 import { AssignTutorModal } from "../assignTutorModal/index"
 import { AssignStudentsModal } from "../assignStudentModal/index"
+import { createClass } from "@/lib/api/admin/managecourses/createcourse"
+import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors"
+import { getStudentForClasses } from "@/lib/api/admin/managestudent/getstudentforclassess"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 
 interface Schedule {
   day: string
@@ -46,6 +52,32 @@ export default function CreateCoursePage() {
   const [assignedStudents, setAssignedStudents] = useState<Student[]>([])
   const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
   const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const loadTutorsAndStudents = async () => {
+      if (!token) return
+      try {
+        const [tutorsRes, studentsRes] = await Promise.all([
+          getTutors(token),
+          getStudentForClasses(token)
+        ])
+        // Update your state with the fetched data
+        // You'll need to modify your AssignTutorModal and AssignStudentsModal
+        // to work with the actual data structure
+      } catch (error) {
+        console.error("Failed to load tutors and students:", error)
+        setAlert({
+          type: "error",
+          message: "Failed to load tutors and students"
+        })
+      }
+    }
+
+    loadTutorsAndStudents()
+  }, [token])
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.fromTime && newSchedule.toTime) {
@@ -69,24 +101,45 @@ export default function CreateCoursePage() {
     setIsAssignStudentsModalOpen(false)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the course data to your backend
-    console.log({
-      courseName,
-      courseCode,
-      department,
-      semester,
-      description,
-      prerequisites,
-      learningOutcomes,
-      joinClassLink,
-      schedules,
-      assignedTutor,
-      assignedStudents,
-    })
-    // After successful creation, navigate back to the courses list
-    router.push("/admin/courses")
+    if (!token) return
+
+    setIsSubmitting(true)
+    try {
+      const response = await createClass(token, {
+        name: courseName,
+        code: courseCode,
+        description,
+        schedule: {
+          days: schedules.map(s => s.day),
+          time: schedules[0]?.fromTime || "00:00" // You might want to handle this differently
+        },
+        meeting_link: joinClassLink,
+        tutor_id: assignedTutor?.id || "",
+        student_ids: assignedStudents.map(s => s.id),
+        learning_outcome: learningOutcomes,
+        prerequisite: prerequisites,
+        department,
+        semester
+      })
+
+      setAlert({
+        type: "success",
+        message: "Course created successfully!"
+      })
+      
+      setTimeout(() => {
+        router.push("/admin/courses")
+      }, 2000)
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to create course"
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -97,6 +150,13 @@ export default function CreateCoursePage() {
         </Button>
         <h1 className="text-3xl font-bold">Create New Course</h1>
       </div>
+
+      {alert && (
+        <Alert variant={alert.type === "success" ? "success" : "error"}>
+          <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <Card>
@@ -312,7 +372,9 @@ export default function CreateCoursePage() {
           <Button type="button" variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
-          <Button type="submit">Create Course</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Course"}
+          </Button>
         </div>
       </form>
 

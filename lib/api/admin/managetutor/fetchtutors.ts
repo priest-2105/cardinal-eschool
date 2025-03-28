@@ -1,20 +1,31 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-export async function getTutors(token: string) {
-    const response = await fetchWithAuth(`${apiUrl}/admin/getTutors`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
-        credentials: 'include',
-    });
+interface Tutor {
+  tutor_codec: string;
+  name: string;
+  email: string;
+  qualification: string | null;
+  dp_url: string | null;
+}
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`Failed to fetch tutors: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
+interface TutorListResponse {
+  status: string;
+  message: string;
+  data: Tutor[];
+}
 
-    return response.json();
+export async function getTutors(token: string): Promise<TutorListResponse> {
+  const response = await fetchWithAuth(`${apiUrl}/admin/getTutors`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch tutors");
+  }
+
+  return response.json();
 }
