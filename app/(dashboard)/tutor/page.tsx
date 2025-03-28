@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import Announcements from "@/components/dashboard/tutor/pages/home/announcements"
 import Assessments from "@/components/dashboard/tutor/pages/home/assessments"
-import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses"
+import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses" 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   BookOpen,
@@ -12,6 +12,7 @@ import {
   LineChart,
   UserCircle2,
 } from "lucide-react"
+import PendingReportsList from "@/components/dashboard/tutor/pages/home/pendingreports"
 
 
 export default function TutorDashboard() {
@@ -69,7 +70,7 @@ export default function TutorDashboard() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                <CardTitle className="text-sm font-medium">Assignments</CardTitle>
                 <LineChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -82,14 +83,16 @@ export default function TutorDashboard() {
      
           <div className="grid pt-5 grid-cols-1 md:grid-cols-2 gap-4 items-start">
       
-          <div className="">
+          {/* <div className=""> */}
         <UpcomingClasses/>
-         </div>
+         {/* </div> */}
 
-        <div className="">
+        {/* <div className=""> */}
         <Announcements />
         <Assessments/>
-        </div>
+
+        <PendingReportsList/>
+        {/* </div> */}
       </div>
     </div>
   )
