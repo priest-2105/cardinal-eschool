@@ -9,11 +9,17 @@ interface AuthState {
     user_codec: string;
     has_subscription: boolean; 
   } | null;
+  subscription: {
+    isActive: boolean;
+    plan: string;
+    expiresAt: string;
+  } | null;
 }
 
 const initialState: AuthState = {
   token: null,
   user: null,
+  subscription: null,
 };
 
 const authSlice = createSlice({
@@ -33,8 +39,24 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
     },
+    setSubscriptionStatus(state, action: PayloadAction<{ plan: string; expiresAt: string }>) {
+      state.subscription = {
+        isActive: true,
+        plan: action.payload.plan,
+        expiresAt: action.payload.expiresAt,
+      };
+    },
+    clearSubscriptionStatus(state) {
+      state.subscription = null;
+    },
   },
 });
 
-export const { setAuthState, clearAuthState, handleTokenExpiration } = authSlice.actions;
+export const { 
+  setAuthState, 
+  clearAuthState, 
+  handleTokenExpiration,
+  setSubscriptionStatus,
+  clearSubscriptionStatus 
+} = authSlice.actions;
 export default authSlice.reducer;
