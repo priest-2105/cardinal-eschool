@@ -27,13 +27,20 @@ interface Schedule {
 }
 
 interface Tutor {
-  id: string
+  tutor_codec: string
   name: string
+  email: string
+  qualification: string | null
+  dp_url: string | null
 }
 
 interface Student {
-  id: string
+  student_codec: string
   name: string
+  email: string
+  dp_url: string | null
+  edu_level: string
+  subjects_interested_in: string[]
 }
 
 export default function CreateCoursePage() {
@@ -48,8 +55,8 @@ export default function CreateCoursePage() {
   const [joinClassLink, setJoinClassLink] = useState("")
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" })
-  const [assignedTutor, setAssignedTutor] = useState<Tutor | null>(null)
-  const [assignedStudents, setAssignedStudents] = useState<Student[]>([])
+  const [assignedTutor, setAssignedTutor] = useState<{ id: string; name: string } | null>(null)
+  const [assignedStudents, setAssignedStudents] = useState<{ id: string; name: string }[]>([])
   const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
   const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
@@ -92,12 +99,18 @@ export default function CreateCoursePage() {
   }
 
   const handleAssignTutor = (tutor: Tutor) => {
-    setAssignedTutor(tutor)
+    setAssignedTutor({
+      id: tutor.tutor_codec,
+      name: tutor.name
+    })
     setIsAssignTutorModalOpen(false)
   }
 
   const handleAssignStudents = (students: Student[]) => {
-    setAssignedStudents(students)
+    setAssignedStudents(students.map(student => ({
+      id: student.student_codec,
+      name: student.name
+    })))
     setIsAssignStudentsModalOpen(false)
   }
 
@@ -107,13 +120,13 @@ export default function CreateCoursePage() {
 
     setIsSubmitting(true)
     try {
-      const response = await createClass(token, {
+      await createClass(token, {
         name: courseName,
         code: courseCode,
         description,
         schedule: {
           days: schedules.map(s => s.day),
-          time: schedules[0]?.fromTime || "00:00" // You might want to handle this differently
+          time: schedules[0]?.fromTime || "00:00"
         },
         meeting_link: joinClassLink,
         tutor_id: assignedTutor?.id || "",

@@ -7,7 +7,7 @@ import { FilterModal } from "../coursefilter/index"
 import { CourseTable } from "../coursetable/index"
 import { Search, Plus } from "lucide-react"
 import type { Course, FilterValues } from "../types"
-import { CreateCourseModal } from "../createCourseModal/index"
+// import { CreateCourseModal } from "../createCourseModal/index"
 import { useRouter } from "next/navigation"
 
 

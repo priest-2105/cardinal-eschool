@@ -6,10 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useSelector } from "react-redux"
+import { getStudentForClasses } from "@/lib/api/admin/managestudent/getstudentforclassess"
+import type { RootState } from "@/lib/store"
 
 interface Student {
-  id: string
+  student_codec: string
   name: string
+  email: string
+  dp_url: string | null
+  edu_level: string
+  subjects_interested_in: string[]
 }
 
 interface AssignStudentsModalProps {
@@ -19,29 +26,46 @@ interface AssignStudentsModalProps {
   currentStudents: Student[]
 }
 
-const SAMPLE_STUDENTS: Student[] = [
-  { id: "1", name: "Alice Johnson" },
-  { id: "2", name: "Bob Smith" },
-  { id: "3", name: "Charlie Brown" },
-  { id: "4", name: "Diana Ross" },
-  { id: "5", name: "Ethan Hunt" },
-]
-
 export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents }: AssignStudentsModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedStudents, setSelectedStudents] = useState<Student[]>(currentStudents)
+  const [students, setStudents] = useState<Student[]>([])
+  const [loading, setLoading] = useState(false)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const loadStudents = async () => {
+      if (!token) return
+      setLoading(true)
+      try {
+        const response = await getStudentForClasses(token)
+        setStudents(response.data)
+      } catch (error) {
+        console.error("Failed to load students:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (isOpen) {
+      loadStudents()
+    }
+  }, [isOpen, token])
 
   useEffect(() => {
     setSelectedStudents(currentStudents)
   }, [currentStudents])
 
-  const filteredStudents = SAMPLE_STUDENTS.filter((student) =>
-    student.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const filteredStudents = students.filter((student) =>
+    student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.email.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleToggleStudent = (student: Student) => {
     setSelectedStudents((prev) =>
-      prev.some((s) => s.id === student.id) ? prev.filter((s) => s.id !== student.id) : [...prev, student],
+      prev.some((s) => s.student_codec === student.student_codec)
+        ? prev.filter((s) => s.student_codec !== student.student_codec)
+        : [...prev, student]
     )
   }
 
@@ -62,20 +86,24 @@ export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents
               id="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name..."
+              placeholder="Search by name or email..."
             />
           </div>
           <div className="space-y-2 max-h-[200px] overflow-y-auto">
-            {filteredStudents.map((student) => (
-              <div key={student.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`student-${student.id}`}
-                  checked={selectedStudents.some((s) => s.id === student.id)}
-                  onCheckedChange={() => handleToggleStudent(student)}
-                />
-                <Label htmlFor={`student-${student.id}`}>{student.name}</Label>
-              </div>
-            ))}
+            {loading ? (
+              <p>Loading students...</p>
+            ) : (
+              filteredStudents.map((student) => (
+                <div key={student.student_codec} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`student-${student.student_codec}`}
+                    checked={selectedStudents.some((s) => s.student_codec === student.student_codec)}
+                    onCheckedChange={() => handleToggleStudent(student)}
+                  />
+                  <Label htmlFor={`student-${student.student_codec}`}>{student.name} ({student.email})</Label>
+                </div>
+              ))
+            )}
           </div>
         </div>
         <DialogFooter>
