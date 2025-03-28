@@ -172,12 +172,12 @@ export default function CourseDetailsComponent() {
             <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback> PHY301</AvatarFallback>
+                  <AvatarFallback> {courseDetails?.code}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold">Course Code: PHY301</h4>
-                  <p className="text-sm text-gray-500">Department: Physics</p>
-                  <p className="text-sm text-gray-500">Semester: Fall 2023</p>
+                  <h4 className="font-semibold">Course Code: {courseDetails.code}</h4>
+                  <p className="text-sm text-gray-500">Department: {courseDetails?.department}</p>
+                  <p className="text-sm text-gray-500">Semester: {courseDetails?.semester}</p>
                 </div>
               </div>
             </CardContent>
@@ -191,12 +191,12 @@ export default function CourseDetailsComponent() {
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Enrolled Students</p>
-                  <p className="font-medium">25</p>
+                  <p className="font-medium">{courseDetails?.students_assigned?.length}</p>
                 </div>
                 <div className="space-y-2">
                   <Clock className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Resources</p>
-                  <p className="font-medium">348</p>
+                  <p className="font-medium"> {courseDetails?.resources_assigned?.length} </p>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
@@ -236,68 +236,3 @@ export default function CourseDetailsComponent() {
     </div>
   )
 }
-
-
-
-
-//   return (
-//     <div className="space-y-6">
-//       {/* Course Header */}
-//       <div className="flex justify-between items-center">
-//         <div>
-//           <h1 className="text-2xl font-bold">{courseDetails.name}</h1>
-//           <p className="text-gray-500">Course Code: {courseDetails.code}</p>
-//         </div>
-//         <Button>Start Class</Button>
-//       </div>
-
-//       {/* Course Description */}
-//       <div className="bg-white p-6 rounded-lg shadow">
-//         <h2 className="text-lg font-semibold mb-4">Course Description</h2>
-//         <p>{courseDetails.description}</p>
-//       </div>
-
-//       {/* Schedule & Meeting Link */}
-//       <div className="bg-white p-6 rounded-lg shadow">
-//         <h2 className="text-lg font-semibold mb-4">Class Schedule</h2>
-//         <div className="space-y-2">
-//           {courseDetails.schedule.days.map((day, index) => (
-//             <div key={day} className="flex items-center space-x-2">
-//               <span className="font-medium">{day}:</span>
-//               <span>{courseDetails.schedule.time[index]}</span>
-//             </div>
-//           ))}
-//         </div>
-//         <div className="mt-4">
-//           <p className="font-medium">Meeting Link:</p>
-//           <a href={courseDetails.meeting_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-//             {courseDetails.meeting_link}
-//           </a>
-//         </div>
-//       </div>
-
-//       {/* Students List */}
-//       <div className="bg-white p-6 rounded-lg shadow">
-//         <h2 className="text-lg font-semibold mb-4">Enrolled Students ({courseDetails.students_assigned.length})</h2>
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//           {courseDetails.students_assigned.map((student) => (
-//             <div key={student.id} className="flex items-center space-x-3 p-3 border rounded-lg">
-//               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-//                 {student.dp_url ? (
-//                   <img src={student.dp_url} alt={student.name} className="w-full h-full rounded-full" />
-//                 ) : (
-//                   <span className="text-xl font-bold">{student.name[0]}</span>
-//                 )}
-//               </div>
-//               <div>
-//                 <p className="font-medium">{student.name}</p>
-//                 <p className="text-sm text-gray-500">Student ID: {student.id}</p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//     </div>
-//   )
-// }
