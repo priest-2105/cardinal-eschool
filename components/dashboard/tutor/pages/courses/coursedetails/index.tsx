@@ -131,7 +131,7 @@ export default function CourseDetailsComponent() {
             {activeTab === "resources" && <ResourcesList />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
-            {activeTab === "students" && <StudentList />}
+            {activeTab === "students" && <StudentList coursedetails={courseDetails} />}
           </CardContent>
         </Card>
 
