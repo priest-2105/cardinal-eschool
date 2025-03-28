@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, Plus, Edit, Eye } from "lucide-react"
@@ -25,6 +25,19 @@ export interface Resource {
   size: string
   dateUploaded: Date
   fileUrl: string
+  comment?: string
+}
+
+interface AssignedResource {
+  id: number
+  name: string
+  file_url: string
+  comment: string
+}
+
+interface ResourcesListProps {
+  classId: string
+  assignedResources?: AssignedResource[]
 }
 
 const SAMPLE_RESOURCES: Resource[] = [
@@ -46,7 +59,7 @@ const SAMPLE_RESOURCES: Resource[] = [
   },
 ]
 
-export default function ResourcesList({ classId }: { classId: string }) {
+export default function ResourcesList({ classId, assignedResources = [] }: ResourcesListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [resources, setResources] = useState(SAMPLE_RESOURCES)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -55,6 +68,21 @@ export default function ResourcesList({ classId }: { classId: string }) {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (assignedResources.length > 0) {
+      const formattedResources: Resource[] = assignedResources.map((resource) => ({
+        id: resource.id.toString(),
+        title: resource.name,
+        type: "PDF",
+        size: "", 
+        dateUploaded: new Date(),  
+        fileUrl: resource.file_url,
+        comment: resource.comment,
+      }))
+      setResources(formattedResources)
+    }
+  }, [assignedResources])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -147,6 +175,7 @@ export default function ResourcesList({ classId }: { classId: string }) {
                 <Calendar size={12} className="mr-1" />
                 {format(resource.dateUploaded, "MMM d, yyyy")}
               </p>
+              {resource.comment && <p className="text-xs text-gray-500 mt-1">{resource.comment}</p>}
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
               <Button variant="outline" size="sm" onClick={() => handleView(resource)}>
