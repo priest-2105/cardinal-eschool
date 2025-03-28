@@ -9,14 +9,13 @@ import { format } from "date-fns"
 import { CreateResourceModal } from "../createResourceModal"
 import { EditResourceModal } from "../editresourcesModal"
 import { ViewResourceModal } from "../resourcesDetails"
-
+import { AssignResourceModal } from "../assignResourceModal"
 
 export interface Student {
   id: string
   name: string
   email: string
 }
-
 
 export interface Resource {
   id: string
@@ -46,13 +45,14 @@ const SAMPLE_RESOURCES: Resource[] = [
   },
 ]
 
-export default function ResourcesList() {
+export default function ResourcesList({ classId }: { classId: string }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [resources, setResources] = useState(SAMPLE_RESOURCES)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -93,20 +93,23 @@ export default function ResourcesList() {
     setIsEditModalOpen(false)
   }
 
+  const handleResourceSuccess = () => {
+    // Refresh resources list
+    fetchResources()
+  }
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Resources</h2>
-          <div>
+        <div>
+          <Button className="mx-1" onClick={() => setIsAssignModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Assign Resource
+          </Button>
           <Button className="mx-1" onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Assign Resource
-        </Button>
-        
-        <Button  className="mx-1" onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Upload Resource
-        </Button>   
-          </div>
-
+            <Plus className="mr-2 h-4 w-4" /> Upload Resource
+          </Button>
+        </div>
       </div>
       <div className="relative mb-4">
         <Input
@@ -150,7 +153,7 @@ export default function ResourcesList() {
       <CreateResourceModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateResource}
+        onSuccess={handleResourceSuccess}
       />
       <EditResourceModal
         isOpen={isEditModalOpen}
@@ -159,13 +162,18 @@ export default function ResourcesList() {
         onSubmit={handleUpdateResource}
         resource={selectedResource}
       />
-       <ViewResourceModal
+      <ViewResourceModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
         onSubmit={handleUpdateResource}
         resource={selectedResource}
       />
-
+      <AssignResourceModal
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        classId={classId}
+        onSuccess={handleResourceSuccess}
+      />
     </div>
   )
 }

@@ -1,96 +1,144 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label" 
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { getResources } from "@/lib/api/tutor/courses/fetchresources"
+import { assignResources } from "@/lib/api/tutor/courses/assignresources"
+import { Alert } from "@/components/ui/alert"
+import { CreateResourceModal } from "../createResourceModal"
 
-
-export interface Student {
-    id: string
-    name: string
-    email: string
-  }
-  
-  
-  export interface Resource {
-    id: string
-    title: string
-    type: string
-    size: string
-    dateUploaded: Date
-    fileUrl: string
-  }
-  
-  
-
-interface AssignResourceModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (resource: Omit<Resource, "id">) => void
+interface Resource {
+  id: number;
+  name: string;
+  comment: string;
+  file_size: string;
+  file_path_url: string;
 }
 
-export function AssignResourceModal({ isOpen, onClose, onSubmit }: AssignResourceModalProps) {
-  const [title, setTitle] = useState("")
-  const [type, setType] = useState("")
-  const [file, setFile] = useState<File | null>(null)
+interface AssignResourceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  classId: string;
+  onSuccess: () => void;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (file) {
-      const newResource: Omit<Resource, "id"> = {
-        title,
-        type,
-        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-        dateUploaded: new Date(),
-        fileUrl: URL.assignObjectURL(file),
-      }
-      onSubmit(newResource)
-      resetForm()
+export function AssignResourceModal({ isOpen, onClose, classId, onSuccess }: AssignResourceModalProps) {
+  const [resources, setResources] = useState<Resource[]>([])
+  const [selectedResources, setSelectedResources] = useState<number[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    if (isOpen && token) {
+      fetchResources()
+    }
+  }, [isOpen, token])
+
+  const fetchResources = async () => {
+    try {
+      const response = await getResources(token!)
+      setResources(response.data.resources)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch resources")
     }
   }
 
-  const resetForm = () => {
-    setTitle("")
-    setType("")
-    setFile(null)
+  const handleAssign = async () => {
+    if (!selectedResources.length) {
+      setError("Please select at least one resource")
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      await assignResources(token!, classId, selectedResources)
+      onSuccess()
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to assign resources")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResourceSelect = (resourceId: number) => {
+    setSelectedResources(prev => 
+      prev.includes(resourceId) 
+        ? prev.filter(id => id !== resourceId)
+        : [...prev, resourceId]
+    )
+  }
+
+  const handleCreateSuccess = () => {
+    setIsCreateModalOpen(false)
+    fetchResources()
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white">
-        <DialogHeader>
-          <DialogTitle>Upload New Resource</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
-          <div>
-            <Label htmlFor="type">Type</Label>
-            <Input id="type" value={type} onChange={(e) => setType(e.target.value)} required />
-          </div>
-          <div>
-            <Label htmlFor="file">File</Label>
-            <Input
-              id="file"
-              type="file"
-              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-              required
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Assign Resources</DialogTitle>
+          </DialogHeader>
+
+          {error && (
+            <Alert variant="danger" className="mb-4">
+              {error}
+            </Alert>
+          )}
+
+          <div className="space-y-4">
+            <div className="max-h-[300px] overflow-y-auto space-y-2">
+              {resources.map((resource) => (
+                <div key={resource.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`resource-${resource.id}`}
+                    checked={selectedResources.includes(resource.id)}
+                    onCheckedChange={() => handleResourceSelect(resource.id)}
+                  />
+                  <Label htmlFor={`resource-${resource.id}`}>
+                    {resource.name} ({resource.file_size})
+                  </Label>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setIsCreateModalOpen(true)}
+            >
+              Create New Resource
             </Button>
-            <Button type="submit">Upload Resource</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+            <DialogFooter>
+              <Button onClick={onClose} variant="outline">
+                Cancel
+              </Button>
+              <Button onClick={handleAssign} disabled={loading}>
+                {loading ? "Assigning..." : "Assign Resources"}
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <CreateResourceModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+    </>
   )
 }
 

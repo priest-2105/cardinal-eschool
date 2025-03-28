@@ -14,7 +14,12 @@ export * from "./profile/fetchuserProfile";
 export * from "./profile/updateTutorDP";
 export * from "./profile/updatetutorProfile";
 
-
+// Tutor Class API EXPORT 
+export * from "./courses/assignresources"
+export * from "./courses/courselist"
+export * from "./courses/createresources"
+export * from "./courses/fetchresources"
+export * from "./courses/fetchsinglecourse"
 
 // Tutor Ticket API EXPORT
 export * from "./ticket/createticket";
