@@ -97,9 +97,16 @@ export default function ResourcesList() {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Resources</h2>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Upload Resource
+          <div>
+          <Button className="mx-1" onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Assign Resource
         </Button>
+        
+        <Button  className="mx-1" onClick={() => setIsCreateModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Upload Resource
+        </Button>   
+          </div>
+
       </div>
       <div className="relative mb-4">
         <Input
