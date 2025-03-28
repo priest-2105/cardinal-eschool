@@ -158,26 +158,26 @@ export default function CreateCoursePage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!token) return
+    e.preventDefault();
+    if (!token) return;
 
     if (!validateForm()) {
       setAlert({
         type: "error",
         message: "Please fix the validation errors before submitting",
-      })
-      return
+      });
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await createClass(token, {
+      const requestBody = {
         name: courseName,
         code: courseCode,
         description,
         schedule: {
           days: schedules.map(s => s.day),
-          time: schedules.map(s => s.fromTime)
+          time: schedules.map(s => s.fromTime), // Changed to array of times
         },
         meeting_link: joinClassLink,
         tutor_id: assignedTutor?.id || "",
@@ -186,29 +186,34 @@ export default function CreateCoursePage() {
         prerequisite: prerequisites,
         department,
         semester
-      })
+      };
+
+      console.log("Submitting class creation request:", JSON.stringify(requestBody, null, 2));
+
+      const response = await createClass(token, requestBody);
+      console.log("Class creation response:", response);
 
       setAlert({
         type: "success",
         message: "Course created successfully!"
-      })
+      });
       
       setTimeout(() => {
-        router.push("/admin/courses")
-      }, 2000)
+        router.push("/admin/courses");
+      }, 2000);
     } catch (error: any) {
+      console.error("Class creation error:", error);
       setAlert({
         type: "error",
         message: error.message || "Failed to create course"
-      })
-      // Handle validation errors from the backend
+      });
       if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors)
+        setErrors(error.response.data.errors);
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-10">
