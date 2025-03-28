@@ -1,167 +1,80 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { FilterModal } from '../coursefilter/index'
-import { CourseTable } from '../coursetable/index'
 import { Search } from 'lucide-react'
-import { Course, FilterValues } from '../types' 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CourseTable } from '../coursetable/index'
+import { getTutorClasses } from '@/lib/api/tutor/courses/courselist'
+import { useSelector } from 'react-redux'
+import type { RootState } from '@/lib/store'
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
 
-const COURSES_DATA: Course[] = [
-  {
-    id: 1,
-    grade: 10,
-    name: "Social Studies",
-    noOfStudent: 14,
-    schedule: "Wednesday 11th Jan 2025",
-    status: "Upcoming",
-    dateAdded: "January 5, 2025"
-  },
-  {
-    grade: 10,
-    id: 2,
-    name: "Mathematics",
-    noOfStudent: 14,
-    schedule: "Tuesday 1sh Jan 2025",
-    status: "Upcoming",
-    dateAdded: "January 5, 2025"
-  },
-  {
-    grade: 10,
-    id: 3,
-    name: "English Studies",
-    noOfStudent: 14,
-    schedule: "Friday 21st Feb 2025",
-    status: "Active",
-    dateAdded: "March 5, 2025"
-  },
-  {
-    grade: 10,
-    id: 4,
-    name: "Econommics",
-    noOfStudent: 12,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 5,
-    name: "Econommics",
-    noOfStudent: 14,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 6,
-    name: "Econommics",
-    noOfStudent: 6,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 7,
-    name: "Econommics",    
-    noOfStudent: 9,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 8,
-    name: "Econommics",
-    noOfStudent: 7,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 9,
-    name: "Econommics",
-    noOfStudent: 4,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  }, {
-    grade: 10,
-    id: 10,
-    name: "Econommics",
-    noOfStudent: 14,
-    schedule: "Tuesday 5th Jan 2025",
-    status: "Completed",
-    dateAdded: "March 5, 2025"
-  },
-]
-
-const INITIAL_LOAD = 10
-const LOAD_MORE_COUNT = 3
+interface Course {
+  class_id: number
+  name: string
+  code: string
+  no_of_students: number
+  schedule: {
+    days: string[]
+    time: string[]
+  }
+}
 
 export function CourseList() {
-
   const [searchQuery, setSearchQuery] = useState('')
-  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
-  const [filters, setFilters] = useState<FilterValues>({
-    courses: [],
-    tutors: [],
-    dateRange: {
-      from: undefined,
-      to: undefined
-    },
-    status: []
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedGrade, setSelectedGrade] = useState("all")
+  const [selectedDateRange, setSelectedDateRange] = useState("all")
+  const [selectedStatus, setSelectedStatus] = useState("all")
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      if (!token) return
+      setLoading(true)
+      try {
+        const response = await getTutorClasses(token)
+        setCourses(response.data.classes)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch courses')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCourses()
+  }, [token])
+
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = 
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.code.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    const matchesGrade = selectedGrade === "all" // Add grade filtering logic if needed
+    const matchesStatus = selectedStatus === "all" // Add status filtering logic if needed
+    const matchesDate = selectedDateRange === "all" // Add date filtering logic if needed
+    
+    return matchesSearch && matchesGrade && matchesStatus && matchesDate
   })
 
-  // Get unique courses and tutors for filter options
-  const uniqueCourses = Array.from(new Set(COURSES_DATA.map(course => course.name)))
-    .map(name => ({
-      id: COURSES_DATA.find(c => c.name === name)?.id || 0,
-      name
-    }))
-
-  // const uniqueTutors = Array.from(new Set(COURSES_DATA.map(course => course.tutor.name)))
-  //   .map(name => ({
-  //     id: COURSES_DATA.findIndex(c => c.tutor.name === name),
-  //     name
-  //   }))
-
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters(newFilters)
-    setVisibleCount(INITIAL_LOAD)
+  if (loading) {
+    return <div className="text-center py-12">Loading courses...</div>
   }
 
-  // Apply filters and search to courses
-  const filteredCourses = COURSES_DATA.filter(course => {
-    const matchesSearch = 
-      course.name.toLowerCase().includes(searchQuery.toLowerCase()) 
-      // ||
-      // course.tutor.name.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesCourses = 
-      filters.courses.length === 0 || 
-      filters.courses.includes(course.name)
-    
-    const matchesTutors = 
-      filters.tutors.length === 0 
-      // || 
-      // filters.tutors.includes(course.tutor.name)
-    
-    const matchesStatus = 
-      filters.status.length === 0 || 
-      filters.status.includes(course.status)
-    
-    const matchesDateRange = 
-      (!filters.dateRange.from || new Date(course.dateAdded) >= filters.dateRange.from) &&
-      (!filters.dateRange.to || new Date(course.dateAdded) <= filters.dateRange.to)
-    
-    return matchesSearch && matchesCourses && matchesTutors && matchesStatus && matchesDateRange
-  })
-
-  const visibleCourses = filteredCourses.slice(0, visibleCount)
-  const hasMore = visibleCourses.length < filteredCourses.length
+  if (error) {
+    return (
+      <Alert variant="danger">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    )
+  }
 
   return (
-    <div className="space-y-4 max-h-[80vh] h-full overflow-hidden">
+    <div className="space-y-4">
       <div className="sm:flex max-sm:block max-sm:pb-3 items-center justify-between">
         <div className="space-y-1 max-sm:pb-3">
           <h2 className="text-2xl font-semibold">View Course Lists</h2>
@@ -169,36 +82,60 @@ export function CourseList() {
             Manage and track your enrolled courses
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
-            />
-          </div>
-          <FilterModal 
-            courses={uniqueCourses}
-            // tutors={uniqueTutors}
-            onFilterChange={handleFilterChange}
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Grade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Grades</SelectItem>
+            {[...Array(12)].map((_, i) => (
+              <SelectItem key={i} value={`${i + 1}`}>
+                Grade {i + 1}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="upcoming">Upcoming</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Date Added" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="last7days">Last 7 Days</SelectItem>
+            <SelectItem value="last30days">Last 30 Days</SelectItem>
+            <SelectItem value="last90days">Last 90 Days</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 w-full"
           />
         </div>
       </div>
 
-      <CourseTable courses={visibleCourses} />
-      
-      {hasMore && (
-        <div className="flex justify-center">
-          <Button
-            variant="outline"
-            onClick={() => setVisibleCount(prev => prev + LOAD_MORE_COUNT)}
-          >
-            Load More
-          </Button>
-        </div>
-      )}
+      <CourseTable courses={filteredCourses} />
     </div>
   )
 }

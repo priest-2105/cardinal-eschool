@@ -1,6 +1,18 @@
-import type { Course } from "../types"
-import { CourseTableRow } from "../coursetablerow/index"
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/dashboard/tutor/ui/table"
+"use client"
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { CourseTableRow } from "../coursetablerow"
+
+interface Course {
+  class_id: number
+  name: string
+  code: string
+  no_of_students: number
+  schedule: {
+    days: string[]
+    time: string[]
+  }
+}
 
 interface CourseTableProps {
   courses: Course[]
@@ -8,30 +20,22 @@ interface CourseTableProps {
 
 export function CourseTable({ courses }: CourseTableProps) {
   return (
-    <div className="relative max-sm:h-[calc(85vh-200px)] sm:h-[calc(90vh-200px)] scroll-smooth custom-scrollbar">
-      <div className="overflow-hidden border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[25%]">Course</TableHead>
-              <TableHead className="w-[10%]">Grade</TableHead>
-              <TableHead className="w-[15%] hidden md:table-cell">No of Students</TableHead>
-              <TableHead className="w-[20%] hidden lg:table-cell">Schedule</TableHead>
-              <TableHead className="w-[15%]">Status</TableHead>
-              <TableHead className="w-[15%] hidden xl:table-cell">Date Added</TableHead>
-            </TableRow>
-          </TableHeader>
-        </Table>
-        <div className="overflow-y-auto h-full max-h-[calc(90vh-250px)] scroll-smooth custom-scrollbar">
-          <Table>
-            <TableBody>
-              {courses.map((course) => (
-                <CourseTableRow key={course.id} course={course} />
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Course Name</TableHead>
+            <TableHead>Course Code</TableHead>
+            <TableHead>No. of Students</TableHead>
+            <TableHead>Schedule</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {courses.map((course) => (
+            <CourseTableRow key={course.class_id} course={course} />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }
