@@ -1,8 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
+import { getCourseDetails, type CourseDetails } from "@/lib/api/tutor/courses/fetchsinglecourse"
+import { Card, CardContent } from "@/components/dashboard/tutor/ui/card"
 import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -13,6 +18,7 @@ import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
 import { FileText} from "lucide-react"
 import StudentList from "../../student/studentList"
+
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -30,7 +36,15 @@ const SAMPLE_SCHEDULES: Schedule[] = [
   { day: "Wednesday", time: "2:00 PM - 3:30 PM" },
 ]
 
-export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
+
+export default function CourseDetailsComponent() {
+  const params = useParams()
+  const courseId = params.coursedetails as string
+  const [courseDetails, setCourseDetails] = useState<CourseDetails['data']['class'] | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
@@ -54,6 +68,45 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
     window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: { isOpen: !isSidebarOpen } }))
   }
 
+
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      if (!token) return
+      
+      setLoading(true)
+      try {
+        const response = await getCourseDetails(token, courseId)
+        setCourseDetails(response.data.class)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch course details')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCourseDetails()
+  }, [courseId, token])
+
+
+
+  if (loading) {
+    return <div className="text-center py-12">Loading course details...</div>
+  }
+
+  if (error) {
+    return (
+      <Alert variant="danger">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    )
+  }
+
+  if (!courseDetails) {
+    return <div className="text-center py-12">No course details found</div>
+  }
+
+
   return (
     <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
       {/* Back Button and Title */}
@@ -61,7 +114,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {courseName}</h1>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {courseDetails?.name}</h1>
         <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
@@ -184,3 +237,67 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
   )
 }
 
+
+
+
+//   return (
+//     <div className="space-y-6">
+//       {/* Course Header */}
+//       <div className="flex justify-between items-center">
+//         <div>
+//           <h1 className="text-2xl font-bold">{courseDetails.name}</h1>
+//           <p className="text-gray-500">Course Code: {courseDetails.code}</p>
+//         </div>
+//         <Button>Start Class</Button>
+//       </div>
+
+//       {/* Course Description */}
+//       <div className="bg-white p-6 rounded-lg shadow">
+//         <h2 className="text-lg font-semibold mb-4">Course Description</h2>
+//         <p>{courseDetails.description}</p>
+//       </div>
+
+//       {/* Schedule & Meeting Link */}
+//       <div className="bg-white p-6 rounded-lg shadow">
+//         <h2 className="text-lg font-semibold mb-4">Class Schedule</h2>
+//         <div className="space-y-2">
+//           {courseDetails.schedule.days.map((day, index) => (
+//             <div key={day} className="flex items-center space-x-2">
+//               <span className="font-medium">{day}:</span>
+//               <span>{courseDetails.schedule.time[index]}</span>
+//             </div>
+//           ))}
+//         </div>
+//         <div className="mt-4">
+//           <p className="font-medium">Meeting Link:</p>
+//           <a href={courseDetails.meeting_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+//             {courseDetails.meeting_link}
+//           </a>
+//         </div>
+//       </div>
+
+//       {/* Students List */}
+//       <div className="bg-white p-6 rounded-lg shadow">
+//         <h2 className="text-lg font-semibold mb-4">Enrolled Students ({courseDetails.students_assigned.length})</h2>
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//           {courseDetails.students_assigned.map((student) => (
+//             <div key={student.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+//               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+//                 {student.dp_url ? (
+//                   <img src={student.dp_url} alt={student.name} className="w-full h-full rounded-full" />
+//                 ) : (
+//                   <span className="text-xl font-bold">{student.name[0]}</span>
+//                 )}
+//               </div>
+//               <div>
+//                 <p className="font-medium">{student.name}</p>
+//                 <p className="text-sm text-gray-500">Student ID: {student.id}</p>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//     </div>
+//   )
+// }

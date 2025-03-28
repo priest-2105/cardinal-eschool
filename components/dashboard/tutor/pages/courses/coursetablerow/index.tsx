@@ -1,6 +1,7 @@
 "use client"
 
 import { TableCell, TableRow } from "@/components/ui/table"
+import { useRouter } from "next/navigation"
 
 interface Course {
   class_id: number
@@ -18,8 +19,15 @@ interface CourseTableRowProps {
 }
 
 export function CourseTableRow({ course }: CourseTableRowProps) {
+
+  const router = useRouter()
+
+  const handleCourseDetails = () => {
+    router.push(`/course/${course.class_id}`)
+  }
+
   return (
-    <TableRow>
+    <TableRow className="hover:bg-gray-50 cursor-pointer " onClick={handleCourseDetails}>
       <TableCell>{course.name}</TableCell>
       <TableCell>{course.code}</TableCell>
       <TableCell>{course.no_of_students}</TableCell>
