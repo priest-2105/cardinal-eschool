@@ -61,8 +61,7 @@ export function AssignResourceModal({ isOpen, onClose, classId, onSuccess }: Ass
 
     try {
       await assignResources(token!, classId, selectedResources)
-      onSuccess()
-      onClose()
+      onSuccess()  
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to assign resources")
     } finally {
@@ -80,7 +79,7 @@ export function AssignResourceModal({ isOpen, onClose, classId, onSuccess }: Ass
 
   const handleCreateSuccess = () => {
     setIsCreateModalOpen(false)
-    fetchResources()
+    fetchResources() // Keep this to refresh the list
   }
 
   return (
@@ -92,13 +91,13 @@ export function AssignResourceModal({ isOpen, onClose, classId, onSuccess }: Ass
           </DialogHeader>
 
           {error && (
-            <Alert variant="danger" className="mb-4">
+            <Alert variant="danger" className="bg bg-white top-5 z-50 right-4">
               {error}
             </Alert>
           )}
 
           <div className="space-y-4">
-            <div className="max-h-[300px] overflow-y-auto space-y-2">
+            <div className="max-h-[500px] min-h-[300px] py-4 overflow-y-auto space-y-2">
               {resources.map((resource) => (
                 <div key={resource.id} className="flex items-center space-x-2">
                   <Checkbox

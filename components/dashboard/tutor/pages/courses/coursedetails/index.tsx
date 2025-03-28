@@ -128,7 +128,7 @@ export default function CourseDetailsComponent() {
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
             {activeTab === "description" && <CourseDescription coursdetails={courseDetails} />}
-            {activeTab === "resources" && <ResourcesList />}
+            {activeTab === "resources" && <ResourcesList classId={courseId} />}
             {activeTab === "reports" && <ReportsList />}
             {activeTab === "assessments" && <AssessmentsList />}
             {activeTab === "students" && <StudentList coursedetails={courseDetails} />}

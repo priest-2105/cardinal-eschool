@@ -10,6 +10,7 @@ import { CreateResourceModal } from "../createResourceModal"
 import { EditResourceModal } from "../editresourcesModal"
 import { ViewResourceModal } from "../resourcesDetails"
 import { AssignResourceModal } from "../assignResourceModal"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export interface Student {
   id: string
@@ -53,6 +54,7 @@ export default function ResourcesList({ classId }: { classId: string }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -93,13 +95,22 @@ export default function ResourcesList({ classId }: { classId: string }) {
     setIsEditModalOpen(false)
   }
 
-  const handleResourceSuccess = () => {
-    // Refresh resources list
-    fetchResources()
+  const handleResourceSuccess = (message: string) => {
+    setSuccessMessage(message)
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setSuccessMessage(null)
+    }, 3000)
   }
 
   return (
     <div className="h-full flex flex-col">
+      {successMessage && (
+        <Alert variant="success" className="mb-4">
+          <AlertDescription>{successMessage}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Resources</h2>
         <div>
@@ -153,7 +164,10 @@ export default function ResourcesList({ classId }: { classId: string }) {
       <CreateResourceModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={handleResourceSuccess}
+        onSuccess={() => {
+          setIsCreateModalOpen(false)
+          handleResourceSuccess("Resource created successfully")
+        }}
       />
       <EditResourceModal
         isOpen={isEditModalOpen}
@@ -172,7 +186,10 @@ export default function ResourcesList({ classId }: { classId: string }) {
         isOpen={isAssignModalOpen}
         onClose={() => setIsAssignModalOpen(false)}
         classId={classId}
-        onSuccess={handleResourceSuccess}
+        onSuccess={() => {
+          setIsAssignModalOpen(false)
+          handleResourceSuccess("Resources assigned successfully")
+        }}
       />
     </div>
   )

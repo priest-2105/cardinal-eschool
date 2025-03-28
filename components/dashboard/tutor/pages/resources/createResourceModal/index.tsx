@@ -53,7 +53,7 @@ export function CreateResourceModal({ isOpen, onClose, onSuccess }: CreateResour
         </DialogHeader>
 
         {error && (
-          <Alert variant="danger" className="mb-4">
+          <Alert variant="danger" className="z-50 bg-white top-5 right-4">
             {error}
           </Alert>
         )}
