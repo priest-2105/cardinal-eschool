@@ -47,11 +47,10 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
             </Badge>
           </div>
         </div>
-        <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto">
-          <a href={coursdetails.meeting_link} target="_blank" rel="noopener noreferrer">
+        
+          <a  className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto" href={coursdetails.meeting_link} target="_blank" rel="noopener noreferrer">
             Join Class
           </a>
-        </Button>
       </div>
 
       {/* Course Description */}
