@@ -159,6 +159,7 @@ export function StudentDetails({ id }: { id: string }) {
       if (!token) throw new Error("Authentication token is missing")
       const data = await getStudentDetails(token, studentId)
       setStudentDetails(data)
+      console.log(data);
       
     } catch (error: any) {
       console.error("Failed to fetch student details:", error.message)
@@ -617,7 +618,7 @@ export function StudentDetails({ id }: { id: string }) {
           {activeTab === "payments" && (
             <Card className="py-5">
               <CardContent>
-                <TransactionList />
+                <TransactionList transactions={studentDetails?.payments} />
               </CardContent>
             </Card>
           )}
