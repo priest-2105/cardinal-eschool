@@ -43,6 +43,10 @@ interface Student {
   subjects_interested_in: string[]
 }
 
+interface ValidationErrors {
+  [key: string]: string
+}
+
 export default function CreateCoursePage() {
   const router = useRouter()
   const [courseName, setCourseName] = useState("")
@@ -61,6 +65,7 @@ export default function CreateCoursePage() {
   const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<ValidationErrors>({})
   const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
@@ -88,6 +93,39 @@ export default function CreateCoursePage() {
 
     loadTutorsAndStudents()
   }, [token])
+
+  const validateForm = (): boolean => {
+    const newErrors: ValidationErrors = {}
+
+    if (!courseName.trim()) newErrors.name = "Course name is required"
+    if (!courseCode.trim()) newErrors.code = "Course code is required"
+    if (!description.trim()) newErrors.description = "Description is required"
+    if (schedules.length === 0) newErrors.schedule = "At least one schedule is required"
+    if (!assignedTutor) newErrors.tutor = "A tutor must be assigned"
+    if (assignedStudents.length === 0) newErrors.students = "At least one student must be assigned"
+
+    // Meeting link validation
+    if (joinClassLink) {
+      const meetLinkRegex = /^(https?:\/\/)?(meet\.google\.com\/[a-zA-Z0-9-]+|(?:www\.)?zoom\.us\/(?:j\/)?[0-9]+(\?pwd=[a-zA-Z0-9]+)?)$/
+      if (!meetLinkRegex.test(joinClassLink)) {
+        newErrors.meeting_link = "Please enter a valid Google Meet or Zoom meeting link"
+      }
+    }
+
+    // Schedule validation
+    schedules.forEach((schedule, index) => {
+      const validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      if (!validDays.includes(schedule.day)) {
+        newErrors[`schedule_${index}`] = "Invalid day selected"
+      }
+      if (!schedule.fromTime || !schedule.toTime) {
+        newErrors[`schedule_time_${index}`] = "Both start and end time are required"
+      }
+    })
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.fromTime && newSchedule.toTime) {
@@ -123,6 +161,14 @@ export default function CreateCoursePage() {
     e.preventDefault()
     if (!token) return
 
+    if (!validateForm()) {
+      setAlert({
+        type: "error",
+        message: "Please fix the validation errors before submitting",
+      })
+      return
+    }
+
     setIsSubmitting(true)
     try {
       await createClass(token, {
@@ -131,7 +177,7 @@ export default function CreateCoursePage() {
         description,
         schedule: {
           days: schedules.map(s => s.day),
-          time: schedules[0]?.fromTime || "00:00"
+          time: schedules.map(s => s.fromTime)
         },
         meeting_link: joinClassLink,
         tutor_id: assignedTutor?.id || "",
@@ -150,11 +196,15 @@ export default function CreateCoursePage() {
       setTimeout(() => {
         router.push("/admin/courses")
       }, 2000)
-    } catch (error) {
+    } catch (error: any) {
       setAlert({
         type: "error",
-        message: error instanceof Error ? error.message : "Failed to create course"
+        message: error.message || "Failed to create course"
       })
+      // Handle validation errors from the backend
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -170,10 +220,12 @@ export default function CreateCoursePage() {
       </div>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "success" : "danger"}>
-          <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
-          <AlertDescription>{alert.message}</AlertDescription>
-        </Alert>
+        <div className="fixed top-5 right-5 z-50">
+          <Alert variant={alert.type === "success" ? "success" : "danger"}>
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -185,11 +237,25 @@ export default function CreateCoursePage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="courseName">Course Name</Label>
-                <Input id="courseName" value={courseName} onChange={(e) => setCourseName(e.target.value)} required />
+                <Input 
+                  id="courseName" 
+                  value={courseName} 
+                  onChange={(e) => setCourseName(e.target.value)}
+                  className={errors.name ? "border-red-500" : ""}
+                  required 
+                />
+                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="courseCode">Course Code</Label>
-                <Input id="courseCode" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} required />
+                <Input 
+                  id="courseCode" 
+                  value={courseCode} 
+                  onChange={(e) => setCourseCode(e.target.value)}
+                  className={errors.code ? "border-red-500" : ""}
+                  required 
+                />
+                {errors.code && <p className="text-sm text-red-500">{errors.code}</p>}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -203,13 +269,17 @@ export default function CreateCoursePage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="joinClassLink">Join Class Link</Label>
+              <Label htmlFor="joinClassLink">Join Class Link (Google Meet or Zoom)</Label>
               <Input
                 id="joinClassLink"
                 value={joinClassLink}
                 onChange={(e) => setJoinClassLink(e.target.value)}
-                required
+                placeholder="https://meet.google.com/xxx-xxxx-xxx"
+                className={errors.meeting_link ? "border-red-500" : ""}
               />
+              {errors.meeting_link && (
+                <p className="text-sm text-red-500">{errors.meeting_link}</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -226,8 +296,10 @@ export default function CreateCoursePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={5}
+                className={errors.description ? "border-red-500" : ""}
                 required
               />
+              {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="prerequisites">Prerequisites</Label>
@@ -370,6 +442,7 @@ export default function CreateCoursePage() {
                   {assignedTutor ? "Change Tutor" : "Assign Tutor"}
                 </Button>
               </div>
+              {errors.tutor && <p className="text-sm text-red-500">{errors.tutor}</p>}
             </div>
             <div className="space-y-2">
               <Label>Assigned Students</Label>
@@ -382,6 +455,7 @@ export default function CreateCoursePage() {
                   {assignedStudents.length > 0 ? "Edit Students" : "Assign Students"}
                 </Button>
               </div>
+              {errors.students && <p className="text-sm text-red-500">{errors.students}</p>}
             </div>
           </CardContent>
         </Card>
@@ -391,7 +465,33 @@ export default function CreateCoursePage() {
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Course"}
+            {isSubmitting ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Creating...
+              </>
+            ) : (
+              "Create Course"
+            )}
           </Button>
         </div>
       </form>
