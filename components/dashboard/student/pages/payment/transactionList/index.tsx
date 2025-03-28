@@ -7,9 +7,26 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { fetchTransactionHistory } from "@/lib/api/student/payment/fetchTransactionHistory"
 import { useAppSelector } from "@/lib/hooks"
-import { Search, X } from "lucide-react"
+import { Search, X, MoreHorizontal } from "lucide-react"
 import { formatDate } from "@/utils/dateformat"
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown"
+import { getTransactionDetails } from "@/lib/api/student/payment/requerypayment"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog"
 
 const MONTHS = [
   "January",
@@ -24,29 +41,30 @@ const MONTHS = [
   "October",
   "November",
   "December",
-];
+]
 
 function parseTransactionDate(dateString: string) {
-  // Parse date string like "March 26th 2025 at 12:59pm"
-  const monthIndex = MONTHS.findIndex(month => dateString.startsWith(month));
-  const year = parseInt(dateString.match(/\d{4}/)?.[0] || "0");
-  return { month: monthIndex, year };
+  const monthIndex = MONTHS.findIndex(month => dateString.startsWith(month))
+  const year = parseInt(dateString.match(/\d{4}/)?.[0] || "0")
+  return { month: monthIndex, year }
 }
 
 export default function TransactionList() {
-  const router = useRouter();
+  const router = useRouter()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [loading, setLoading] = useState(true)
+  const [isRequeryModalOpen, setIsRequeryModalOpen] = useState(false)
+  const [selectedTransactionRef, setSelectedTransactionRef] = useState<string>("")
   const authState = useAppSelector((state) => state.auth)
 
   useEffect(() => {
     const fetchTransactions = async () => {
       if (!authState?.token) return
-      
+
       try {
         const response = await fetchTransactionHistory(authState.token)
         setTransactions(response.data.data)
@@ -61,53 +79,71 @@ export default function TransactionList() {
   }, [authState?.token])
 
   const availableYears = useMemo(() => {
-    const years = new Set(transactions.map(t => parseTransactionDate(t.created_at).year));
-    return Array.from(years).sort((a, b) => b - a); // Sort descending
-  }, [transactions]);
+    const years = new Set(transactions.map(t => parseTransactionDate(t.created_at).year))
+    return Array.from(years).sort((a, b) => b - a)
+  }, [transactions])
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
-      const { month, year } = parseTransactionDate(transaction.created_at);
-      
-      const monthMatch = 
-        selectedMonths === "all" || 
-        month.toString() === selectedMonths;
+      const { month, year } = parseTransactionDate(transaction.created_at)
 
-      const yearMatch = 
-        selectedYear === "all" || 
-        year.toString() === selectedYear;
+      const monthMatch =
+        selectedMonths === "all" ||
+        month.toString() === selectedMonths
 
-      const statusMatch = 
-        selectedStatus === "all" || 
-        transaction.status.toLowerCase() === selectedStatus.toLowerCase();
-      
-      const searchLower = searchQuery.toLowerCase();
-      const searchMatch = 
+      const yearMatch =
+        selectedYear === "all" ||
+        year.toString() === selectedYear
+
+      const statusMatch =
+        selectedStatus === "all" ||
+        transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+
+      const searchLower = searchQuery.toLowerCase()
+      const searchMatch =
         searchQuery === "" ||
         transaction.subscription_plan_name.toLowerCase().includes(searchLower) ||
-        transaction.transaction_ref.toLowerCase().includes(searchLower);
+        transaction.transaction_ref.toLowerCase().includes(searchLower)
 
-      return monthMatch && yearMatch && statusMatch && searchMatch;
-    });
-  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery]);
+      return monthMatch && yearMatch && statusMatch && searchMatch
+    })
+  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery])
 
-  const clearMonths = () => setSelectedMonths("all");
-  const clearYear = () => setSelectedYear("all");
+  const clearMonths = () => setSelectedMonths("all")
+  const clearYear = () => setSelectedYear("all")
 
   const handleTransactionClick = (transactionRef: string) => {
-    router.push(`/student/transaction/${transactionRef}`);
-  };
+    router.push(`/student/transaction/${transactionRef}`)
+  }
+
+  const handleRequeryPayment = async (transactionRef: string) => {
+    if (!authState?.token) return
+    try {
+      const response = await getTransactionDetails(authState.token, transactionRef)
+      const updatedResponse = await fetchTransactionHistory(authState.token)
+      setTransactions(updatedResponse.data.data)
+      setIsRequeryModalOpen(false)
+    } catch (error) {
+      console.error("Failed to requery payment:", error)
+    }
+  }
+
+  const openRequeryModal = (transactionRef: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelectedTransactionRef(transactionRef)
+    setIsRequeryModalOpen(true)
+  }
 
   if (loading) {
     return <div className="text-center py-12 border rounded-lg">
-    <p className="text-gray-500">Loading</p>
-  </div>
+      <p className="text-gray-500">Loading</p>
+    </div>
   }
 
   if (!transactions) {
     return <div className="text-center py-12 border rounded-lg">
-    <p className="text-gray-500">No Transactions</p>
-  </div>
+      <p className="text-gray-500">No Transactions</p>
+    </div>
   }
 
   return (
@@ -201,11 +237,12 @@ export default function TransactionList() {
               <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Quantity</TableHead>
+              <TableHead>Options</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredTransactions.map((transaction) => (
-              <TableRow 
+              <TableRow
                 key={transaction.id}
                 className="cursor-pointer hover:bg-gray-50"
                 onClick={() => handleTransactionClick(transaction.transaction_ref)}
@@ -228,11 +265,54 @@ export default function TransactionList() {
                   </Badge>
                 </TableCell>
                 <TableCell>{transaction.quantity}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      {(transaction.status.toLowerCase() === "pending" ||
+                        transaction.status.toLowerCase() === "failed") && (
+                        <DropdownMenuItem
+                          onClick={(e) => openRequeryModal(transaction.transaction_ref, e)}
+                        >
+                          Requery Payment
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleTransactionClick(transaction.transaction_ref)
+                        }}
+                      >
+                        View Details
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+      <AlertDialog open={isRequeryModalOpen} onOpenChange={setIsRequeryModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Requery Payment</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to requery this payment? This will check the current status of your transaction.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsRequeryModalOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleRequeryPayment(selectedTransactionRef)}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

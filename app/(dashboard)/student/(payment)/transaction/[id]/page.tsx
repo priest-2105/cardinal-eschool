@@ -84,12 +84,14 @@
 
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { getTransactionDetails } from "@/lib/api/student/payment/transactiondetails";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
 
 export default function TransactionDetails() {
   const params = useParams();
@@ -98,6 +100,7 @@ export default function TransactionDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const authState = useAppSelector((state) => state.auth);
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -149,15 +152,19 @@ export default function TransactionDetails() {
     );
   }
 
+  const handleBack = () => {
+      router.back();
+  }
+
   return (
-    <div className={`transition-all ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+    <div className={`transition-all bg-white p-6 rounded-lg shadow-sm ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     <div className="flex flex-col w-full mx-auto px-4">
     <div className="border-b">
-          <Button variant="ghost">Back</Button>
+          <Button variant="ghost" onClick={handleBack}> <ArrowLeft/> Back</Button>
       </div>
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl p-4">
         <h1 className="text-2xl font-bold mb-6">Transaction Details</h1>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="rounded-lg p-6">
           <div className="grid gap-4">
             <div className="flex justify-between border-b py-2">
               <span className="font-semibold">Transaction Reference:</span>
