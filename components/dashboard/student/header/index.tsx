@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { Bell } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/dashboard/student/ui/avatar"
 import { Button } from "@/components/dashboard/student/ui/button"
@@ -13,7 +12,7 @@ import { fetchStudentProfile, logout } from "@/lib/api/student/api"
 import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
-import { getStudentDetails } from "@/lib/api/public/api"
+// import { getStudentDetails } from "@/lib/api/public/api"
 
 
 const notifications = [
