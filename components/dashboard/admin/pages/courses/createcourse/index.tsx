@@ -177,7 +177,7 @@ export default function CreateCoursePage() {
         description,
         schedule: {
           days: schedules.map(s => s.day),
-          time: schedules.map(s => s.fromTime), // Changed to array of times
+          time: schedules.map(s => s.fromTime),
         },
         meeting_link: joinClassLink,
         tutor_id: assignedTutor?.id || "",
@@ -188,10 +188,13 @@ export default function CreateCoursePage() {
         semester
       };
 
-      console.log("Submitting class creation request:", JSON.stringify(requestBody, null, 2));
+      console.log("Submitting request to create class:", {
+        token: token ? "Present" : "Missing",
+        body: requestBody
+      });
 
       const response = await createClass(token, requestBody);
-      console.log("Class creation response:", response);
+      console.log("Class creation successful:", response);
 
       setAlert({
         type: "success",
@@ -202,12 +205,19 @@ export default function CreateCoursePage() {
         router.push("/admin/courses");
       }, 2000);
     } catch (error: any) {
-      console.error("Class creation error:", error);
+      console.error("Class creation error details:", {
+        message: error.message,
+        stack: error.stack
+      });
+      
       setAlert({
         type: "error",
-        message: error.message || "Failed to create course"
+        message: error.message || "Failed to create course. Please check the console for details."
       });
+      
+      // Log validation errors if present
       if (error.response?.data?.errors) {
+        console.error("Validation errors:", error.response.data.errors);
         setErrors(error.response.data.errors);
       }
     } finally {
