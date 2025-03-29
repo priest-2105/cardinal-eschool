@@ -22,6 +22,9 @@ export * from "./courses/createassessment"
 export * from "./courses/fetchsingleassessment"
 export * from "./courses/deleteassessment"
 export * from "./courses/createreport"
+export * from "./courses/fetchreport"
+
+
 
 // Tutor Ticket API EXPORT
 export * from "./ticket/createticket";

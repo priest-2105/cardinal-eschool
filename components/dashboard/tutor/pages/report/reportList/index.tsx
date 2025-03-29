@@ -1,15 +1,19 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, FileText, Plus, Edit } from "lucide-react"
-import { format } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreateReportModal } from "../createReportModal/index"
 import { ViewReportModal } from "../viewReportModal/index"
 import { EditReportModal } from "../editReportModal/index"
+import { Badge } from "@/components/ui/badge"
+import { getClassReports } from "@/lib/api/tutor/courses/fetchreport"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
 
 export interface Student {
   id: string
@@ -18,41 +22,14 @@ export interface Student {
 }
 
 export interface Report {
-  id: string
-  title: string
-  subject: string
-  grade: string
-  dateSubmitted: Date
-  studentId: string
-  content: string
+  id: number
+  student_id: string
+  report: string
+  status: "pending" | "completed"
+  month: string
+  created_at: string
+  updated_at: string
 }
-
-const SAMPLE_STUDENTS: Student[] = [
-  { id: "1", name: "Alice Johnson", email: "alice@example.com" },
-  { id: "2", name: "Bob Smith", email: "bob@example.com" },
-  { id: "3", name: "Charlie Brown", email: "charlie@example.com" },
-]
-
-const SAMPLE_REPORTS: Report[] = [
-  {
-    id: "1",
-    title: "Midterm Exam Results",
-    subject: "Basic Science",
-    grade: "A",
-    dateSubmitted: new Date(2024, 5, 15),
-    studentId: "1",
-    content: "Alice demonstrated excellent understanding of basic scientific principles...",
-  },
-  {
-    id: "2",
-    title: "Lab Report: Energy Conservation",
-    subject: "Physics",
-    grade: "B+",
-    dateSubmitted: new Date(2025, 6, 1),
-    studentId: "2",
-    content: "Bob's lab report on energy conservation showed good analytical skills...",
-  },
-]
 
 interface ReportListProps {
   classId: string
@@ -67,13 +44,34 @@ interface ReportListProps {
 
 export default function ReportsList({ classId, courseDetails }: ReportListProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [reports, setReports] = useState(SAMPLE_REPORTS)
+  const [reports, setReports] = useState<Report[]>([])
   const [dateFilter, setDateFilter] = useState("all")
   const [studentFilter, setStudentFilter] = useState("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  const fetchReports = async () => {
+    if (!token) return
+
+    setLoading(true)
+    try {
+      const response = await getClassReports(token, classId)
+      setReports(response.data.reports)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch reports")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchReports()
+  }, [classId, token])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -91,38 +89,37 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     filterReports(searchTerm, dateFilter, value)
   }
 
-  const handleDeleteReport = (id: string) => {
+  const handleDeleteReport = (id: number) => {
     const updatedReports = reports.filter((report) => report.id !== id)
     setReports(updatedReports)
     setIsEditModalOpen(false)
   }
 
   const filterReports = (term: string, date: string, student: string) => {
-    let filteredReports = SAMPLE_REPORTS.filter(
+    let filteredReports = reports.filter(
       (report) =>
-        report.title.toLowerCase().includes(term.toLowerCase()) ||
-        report.subject.toLowerCase().includes(term.toLowerCase()),
+        report.report.toLowerCase().includes(term.toLowerCase()),
     )
 
     if (student !== "all") {
-      filteredReports = filteredReports.filter((report) => report.studentId === student)
+      filteredReports = filteredReports.filter((report) => report.student_id === student)
     }
 
     const now = new Date()
     switch (date) {
       case "week":
         filteredReports = filteredReports.filter(
-          (report) => report.dateSubmitted >= new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7),
+          (report) => parseISO(report.created_at) >= new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7),
         )
         break
       case "month":
         filteredReports = filteredReports.filter(
-          (report) => report.dateSubmitted >= new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()),
+          (report) => parseISO(report.created_at) >= new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()),
         )
         break
       case "year":
         filteredReports = filteredReports.filter(
-          (report) => report.dateSubmitted >= new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()),
+          (report) => parseISO(report.created_at) >= new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()),
         )
         break
     }
@@ -131,7 +128,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   }
 
   const handleCreateReport = (newReport: Omit<Report, "id">) => {
-    const id = (reports.length + 1).toString()
+    const id = reports.length + 1
     setReports([...reports, { ...newReport, id }])
     setIsCreateModalOpen(false)
   }
@@ -188,7 +185,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All students</SelectItem>
-            {SAMPLE_STUDENTS.map((student) => (
+            {courseDetails.students_assigned.map((student) => (
               <SelectItem key={student.id} value={student.id}>
                 {student.name}
               </SelectItem>
@@ -196,38 +193,55 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           </SelectContent>
         </Select>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {reports.map((report) => (
-          <div
-            key={report.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
-          >
-            <div className="mb-2 sm:mb-0">
-              <h3 className="font-medium">{report.title}</h3>
-              <p className="text-sm text-gray-500">
-                {report.subject} • Grade: {report.grade}
-              </p>
-              <p className="text-xs text-gray-400 flex items-center mt-1">
-                <Calendar size={12} className="mr-1" />
-                {format(report.dateSubmitted, "MMM d, yyyy")}
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Student: {SAMPLE_STUDENTS.find((s) => s.id === report.studentId)?.name}
-              </p>
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <p>Loading reports...</p>
+        </div>
+      ) : error ? (
+        <div className="flex-1 flex items-center justify-center text-red-500">
+          <p>{error}</p>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
+          {reports.map((report) => (
+            <div
+              key={report.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
+            >
+              <div className="mb-2 sm:mb-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium">
+                    {courseDetails.students_assigned.find(s => s.id === report.student_id)?.name || "Unknown Student"}
+                  </h3>
+                  <Badge variant={report.status === "pending" ? "warning" : "success"}>
+                    {report.status}
+                  </Badge>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">{report.report}</p>
+                <div className="flex items-center gap-4 mt-1">
+                  <p className="text-xs text-gray-400">
+                    <Calendar size={12} className="inline mr-1" />
+                    {format(parseISO(report.created_at), "MMM d, yyyy")}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Month: {report.month}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+                <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
+                  <FileText size={16} className="mr-2" />
+                  View
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleEditReport(report)}>
+                  <Edit size={16} className="mr-2" />
+                  Edit
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-              <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
-                <FileText size={16} className="mr-2" />
-                View
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleEditReport(report)}>
-                <Edit size={16} className="mr-2" />
-                Edit
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       <CreateReportModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -239,7 +253,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
         report={selectedReport}
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
-        students={SAMPLE_STUDENTS}
+        students={courseDetails.students_assigned}
       />
       <EditReportModal
         isOpen={isEditModalOpen}
@@ -247,7 +261,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
         onSubmit={handleUpdateReport}
         onDelete={handleDeleteReport}
         report={selectedReport}
-        students={SAMPLE_STUDENTS}
+        students={courseDetails.students_assigned}
       />
     </div>
   )
