@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import type { Assessment } from "../types" // Import the Assessment type
+import type { Assessment } from "../types" 
 
 export interface Student {
   id: string
@@ -80,21 +79,6 @@ export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: C
           <div>
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-          <div>
-            <Label>Assign to Students</Label>
-            <div className="space-y-2 mt-2">
-              {students.map((student) => (
-                <div key={student.id} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`student-${student.id}`}
-                    checked={selectedStudents.includes(student.id)}
-                    onCheckedChange={() => handleStudentSelection(student.id)}
-                  />
-                  <Label htmlFor={`student-${student.id}`}>{student.name}</Label>
-                </div>
-              ))}
-            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
