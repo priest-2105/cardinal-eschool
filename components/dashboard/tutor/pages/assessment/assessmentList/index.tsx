@@ -105,12 +105,12 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
       {error && (
         <Alert 
           variant="danger" 
-          className="fixed top-4 right-4 z-50"
+          className="fixed bg-white top-30 right-4 z-50"
           onClose={() => setError(null)}
         >
           <AlertDescription>
             {error === 'CONFIRM_DELETE' ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col  gap-2">
                 <p>Are you sure you want to delete this assessment?</p>
                 <div className="flex gap-2 justify-end">
                   <Button 
@@ -121,7 +121,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                     Cancel
                   </Button>
                   <Button 
-                    variant="destructive" 
+                    variant="danger" 
                     size="sm" 
                     onClick={() => {
                       setError(null)
