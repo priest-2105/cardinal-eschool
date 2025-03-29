@@ -41,9 +41,8 @@ export function CreateAssessmentModal({ isOpen, onClose, onSuccess, classId }: C
 
     try {
       await createAssessment(token, classId, formData)
-      onSuccess()
-      onClose()
       form.reset()
+      onSuccess() // This will trigger the parent's success handler
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create assessment")
     } finally {

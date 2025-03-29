@@ -19,6 +19,8 @@ export * from "./courses/createresources"
 export * from "./courses/fetchresources"
 export * from "./courses/fetchsinglecourse"
 export * from "./courses/createassessment"
+export * from "./courses/fetchsingleassessment"
+export * from "./courses/deleteassessment"
 
 // Tutor Ticket API EXPORT
 export * from "./ticket/createticket";
