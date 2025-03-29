@@ -1,5 +1,3 @@
-
-
 // Authentication  API EXPORT
 
 export * from "./auth/login";
@@ -20,6 +18,7 @@ export * from "./courses/courselist"
 export * from "./courses/createresources"
 export * from "./courses/fetchresources"
 export * from "./courses/fetchsinglecourse"
+export * from "./courses/createassessment"
 
 // Tutor Ticket API EXPORT
 export * from "./ticket/createticket";
@@ -32,4 +31,4 @@ export * from "./ticket/tickedetails";
 export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
 export * from "./notifcation/markallnotificationasread";
-export * from "./notifcation/deletenotification"; 
+export * from "./notifcation/deletenotification";

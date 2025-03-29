@@ -1,90 +1,119 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import type { Assessment } from "../types" 
-
-export interface Student {
-  id: string
-  name: string
-  email: string
-}
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { createAssessment } from "@/lib/api/tutor/courses/createassessment"
+import { Alert } from "@/components/ui/alert"
 
 interface CreateAssessmentModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (assessments: Omit<Assessment, "id">[]) => void
-  students: Student[]
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  classId: string;
 }
 
-export function CreateAssessmentModal({ isOpen, onClose, onSubmit, students }: CreateAssessmentModalProps) {
-  const [topic, setTopic] = useState("")
-  const [subject, setSubject] = useState("")
-  const [dueDate, setDueDate] = useState("")
-  const [description, setDescription] = useState("")
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([])
+export function CreateAssessmentModal({ isOpen, onClose, onSuccess, classId }: CreateAssessmentModalProps) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const newAssessments: Omit<Assessment, "id">[] = selectedStudents.map((studentId) => ({
-      topic,
-      subject,
-      dueDate: new Date(dueDate),
-      status: "pending",
-      description,
-      studentIds: [studentId],
-    }))
-    onSubmit(newAssessments)
-    resetForm()
-  }
+    if (!token) return
 
-  const resetForm = () => {
-    setTopic("")
-    setSubject("")
-    setDueDate("")
-    setDescription("")
-    setSelectedStudents([])
-  }
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    
+    // Format the deadline
+    const dateValue = form.elements.namedItem('date') as HTMLInputElement
+    const timeValue = form.elements.namedItem('time') as HTMLInputElement
+    const deadline = `${dateValue.value} ${timeValue.value}:00`
+    formData.set('deadline', deadline)
 
-  const handleStudentSelection = (studentId: string) => {
-    setSelectedStudents((prev) =>
-      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId],
-    )
+    setLoading(true)
+    setError(null)
+
+    try {
+      await createAssessment(token, classId, formData)
+      onSuccess()
+      onClose()
+      form.reset()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create assessment")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[625px] bg-white">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Assessment</DialogTitle>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="danger" className="mb-4">
+            {error}
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="subject">Subject</Label>
-            <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required />
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" name="title" required />
           </div>
-          <div>
-            <Label htmlFor="topic">Topic</Label>
-            <Input id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} required />
-          </div>
-          <div>
-            <Label htmlFor="dueDate">Due Date</Label>
-            <Input id="dueDate" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
-          </div>
+          
           <div>
             <Label htmlFor="description">Description</Label>
-            <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Textarea id="description" name="description" required />
           </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="date">Due Date</Label>
+              <Input 
+                id="date" 
+                name="date" 
+                type="date" 
+                required 
+              />
+            </div>
+            <div>
+              <Label htmlFor="time">Time</Label>
+              <Input 
+                id="time" 
+                name="time" 
+                type="time" 
+                required 
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="file">File</Label>
+            <Input 
+              id="file" 
+              name="file" 
+              type="file" 
+              accept=".pdf,.doc,.docx"
+              required 
+            />
+          </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Create Assessment</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Assessment"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

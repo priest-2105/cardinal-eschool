@@ -79,6 +79,11 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     setSelectedAssessment(null)
   }
 
+  const handleAssessmentSuccess = (message: string) => {
+    console.log(message)
+    // Additional logic for handling success can be added here
+  }
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
@@ -146,6 +151,11 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
       <CreateAssessmentModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          setIsCreateModalOpen(false)
+          handleAssessmentSuccess("Assessment created successfully")
+        }}
+        classId={classId}
       />
       <EditAssessmentModal
         isOpen={isEditModalOpen}
