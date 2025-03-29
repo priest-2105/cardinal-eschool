@@ -1,124 +1,83 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { updateReport } from "@/lib/api/tutor/courses/updaterereport"
+import { Alert } from "@/components/ui/alert"
 
-export interface Student {
-    id: string
-    name: string
-    email: string
-  }
-  
-  export interface Report {
-    id: string
-    title: string
-    subject: string
-    grade: string
-    dateSubmitted: Date
-    studentId: string
-    content: string
-  }
-  
- 
 interface EditReportModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (report: Report) => void
-  onDelete: (id: string) => void
-  report: Report | null
-  students: Student[]
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  classId: string;
+  report: {
+    id: number;
+    report: string;
+  } | null;
 }
 
-export function EditReportModal({ isOpen, onClose, onSubmit, onDelete, report, students }: EditReportModalProps) {
-  const [title, setTitle] = useState("")
-  const [subject, setSubject] = useState("")
-  const [grade, setGrade] = useState("")
-  const [content, setContent] = useState("")
-  const [selectedStudent, setSelectedStudent] = useState("")
+export function EditReportModal({ isOpen, onClose, onSuccess, classId, report }: EditReportModalProps) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [reportContent, setReportContent] = useState(report?.report || "")
+  const token = useSelector((state: RootState) => state.auth?.token)
 
-  useEffect(() => {
-    if (report) {
-      setTitle(report.title)
-      setSubject(report.subject)
-      setGrade(report.grade)
-      setContent(report.content)
-      setSelectedStudent(report.studentId)
-    }
-  }, [report])
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (report) {
-      const updatedReport: Report = {
-        ...report,
-        title,
-        subject,
-        grade,
-        content,
-        studentId: selectedStudent,
-      }
-      onSubmit(updatedReport)
+    if (!token || !report) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      await updateReport(token, classId, report.id, {
+        report: reportContent,
+      })
+      onSuccess()
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update report")
+    } finally {
+      setLoading(false)
     }
   }
-
-  if (!report) return null
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[625px] bg-white">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Report</DialogTitle>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="danger" className="mb-4">
+            {error}
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Label>Report Content</Label>
+            <Textarea 
+              value={reportContent}
+              onChange={(e) => setReportContent(e.target.value)}
+              required
+              rows={6}
+            />
           </div>
-          <div>
-            <Label htmlFor="subject">Subject</Label>
-            <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required />
-          </div>
-          <div>
-            <Label htmlFor="grade">Grade</Label>
-            <Input id="grade" value={grade} onChange={(e) => setGrade(e.target.value)} required />
-          </div>
-          <div>
-            <Label htmlFor="student">Student</Label>
-            <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a student" />
-              </SelectTrigger>
-              <SelectContent>
-                {students.map((student) => (
-                  <SelectItem key={student.id} value={student.id}>
-                    {student.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="content">Report Content</Label>
-            <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} required />
-          </div>
-          <DialogFooter className="flex">
-            <div className="ml-0 mr-auto">
-              <Button type="button" variant="danger" onClick={() => onDelete(report.id)}>
-              Delete
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
             </Button>
-            </div>
-            <div>
-              <Button type="button" variant="outline" onClick={onClose} className="mr-2">
-                Cancel
-              </Button>
-              <Button type="submit">Update Report</Button>
-            </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Updating..." : "Update Report"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

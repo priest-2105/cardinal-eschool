@@ -45,7 +45,7 @@ interface ReportListProps {
 export default function ReportsList({ classId, courseDetails }: ReportListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState<Report[]>([])
-  const [dateFilter, setDateFilter] = useState("all")
+  const [monthFilter, setMonthFilter] = useState("all")
   const [studentFilter, setStudentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -55,6 +55,11 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ]
 
   const fetchReports = async () => {
     if (!token) return
@@ -77,22 +82,22 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
-    filterReports(term, dateFilter, studentFilter, statusFilter)
+    filterReports(term, monthFilter, statusFilter)
   }
 
-  const handleDateFilter = (value: string) => {
-    setDateFilter(value)
-    filterReports(searchTerm, value, studentFilter, statusFilter)
+  const handleMonthFilter = (value: string) => {
+    setMonthFilter(value)
+    filterReports(searchTerm, value, statusFilter)
   }
 
   const handleStudentFilter = (value: string) => {
     setStudentFilter(value)
-    filterReports(searchTerm, dateFilter, value, statusFilter)
+    filterReports(searchTerm, monthFilter, statusFilter)
   }
 
   const handleStatusFilter = (value: string) => {
     setStatusFilter(value)
-    filterReports(searchTerm, dateFilter, studentFilter, value)
+    filterReports(searchTerm, monthFilter, value)
   }
 
   const handleDeleteReport = (id: number) => {
@@ -101,37 +106,18 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     setIsEditModalOpen(false)
   }
 
-  const filterReports = (term: string, date: string, student: string, status: string) => {
+  const filterReports = (term: string, month: string, status: string) => {
     let filteredReports = reports.filter(
       (report) =>
         report.report.toLowerCase().includes(term.toLowerCase()),
     )
 
-    if (student !== "all") {
-      filteredReports = filteredReports.filter((report) => report.student_id === student)
+    if (month !== "all") {
+      filteredReports = filteredReports.filter((report) => report.month === month)
     }
 
     if (status !== "all") {
       filteredReports = filteredReports.filter((report) => report.status === status)
-    }
-
-    const now = new Date()
-    switch (date) {
-      case "week":
-        filteredReports = filteredReports.filter(
-          (report) => parseISO(report.created_at) >= new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7),
-        )
-        break
-      case "month":
-        filteredReports = filteredReports.filter(
-          (report) => parseISO(report.created_at) >= new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()),
-        )
-        break
-      case "year":
-        filteredReports = filteredReports.filter(
-          (report) => parseISO(report.created_at) >= new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()),
-        )
-        break
     }
 
     setReports(filteredReports)
@@ -178,30 +164,37 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
-        <Select onValueChange={handleDateFilter} defaultValue="all">
+
+        <Select onValueChange={handleMonthFilter} defaultValue="all">
           <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filter by date" />
+            <SelectValue placeholder="Filter by month" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All time</SelectItem>
-            <SelectItem value="week">Past week</SelectItem>
-            <SelectItem value="month">Past month</SelectItem>
-            <SelectItem value="year">Past year</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select onValueChange={handleStudentFilter} defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Filter by student" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All students</SelectItem>
-            {courseDetails.students_assigned.map((student) => (
-              <SelectItem key={student.id} value={student.id}>
-                {student.name}
+            <SelectItem value="all">All months</SelectItem>
+            {months.map((month) => (
+              <SelectItem key={month} value={month}>
+                {month}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
+        {courseDetails.students_assigned.length > 1 && (
+          <Select onValueChange={handleStudentFilter} defaultValue="all">
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Filter by student" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All students</SelectItem>
+              {courseDetails.students_assigned.map((student) => (
+                <SelectItem key={student.id} value={student.id}>
+                  {student.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <Select onValueChange={handleStatusFilter} defaultValue="all">
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by status" />

@@ -23,6 +23,7 @@ export * from "./courses/fetchsingleassessment"
 export * from "./courses/deleteassessment"
 export * from "./courses/createreport"
 export * from "./courses/fetchreport"
+export * from "./courses/updaterereport"
 
 
 
