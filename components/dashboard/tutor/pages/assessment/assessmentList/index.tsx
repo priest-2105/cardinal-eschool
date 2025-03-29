@@ -14,6 +14,16 @@ import type { RootState } from "@/lib/store"
 import { getClassAssignments } from "@/lib/api/tutor/courses/fetchasessments"
 import { deleteAssessment } from "@/lib/api/tutor/courses/deleteassessment"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface Assessment {
   id: number
@@ -41,6 +51,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false)
 
   const fetchAssessments = async () => {
     if (!token) return
@@ -102,43 +113,29 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
         </Alert>
       )}
 
-      {error && (
-        <Alert 
-          variant="danger" 
-          className="fixed bg-white top-30 right-4 z-50"
-          onClose={() => setError(null)}
-        >
-          <AlertDescription>
-            {error === 'CONFIRM_DELETE' ? (
-              <div className="flex flex-col  gap-2">
-                <p>Are you sure you want to delete this assessment?</p>
-                <div className="flex gap-2 justify-end">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setError(null)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="danger" 
-                    size="sm" 
-                    onClick={() => {
-                      setError(null)
-                      handleDeleteAssessment(selectedAssessment!)
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              error
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-      
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this assessment. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                handleDeleteAssessment(selectedAssessment!)
+                setShowDeleteAlert(false)
+              }}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Assessments</h2>
         <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -196,7 +193,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                   size="sm" 
                   onClick={() => {
                     setSelectedAssessment(assessment)
-                    setError('CONFIRM_DELETE')
+                    setShowDeleteAlert(true)
                   }}
                   className="text-red-600 hover:text-red-700"
                 >

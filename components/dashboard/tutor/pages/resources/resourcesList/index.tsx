@@ -182,10 +182,10 @@ export default function ResourcesList({ classId, assignedResources = [] }: Resou
                 <Eye size={16} className="mr-2" />
                 View
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleEditResource(resource)}>
+              {/* <Button variant="outline" size="sm" onClick={() => handleEditResource(resource)}>
                 <Edit size={16} className="mr-2" />
                 Edit
-              </Button>
+              </Button> */}
             </div>
           </div>
         ))}
