@@ -16,7 +16,6 @@ export interface Student {
   name: string
   email: string
 }
- 
 
 export interface Report {
   id: string
@@ -55,7 +54,18 @@ const SAMPLE_REPORTS: Report[] = [
   },
 ]
 
-export default function ReportsList() {
+interface ReportListProps {
+  classId: string
+  courseDetails: {
+    students_assigned: {
+      id: string
+      name: string
+      dp_url: string | null
+    }[]
+  }
+}
+
+export default function ReportsList({ classId, courseDetails }: ReportListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
@@ -221,8 +231,9 @@ export default function ReportsList() {
       <CreateReportModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateReport}
-        students={SAMPLE_STUDENTS}
+        onSuccess={handleCreateReport}
+        classId={classId}
+        students={courseDetails.students_assigned}
       />
       <ViewReportModal
         report={selectedReport}
