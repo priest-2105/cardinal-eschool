@@ -45,6 +45,7 @@ interface ReportListProps {
 export default function ReportsList({ classId, courseDetails }: ReportListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState<Report[]>([])
+  const [filteredReports, setFilteredReports] = useState<Report[]>([])
   const [monthFilter, setMonthFilter] = useState("all")
   const [studentFilter, setStudentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -79,6 +80,10 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     fetchReports()
   }, [classId, token])
 
+  useEffect(() => {
+    setFilteredReports(reports)
+  }, [reports])
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
@@ -107,20 +112,20 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   }
 
   const filterReports = (term: string, month: string, status: string) => {
-    let filteredReports = reports.filter(
+    let result = reports.filter(
       (report) =>
         report.report.toLowerCase().includes(term.toLowerCase()),
     )
 
     if (month !== "all") {
-      filteredReports = filteredReports.filter((report) => report.month === month)
+      result = result.filter((report) => report.month === month)
     }
 
     if (status !== "all") {
-      filteredReports = filteredReports.filter((report) => report.status === status)
+      result = result.filter((report) => report.status === status)
     }
 
-    setReports(filteredReports)
+    setFilteredReports(result)
   }
 
   const handleCreateReport = (newReport: Omit<Report, "id">) => {
@@ -143,6 +148,10 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     const updatedReports = reports.map((report) => (report.id === updatedReport.id ? updatedReport : report))
     setReports(updatedReports)
     setIsEditModalOpen(false)
+  }
+
+  const handleAssessmentSuccess = (message: string) => {
+    console.log(message)
   }
 
   return (
@@ -216,7 +225,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-          {reports.map((report) => (
+          {filteredReports.map((report) => (
             <div
               key={report.id}
               className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
@@ -271,11 +280,13 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
       <EditReportModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSubmit={handleUpdateReport}
-        onDelete={handleDeleteReport}
+        onSuccess={() => {
+          setIsEditModalOpen(false)
+          handleAssessmentSuccess("Report updated successfully")
+          fetchReports() // Refresh the list after update
+        }}
         report={selectedReport}
         classId={classId}
-        students={courseDetails.students_assigned}
       />
     </div>
   )
