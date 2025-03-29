@@ -274,6 +274,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
         onSubmit={handleUpdateReport}
         onDelete={handleDeleteReport}
         report={selectedReport}
+        classId={classId}
         students={courseDetails.students_assigned}
       />
     </div>
