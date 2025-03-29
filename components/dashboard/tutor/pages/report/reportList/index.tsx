@@ -47,6 +47,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const [reports, setReports] = useState<Report[]>([])
   const [dateFilter, setDateFilter] = useState("all")
   const [studentFilter, setStudentFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
@@ -76,17 +77,22 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
     setSearchTerm(term)
-    filterReports(term, dateFilter, studentFilter)
+    filterReports(term, dateFilter, studentFilter, statusFilter)
   }
 
   const handleDateFilter = (value: string) => {
     setDateFilter(value)
-    filterReports(searchTerm, value, studentFilter)
+    filterReports(searchTerm, value, studentFilter, statusFilter)
   }
 
   const handleStudentFilter = (value: string) => {
     setStudentFilter(value)
-    filterReports(searchTerm, dateFilter, value)
+    filterReports(searchTerm, dateFilter, value, statusFilter)
+  }
+
+  const handleStatusFilter = (value: string) => {
+    setStatusFilter(value)
+    filterReports(searchTerm, dateFilter, studentFilter, value)
   }
 
   const handleDeleteReport = (id: number) => {
@@ -95,7 +101,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     setIsEditModalOpen(false)
   }
 
-  const filterReports = (term: string, date: string, student: string) => {
+  const filterReports = (term: string, date: string, student: string, status: string) => {
     let filteredReports = reports.filter(
       (report) =>
         report.report.toLowerCase().includes(term.toLowerCase()),
@@ -103,6 +109,10 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
 
     if (student !== "all") {
       filteredReports = filteredReports.filter((report) => report.student_id === student)
+    }
+
+    if (status !== "all") {
+      filteredReports = filteredReports.filter((report) => report.status === status)
     }
 
     const now = new Date()
@@ -190,6 +200,16 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
                 {student.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+        <Select onValueChange={handleStatusFilter} defaultValue="all">
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
       </div>
