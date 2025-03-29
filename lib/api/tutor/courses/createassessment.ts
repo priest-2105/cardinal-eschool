@@ -23,7 +23,7 @@ export async function createAssessment(token: string, classId: string, formData:
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    credentials: 'include', // Include cookies if needed
+    credentials: 'include', 
     body: formData,
   });
 
