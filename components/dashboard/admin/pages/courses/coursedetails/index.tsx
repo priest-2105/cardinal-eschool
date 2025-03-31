@@ -127,10 +127,18 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
               <ResourcesList resources={courseDetails.resources.details} />
             )}
             {activeTab === "reports" && (
-              <ReportsList classId={courseDetails.class.id.toString()} total={courseDetails.reports.total} />
+              <ReportsList
+                classId={courseDetails.class.id.toString()}
+                total={courseDetails.reports.total}
+                students={courseDetails.students}
+              />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList classId={courseDetails.class.id.toString()} stats={courseDetails.assignments} />
+              <AssessmentsList
+                classId={courseDetails.class.id.toString()}
+                stats={courseDetails.assignments}
+                students={courseDetails.students}
+              />
             )}
             {activeTab === "students" && (
               <StudentList students={courseDetails.students} />
@@ -169,7 +177,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
 
           {/* Class Statistics */}
           <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
+            <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
