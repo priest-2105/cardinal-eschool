@@ -1,36 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { FilterModal } from "../coursefilter/index"
 import { CourseTable } from "../coursetable/index"
 import { Search, Plus } from "lucide-react"
 import type { Course, FilterValues } from "../types"
-// import { CreateCourseModal } from "../createCourseModal/index"
 import { useRouter } from "next/navigation"
-
-
-const COURSES_DATA: Course[] = [
-  {
-    id: 1,
-    name: "Introduction to Programming",
-    grade: 10,
-    noOfStudent: 20,
-    schedule: "Monday, Wednesday 10:00 AM - 11:30 AM",
-    status: "Active",
-    dateAdded: "2024-03-01",
-  },
-  {
-    id: 2,
-    name: "Advanced JavaScript",
-    grade: 10,
-    noOfStudent: 15,
-    schedule: "Tuesday, Thursday 2:00 PM - 3:30 PM",
-    status: "Upcoming",
-    dateAdded: "2024-04-15",
-  },
-]
+import { getTutorClasses } from "@/lib/api/admin/managecourses/courselist"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert } from "@/components/ui/alert"
 
 const INITIAL_LOAD = 10
 const LOAD_MORE_COUNT = 5
@@ -38,11 +19,10 @@ const LOAD_MORE_COUNT = 5
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_filters, setFilters] = useState<FilterValues>({
     courses: [],
     tutors: [],
-    admins: [], // Add this line
+    admins: [],
     dateRange: {
       from: undefined,
       to: undefined,
@@ -50,16 +30,44 @@ export function CourseList() {
     status: [],
   })
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [courses, setCourses] = useState<Course[]>([])
   const router = useRouter()
-  const filteredCourses = COURSES_DATA.filter((course) => {
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  const fetchCourses = async () => {
+    if (!token) return
+
+    setLoading(true)
+    try {
+      const response = await getTutorClasses(token)
+      const formattedCourses = response.data.classes.map(course => ({
+        id: course.class_id,
+        name: course.name,
+        grade: "10", // You might want to add this to your API response
+        noOfStudent: course.no_of_students,
+        schedule: `${course.schedule.days.join(", ")} ${course.schedule.time.join(" - ")}`,
+        status: "Active", // You might want to add this to your API response
+        dateAdded: new Date().toISOString().split('T')[0], // You might want to add this to your API response
+      }))
+      setCourses(formattedCourses)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch courses")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCourses()
+  }, [token])
+
+  const filteredCourses = courses.filter((course) => {
     const nameMatch = course.name.toLowerCase().includes(searchQuery.toLowerCase())
     const scheduleMatch = course.schedule.toLowerCase().includes(searchQuery.toLowerCase())
     return nameMatch || scheduleMatch
   })
-
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters(newFilters)
-  }
 
   const uniqueCourses = [
     ...new Map(filteredCourses.map((course) => [course.name, { id: course.id, name: course.name }])).values(),
@@ -70,6 +78,10 @@ export function CourseList() {
 
   const handleCreateCourse = () => {
     router.push("/admin/createcourse")
+  }
+
+  const handleFilterChange = (newFilters: FilterValues) => {
+    setFilters(newFilters)
   }
 
   return (
@@ -96,7 +108,13 @@ export function CourseList() {
         </div>
       </div>
 
-      <CourseTable courses={visibleCourses} />
+      {error ? (
+        <Alert variant="danger" className="mb-4">{error}</Alert>
+      ) : loading ? (
+        <div className="flex items-center justify-center h-32">Loading courses...</div>
+      ) : (
+        <CourseTable courses={visibleCourses} />
+      )}
 
       {hasMore && (
         <div className="flex justify-center">
@@ -104,7 +122,7 @@ export function CourseList() {
             Load More
           </Button>
         </div>
-      )} 
+      )}
     </div>
   )
 }

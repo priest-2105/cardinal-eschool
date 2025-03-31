@@ -36,6 +36,13 @@ export * from "./userstatus/updateuserstatus"
 
 // Admin Course Management
 export * from "./managecourses/createcourse" 
+export * from "./managecourses/courselist"
+export * from "./managecourses/fetchsinglecourse"
+export * from "./managecourses/fetchasessments"
+export * from "./managecourses/fetchreport"
+export * from "./managecourses/fetchresources"
+
+
 
 
 

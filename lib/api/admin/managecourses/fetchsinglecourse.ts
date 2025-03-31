@@ -1,10 +1,11 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-export interface CourseDetails {
+export interface CourseDetailsResponse {
   status: string;
   message: string;
   data: {
     class: {
+      id: number;
       name: string;
       code: string;
       description: string;
@@ -13,27 +14,48 @@ export interface CourseDetails {
         time: string[];
       };
       meeting_link: string;
-      students_assigned: {
-        id: string;
+      learning_outcome: string;
+      prerequisite: string;
+      department: string;
+      semester: string;
+    };
+    students: {
+      id: string;
+      name: string;
+      email: string;
+    }[];
+    assignments: {
+      total: number;
+      turned_in: number;
+      pending: number;
+      overdue: number;
+      percentage_turned_in: number;
+    };
+    reports: {
+      total: number;
+    };
+    resources: {
+      total: number;
+      details: {
+        id: number;
         name: string;
-        dp_url: string | null;
+        file_path: string;
       }[];
-      resources_assigned: any[];
     };
   };
 }
 
-export async function getCourseDetails(token: string, courseId: string): Promise<CourseDetails> {
+export async function getAdminCourseDetails(token: string, courseId: string): Promise<CourseDetailsResponse> {
   const response = await fetchWithAuth(`${apiUrl}/admin/classes/${courseId}`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch course details");
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || "Failed to fetch course details");
   }
 
   return response.json();
