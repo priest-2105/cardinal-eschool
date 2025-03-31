@@ -12,13 +12,13 @@ import { AssessmentModal } from "../assessmentModal/index"
 import { CreateAssessmentModal } from "../createassessmentModal/index"
 import { EditAssessmentModal } from "../editAssessmentModal/index"
 import { Assessment } from "@/types/dashboard/admin/course/assessment/index"
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 export interface Student {
   id: string
   name: string
   email: string
 }
-
 
 const SAMPLE_STUDENTS: Student[] = [
   { id: "1", name: "Alice Johnson", email: "alice@example.com" },
@@ -49,7 +49,17 @@ const SAMPLE_ASSESSMENTS: Assessment[] = [
   },
 ]
 
-export default function AssessmentsList() {
+interface AssessmentListProps {
+  stats: {
+    total: number
+    turned_in: number
+    pending: number
+    overdue: number
+    percentage_turned_in: number
+  }
+}
+
+export default function AssessmentsList({ stats }: AssessmentListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [assessments, setAssessments] = useState(SAMPLE_ASSESSMENTS)
   const [statusFilter, setStatusFilter] = useState("all")
@@ -164,8 +174,34 @@ export default function AssessmentsList() {
     setIsEditModalOpen(false)
   }
 
-  return ( 
-   <div className="h-full flex flex-col">
+  return (
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Total</CardTitle>
+            <CardDescription className="text-2xl font-bold">{stats.total}</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Turned In</CardTitle>
+            <CardDescription className="text-2xl font-bold text-green-600">{stats.turned_in}</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Pending</CardTitle>
+            <CardDescription className="text-2xl font-bold text-yellow-600">{stats.pending}</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-500">Overdue</CardTitle>
+            <CardDescription className="text-2xl font-bold text-red-600">{stats.overdue}</CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Assessments</h2>
         <Button onClick={() => setIsCreateModalOpen(true)}>
@@ -220,10 +256,8 @@ export default function AssessmentsList() {
         </Select>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {assessments.map(
-          (assessment) =>
-            (
-              <div
+        {assessments.map((assessment) => (
+          <div
             key={assessment.id}
             className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
           >
@@ -240,9 +274,6 @@ export default function AssessmentsList() {
                 <p className="text-sm text-gray-500">{assessment.subject}</p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
                   <Calendar size={12} className="mr-1" />
-                  Due: {format(assessment.dueDate, "MMM d, yyyy")}
-                </p>
-                <p>
                   Due: {format(assessment.dueDate, "MMM d, yyyy")}
                 </p>
                 <p className="text-xs text-gray-400 flex items-center mt-1">
@@ -269,8 +300,7 @@ export default function AssessmentsList() {
               </Button>
             </div>
           </div>
-            ),
-        )}
+        ))}
       </div>
       <AssessmentModal
         assessment={selectedAssessment}

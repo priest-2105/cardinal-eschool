@@ -124,21 +124,16 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
               <CourseDescription courseData={courseDetails.class} />
             )}
             {activeTab === "resources" && (
-              <ResourcesList resources={courseDetails.resources.details} />
+              <ResourcesList resources={courseDetails.resources} />
             )}
             {activeTab === "reports" && (
-              <ReportsList
-                classId={courseDetails.class.id.toString()}
-                total={courseDetails.reports.total}
-                students={courseDetails.students}
+              <ReportsList 
+                students={courseDetails.students} 
+                stats={courseDetails.reports} 
               />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList
-                classId={courseDetails.class.id.toString()}
-                stats={courseDetails.assignments}
-                students={courseDetails.students}
-              />
+              <AssessmentsList stats={courseDetails.assignments} />
             )}
             {activeTab === "students" && (
               <StudentList students={courseDetails.students} />

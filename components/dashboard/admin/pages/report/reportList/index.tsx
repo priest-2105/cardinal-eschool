@@ -16,7 +16,6 @@ export interface Student {
   name: string
   email: string
 }
- 
 
 export interface Report {
   id: string
@@ -26,6 +25,17 @@ export interface Report {
   dateSubmitted: Date
   studentId: string
   content: string
+}
+
+interface ReportsListProps {
+  students: {
+    id: string
+    name: string
+    email: string
+  }[]
+  stats: {
+    total: number
+  }
 }
 
 const SAMPLE_STUDENTS: Student[] = [
@@ -55,7 +65,7 @@ const SAMPLE_REPORTS: Report[] = [
   },
 ]
 
-export default function ReportsList() {
+export default function ReportsList({ students, stats }: ReportsListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
@@ -145,7 +155,10 @@ export default function ReportsList() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Student Reports</h2>
+        <div>
+          <h2 className="text-2xl font-bold">Student Reports</h2>
+          <p className="text-sm text-gray-500">Total Reports: {stats.total}</p>
+        </div>
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Create Report
         </Button>
@@ -178,7 +191,7 @@ export default function ReportsList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All students</SelectItem>
-            {SAMPLE_STUDENTS.map((student) => (
+            {students.map((student) => (
               <SelectItem key={student.id} value={student.id}>
                 {student.name}
               </SelectItem>
@@ -202,7 +215,7 @@ export default function ReportsList() {
                 {format(report.dateSubmitted, "MMM d, yyyy")}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                Student: {SAMPLE_STUDENTS.find((s) => s.id === report.studentId)?.name}
+                Student: {students.find((s) => s.id === report.studentId)?.name}
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
@@ -222,13 +235,13 @@ export default function ReportsList() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateReport}
-        students={SAMPLE_STUDENTS}
+        students={students}
       />
       <ViewReportModal
         report={selectedReport}
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
-        students={SAMPLE_STUDENTS}
+        students={students}
       />
       <EditReportModal
         isOpen={isEditModalOpen}
@@ -236,7 +249,7 @@ export default function ReportsList() {
         onSubmit={handleUpdateReport}
         onDelete={handleDeleteReport}
         report={selectedReport}
-        students={SAMPLE_STUDENTS}
+        students={students}
       />
     </div>
   )
