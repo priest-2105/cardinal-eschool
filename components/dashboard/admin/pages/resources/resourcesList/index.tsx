@@ -1,27 +1,29 @@
 "use client"
 
-import type React from "react"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Search, Eye } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ViewResourceModal } from "../resourcesDetails"
 
 interface Resource {
-  id: number
-  name: string
-  file_path: string
+  id: number;
+  name: string;
+  file_path: string;
 }
 
 interface ResourcesListProps {
   resources: {
-    total: number
-    details: Resource[]
-  }
+    total: number;
+    details: Resource[];
+  };
 }
 
 export default function ResourcesList({ resources }: ResourcesListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredResources, setFilteredResources] = useState(resources.details)
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
   useEffect(() => {
     setFilteredResources(resources.details)
@@ -30,11 +32,15 @@ export default function ResourcesList({ resources }: ResourcesListProps) {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value.toLowerCase()
     setSearchTerm(term)
-
     const filtered = resources.details.filter((resource) =>
-      resource.name.toLowerCase().includes(term),
+      resource.name.toLowerCase().includes(term)
     )
     setFilteredResources(filtered)
+  }
+
+  const handleViewResource = (resource: Resource) => {
+    setSelectedResource(resource)
+    setIsViewModalOpen(true)
   }
 
   return (
@@ -63,17 +69,25 @@ export default function ResourcesList({ resources }: ResourcesListProps) {
                 <h3 className="font-medium">{resource.name}</h3>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                <Button variant="outline" size="sm" asChild>
-                  <a href={resource.file_path} target="_blank" rel="noopener noreferrer">
-                    <Eye size={16} className="mr-2" />
-                    View
-                  </a>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleViewResource(resource)}
+                >
+                  <Eye size={16} className="mr-2" />
+                  View Details
                 </Button>
               </div>
             </div>
           ))
         )}
       </div>
+
+      <ViewResourceModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        resource={selectedResource}
+      />
     </div>
   )
 }

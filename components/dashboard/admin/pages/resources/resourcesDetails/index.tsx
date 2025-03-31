@@ -1,91 +1,65 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { FileText, Download } from "lucide-react"
 import { Label } from "@/components/ui/label"
 
-
-export interface Student {
-    id: string
-    name: string
-    email: string
-  }
-  
-  
-  export interface Resource {
-    id: string
-    title: string
-    type: string
-    size: string
-    dateUploaded: Date
-    fileUrl: string
-  }
-  
-
-interface ViewResourceModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (resource: Resource) => void
-  resource: Resource | null
+interface Resource {
+  id: number;
+  name: string;
+  file_path: string;
 }
 
-export function ViewResourceModal({ isOpen, onClose, onSubmit, resource }: ViewResourceModalProps) {
-  const [title, setTitle] = useState("")
-  const [type, setType] = useState("")
-  const [file, setFile] = useState<File | null>(null)
+interface ViewResourceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  resource: Resource | null;
+}
 
-  useEffect(() => {
-    if (resource) {
-      setTitle(resource.title)
-      setType(resource.type)
-    }
-  }, [resource])
+export function ViewResourceModal({ isOpen, onClose, resource }: ViewResourceModalProps) {
+  if (!resource) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (resource) {
-      const updatedResource: Resource = {
-        ...resource,
-        title,
-        type,
-        size: file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : resource.size,
-        fileUrl: file ? URL.createObjectURL(file) : resource.fileUrl,
-      }
-      onSubmit(updatedResource)
-    }
-  }
-
-  if (!resource) return null
+  const handleDownload = () => {
+    window.open(resource.file_path, '_blank');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>View Resource</DialogTitle>
+          <DialogTitle>Resource Details</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input readOnly id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Resource Name</Label>
+            <p className="text-sm text-gray-700">{resource.name}</p>
           </div>
-          <div>
-            <Label htmlFor="type">Type</Label>
-            <Input readOnly id="type" value={type} onChange={(e) => setType(e.target.value)} required />
+
+          <div className="space-y-2">
+            <Label>File</Label>
+            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <FileText size={20} className="text-gray-500" />
+                <span className="text-sm text-gray-700">View Document</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleDownload}
+                className="flex items-center space-x-2"
+              >
+                <Download size={16} />
+                <span>Open</span>
+              </Button>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="file">File (Optional)</Label>
-            <Input readOnly id="file" type="file" onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">Update Resource</Button>
-          </DialogFooter>
-        </form>
+        </div>
+
+        <DialogFooter>
+          <Button onClick={onClose}>Close</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
