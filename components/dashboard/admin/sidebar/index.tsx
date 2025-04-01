@@ -113,6 +113,16 @@ const navigation = [
     dynamicPath: "/admin/tutor/",
   },
   {
+    name: "Pending Reports",
+    href: cardinalConfig.routes.dashboard.admin.adminPendingReports,
+    icon:  ManageTutorsIcon,
+    iconLight: ManageTutorsLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminPendingReports,
+    ],
+    dynamicPath: "/admin/pendingreports/",
+  },
+  {
     name: "Announcements",
     href: cardinalConfig.routes.dashboard.admin.adminAnnouncements,
     icon: AnnouncementIcon,

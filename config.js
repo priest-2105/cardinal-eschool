@@ -103,6 +103,7 @@ const cardinalConfig = {
         adminManageTutors: "/admin/tutors",
         adminTutorDetails:(tutordetails) => `/admin/tutor/${tutordetails}`,
         adminAnnouncements: "/admin/announcements",
+        adminPendingReports: "/admin/pendingreports/",
         adminAnnouncementDetails:(announcementdetail) => `/admin/coupon/${announcementdetail}`,
         adminCreateAnnouncement: "/admin/announcement/create",
         adminCreateCoupon: "/admin/createcoupon",

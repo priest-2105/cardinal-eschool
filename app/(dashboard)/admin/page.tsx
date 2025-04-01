@@ -22,47 +22,36 @@ import {
   Tag,
 } from "lucide-react"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
-
-// Sample data
-const announcements = [
-  {
-    id: "1",
-    title: "End of Semester Examination Schedule",
-    content: "The end of semester examinations will begin on December 15th...",
-  },
-  {
-    id: "2",
-    title: "Holiday Break Notice",
-    content: "The school will be closed for the holiday break from December 23rd...",
-  },
-  {
-    id: "3",
-    title: "New Course Registration Opens Next Week",
-    content: "Registration for new courses will open on January 5th...",
-  },
-  { id: "4", title: "Faculty Meeting on Friday", content: "There will be a faculty meeting on Friday at 2:00 PM..." },
-]
-
-const recentCourses = [
-  { id: "1", name: "Introduction to Computer Science", students: 32, status: "Active" },
-  { id: "2", name: "Advanced Mathematics", students: 24, status: "Active" },
-  { id: "3", name: "Business Ethics", students: 18, status: "Active" },
-  { id: "4", name: "Data Structures and Algorithms", students: 28, status: "Upcoming" },
-]
-
-const recentStudents = [
-  { id: "1", name: "Alex Johnson", email: "alex.j@example.com", courses: 3, joinDate: "2023-09-15" },
-  { id: "2", name: "Maria Garcia", email: "maria.g@example.com", courses: 2, joinDate: "2023-09-18" },
-  { id: "3", name: "James Wilson", email: "james.w@example.com", courses: 4, joinDate: "2023-09-20" },
-]
-
-const recentTutors = [
-  { id: "1", name: "Dr. Sarah Miller", email: "sarah.m@example.com", courses: 2, rating: 4.8 },
-  { id: "2", name: "Prof. David Chen", email: "david.c@example.com", courses: 3, rating: 4.9 },
-]
+import { getDashboardData } from "@/lib/api/admin/home/dashboard"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert } from "@/components/ui/alert"
+import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/dashboardSkeleton"
 
 export default function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [dashboardData, setDashboardData] = useState<any>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      if (!token) return
+      
+      setLoading(true)
+      try {
+        const response = await getDashboardData(token)
+        setDashboardData(response.data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboard()
+  }, [token])
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,10 +68,29 @@ export default function AdminDashboard() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  
+  if (loading) {
+    return (
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+        <div className="p-6 bg-white my-4 border border-gray-200 rounded-lg">
+          <DashboardSkeleton />
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <div className="p-4">
+          <Alert variant="danger">{error}</Alert>
+        </div>
+       </div>
+    )
+  }
+
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      <AnnouncementMarquee announcements={announcements} />
+      {/* <AnnouncementMarquee announcements={dashboardData.announcements} /> */}
 
       <div className="p-6 bg-white my-4 border border-gray-200 rounded-lg space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -110,8 +118,10 @@ export default function AdminDashboard() {
                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,248</div>
-                <p className="text-xs text-muted-foreground">+12% from last month</p>
+                <div className="text-2xl font-bold">{dashboardData.overview.students.total}</div>
+                <p className="text-xs text-muted-foreground">
+                  +{dashboardData.overview.students.new_this_month} from last month
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -120,8 +130,10 @@ export default function AdminDashboard() {
                 <UserCircle2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">64</div>
-                <p className="text-xs text-muted-foreground">+2 new this month</p>
+                <div className="text-2xl font-bold">{dashboardData.overview.tutors.total}</div>
+                <p className="text-xs text-muted-foreground">
+                  +{dashboardData.overview.tutors.new_this_month} new this month
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -130,8 +142,10 @@ export default function AdminDashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">42</div>
-                <p className="text-xs text-muted-foreground">+4 from last month</p>
+                {/* <div className="text-2xl font-bold">{dashboardData.overview.courses.active}</div> */}
+                <p className="text-xs text-muted-foreground">
+                  {/* +{dashboardData.overview.courses.new_this_month} from last month */}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -140,8 +154,10 @@ export default function AdminDashboard() {
                 <LineChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">88%</div>
-                <p className="text-xs text-muted-foreground">+2% from last month</p>
+                <div className="text-2xl font-bold">{dashboardData.overview.completion_rate}%</div>
+                <p className="text-xs text-muted-foreground">
+                  +{dashboardData.overview.completion_rate_change}% from last month
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -150,19 +166,18 @@ export default function AdminDashboard() {
             <Card className="lg:col-span-4">
               <CardHeader>
                 <CardTitle>Recent Courses</CardTitle>
-                <CardDescription>{recentCourses.length} courses added this month</CardDescription>
+                <CardDescription>
+                  {dashboardData.extras.recent_courses.length} courses added this month
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentCourses.map((course) => (
+                  {dashboardData.extras.recent_courses.map((course) => (
                     <div key={course.id} className="flex items-center">
                       <div className="w-full space-y-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium leading-none">{course.name}</p>
-                          <Badge variant={course.status === "Active" ? "default" : "outline"}>{course.status}</Badge>
-                        </div>
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <div>{course.students} students enrolled</div>
+                        <p className="text-sm font-medium leading-none">{course.name}</p>
+                        <div className="text-sm text-muted-foreground">
+                          {course.student_count} students enrolled
                         </div>
                       </div>
                     </div>
@@ -228,11 +243,13 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Recent Students</CardTitle>
-                <CardDescription>{recentStudents.length} new students this month</CardDescription>
+                <CardDescription>
+                  {dashboardData.extras.recent_students.length} new students this month
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentStudents.map((student) => (
+                  {dashboardData.extras.recent_students.map((student) => (
                     <div key={student.id} className="flex items-center gap-4">
                       <Avatar>
                         <AvatarImage src={`/placeholder.svg?height=40&width=40&text=${student.name.charAt(0)}`} />
@@ -263,11 +280,13 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Recent Tutors</CardTitle>
-                <CardDescription>{recentTutors.length} new tutors this month</CardDescription>
+                <CardDescription>
+                  {dashboardData.extras.recent_tutors.length} new tutors this month
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentTutors.map((tutor) => (
+                  {dashboardData.extras.recent_tutors.map((tutor) => (
                     <div key={tutor.id} className="flex items-center gap-4">
                       <Avatar>
                         <AvatarImage src={`/placeholder.svg?height=40&width=40&text=${tutor.name.charAt(0)}`} />
