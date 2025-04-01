@@ -1,22 +1,43 @@
 "use client"
 
 
-import { useState, useEffect } from "react"
-import Announcements from "@/components/dashboard/tutor/pages/home/announcements"
-import Assessments from "@/components/dashboard/tutor/pages/home/assessments"
 import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses" 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  BookOpen,
-  GraduationCap,
-  LineChart,
-  UserCircle2,
-} from "lucide-react"
+import { useEffect, useState } from "react"
+import { getTutorDashboard } from "@/lib/api/tutor/home/dashboard"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert } from "@/components/ui/alert"
+import { DashboardSkeleton } from "@/components/dashboard/tutor/pages/skeletons/dashboardSkeleton"
+import { AnnouncementMarquee } from "@/components/dashboard/tutor/announcementMarquee"
+import { DashboardStats } from "@/components/dashboard/tutor/pages/home/dashboardStats"
+import Assessments from "@/components/dashboard/tutor/pages/home/assessments"
 import PendingReportsList from "@/components/dashboard/tutor/pages/home/pendingreports"
 
 
 export default function TutorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [dashboardData, setDashboardData] = useState<any>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      if (!token) return
+      
+      setLoading(true)
+      try {
+        const response = await getTutorDashboard(token)
+        setDashboardData(response.data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboard()
+  }, [token])
 
   useEffect(() => {
     const handleResize = () => {
@@ -33,66 +54,38 @@ export default function TutorDashboard() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  if (loading) {
+    return (
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+        <DashboardSkeleton />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+        <Alert variant="danger">{error}</Alert>
+      </div>
+    )
+  }
+
   return (
-    <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-
-      <div className="space-y-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Courses Assigned</CardTitle>
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1,248</div>
-                <p className="text-xs text-muted-foreground">+12% from last month</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Students Assigned</CardTitle>
-                <UserCircle2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">64</div>
-                <p className="text-xs text-muted-foreground">+2 new this month</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Reports</CardTitle>
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">42</div>
-                <p className="text-xs text-muted-foreground">+4 from last month</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Assignments</CardTitle>
-                <LineChart className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">88%</div>
-                <p className="text-xs text-muted-foreground">+2% from last month</p>
-              </CardContent>
-            </Card>
-          </div>
-          </div>
-     
-          <div className="grid pt-5 grid-cols-1 md:grid-cols-2 gap-4 items-start">
+    <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+      <AnnouncementMarquee announcements={dashboardData.announcements} />
       
-          {/* <div className=""> */}
-        <UpcomingClasses/>
-         {/* </div> */}
-
-        {/* <div className=""> */}
-        <Announcements />
-        <Assessments/>
-
-        <PendingReportsList/>
-        {/* </div> */}
+      <div className="space-y-6 p-6 bg-white rounded-lg border">
+        <DashboardStats overview={dashboardData.overview} />
+        
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="md:col-span-2">
+            <UpcomingClasses classes={dashboardData.upcoming_classes} />
+          </div>
+          <div className="space-y-6">
+            <Assessments assignments={dashboardData.active_assignments} />
+            <PendingReportsList reports={dashboardData.pending_reports} />
+          </div>
+        </div>
       </div>
     </div>
   )
