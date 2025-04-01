@@ -442,6 +442,11 @@ export function NotificationList() {
   // Check if there are any unread notifications
   const hasUnreadNotifications = notifications.some((n) => !n.isRead)
 
+
+  if(!notifications) { 
+    return <div className="text-center py-12">Loading courses...</div>
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

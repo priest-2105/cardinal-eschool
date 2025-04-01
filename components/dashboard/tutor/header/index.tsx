@@ -116,7 +116,7 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
 
   useEffect(() => {
     if (showLogoutDialog) {
-      router.prefetch(cardinalConfig.routes.dashboard.tutor.login)
+      router.prefetch("/tutor/login")
     }
   }, [showLogoutDialog, router])
 
