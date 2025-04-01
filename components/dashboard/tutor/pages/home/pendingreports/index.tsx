@@ -25,14 +25,19 @@ interface PendingReportsProps {
 
 export default function PendingReportsList({ reports }: PendingReportsProps) {
   const router = useRouter()
+  const displayReports = reports.slice(0, 2)
+  const remainingCount = Math.max(0, reports.length - 2)
 
   return (
     <div className="h-full flex bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 flex-col">
       <div className="flex justify-between items-center mb-4">
         <CardTitle>Pending Reports</CardTitle>
+        {remainingCount > 0 && (
+          <span className="text-sm text-gray-500">+{remainingCount} more</span>
+        )}
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {reports.map((report) => (
+        {displayReports.map((report) => (
           <div
             key={report.id}
             className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
