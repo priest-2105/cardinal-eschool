@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAppDispatch } from '@/lib/hooks'
 import { setAuthState } from '@/lib/authSlice'
 import { login } from '@/lib/api/admin/api'
@@ -11,6 +11,8 @@ import { Eye, EyeIcon as EyeClosed } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
+import cardinalConfig from "@/config"
+
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -22,6 +24,21 @@ export default function LoginPage() {
   const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const dispatch = useAppDispatch()
   const router = useRouter()
+
+  
+  useEffect(() => {
+    const commonAdminRoutes = [
+      cardinalConfig.routes.dashboard.admin.home,
+      cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+      cardinalConfig.routes.dashboard.admin.adminManageStudents,
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
+      cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+    ]
+
+    commonAdminRoutes.forEach(route => {
+      router.prefetch(route)
+    })
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

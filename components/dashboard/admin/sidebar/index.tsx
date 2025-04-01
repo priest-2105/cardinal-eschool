@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Logo from "@/public/assets/img/logo.png"
 import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
@@ -159,11 +159,13 @@ const navigation = [
   },
 ]
 
+
 const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
   isOpen,
   setIsOpen,
 }) => {
   const pathname = usePathname()
+  const router = useRouter()
 
   useEffect(() => {
     const handleResize = () => {
@@ -183,6 +185,21 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
   }
+
+  
+  useEffect(() => {
+    const commonAdminRoutes = [
+      cardinalConfig.routes.dashboard.admin.home,
+      cardinalConfig.routes.dashboard.admin.adminmanagecourses,
+      cardinalConfig.routes.dashboard.admin.adminManageStudents,
+      cardinalConfig.routes.dashboard.admin.adminManageTutors,
+      cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+    ]
+
+    commonAdminRoutes.forEach(route => {
+      router.prefetch(route)
+    })
+  }, [router])
 
   return (
     <div
