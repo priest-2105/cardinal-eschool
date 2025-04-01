@@ -1,5 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Book, GraduationCap, FileText, Calendar, UserCircle2, BookOpen, LineChart } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {  GraduationCap, UserCircle2, BookOpen, LineChart } from "lucide-react"
 
 interface StatsProps {
   overview: {
@@ -21,8 +21,8 @@ export function DashboardStats({ overview }: StatsProps) {
                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
                  </CardHeader>
                  <CardContent>
-                   <div className="text-2xl font-bold">1,248</div>
-                   <p className="text-xs text-muted-foreground">+12% from last month</p>
+                   <div className="text-2xl font-bold">{overview.total_classes.total_count}</div>
+                   <p className="text-xs text-muted-foreground">{overview.total_classes.percentage_change}%</p>
                  </CardContent>
                </Card>
                <Card>
@@ -31,8 +31,8 @@ export function DashboardStats({ overview }: StatsProps) {
                    <UserCircle2 className="h-4 w-4 text-muted-foreground" />
                  </CardHeader>
                  <CardContent>
-                   <div className="text-2xl font-bold">64</div>
-                   <p className="text-xs text-muted-foreground">+2 new this month</p>
+                   <div className="text-2xl font-bold">{overview.total_students.total_count}</div>
+                   <p className="text-xs text-muted-foreground">{overview.total_students.percentage_change}%</p>
                  </CardContent>
                </Card>
                <Card>
@@ -41,8 +41,8 @@ export function DashboardStats({ overview }: StatsProps) {
                    <BookOpen className="h-4 w-4 text-muted-foreground" />
                  </CardHeader>
                  <CardContent>
-                   <div className="text-2xl font-bold">42</div>
-                   <p className="text-xs text-muted-foreground">+4 from last month</p>
+                   <div className="text-2xl font-bold">{overview.total_reports.total_count}</div>
+                   <p className="text-xs text-muted-foreground">{overview.total_reports.percentage_change}%</p>
                  </CardContent>
                </Card>
                <Card>
@@ -51,8 +51,8 @@ export function DashboardStats({ overview }: StatsProps) {
                    <LineChart className="h-4 w-4 text-muted-foreground" />
                  </CardHeader>
                  <CardContent>
-                   <div className="text-2xl font-bold">88%</div>
-                   <p className="text-xs text-muted-foreground">+2% from last month</p>
+                   <div className="text-2xl font-bold">{overview.total_assignments.total_count}</div>
+                   <p className="text-xs text-muted-foreground">{overview.total_assignments.percentage_change}%</p>
                  </CardContent>
                </Card>
              </div>
