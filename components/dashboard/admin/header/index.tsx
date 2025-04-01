@@ -9,10 +9,20 @@ import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchAdminProfile, logout } from "@/lib/api/admin/api"
+import { fetchAdminProfile } from "@/lib/api/admin/api"
 import { RootState } from "@/lib/store"
-import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
+import { logout } from "@/lib/api/admin/auth/logout"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -92,7 +102,7 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const token = useSelector((state: RootState) => state.auth?.token);
   const dispatch = useDispatch();
   const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const router = useRouter()
 
   useEffect(() => {
@@ -113,8 +123,8 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const handleLogout = async () => {
     try {
       if (token) {
-        await logout(token);
-        dispatch(clearAuthState());
+        await logout(token)
+        dispatch({ type: "CLEAR_AUTH" })
       }
     } catch (error) {
       console.error("Logout failed", error);
@@ -155,7 +165,7 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
             <Dropdown
               items={profileOptions.map(option => ({
                 ...option,
-                onClick: option.name === "Logout" ? () => setIsModalOpen(true) : undefined
+                onClick: option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined
               }))}
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
@@ -174,18 +184,23 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <div className="fixed inset-0   w-full flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Confirm Logout</h2>
-            <p className="mb-4">Are you sure you want to logout?</p>
-            <div className="flex justify-end gap-4">
-              <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-              <Button variant="danger" onClick={handleLogout}>Confirm</Button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will be logged out of your account and redirected to the login page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout}>
+              Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
