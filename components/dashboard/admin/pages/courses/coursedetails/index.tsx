@@ -37,15 +37,18 @@ interface CourseDetailsComponentProps {
       name: string
       email: string
     }[]
+    students_new?: number
     assignments: {
       total: number
       turned_in: number
       pending: number
       overdue: number
       percentage_turned_in: number
+      assignments_new?: number
     }
     reports: {
       total: number
+      reports_new?: number
     }
     resources: {
       total: number
@@ -54,6 +57,7 @@ interface CourseDetailsComponentProps {
         name: string
         file_path: string
       }[]
+      resources_new?: number
     }
   }
 }
@@ -177,22 +181,42 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Enrolled Students</p>
-                  <p className="font-medium">{courseDetails.students.length}</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.students.length}</p>
+                    <p className="text-xs text-gray-500">
+                      {courseDetails.students_new || 0} new this month
+                    </p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <FileText className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Resources</p>
-                  <p className="font-medium">{courseDetails.resources.total}</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.resources.total}</p>
+                    <p className="text-xs text-gray-500">
+                      {courseDetails.resources_new || 0} new this month
+                    </p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Reports</p>
-                  <p className="font-medium">{courseDetails.reports.total}</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.reports.total}</p>
+                    <p className="text-xs text-gray-500">
+                      {courseDetails.reports_new || 0} new this month
+                    </p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Assessments</p>
-                  <p className="font-medium">{courseDetails.assignments.total}</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.assignments.total}</p>
+                    <p className="text-xs text-gray-500">
+                      {courseDetails.assignments_new || 0} new this month
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>

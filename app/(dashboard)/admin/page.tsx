@@ -28,6 +28,9 @@ import type { RootState } from "@/lib/store"
 import { Alert } from "@/components/ui/alert"
 import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/dashboardSkeleton"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+
+
 
 interface StatChangeProps {
   value: number;
@@ -52,6 +55,8 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [dashboardData, setDashboardData] = useState<any>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
+  const route = useRouter()
+
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -85,6 +90,25 @@ export default function AdminDashboard() {
 
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
+  const handleNewCourse = () => {
+    route.push("courses/new")
+  }
+
+  const handleRefresh = async () => {
+      if (!token) return
+   
+      setLoading(true)
+      try {
+        const response = await getDashboardData(token)
+        setDashboardData(response.data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
+      } finally {
+        setLoading(false)
+      }
+  }
+  
 
   if (loading) {
     return (
@@ -120,11 +144,11 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground">Welcome back, Admin!</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleRefresh}>
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={handleNewCourse}>
               <Plus className="mr-2 h-4 w-4" />
               New Course
             </Button>
@@ -139,8 +163,13 @@ export default function AdminDashboard() {
                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="flex justify-between items-center">
+                <div>
                 <div className="text-2xl font-bold">{dashboardData.overview.students.total}</div>
                 <StatChange value={dashboardData.overview.students.percentage_change} />
+                  </div>
+                <p className="text-xs text-muted-foreground">
+                {dashboardData.overview.students.new_this_month} new students this month
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -149,8 +178,13 @@ export default function AdminDashboard() {
                 <UserCircle2 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="flex justify-between items-center">
-                <div className="text-2xl font-bold">{dashboardData.overview.tutors.total}</div>
+                <div>
+                  <div className="text-2xl font-bold">{dashboardData.overview.tutors.total}</div>
                 <StatChange value={dashboardData.overview.tutors.percentage_change} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                  {dashboardData.overview.students.new_this_month} new tutors this month
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -159,8 +193,13 @@ export default function AdminDashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="flex justify-between items-center">
+               <div>
                 <div className="text-2xl font-bold">{dashboardData.overview.classes.total}</div>
                 <StatChange value={dashboardData.overview.classes.percentage_change} />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {dashboardData.overview.classes.new_this_month} new tutors this month
+                </p>
               </CardContent>
             </Card>
             <Card>
