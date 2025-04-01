@@ -21,7 +21,6 @@ import {
   FileText,
   Tag,
 } from "lucide-react"
-import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
 import { getDashboardData } from "@/lib/api/admin/home/dashboard"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
@@ -29,6 +28,7 @@ import { Alert } from "@/components/ui/alert"
 import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/dashboardSkeleton"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
+import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
 
 
 
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
   }, [])
 
   const handleNewCourse = () => {
-    route.push("courses/new")
+    route.push("/admin/createcourse")
   }
 
   const handleRefresh = async () => {
@@ -109,6 +109,7 @@ export default function AdminDashboard() {
       }
   }
   
+  
 
   if (loading) {
     return (
@@ -122,10 +123,12 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
       <div className="text-center py-12 border rounded-lg">
         <div className="p-4">
           <Alert variant="danger">{error}</Alert>
         </div>
+       </div>
        </div>
     )
   }
@@ -135,8 +138,8 @@ export default function AdminDashboard() {
 
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      {/* <AnnouncementMarquee announcements={dashboardData.announcements} /> */}
-
+      <AnnouncementMarquee />
+      
       <div className="p-6 bg-white my-4 border border-gray-200 rounded-lg space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>

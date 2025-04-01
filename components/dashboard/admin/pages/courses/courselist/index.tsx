@@ -59,6 +59,8 @@ export function CourseList() {
     }
   }
 
+  
+
   useEffect(() => {
     fetchCourses()
   }, [token])
