@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Logo from "@/public/assets/img/logo.png"
 import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
@@ -13,14 +13,12 @@ import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import NotificationIcon from "@/public/assets/icons/notification-03.png"
 import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 import cardinalConfig from "@/config"
-import type React from "react" 
+import type React from "react"
 
 const navigation = [
   {
@@ -78,6 +76,24 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   setIsOpen,
 }) => {
   const pathname = usePathname()
+  const router = useRouter()
+
+  
+  useEffect(() => {
+    const commonRoutes = [
+      cardinalConfig.routes.dashboard.tutor.home,
+      cardinalConfig.routes.dashboard.tutor.courses,
+      cardinalConfig.routes.dashboard.tutor.tutorinformation,
+      cardinalConfig.routes.dashboard.tutor.tutorNotifications,
+      cardinalConfig.routes.dashboard.tutor.tutorticketlist,
+    ]
+
+    commonRoutes.forEach(route => {
+      if (route !== pathname) {
+        router.prefetch(route)
+      }
+    })
+  }, [pathname, router])
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,6 +112,11 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
+  }
+
+  const handleNavigation = (href: string) => {
+    
+    router.prefetch(href)
   }
 
   return (
@@ -135,12 +156,15 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
         {navigation.map((item) => {
           const isActive =
             item.activePaths.includes(pathname) || (item.dynamicPath && pathname.startsWith(item.dynamicPath))
+
           return (
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
+              onClick={() => handleNavigation(item.href)}
               className={cn(
-                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
               )}
             >

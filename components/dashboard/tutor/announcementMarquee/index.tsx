@@ -2,8 +2,6 @@
 
 import { useEffect, useState, useRef } from "react"
 import { BellRing } from "lucide-react"
-import { useSelector } from "react-redux"
-import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
 interface Announcement {
@@ -31,12 +29,16 @@ export function AnnouncementMarquee({ announcements }: AnnouncementMarqueeProps)
   if (!announcements?.length) return null
 
   return (
-    <div className="bg-[#1BC2C2] text-white py-2 px-4 relative overflow-hidden rounded-lg mb-4">
+    <div 
+      className="bg-[#1BC2C2] text-white py-2 px-4 relative overflow-hidden rounded-lg mb-4"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="flex items-center">
         <div className="flex items-center gap-2 min-w-[200px]">
           <BellRing className="h-4 w-4" />
           <span className="font-medium">Announcements</span>
-        </div>|
+        </div>
         <div className="relative overflow-hidden flex-1">
           <div
             ref={marqueeRef}

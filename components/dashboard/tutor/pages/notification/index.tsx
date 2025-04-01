@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Bell, CheckCheck, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,6 +29,8 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+import { cn } from "@/lib/utils"
+import cardinalConfig from "@/config"
 
 // Notification type definition
 interface Notification {
@@ -42,6 +45,7 @@ interface Notification {
 }
 
 export function NotificationList() {
+  const router = useRouter()
   const token = useSelector((state: RootState) => state.auth?.token)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
@@ -59,7 +63,6 @@ export function NotificationList() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
 
-  // Clear alert after 3 seconds
   useEffect(() => {
     if (alert) {
       const timer = setTimeout(() => {
@@ -262,13 +265,7 @@ export function NotificationList() {
         await handleDeleteNotification(id)
       }
 
-      setSelectedNotifications((prev) => {
-        const newSelected = new Set(prev)
-        notificationsToDelete.forEach((id) => {
-          newSelected.delete(id)
-        })
-        return newSelected
-      })
+      setSelectedNotifications(new Set())
 
       setAlert({ type: "success", message: "Notifications deleted successfully." })
     } catch (error) {
@@ -304,6 +301,7 @@ export function NotificationList() {
             }
           }
           setAlert({ type: "success", message: "Selected notifications marked as read." })
+          setSelectedNotifications(new Set())
         } catch (error) {
           console.error("Failed to mark notifications as read:", error)
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
@@ -338,6 +336,23 @@ export function NotificationList() {
         openDeleteDialog([id])
         break
       default:
+        break
+    }
+  }
+
+  const handleNotificationClick = (notification: any) => {
+    if (!notification.data) return
+
+    switch (notification.type) {
+      case "ticket_updated":
+        router.push(cardinalConfig.routes.dashboard.tutor.tutorticketdetails(notification.data.ticket_id))
+        break
+      case "class_created":
+      case "resources_assigned":
+        router.push(cardinalConfig.routes.dashboard.tutor.courseDetails(notification.data.class_id))
+        break
+      default:
+        
         break
     }
   }
@@ -502,7 +517,7 @@ export function NotificationList() {
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent>
         {/* Mark All as Read button - always visible when there are unread notifications */}
         {hasUnreadNotifications && selectedNotifications.size === 0 && (
           <div className="flex items-center justify-end bg-muted/20 p-4 border-b">
@@ -622,7 +637,7 @@ export function NotificationList() {
         )}
 
         {/* Notifications List */}
-        <div className="divide-y">
+        <div className="p-0 max-h-[65vh] overflow-y-scroll custom-scrollbar divide-y">
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
@@ -630,9 +645,11 @@ export function NotificationList() {
               : filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`flex items-start gap-4 p-4 ${
-                      !notification.isRead ? "bg-muted/10" : ""
-                    } hover:bg-muted/20 transition-colors`}
+                    className={cn(
+                      "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
+                      notification.isRead ? "bg-white" : "bg-gray-50"
+                    )}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <Checkbox
                       checked={selectedNotifications.has(notification.id)}
@@ -801,7 +818,7 @@ export function NotificationList() {
       </CardContent>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "default" : "danger"} className="absolute top-12 bg-white right-4">
+        <Alert variant={alert.type === "success" ? "default" : "danger"} className="fixed z-50 top-16 bg-white right-4">
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

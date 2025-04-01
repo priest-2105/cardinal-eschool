@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Bell } from "lucide-react"
+import { Bell, Loader2 } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/dashboard/tutor/ui/avatar"
 import { Button } from "@/components/dashboard/tutor/ui/button"
 import { useState, useEffect, useRef } from "react"
@@ -14,6 +14,7 @@ import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import cardinalConfig from "@/config"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -57,7 +58,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, []) // Removed handleClickOutside from dependencies
+  }, []) 
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -95,6 +96,7 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter()
 
   useEffect(() => {
@@ -112,16 +114,27 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
     getProfile();
   }, [token]);
 
+  useEffect(() => {
+    if (showLogoutDialog) {
+      router.prefetch(cardinalConfig.routes.dashboard.tutor.login)
+    }
+  }, [showLogoutDialog, router])
+
   const handleLogout = async () => {
+    setIsLoggingOut(true)
     try {
       if (token) {
         await logout(token);
         dispatch(clearAuthState());
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     } catch (error) {
       console.error("Logout failed", error);
+    } finally {
+      setShowLogoutDialog(false)
+      setIsLoggingOut(false)
+      router.push("/tutor/login")
     }
-    router.push("/tutor/login")
   };
 
   return (
@@ -185,9 +198,16 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleLogout}>
-              Logout
+            <AlertDialogCancel disabled={isLoggingOut}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleLogout} 
+              disabled={isLoggingOut}
+              className="relative"
+            >
+              {isLoggingOut && (
+                <Loader2 className="h-4 w-4 animate-spin absolute left-3" />
+              )}
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
