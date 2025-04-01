@@ -2,43 +2,25 @@
 
 import { useEffect, useState, useRef } from "react"
 import { BellRing } from "lucide-react"
-// import { getAnnouncements } from "@/lib/api/student/announcement/fetchannouncement"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
 interface Announcement {
-  id: number;
-  title: string;
-  content: string;
-  created_at: string;
+  id: number
+  title: string
+  content: string
+  target_role: string
+  created_at: string
 }
 
-export function AnnouncementMarquee() {
+interface AnnouncementMarqueeProps {
+  announcements: Announcement[]
+}
+
+export function AnnouncementMarquee({ announcements }: AnnouncementMarqueeProps) {
   const [isPaused, setIsPaused] = useState(false)
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const token = useSelector((state: RootState) => state.auth?.token)
   const marqueeRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
-      if (!token) return
-      
-      try {
-        const response = await getAnnouncements(token)
-        setAnnouncements(response.data.announcements)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch announcements")
-      }
-    }
-
-    fetchAnnouncements()
-  }, [token])
-
-  const togglePause = () => {
-    setIsPaused(!isPaused)
-  }
 
   useEffect(() => {
     if (marqueeRef.current) {
@@ -46,7 +28,7 @@ export function AnnouncementMarquee() {
     }
   }, [isPaused])
 
-  if (!announcements.length || error) return null
+  if (!announcements?.length) return null
 
   return (
     <div className="bg-[#1BC2C2] text-white py-2 px-4 relative overflow-hidden rounded-lg mb-4">
