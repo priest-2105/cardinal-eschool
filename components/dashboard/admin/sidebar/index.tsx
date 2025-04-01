@@ -30,8 +30,6 @@ import NotificationLightIcon from "@/public/assets/icons/notification-0-light.pn
 import cardinalConfig from "@/config"
 import type React from "react" 
 
-
-
 const navigation = [
   {
     name: "Home",
@@ -159,13 +157,19 @@ const navigation = [
   },
 ]
 
-
 const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
   isOpen,
   setIsOpen,
 }) => {
   const pathname = usePathname()
   const router = useRouter()
+
+  const handleLinkClick = (href: string) => {
+    // Only prefetch if not current path
+    if (href !== pathname) {
+      router.prefetch(href)
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -185,21 +189,6 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
   }
-
-  
-  useEffect(() => {
-    const commonAdminRoutes = [
-      cardinalConfig.routes.dashboard.admin.home,
-      cardinalConfig.routes.dashboard.admin.adminmanagecourses,
-      cardinalConfig.routes.dashboard.admin.adminManageStudents,
-      cardinalConfig.routes.dashboard.admin.adminManageTutors,
-      cardinalConfig.routes.dashboard.admin.adminAnnouncements,
-    ]
-
-    commonAdminRoutes.forEach(route => {
-      router.prefetch(route)
-    })
-  }, [router])
 
   return (
     <div
@@ -242,8 +231,10 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
+              onMouseEnter={() => handleLinkClick(item.href)}
               className={cn(
-                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
               )}
             >

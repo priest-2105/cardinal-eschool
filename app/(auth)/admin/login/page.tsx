@@ -33,6 +33,7 @@ export default function LoginPage() {
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminAnnouncements,
+      
     ]
 
     commonAdminRoutes.forEach(route => {

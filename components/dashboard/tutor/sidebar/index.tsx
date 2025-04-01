@@ -78,22 +78,11 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   const pathname = usePathname()
   const router = useRouter()
 
-  
-  useEffect(() => {
-    const commonRoutes = [
-      cardinalConfig.routes.dashboard.tutor.home,
-      cardinalConfig.routes.dashboard.tutor.courses,
-      cardinalConfig.routes.dashboard.tutor.tutorinformation,
-      cardinalConfig.routes.dashboard.tutor.tutorNotifications,
-      cardinalConfig.routes.dashboard.tutor.tutorticketlist,
-    ]
-
-    commonRoutes.forEach(route => {
-      if (route !== pathname) {
-        router.prefetch(route)
-      }
-    })
-  }, [pathname, router])
+  const handleLinkClick = (href: string) => {
+    if (href !== pathname) {
+      router.prefetch(href)
+    }
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -112,11 +101,6 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
-  }
-
-  const handleNavigation = (href: string) => {
-    
-    router.prefetch(href)
   }
 
   return (
@@ -162,7 +146,7 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
               key={item.name}
               href={item.href}
               prefetch={true}
-              onClick={() => handleNavigation(item.href)}
+              onMouseEnter={() => handleLinkClick(item.href)}
               className={cn(
                 "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
