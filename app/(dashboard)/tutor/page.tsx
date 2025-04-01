@@ -80,10 +80,10 @@ export default function TutorDashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2">
             <UpcomingClasses upcomingClasses={dashboardData.upcoming_classes} />
+            <PendingReportsList reports={dashboardData.pending_reports} />
           </div>
           <div className="space-y-6">
             <Assessments assignments={dashboardData.active_assignments} />
-            <PendingReportsList reports={dashboardData.pending_reports} />
           </div>
         </div>
       </div>
