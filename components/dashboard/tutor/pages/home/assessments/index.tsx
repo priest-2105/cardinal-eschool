@@ -22,6 +22,19 @@ interface AssessmentsProps {
 }
 
 export default function Assessments({ assignments }: AssessmentsProps) {
+  const getRemainingDays = (deadline: string) => {
+    const today = new Date()
+    const deadlineDate = new Date(deadline)
+    const diffTime = deadlineDate.getTime() - today.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays
+  }
+
+  const getDeadlineColor = (deadline: string) => {
+    const remainingDays = getRemainingDays(deadline)
+    return remainingDays > 4 ? "text-green-500" : "text-red-500"
+  }
+
   return (
     <Card className="mt-5">
       <CardHeader>
@@ -46,7 +59,7 @@ export default function Assessments({ assignments }: AssessmentsProps) {
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm text-red-500 font-medium">
+              <p className={`text-sm font-medium ${getDeadlineColor(assessment.deadline)}`}>
                 Submit before {new Date(assessment.deadline).toLocaleString()}
               </p>
 
