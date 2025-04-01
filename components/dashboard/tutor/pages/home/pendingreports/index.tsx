@@ -29,7 +29,7 @@ export default function PendingReportsList({ reports }: PendingReportsProps) {
   const remainingCount = Math.max(0, reports.length - 2)
 
   return (
-    <div className="h-full flex bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 flex-col">
+    <div className="h-fit flex bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 flex-col">
       <div className="flex justify-between items-center mb-4">
         <CardTitle>Pending Reports</CardTitle>
         {remainingCount > 0 && (

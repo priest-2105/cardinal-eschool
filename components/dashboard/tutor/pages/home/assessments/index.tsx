@@ -35,13 +35,21 @@ export default function Assessments({ assignments }: AssessmentsProps) {
     return remainingDays > 4 ? "text-green-500" : "text-red-500"
   }
 
+  const displayAssignments = assignments.slice(0, 3)
+  const remainingCount = Math.max(0, assignments.length - 3)
+
   return (
-    <Card className="mt-5">
+    <Card className="">
       <CardHeader>
-        <CardTitle>Active Assessment</CardTitle>
+        <CardTitle>
+          Active Assessment
+          {remainingCount > 0 && (
+            <span className="text-sm text-gray-500 ml-2">+{remainingCount} more</span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {assignments.map((assessment) => (
+        {displayAssignments.map((assessment) => (
           <div key={assessment.id} className="flex flex-col space-y-4 p-4 rounded-lg border bg-white">
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
