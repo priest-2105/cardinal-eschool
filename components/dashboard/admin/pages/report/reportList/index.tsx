@@ -241,7 +241,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
           <SelectContent>
             <SelectItem value="all">All status</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
           </SelectContent>
         </Select>
       </div>

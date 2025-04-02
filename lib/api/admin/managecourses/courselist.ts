@@ -35,3 +35,4 @@ export async function getAdminClasses(token: string): Promise<AdminClassResponse
 
   return response.json();
 }
+

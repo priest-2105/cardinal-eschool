@@ -29,6 +29,8 @@ export default function TutorDashboard() {
       try {
         const response = await getTutorDashboard(token)
         setDashboardData(response.data)
+        console.log(response.data);
+        
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
       } finally {
@@ -72,18 +74,18 @@ export default function TutorDashboard() {
 
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      <AnnouncementMarquee announcements={dashboardData.announcements} />
+    { dashboardData.announcements.length >= 1  && <AnnouncementMarquee announcements={dashboardData.announcements} />}
       
       <div className="space-y-6 p-6 bg-white rounded-lg border">
-        <DashboardStats overview={dashboardData.overview} />
+      <DashboardStats overview={dashboardData.overview} />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2">
-            <UpcomingClasses upcomingClasses={dashboardData.upcoming_classes} />
-            <PendingReportsList reports={dashboardData.pending_reports} />
+            {dashboardData.upcoming_classes.length >= 1 &&<UpcomingClasses upcomingClasses={dashboardData.upcoming_classes} />}
+            {dashboardData.pending_reports.length >= 1 && <PendingReportsList reports={dashboardData.pending_reports} />}
           </div>
           <div className="space-y-6">
-            <Assessments assignments={dashboardData.active_assignments} />
+           {dashboardData.active_assignments.length >= 1 && <Assessments assignments={dashboardData.active_assignments} /> }
           </div>
         </div>
       </div>

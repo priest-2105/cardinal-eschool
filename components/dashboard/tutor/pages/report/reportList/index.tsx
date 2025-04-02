@@ -243,7 +243,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
                 <div className="flex items-center gap-4 mt-1">
                   <p className="text-xs text-gray-400">
                     <Calendar size={12} className="inline mr-1" />
-                    {format(parseISO(report.created_at), "MMM d, yyyy")}
+                    {report.created_at}
                   </p>
                   <p className="text-xs text-gray-400">
                     Month: {report.month}
