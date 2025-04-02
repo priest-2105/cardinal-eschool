@@ -7,7 +7,7 @@ import { format, parseISO } from "date-fns"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getPendingReports } from "@/lib/api/admin/pendingreport/fetchpendingreport"
-import { updateReportStatus } from "@/lib/api/admin/pendingreport/updatereport"
+import { updateReport } from "@/lib/api/admin/pendingreport/updatereport"
 import { getStudentDetails } from "@/lib/api/admin/managestudent/getstudentdetails"
 import { getTutorDetails } from "@/lib/api/admin/managetutor/gettutordetails"
 import { Button } from "@/components/ui/button"
@@ -150,7 +150,7 @@ export function PendingReportsList() {
 
     try {
       // Call the API to approve the report
-      await updateReportStatus(token, reportId, "approved")
+      await updateReport(token, reportId, "approved")
 
       // Update local state
       setPendingReports(pendingReports.filter((report) => report.id !== reportId))
