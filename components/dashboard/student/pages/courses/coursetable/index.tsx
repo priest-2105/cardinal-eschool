@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { CourseTableRow } from "../coursetablerow"
 
 interface Course {
-  class_id: number
+  id: number
   name: string
   code: string
   no_of_students: number

@@ -4,7 +4,7 @@ import { TableCell, TableRow } from "@/components/ui/table"
 import { useRouter } from "next/navigation"
 
 interface Course {
-  class_id: number
+  id: number
   name: string
   code: string
   no_of_students: number
@@ -24,7 +24,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
   const router = useRouter()
 
   const handleCourseDetails = () => {
-    router.push(`/student/course/${course.class_id}`)
+    router.push(`/student/course/${course.id}`)
   }
 
   // Parse the schedule string into an object
