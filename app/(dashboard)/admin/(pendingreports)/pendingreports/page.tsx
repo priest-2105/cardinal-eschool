@@ -1,7 +1,8 @@
 "use client"
 
 
-import { PendingReportsList } from "@/components/dashboard/admin/pages/pendingReports"
+
+import PendingReportsList from "@/components/dashboard/admin/pages/pendingReports"
 import { useState, useEffect } from "react"
 
 
