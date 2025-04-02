@@ -8,11 +8,13 @@ interface Course {
   name: string
   code: string
   no_of_students: number
-  schedule: {
-    days: string[]
-    time: string[]
+  schedule: string
+  tutor: {
+    name: string
+    dp_url: string
   }
 }
+
 
 interface CourseTableProps {
   courses: Course[]
@@ -24,6 +26,7 @@ export function CourseTable({ courses }: CourseTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Tutor</TableHead>
             <TableHead>Course Name</TableHead>
             <TableHead>Course Code</TableHead>
             <TableHead>No. of Students</TableHead>
@@ -32,11 +35,10 @@ export function CourseTable({ courses }: CourseTableProps) {
         </TableHeader>
         <TableBody>
           {courses.map((course) => (
-            <CourseTableRow key={course.class_id} course={course} />
+            <CourseTableRow key={course.id} course={course} />
           ))}
         </TableBody>
       </Table>
     </div>
   )
 }
-

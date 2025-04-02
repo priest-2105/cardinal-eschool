@@ -16,8 +16,8 @@ interface Course {
   code: string
   no_of_students: number
   schedule: {
-    days: string[]
-    time: string[]
+    days: string[] 
+    time: string[] 
   }
 }
 
@@ -71,6 +71,10 @@ export function CourseList() {
         <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
+  }
+
+  if (filteredCourses.length === 0) {
+    return <div className="text-center py-12">You haven't been assigned a course, please inform support.</div>
   }
 
   return (
@@ -139,4 +143,3 @@ export function CourseList() {
     </div>
   )
 }
-

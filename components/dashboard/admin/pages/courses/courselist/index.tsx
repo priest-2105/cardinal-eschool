@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CourseTable } from "../coursetable/index"
 import { getAdminClasses } from "@/lib/api/admin/managecourses/courselist"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,6 +21,7 @@ export function CourseList() {
   const [selectedDateRange, setSelectedDateRange] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
   const token = useSelector((state: RootState) => state.auth?.token)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -33,7 +36,7 @@ export function CourseList() {
         setLoading(false)
       }
     }
-
+    router.prefetch("createcourse")
     fetchCourses()
   }, [token])
 
@@ -68,7 +71,9 @@ export function CourseList() {
         <div className="space-y-1 max-sm:pb-3">
           <h2 className="text-2xl font-semibold">View Course Lists</h2>
           <p className="text-sm text-muted-foreground">Manage and track your enrolled courses</p>
-        </div>
+        </div>  <Button onClick={() => router.push('createcourse')}>
+            <Plus className="mr-2 h-4 w-4" /> Create Class
+          </Button>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
