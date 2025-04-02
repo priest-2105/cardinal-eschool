@@ -6,24 +6,20 @@ export interface UpdateReportStatusResponse {
   data: null
 }
 
-export async function updateReportStatus(
-  token: string,
-  reportId: number,
-  status: string,
-): Promise<UpdateReportStatusResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/admin/report/${reportId}/status`, {
+export async function updateReport(token: string, reportId: number, status: 'approved' | 'rejected') {
+  const response = await fetchWithAuth(`${apiUrl}/admin/reports/${reportId}/status`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      "Accept": "application/json",
+      "Authorization": `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      status: status,
-    }),
+    body: JSON.stringify({ status }),
   })
 
   if (!response.ok) {
-    throw new Error("Failed to update report status")
+    const errorMessage = await response.text()
+    throw new Error(`Failed to update report: ${response.status} ${response.statusText} - ${errorMessage}`)
   }
 
   return response.json()
