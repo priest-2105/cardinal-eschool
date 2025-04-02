@@ -70,7 +70,7 @@ export default function Assessments({ assignments }: AssessmentsProps) {
             </div>
             <div className="space-y-4">
               <p className={`text-sm font-medium ${getDeadlineColor(assessment.deadline)}`}>
-                Submit before {new Date(assessment.deadline).toLocaleString()}
+                Assignment Due By {new Date(assessment.deadline).toLocaleString()}
               </p>
             </div>
           </div>

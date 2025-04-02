@@ -12,7 +12,7 @@ interface Plan {
   price: string;
   duration: string;
   features: string[];
-  sub_id?: string; // Include the subscription ID
+  sub_id?: string; 
 }
 
 export default function PlanPick() {
