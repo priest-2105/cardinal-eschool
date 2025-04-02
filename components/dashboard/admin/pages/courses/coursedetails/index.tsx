@@ -134,6 +134,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
               <ReportsList 
                 students={courseDetails.students} 
                 stats={courseDetails.reports} 
+                classId={courseDetails.class.id}
               />
             )}
             {activeTab === "assessments" && (
