@@ -63,6 +63,13 @@ export function NotificationList() {
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 20,
+    total: 0,
+    last_page: 2,
+  })
 
   useEffect(() => {
     if (alert) {
@@ -95,7 +102,7 @@ export function NotificationList() {
       if (!token) return
       try {
         setIsLoading(true)
-        const response = await fetchNotifications(token)
+        const response = await fetchNotifications(token, currentPage)
         const notificationsWithDates = response.data.notifications.map((notification: any) => ({
           ...notification,
           id: notification.id.toString(),
@@ -108,6 +115,7 @@ export function NotificationList() {
           link: notification.link || undefined,
         }))
         setNotifications(notificationsWithDates)
+        setPagination(response.data.pagination)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
         setAlert({ type: "error", message: "Failed to load notifications." })
@@ -117,7 +125,7 @@ export function NotificationList() {
     }
 
     loadNotifications()
-  }, [token])
+  }, [token, currentPage])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -844,6 +852,47 @@ export function NotificationList() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Pagination */}
+        {!isLoading && notifications.length > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-gray-500">
+              Showing {notifications.length} of {pagination.total} notifications
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              
+              <select
+                className="border rounded-md px-2 py-1 text-sm"
+                value={currentPage}
+                onChange={(e) => setCurrentPage(Number(e.target.value))}
+              >
+                {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
+                  <option key={page} value={page}>
+                    Page {page} of {pagination.last_page}
+                  </option>
+                ))}
+              </select>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(pagination.last_page, prev + 1))}
+                disabled={currentPage === pagination.last_page}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
 
       {alert && (
