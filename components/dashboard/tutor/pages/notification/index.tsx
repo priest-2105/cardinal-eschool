@@ -149,13 +149,15 @@ export function NotificationList() {
     }
 
     // Apply sorting
-    filtered.sort((a, b) => {
-      if (sortOrder === "newest") {
-        return b.created_at.getTime() - a.created_at.getTime()
-      } else {
-        return a.created_at.getTime() - b.created_at.getTime()
-      }
-    })
+      filtered.sort((a, b) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
+        if (sortOrder === "newest") {
+          return dateB.getTime() - dateA.getTime();
+        } else {
+          return dateA.getTime() - dateB.getTime();
+        }
+      });
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
