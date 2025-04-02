@@ -332,7 +332,7 @@ export default function PendingReportsList() {
                   </Button>
                   <Button
                     size="sm"
-                    variant="destructive"
+                    variant="danger"
                     onClick={() => handleRejectReport(report.id)}
                     disabled={processingAction.reportId === report.id}
                   >
@@ -501,7 +501,7 @@ export default function PendingReportsList() {
                     )}
                   </Button>
                   <Button
-                    variant="destructive"
+                    variant="danger"
                     onClick={() => handleRejectReport(selectedReport.id)}
                     disabled={processingAction.reportId === selectedReport.id}
                   >

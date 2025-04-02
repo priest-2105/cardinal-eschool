@@ -7,7 +7,7 @@ export interface UpdateReportStatusResponse {
 }
 
 export async function updateReport(token: string, reportId: number, status: 'approved' | 'rejected') {
-  const response = await fetchWithAuth(`${apiUrl}/admin/reports/${reportId}/status`, {
+  const response = await fetchWithAuth(`${apiUrl}/admin/report/${reportId}/status`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
