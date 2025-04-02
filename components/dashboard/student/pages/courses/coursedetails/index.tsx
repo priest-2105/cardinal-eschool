@@ -17,7 +17,7 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
 import { FileText } from "lucide-react"
-import StudentList from "../../student/studentList"
+// import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -42,7 +42,7 @@ export default function CourseDetailsComponent() {
     { id: "resources", label: "Resources", icon: FileText },
     { id: "reports", label: "Reports", icon: BarChart },
     { id: "assessments", label: "Assessments", icon: FileText },
-    { id: "students", label: "Students", icon: Users },
+    // { id: "students", label: "Students", icon: Users },
   ]
 
   const handleback = () => {
@@ -136,7 +136,7 @@ export default function CourseDetailsComponent() {
             )}
             {activeTab === "reports" && <ReportsList classId={courseId}  courseDetails={courseDetails} />}
             {activeTab === "assessments" && <AssessmentsList classId={courseId} />}
-            {activeTab === "students" && <StudentList coursedetails={courseDetails} />}
+            {/* {activeTab === "students" && <StudentList coursedetails={courseDetails} />} */}
           </CardContent>
         </Card>
 

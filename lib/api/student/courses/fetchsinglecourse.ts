@@ -24,7 +24,7 @@ export interface CourseDetails {
 }
 
 export async function getCourseDetails(token: string, courseId: string): Promise<CourseDetails> {
-  const response = await fetchWithAuth(`${apiUrl}/student/classes/${courseId}`, {
+  const response = await fetchWithAuth(`${apiUrl}/student/class/${courseId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
