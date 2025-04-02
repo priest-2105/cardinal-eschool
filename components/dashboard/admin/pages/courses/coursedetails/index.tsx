@@ -137,7 +137,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
               />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList stats={courseDetails.assignments} />
+              <AssessmentsList classId={courseDetails.class.id} stats={courseDetails.assignments} />
             )}
             {activeTab === "students" && (
               <StudentList students={courseDetails.students} />

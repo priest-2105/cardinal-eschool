@@ -20,7 +20,7 @@ interface AssignmentsResponse {
 }
 
 export async function getClassAssignments(token: string, classId: string): Promise<AssignmentsResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/admin/class/assignments/${classId}`, {
+  const response = await fetchWithAuth(`${apiUrl}/admin/classes/assignments/${classId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
