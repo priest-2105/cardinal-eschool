@@ -2,129 +2,127 @@
 
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { FilterModal } from "../coursefilter/index"
+import { Search } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CourseTable } from "../coursetable/index"
-import { Search, Plus } from "lucide-react"
-import type { Course, FilterValues } from "../types"
-import { useRouter } from "next/navigation"
-import { getTutorClasses } from "@/lib/api/admin/managecourses/courselist"
+import { getAdminClasses } from "@/lib/api/admin/managecourses/courselist"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { Alert } from "@/components/ui/alert"
-
-const INITIAL_LOAD = 10
-const LOAD_MORE_COUNT = 5
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 
 export function CourseList() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD)
-  const [_filters, setFilters] = useState<FilterValues>({
-    courses: [],
-    tutors: [],
-    admins: [],
-    dateRange: {
-      from: undefined,
-      to: undefined,
-    },
-    status: [],
-  })
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [courses, setCourses] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [courses, setCourses] = useState<Course[]>([])
-  const router = useRouter()
+  const [selectedGrade, setSelectedGrade] = useState("all")
+  const [selectedDateRange, setSelectedDateRange] = useState("all")
+  const [selectedStatus, setSelectedStatus] = useState("all")
   const token = useSelector((state: RootState) => state.auth?.token)
 
-  const fetchCourses = async () => {
-    if (!token) return
-
-    setLoading(true)
-    try {
-      const response = await getTutorClasses(token)
-      const formattedCourses = response.data.classes.map(course => ({
-        id: course.class_id,
-        name: course.name,
-        grade: "10", // You might want to add this to your API response
-        noOfStudent: course.no_of_students,
-        schedule: `${course.schedule.days.join(", ")} ${course.schedule.time.join(" - ")}`,
-        status: "Active", // You might want to add this to your API response
-        dateAdded: new Date().toISOString().split('T')[0], // You might want to add this to your API response
-      }))
-      setCourses(formattedCourses)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch courses")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  
-
   useEffect(() => {
+    const fetchCourses = async () => {
+      if (!token) return
+      setLoading(true)
+      try {
+        const response = await getAdminClasses(token)
+        setCourses(response.data.classes)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch courses")
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchCourses()
   }, [token])
 
   const filteredCourses = courses.filter((course) => {
-    const nameMatch = course.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const scheduleMatch = course.schedule.toLowerCase().includes(searchQuery.toLowerCase())
-    return nameMatch || scheduleMatch
+    const matchesSearch =
+      course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (course.code && course.code.toLowerCase().includes(searchQuery.toLowerCase()))
+
+    const matchesGrade = selectedGrade === "all"
+    const matchesStatus = selectedStatus === "all"
+    const matchesDate = selectedDateRange === "all"
+
+    return matchesSearch && matchesGrade && matchesStatus && matchesDate
   })
 
-  const uniqueCourses = [
-    ...new Map(filteredCourses.map((course) => [course.name, { id: course.id, name: course.name }])).values(),
-  ]
-
-  const visibleCourses = filteredCourses.slice(0, visibleCount)
-  const hasMore = visibleCourses.length < filteredCourses.length
-
-  const handleCreateCourse = () => {
-    router.push("/admin/createcourse")
+  if (loading) {
+    return <div className="text-center py-12">Loading courses...</div>
   }
 
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters(newFilters)
+  if (error) {
+    return (
+      <Alert variant="danger">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    )
   }
 
   return (
-    <div className="space-y-4 max-h-[80vh] h-full overflow-hidden">
+    <div className="space-y-4">
       <div className="sm:flex max-sm:block max-sm:pb-3 items-center justify-between">
         <div className="space-y-1 max-sm:pb-3">
-          <h2 className="text-2xl font-semibold">Manage Courses</h2>
-          <p className="text-sm text-muted-foreground">Create, view, and manage courses</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={handleCreateCourse}>
-            <Plus className="mr-2 h-4 w-4" /> Create Course
-          </Button>
-          <div className="relative">
-            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
-            />
-          </div>
-          <FilterModal courses={uniqueCourses} onFilterChange={handleFilterChange} />
+          <h2 className="text-2xl font-semibold">View Course Lists</h2>
+          <p className="text-sm text-muted-foreground">Manage and track your enrolled courses</p>
         </div>
       </div>
 
-      {error ? (
-        <Alert variant="danger" className="mb-4">{error}</Alert>
-      ) : loading ? (
-        <div className="flex items-center justify-center h-32">Loading courses...</div>
-      ) : (
-        <CourseTable courses={visibleCourses} />
-      )}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Grade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Grades</SelectItem>
+            {[...Array(12)].map((_, i) => (
+              <SelectItem key={i} value={`${i + 1}`}>
+                Grade {i + 1}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      {hasMore && (
-        <div className="flex justify-center">
-          <Button variant="outline" onClick={() => setVisibleCount((prev) => prev + LOAD_MORE_COUNT)}>
-            Load More
-          </Button>
+        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="upcoming">Upcoming</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Date Added" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Time</SelectItem>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="last7days">Last 7 Days</SelectItem>
+            <SelectItem value="last30days">Last 30 Days</SelectItem>
+            <SelectItem value="last90days">Last 90 Days</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 w-full"
+          />
         </div>
-      )}
+      </div>
+
+      <CourseTable courses={filteredCourses} />
     </div>
   )
 }

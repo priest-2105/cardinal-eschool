@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Bell, CheckCheck, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,7 +29,8 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import pusher from "@/utils/pusher"
+import { cn } from "@/lib/utils"
+import cardinalConfig from "@/config"
 
 // Notification type definition
 interface Notification {
@@ -38,13 +40,13 @@ interface Notification {
   type: "system" | "course" | "announcement" | "message"
   isRead: boolean
   isDone: boolean
-  createdAt: Date
+  created_at: Date
   link?: string
 }
 
 export function NotificationList() {
+  const router = useRouter()
   const token = useSelector((state: RootState) => state.auth?.token)
-  const userId = useSelector((state: RootState) => state.auth?.user?.id)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -61,7 +63,6 @@ export function NotificationList() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
 
-  // Clear alert after 3 seconds
   useEffect(() => {
     if (alert) {
       const timer = setTimeout(() => {
@@ -86,7 +87,7 @@ export function NotificationList() {
           type: notification.type || "system",
           isRead: !!notification.read_at,
           isDone: false,
-          createdAt: new Date(notification.created_at),
+          created_at: notification.created_at,
           link: notification.link || undefined,
         }))
         setNotifications(notificationsWithDates)
@@ -100,47 +101,6 @@ export function NotificationList() {
 
     loadNotifications()
   }, [token])
-
-  // Subscribe to Pusher channel for real-time notifications
-  useEffect(() => {
-    if (!userId) return
-
-    // Format the channel name correctly
-    const channelName = `private-user.${userId}`
-
-    // Subscribe to the user's private channel
-    const channel = pusher.subscribe(channelName)
-
-    // Listen for the 'notification.created' event
-    channel.bind("notification.created", (data: any) => {
-      // Format the new notification to match our interface
-      const newNotification: Notification = {
-        id: data.id.toString(),
-        title: data.title || "New Notification",
-        message: data.message || data.content || "",
-        type: data.type || "system",
-        isRead: false,
-        isDone: false,
-        createdAt: new Date(data.created_at || Date.now()),
-        link: data.link || undefined,
-      }
-
-      // Add the new notification to the top of the list
-      setNotifications((prev) => [newNotification, ...prev])
-
-      // Show an alert for the new notification
-      setAlert({
-        type: "success",
-        message: `New notification: ${newNotification.title}`,
-      })
-    })
-
-    // Cleanup on unmount
-    return () => {
-      channel.unbind("notification.created")
-      pusher.unsubscribe(channelName)
-    }
-  }, [userId])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -170,15 +130,29 @@ export function NotificationList() {
     } else if (statusFilter === "not-done") {
       filtered = filtered.filter((notification) => !notification.isDone)
     }
-
+    
+    const parseDate = (dateStr) => {
+      // Remove the "th", "st", "nd", "rd" from the day
+      const cleanDateStr = dateStr.replace(/(\d+)(st|nd|rd|th)/, "$1");
+      
+      // Convert to a valid Date string
+      const dateObj = new Date(cleanDateStr);
+      
+      return dateObj;
+    };
+    
     // Apply sorting
     filtered.sort((a, b) => {
+      const dateA = parseDate(a.created_at);
+      const dateB = parseDate(b.created_at);
+    
       if (sortOrder === "newest") {
-        return b.createdAt.getTime() - a.createdAt.getTime()
+        return dateB - dateA;
       } else {
-        return a.createdAt.getTime() - b.createdAt.getTime()
+        return dateA - dateB;
       }
-    })
+    });
+    
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
@@ -305,13 +279,7 @@ export function NotificationList() {
         await handleDeleteNotification(id)
       }
 
-      setSelectedNotifications((prev) => {
-        const newSelected = new Set(prev)
-        notificationsToDelete.forEach((id) => {
-          newSelected.delete(id)
-        })
-        return newSelected
-      })
+      setSelectedNotifications(new Set())
 
       setAlert({ type: "success", message: "Notifications deleted successfully." })
     } catch (error) {
@@ -347,6 +315,7 @@ export function NotificationList() {
             }
           }
           setAlert({ type: "success", message: "Selected notifications marked as read." })
+          setSelectedNotifications(new Set())
         } catch (error) {
           console.error("Failed to mark notifications as read:", error)
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
@@ -381,6 +350,23 @@ export function NotificationList() {
         openDeleteDialog([id])
         break
       default:
+        break
+    }
+  }
+
+  const handleNotificationClick = (notification: any) => {
+    if (!notification.data) return
+
+    switch (notification.type) {
+      case "ticket_updated":
+        router.push(cardinalConfig.routes.dashboard.admin.adminticketdetails(notification.data.ticket_id))
+        break
+      case "class_created":
+      case "resources_assigned":
+        router.push(cardinalConfig.routes.dashboard.admin.courseDetails(notification.data.class_id))
+        break
+      default:
+        
         break
     }
   }
@@ -470,6 +456,11 @@ export function NotificationList() {
   // Check if there are any unread notifications
   const hasUnreadNotifications = notifications.some((n) => !n.isRead)
 
+
+  if(!notifications) { 
+    return <div className="text-center py-12">Loading courses...</div>
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -524,8 +515,6 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                    <SelectItem value="not-done">Not Done</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -545,7 +534,7 @@ export function NotificationList() {
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent>
         {/* Mark All as Read button - always visible when there are unread notifications */}
         {hasUnreadNotifications && selectedNotifications.size === 0 && (
           <div className="flex items-center justify-end bg-muted/20 p-4 border-b">
@@ -665,7 +654,7 @@ export function NotificationList() {
         )}
 
         {/* Notifications List */}
-        <div className="divide-y">
+        <div className="p-0 max-h-[65vh] overflow-y-scroll custom-scrollbar divide-y">
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
@@ -673,9 +662,11 @@ export function NotificationList() {
               : filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`flex items-start gap-4 p-4 ${
-                      !notification.isRead ? "bg-muted/10" : ""
-                    } hover:bg-muted/20 transition-colors`}
+                    className={cn(
+                      "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
+                      notification.isRead ? "bg-white" : "bg-gray-50"
+                    )}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <Checkbox
                       checked={selectedNotifications.has(notification.id)}
@@ -776,9 +767,7 @@ export function NotificationList() {
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {renderTypeBadge(notification.type)}
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(notification.createdAt).toLocaleString()}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{notification.created_at}</span>
                         {notification.isDone && (
                           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
                             <CheckCheck className="mr-1 h-3 w-3" />
@@ -811,7 +800,7 @@ export function NotificationList() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-              <Button onClick={confirmDelete} variant="destructive" disabled={isDeleting}>
+              <Button onClick={confirmDelete} variant="danger" disabled={isDeleting}>
                 {isDeleting ? (
                   <span className="flex items-center">
                     <svg
@@ -846,10 +835,7 @@ export function NotificationList() {
       </CardContent>
 
       {alert && (
-        <Alert
-          variant={alert.type === "success" ? "default" : "destructive"}
-          className="absolute top-12 bg-white right-4"
-        >
+        <Alert variant={alert.type === "success" ? "default" : "danger"} className="fixed z-50 top-16 bg-white right-4">
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

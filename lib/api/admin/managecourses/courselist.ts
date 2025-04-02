@@ -1,6 +1,6 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-export interface TutorClassResponse {
+export interface AdminClassResponse {
   status: string;
   message: string;
   data: {
@@ -20,7 +20,7 @@ export interface TutorClassResponse {
   };
 }
 
-export async function getTutorClasses(token: string): Promise<TutorClassResponse> {
+export async function getAdminClasses(token: string): Promise<AdminClassResponse> {
   const response = await fetchWithAuth(`${apiUrl}/admin/classes`, {
     method: "GET",
     headers: {

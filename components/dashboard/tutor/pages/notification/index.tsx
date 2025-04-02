@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { Bell, CheckCheck, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,12 +40,13 @@ interface Notification {
   type: "system" | "course" | "announcement" | "message"
   isRead: boolean
   isDone: boolean
-  createdAt: Date
+  created_at: Date
   link?: string
 }
 
 export function NotificationList() {
   const router = useRouter()
+  const pathname = usePathname()
   const token = useSelector((state: RootState) => state.auth?.token)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
@@ -72,6 +73,22 @@ export function NotificationList() {
     }
   }, [alert])
 
+  // Add prefetching when component mounts
+  useEffect(() => {
+    const commonRoutes = [
+      cardinalConfig.routes.dashboard.tutor.courseDetails(1), // Example course
+      cardinalConfig.routes.dashboard.tutor.tutorticketdetails(1), // Example ticket
+      cardinalConfig.routes.dashboard.tutor.courses,
+      cardinalConfig.routes.dashboard.tutor.tutorticketlist,
+    ]
+
+    commonRoutes.forEach((route) => {
+      if (route !== pathname) {
+        router.prefetch(route)
+      }
+    })
+  }, [router, pathname])
+
   // Load notifications
   useEffect(() => {
     const loadNotifications = async () => {
@@ -87,7 +104,7 @@ export function NotificationList() {
           type: notification.type || "system",
           isRead: !!notification.read_at,
           isDone: false,
-          createdAt: new Date(notification.created_at),
+          created_at: notification.created_at,
           link: notification.link || undefined,
         }))
         setNotifications(notificationsWithDates)
@@ -134,9 +151,9 @@ export function NotificationList() {
     // Apply sorting
     filtered.sort((a, b) => {
       if (sortOrder === "newest") {
-        return b.createdAt.getTime() - a.createdAt.getTime()
+        return b.created_at.getTime() - a.created_at.getTime()
       } else {
-        return a.createdAt.getTime() - b.createdAt.getTime()
+        return a.created_at.getTime() - b.created_at.getTime()
       }
     })
     setFilteredNotifications(filtered)
@@ -343,17 +360,25 @@ export function NotificationList() {
   const handleNotificationClick = (notification: any) => {
     if (!notification.data) return
 
+    const route = getNotificationRoute(notification)
+    if (route) {
+      router.prefetch(route) // Prefetch before navigating
+      router.push(route)
+    }
+  }
+
+  const getNotificationRoute = (notification: any) => {
     switch (notification.type) {
-      case "ticket_updated":
-        router.push(cardinalConfig.routes.dashboard.tutor.tutorticketdetails(notification.data.ticket_id))
-        break
+        case "ticket_created":
+        case "ticket_updated":
+        return cardinalConfig.routes.dashboard.tutor.tutorticketdetails(notification.data.ticket_id)
       case "class_created":
       case "resources_assigned":
-        router.push(cardinalConfig.routes.dashboard.tutor.courseDetails(notification.data.class_id))
-        break
+        return cardinalConfig.routes.dashboard.tutor.courseDetails(notification.data.class_id)
+      // case "report_updated":
+        // return cardinalConfig.routes.dashboard.tutor.rep(notification.data.class_id)
       default:
-        
-        break
+        return null
     }
   }
 
@@ -442,8 +467,7 @@ export function NotificationList() {
   // Check if there are any unread notifications
   const hasUnreadNotifications = notifications.some((n) => !n.isRead)
 
-
-  if(!notifications) { 
+  if (!notifications) {
     return <div className="text-center py-12">Loading courses...</div>
   }
 
@@ -501,8 +525,6 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                    <SelectItem value="not-done">Not Done</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -646,83 +668,46 @@ export function NotificationList() {
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
-              ? renderEmptyState()
-              : filteredNotifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    className={cn(
-                      "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
-                      notification.isRead ? "bg-white" : "bg-gray-50"
-                    )}
-                    onClick={() => handleNotificationClick(notification)}
-                  >
-                    <Checkbox
-                      checked={selectedNotifications.has(notification.id)}
-                      onCheckedChange={() => toggleSelectNotification(notification.id)}
-                      id={`select-${notification.id}`}
-                      className="mt-1"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <h4 className={`text-sm font-medium ${!notification.isRead ? "font-semibold" : ""}`}>
-                            {notification.title}
-                          </h4>
-                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="bg-white" align="end">
-                            {!notification.isRead && (
-                              <DropdownMenuItem
-                                onClick={() => handleSingleAction("mark-read", notification.id)}
-                                disabled={processingNotificationId === notification.id}
-                              >
-                                {processingNotificationId === notification.id ? (
-                                  <span className="flex items-center">
-                                    <svg
-                                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <circle
-                                        className="opacity-25"
-                                        cx="12"
-                                        cy="12"
-                                        r="10"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                      ></circle>
-                                      <path
-                                        className="opacity-75"
-                                        fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                      ></path>
-                                    </svg>
-                                    Processing...
-                                  </span>
-                                ) : (
-                                  <>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    Mark as read
-                                  </>
-                                )}
-                              </DropdownMenuItem>
-                            )}
+            ? renderEmptyState()
+            : filteredNotifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
+                    notification.isRead ? "bg-white" : "bg-gray-50",
+                  )}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <Checkbox
+                    checked={selectedNotifications.has(notification.id)}
+                    onCheckedChange={() => toggleSelectNotification(notification.id)}
+                    id={`select-${notification.id}`}
+                    className="mt-1"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <h4 className={`text-sm font-medium ${!notification.isRead ? "font-semibold" : ""}`}>
+                          {notification.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-white" align="end">
+                          {!notification.isRead && (
                             <DropdownMenuItem
-                              onClick={() => handleSingleAction("delete", notification.id)}
-                              className="text-destructive"
+                              onClick={() => handleSingleAction("mark-read", notification.id)}
                               disabled={processingNotificationId === notification.id}
                             >
                               {processingNotificationId === notification.id ? (
                                 <span className="flex items-center">
                                   <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-destructive"
+                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -741,36 +726,73 @@ export function NotificationList() {
                                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                     ></path>
                                   </svg>
-                                  Deleting...
+                                  Processing...
                                 </span>
                               ) : (
                                 <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Mark as read
                                 </>
                               )}
                             </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        {renderTypeBadge(notification.type)}
-                        <span className="text-xs text-muted-foreground">{/* {notification.createdAt} */}</span>
-                        {notification.isDone && (
-                          <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                            <CheckCheck className="mr-1 h-3 w-3" />
-                            Done
-                          </Badge>
-                        )}
-                        {notification.link && (
-                          <Button variant="link" size="sm" className="h-auto p-0 text-xs">
-                            View Details
-                          </Button>
-                        )}
-                      </div>
+                          )}
+                          <DropdownMenuItem
+                            onClick={() => handleSingleAction("delete", notification.id)}
+                            className="text-destructive"
+                            disabled={processingNotificationId === notification.id}
+                          >
+                            {processingNotificationId === notification.id ? (
+                              <span className="flex items-center">
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-destructive"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Deleting...
+                              </span>
+                            ) : (
+                              <>
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      {renderTypeBadge(notification.type)}
+                      <span className="text-xs text-muted-foreground">{notification.created_at}</span>
+                      {notification.isDone && (
+                        <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
+                          <CheckCheck className="mr-1 h-3 w-3" />
+                          Done
+                        </Badge>
+                      )}
+                      {notification.link && (
+                        <Button variant="link" size="sm" className="h-auto p-0 text-xs">
+                          View Details
+                        </Button>
+                      )}
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
         </div>
 
         {/* Delete Confirmation Dialog */}
