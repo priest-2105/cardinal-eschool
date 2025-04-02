@@ -286,7 +286,7 @@ export function PendingReportsList() {
                     onClick={() => handleApproveReport(report.id)}
                   >
                     <CheckCircle size={16} className="mr-2" />
-                   {approving ? "Approving" : "Approve Report"}
+                   {approving ? "Approve Report" : "Approving"}
                   </Button>
                 </div>
               </div>
@@ -408,7 +408,7 @@ export function PendingReportsList() {
                   onClick={() => handleApproveReport(selectedReport.id)}
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
-                   {approving ? "Approving" : "Approve Report"}
+                   {approving ? "Approve Report" : "Approving"}
                 </Button>
 
                 <Button variant="outline" onClick={() => setIsViewModalOpen(false)} className="sm:ml-auto">
