@@ -22,7 +22,7 @@ const notifications = [
 ]
 
 const profileOptions = [
-  { name: "Profile", href: "/student/profile" },
+  { name: "Profile", href: "/student/studentinformation" },
   { name: "Settings", href: "/student/settings" },
   { name: "Support", href: "/student/support" },
   { name: "Logout", href: "#" },
@@ -125,12 +125,12 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
               })
             )
           } else {
-            // router.push("/planpick")
+            router.push("/planpick")
           }
         }
       } catch (error) {
         console.error("Failed to check subscription:", error)
-        // router.push("/planpick")
+        router.push("/planpick")
       }
     }
 

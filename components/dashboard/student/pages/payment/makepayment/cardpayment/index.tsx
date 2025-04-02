@@ -14,7 +14,7 @@ const StudentCardPayment = () => {
           <div className="bg-[#E6FFFC] p-6 rounded-lg">
             <div className="flex items-center mb-4">
               <CheckCircle2 className="h-6 w-6 text-[#1BC2C2] mr-2" />
-              <h3 className="text-lg font-semibold">{subscription.plan} Plan</h3>
+              <h3 className="text-lg font-semibold">{subscription.plan[0].toUpperCase()}{subscription.plan.slice(1)} Plan</h3>
             </div>
             <div className="space-y-4">
               <div>

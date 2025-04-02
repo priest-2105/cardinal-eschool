@@ -1,11 +1,8 @@
 export interface Course {
     id: number;
+    grade: number,
     name: string;
-    tutor: {
-      name: string;
-      email: string;
-      avatar?: string;
-    };
+    noOfStudent: number,
     schedule: string;
     status: 'Upcoming' | 'Active' | 'Completed';
     dateAdded: string;
@@ -13,7 +10,7 @@ export interface Course {
   
   export interface FilterValues {
     courses: string[];
-    tutors: string[];
+    students: string[];
     dateRange: {
       from: Date | undefined;
       to: Date | undefined;

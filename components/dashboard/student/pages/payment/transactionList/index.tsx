@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useMemo, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -8,14 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { fetchTransactionHistory } from "@/lib/api/student/payment/fetchTransactionHistory"
 import { useAppSelector } from "@/lib/hooks"
 import { Search, X, MoreHorizontal } from "lucide-react"
-import { formatDate } from "@/utils/dateformat"
 import { useRouter } from "next/navigation"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown"
 import { getTransactionDetails } from "@/lib/api/student/payment/requerypayment"
 import {
   AlertDialog,
@@ -27,6 +23,17 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
+
+// Define the Transaction type
+interface Transaction {
+  id: number
+  transaction_ref: string
+  created_at: string
+  subscription_plan_name: string
+  amount: number
+  status: string
+  quantity: number
+}
 
 const MONTHS = [
   "January",
@@ -44,8 +51,8 @@ const MONTHS = [
 ]
 
 function parseTransactionDate(dateString: string) {
-  const monthIndex = MONTHS.findIndex(month => dateString.startsWith(month))
-  const year = parseInt(dateString.match(/\d{4}/)?.[0] || "0")
+  const monthIndex = MONTHS.findIndex((month) => dateString.startsWith(month))
+  const year = Number.parseInt(dateString.match(/\d{4}/)?.[0] || "0")
   return { month: monthIndex, year }
 }
 
@@ -79,7 +86,7 @@ export default function TransactionList() {
   }, [authState?.token])
 
   const availableYears = useMemo(() => {
-    const years = new Set(transactions.map(t => parseTransactionDate(t.created_at).year))
+    const years = new Set(transactions.map((t) => parseTransactionDate(t.created_at).year))
     return Array.from(years).sort((a, b) => b - a)
   }, [transactions])
 
@@ -87,17 +94,11 @@ export default function TransactionList() {
     return transactions.filter((transaction) => {
       const { month, year } = parseTransactionDate(transaction.created_at)
 
-      const monthMatch =
-        selectedMonths === "all" ||
-        month.toString() === selectedMonths
+      const monthMatch = selectedMonths === "all" || month.toString() === selectedMonths
 
-      const yearMatch =
-        selectedYear === "all" ||
-        year.toString() === selectedYear
+      const yearMatch = selectedYear === "all" || year.toString() === selectedYear
 
-      const statusMatch =
-        selectedStatus === "all" ||
-        transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+      const statusMatch = selectedStatus === "all" || transaction.status.toLowerCase() === selectedStatus.toLowerCase()
 
       const searchLower = searchQuery.toLowerCase()
       const searchMatch =
@@ -135,15 +136,19 @@ export default function TransactionList() {
   }
 
   if (loading) {
-    return <div className="text-center py-12 border rounded-lg">
-      <p className="text-gray-500">Loading</p>
-    </div>
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">Loading</p>
+      </div>
+    )
   }
 
   if (!transactions) {
-    return <div className="text-center py-12 border rounded-lg">
-      <p className="text-gray-500">No Transactions</p>
-    </div>
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">No Transactions</p>
+      </div>
+    )
   }
 
   return (
@@ -254,9 +259,9 @@ export default function TransactionList() {
                 <TableCell>
                   <Badge
                     className={`
-                    ${transaction.status.toLowerCase() === "success"  && "bg-[#1BC2C2] text-[#1BC2C2]-300 hover:bg-[#1BC2C2]-800" }
-                    ${transaction.status.toLowerCase() === "pending"  && "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"  } 
-                    ${transaction.status.toLowerCase() === "failed"  &&  "bg-red-100 text-red-800 hover:bg-red-100"}
+                    ${transaction.status.toLowerCase() === "success" && "bg-[#1BC2C2] text-[#1BC2C2]-300 hover:bg-[#1BC2C2]-800"}
+                    ${transaction.status.toLowerCase() === "pending" && "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"} 
+                    ${transaction.status.toLowerCase() === "failed" && "bg-red-100 text-red-800 hover:bg-red-100"}
                     `}
                   >
                     {transaction.status}
@@ -268,12 +273,10 @@ export default function TransactionList() {
                     <DropdownMenuTrigger>
                       <MoreHorizontal className="h-4 w-4" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      {(transaction.status.toLowerCase() === "pending" ||
-                        transaction.status.toLowerCase() === "failed") && (
-                        <DropdownMenuItem
-                          onClick={(e) => openRequeryModal(transaction.transaction_ref, e)}
-                        >
+                    <DropdownMenuContent className="bg-white">
+                      {/* Only show Requery Payment for pending status, not for failed */}
+                      {transaction.status.toLowerCase() === "pending" && (
+                        <DropdownMenuItem onClick={(e) => openRequeryModal(transaction.transaction_ref, e)}>
                           Requery Payment
                         </DropdownMenuItem>
                       )}
@@ -303,11 +306,7 @@ export default function TransactionList() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setIsRequeryModalOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleRequeryPayment(selectedTransactionRef)}
-            >
-              Continue
-            </AlertDialogAction>
+            <AlertDialogAction onClick={() => handleRequeryPayment(selectedTransactionRef)}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

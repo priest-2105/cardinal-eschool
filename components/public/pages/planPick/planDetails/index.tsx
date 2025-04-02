@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
 import { Check } from "lucide-react";
+import { validateCoupon } from "@/lib/api/student/payment/validatecoupon";
+import { useAppSelector } from "@/lib/hooks";
 
 interface Plan {
   title: string;
   price: string;
   duration: string;
   features: string[];
-  sub_id: string; 
+  sub_id: string;
 }
 
 interface UserProfile {
@@ -27,17 +29,30 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
 }) => {
   const [months, setMonths] = useState(1);
   const [coupon, setCoupon] = useState("");
-  const router = useRouter();
+  const [discount, setDiscount] = useState<number | null>(null);
+  const [finalPrice, setFinalPrice] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const authState = useAppSelector((state) => state.auth);
+  
+  const originalPrice = Number.parseFloat(plan.price.replace("$", "")) * months;
 
+  const applyCoupon = async () => {
+    setIsLoading(true);
+    setError(null);
 
-  const calculatePrice = () => {
-    let price = Number.parseFloat(plan.price.replace("$", "")) * months;
-    if (coupon === "SAVE10") {
-      price *= 0.9;
+    try {
+      const response = await validateCoupon(authState?.token, coupon, originalPrice);
+      setDiscount(parseFloat(response.data.coupon.discount_percentage));
+      setFinalPrice(response.data.coupon.final_amount);
+    } catch (error) {
+      setError("Invalid coupon or failed to validate");
+      setDiscount(null);
+      setFinalPrice(null);
+    } finally {
+      setIsLoading(false);
     }
-    return price.toFixed(2);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -48,10 +63,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
         className="bg-white rounded-lg shadow-lg max-w-4xl w-full relative overflow-hidden"
       >
         <div className="flex flex-col md:flex-row ">
-          <div className="md:w-1/2 p-6 bg-gradient-to-br bg-[#1BC2C2]  text-white">
-            {/* <button onClick={onDeselect} className="absolute top-1 right-1 text-white hover:text-gray-200">
-              <X size={34} color="#000" />
-            </button> */}
+          <div className="md:w-1/2 p-6 bg-gradient-to-br bg-[#1BC2C2] text-white">
             <h2 className="text-3xl font-bold mb-4">{plan.title}</h2>
             <p className="text-2xl font-semibold mb-2">
               {plan.price} <span className="text-sm">{plan.duration}</span>
@@ -92,19 +104,32 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
-                <input
-                  type="text"
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
-                  placeholder="Enter coupon code"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
+                    placeholder="Enter coupon code"
+                  />
+                  <button
+                    onClick={applyCoupon}
+                    className="bg-[#1BC2C2] text-white px-4 py-2 rounded-md hover:bg-[#139797] disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Applying..." : "Apply"}
+                  </button>
+                </div>
+                {discount !== null && (
+                  <p className="text-green-600 mt-2">Coupon applied! {discount}% off</p>
+                )}
+                {error && <p className="text-red-600 mt-2">{error}</p>}
               </div>
             </div>
           </div>
         </div>
         <div className="bg-gray-50 p-6 flex items-center justify-between">
-          <div className="text-2xl font-bold">Total: ${calculatePrice()}</div>
+          <div className="text-2xl font-bold">Total: ${finalPrice !== null ? finalPrice.toFixed(2) : originalPrice.toFixed(2)}</div>
           <CheckoutButton
             subscriptionPlanId={plan.sub_id}
             quantity={months}
@@ -117,4 +142,3 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null;
 };
 
 export default ChosenPlanDetails;
-

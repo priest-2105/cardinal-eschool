@@ -13,14 +13,14 @@ import { Check, ChevronsUpDown, Filter } from "lucide-react"
 
 interface FilterModalProps {
   courses: { id: number; name: string }[]
-  tutors: { id: number; name: string }[]
+  // students: { id: number; name: string }[]
   onFilterChange: (filters: FilterValues) => void
 }
 
-export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProps) {
+export function FilterModal({ courses,  onFilterChange }: FilterModalProps) {
   const [open, setOpen] = useState(false)
   const [selectedCourses, setSelectedCourses] = useState<string[]>([])
-  const [selectedTutors, setSelectedTutors] = useState<string[]>([])
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
     to: Date | undefined
@@ -33,7 +33,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
   const handleApplyFilters = () => {
     onFilterChange({
       courses: selectedCourses,
-      tutors: selectedTutors,
+      students: selectedStudents,
       dateRange,
       status: selectedStatuses,
     })
@@ -42,7 +42,7 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
 
   const handleReset = () => {
     setSelectedCourses([])
-    setSelectedTutors([])
+    setSelectedStudents([])
     setDateRange({ from: undefined, to: undefined })
     setSelectedStatuses([])
   }
@@ -92,46 +92,6 @@ export function FilterModal({ courses, tutors, onFilterChange }: FilterModalProp
                           )}
                         />
                         {course.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Tutors</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" role="combobox" className="w-full justify-between">
-                  {selectedTutors.length === 0 ? "Select tutors..." : `${selectedTutors.length} selected`}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-white">
-                <Command>
-                  <CommandInput placeholder="Search tutors..." />
-                  <CommandEmpty>No tutor found.</CommandEmpty>
-                  <CommandGroup>
-                    {tutors.map((tutor) => (
-                      <CommandItem
-                        key={tutor.id}
-                        onSelect={() => {
-                          setSelectedTutors((prev) =>
-                            prev.includes(tutor.name)
-                              ? prev.filter((name) => name !== tutor.name)
-                              : [...prev, tutor.name],
-                          )
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedTutors.includes(tutor.name) ? "opacity-100" : "opacity-0",
-                          )}
-                        />
-                        {tutor.name}
                       </CommandItem>
                     ))}
                   </CommandGroup>
