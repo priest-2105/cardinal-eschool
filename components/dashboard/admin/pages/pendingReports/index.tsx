@@ -53,7 +53,7 @@ interface PendingReport {
   tutorProfile?: TutorProfile
 }
 
-export function PendingReportsList() {
+export default function PendingReportsList() {
   const [pendingReports, setPendingReports] = useState<PendingReport[]>([])
   const [filteredReports, setFilteredReports] = useState<PendingReport[]>([])
   const [loading, setLoading] = useState(true)
