@@ -76,12 +76,10 @@ export default function PendingReportsList() {
     setLoading(true)
     try {
       const response = await getPendingReports(token)
-      // Filter only pending reports
       const pendingOnly = response.data.reports.filter((report) => report.status === "pending")
       setPendingReports(pendingOnly)
       setFilteredReports(pendingOnly)
 
-      // Fetch student and tutor profiles for each report
       pendingOnly.forEach((report) => {
         fetchProfilesForReport(report)
       })
@@ -99,18 +97,14 @@ export default function PendingReportsList() {
     setLoadingProfiles((prev) => ({ ...prev, [reportId]: true }))
 
     try {
-      // Fetch student profile
       const studentProfile = await getStudentDetails(token, report.student_id)
 
-      // Fetch tutor profile
       const tutorProfile = await getTutorDetails(token, report.tutor_id)
 
-      // Update the report with profiles
       setPendingReports((prev) => prev.map((r) => (r.id === report.id ? { ...r, studentProfile, tutorProfile } : r)))
 
       setFilteredReports((prev) => prev.map((r) => (r.id === report.id ? { ...r, studentProfile, tutorProfile } : r)))
 
-      // If this is the selected report, update it too
       if (selectedReport?.id === report.id) {
         setSelectedReport({ ...report, studentProfile, tutorProfile })
       }

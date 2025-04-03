@@ -8,7 +8,7 @@ import { CourseTable } from '../coursetable/index'
 import { getTutorClasses } from '@/lib/api/tutor/courses/courselist'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
+
 
 interface Course {
   class_id: number
@@ -65,12 +65,11 @@ export function CourseList() {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    )
+    return <div className="text-center py-12 text-red-500">{error}</div>
+  }
+
+  if (courses.length === 0) {
+    return <div className="text-center py-12">No courses available</div>
   }
 
   return (

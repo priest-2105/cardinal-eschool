@@ -7,17 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CourseTable } from '../coursetable/index'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 
 interface Course {
   class_id: number
   name: string
   code: string
-  no_of_students: number
+  tutor_name: string
   schedule: {
-    days: string[] 
-    time: string[] 
+    days: string[]
+    time: string[]
   }
 }
 
@@ -51,7 +50,8 @@ export function CourseList() {
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = 
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.code.toLowerCase().includes(searchQuery.toLowerCase())
+      course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.tutor_name.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesGrade = selectedGrade === "all" // Add grade filtering logic if needed
     const matchesStatus = selectedStatus === "all" // Add status filtering logic if needed
@@ -65,25 +65,20 @@ export function CourseList() {
   }
 
   if (error) {
-    return (
-      <Alert variant="danger">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
-    )
+    return <div className="text-center py-12 text-red-500">{error}</div>
   }
 
-  if (filteredCourses.length === 0) {
-    return <div className="text-center py-12">You haven't been assigned a course, please inform support.</div>
+  if (courses.length === 0) {
+    return <div className="text-center py-12">No courses available</div>
   }
 
   return (
     <div className="space-y-4">
       <div className="sm:flex max-sm:block max-sm:pb-3 items-center justify-between">
         <div className="space-y-1 max-sm:pb-3">
-          <h2 className="text-2xl font-semibold">View Course Lists</h2>
+          <h2 className="text-2xl font-semibold">My Courses</h2>
           <p className="text-sm text-muted-foreground">
-            Manage and track your enrolled courses
+            View and manage your enrolled courses
           </p>
         </div>
       </div>

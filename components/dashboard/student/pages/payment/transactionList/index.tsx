@@ -23,6 +23,15 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 // Define the Transaction type
 interface Transaction {
@@ -67,6 +76,8 @@ export default function TransactionList() {
   const [isRequeryModalOpen, setIsRequeryModalOpen] = useState(false)
   const [selectedTransactionRef, setSelectedTransactionRef] = useState<string>("")
   const authState = useAppSelector((state) => state.auth)
+  const [isRequeryingPayment, setIsRequeryingPayment] = useState(false)
+  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null)
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -117,15 +128,31 @@ export default function TransactionList() {
     router.push(`/student/transaction/${transactionRef}`)
   }
 
-  const handleRequeryPayment = async (transactionRef: string) => {
-    if (!authState?.token) return
+  const handleRequeryPayment = async (transactionId: string) => {
+    setIsRequeryingPayment(true)
     try {
-      const response = await getTransactionDetails(authState.token, transactionRef)
-      const updatedResponse = await fetchTransactionHistory(authState.token)
-      setTransactions(updatedResponse.data.data)
+      const response = await getTransactionDetails(authState.token, transactionId)
+      setTransactions(prevTransactions =>
+        prevTransactions.map(transaction =>
+          transaction.id === transactionId
+            ? { ...transaction, status: response.data.status }
+            : transaction
+        )
+      )
+      
+      setAlert({
+        type: "success",
+        message: "Payment status updated successfully"
+      })
+      
       setIsRequeryModalOpen(false)
     } catch (error) {
-      console.error("Failed to requery payment:", error)
+      setAlert({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to requery payment"
+      })
+    } finally {
+      setIsRequeryingPayment(false)
     }
   }
 
@@ -296,20 +323,64 @@ export default function TransactionList() {
           </TableBody>
         </Table>
       </div>
-      <AlertDialog open={isRequeryModalOpen} onOpenChange={setIsRequeryModalOpen}>
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Requery Payment</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to requery this payment? This will check the current status of your transaction.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsRequeryModalOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleRequeryPayment(selectedTransactionRef)}>Continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog 
+        open={isRequeryModalOpen} 
+        onOpenChange={(open) => {
+          if (!isRequeryingPayment) {
+            setIsRequeryModalOpen(open)
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Requery Payment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to requery this payment? This will check the current status of your payment.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => !isRequeryingPayment && setIsRequeryModalOpen(false)}
+              disabled={isRequeryingPayment}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => selectedTransactionRef && handleRequeryPayment(selectedTransactionRef)}
+              disabled={isRequeryingPayment}
+            >
+              {isRequeryingPayment ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Checking Payment...
+                </span>
+              ) : (
+                "Confirm Requery"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
