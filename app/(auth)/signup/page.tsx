@@ -2,7 +2,7 @@
 
 import type React from "react"
 import Link from "next/link"
-import { Youtube } from "lucide-react"
+import { Youtube, Eye, EyeOff } from "lucide-react"
 import PhoneInput from "react-phone-input-2"
 import "react-phone-input-2/lib/style.css"
 import XIcon from "@/public/assets/icons/x-dark.png"
@@ -43,6 +43,8 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default");
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const router = useRouter();
 
@@ -82,19 +84,20 @@ export default function SignupPage() {
     setAlertMessage(null);
 
     const age = formData.dateOfBirth ? new Date().getFullYear() - formData.dateOfBirth.getFullYear() : 0;
+    const isUnder16 = age < 16;
 
     const payload = {
       firstname: formData.firstName,
       lastname: formData.lastName,
-      email: age >= 16 ? formData.email : formData.guardianEmail, 
+      email: isUnder16 ? formData.guardianEmail : formData.email,
       password: formData.password,
       password_confirmation: formData.confirmPassword,
       gender: formData.gender,
-      dob: formData.dateOfBirth?.toISOString().split("T")[0],
+      dob: formData.dateOfBirth?.toISOString().split("T")[0] || "",
       channel: formData.referralChannel,
-      guardian_name: age < 16 ? formData.guardianName : "",
-      guardian_email: age < 16 ? formData.guardianEmail : "",
-      guardian_phone: age < 16 ? formData.guardianPhone : "",
+      guardian_name: isUnder16 ? formData.guardianName : formData.firstName + " " + formData.lastName,
+      guardian_email: isUnder16 ? formData.guardianEmail : formData.email,
+      guardian_phone: isUnder16 ? formData.guardianPhone : formData.phone,
     };
 
     try {
@@ -114,7 +117,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-white">
         {alertMessage && (<div className="absolute bg-white top-4 right-4">
-        <Alert variant={alertVariant} className="fixed right-4 top-8 z-99" onClose={() => setAlertMessage(null)}>
+        <Alert variant={alertVariant} className="fixed right-4 bg-white top-8 z-99" onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
@@ -292,24 +295,38 @@ export default function SignupPage() {
                   {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
               )}
-              <div>
+              <div className="relative">
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className={errors.password ? "border-red-500" : ""}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
               </div>
-              <div>
+              <div className="relative">
                 <Input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className={errors.confirmPassword ? "border-red-500" : ""}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
                 {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting}>

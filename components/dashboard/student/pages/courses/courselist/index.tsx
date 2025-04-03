@@ -38,7 +38,7 @@ export function CourseList() {
         const response = await getStudentClasses(token)
         setCourses(response.data.classes)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch courses')
+        setError(err instanceof Error ? err.message : 'Failed to fetch courses. Please contact Support')
       } finally {
         setLoading(false)
       }
