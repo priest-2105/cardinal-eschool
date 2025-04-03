@@ -202,6 +202,7 @@ export default function LoginPage() {
                   placeholder="Enter password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="pr-10"
                 />
                 <button
                   type="button"

@@ -300,7 +300,7 @@ export default function SignupPage() {
                   placeholder="Password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={errors.password ? "border-red-500" : ""}
+                  className={errors.password ? "border-red-500 pr-10" : "pr-10"}
                 />
                 <button
                   type="button"
@@ -317,7 +317,7 @@ export default function SignupPage() {
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className={errors.confirmPassword ? "border-red-500" : ""}
+                  className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
                 />
                 <button
                   type="button"
