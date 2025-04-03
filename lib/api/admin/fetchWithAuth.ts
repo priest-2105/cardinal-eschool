@@ -3,13 +3,16 @@ import { clearAuthState } from "../../authSlice";
 
 const apiUrl = process.env.NEXT_PUBLIC_CARDINAL_APP_API_URL;
 
-
 export async function fetchWithAuth(input: RequestInfo, init?: RequestInit) {
     const response = await fetch(input, init);
 
     if (response.status === 401) {
         store.dispatch(clearAuthState());
-        throw new Error("Unauthorized: Token expired or invalid.");
+        // Check if this is a login request
+        if (input.toString().includes('/login')) {
+            throw new Error("Email or password is incorrect");
+        }
+        throw new Error("Your session has expired. Please log in again.");
     }
 
     return response;

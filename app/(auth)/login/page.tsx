@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image"
-import { Youtube,  EyeIcon as EyeClosed } from "lucide-react"
+import { Youtube, Eye, EyeOff } from "lucide-react"
 import XIcon from "@/public/assets/icons/x-dark.png"
 import TiktokIcon from "@/public/assets/icons/tiktok-dark.png"
 import WhatsappIcon from "@/public/assets/icons/whatsapp-dark.png"
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -90,12 +91,11 @@ export default function LoginPage() {
      
      
      
-      {alert && (<div className="absolute bg-white top-4 right-4">
-        <Alert variant={alert.type === "success" ? "default" : "danger"} >
+      {alert && (
+        <Alert className="bg-white z-50 top-5 right-4 fixed" variant={alert.type === "success" ? "default" : "danger"} >
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
-        </div>
       )}
      
      <div className="min-h-screen bg-white">
@@ -186,12 +186,21 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>

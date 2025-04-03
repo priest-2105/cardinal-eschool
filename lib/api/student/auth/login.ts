@@ -10,7 +10,11 @@ export async function login(email: string, password: string) {
   const responseData = await response.json();
 
   if (!response.ok) {
-    throw new Error(responseData.message || "Login failed");
+    // Check for specific error messages and provide user-friendly alternatives
+    if (responseData.message?.includes("Invalid credentials") || responseData.message?.includes("credentials")) {
+      throw new Error("Email or password is incorrect");
+    }
+    throw new Error(responseData.message || "Login failed. Please try again.");
   }
 
   return responseData;

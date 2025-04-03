@@ -116,12 +116,11 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-white">
-        {alertMessage && (<div className="absolute bg-white top-4 right-4">
-        <Alert variant={alertVariant} className="fixed right-4 bg-white top-8 z-99" onClose={() => setAlertMessage(null)}>
+        {alertMessage && (
+        <Alert className="bg-white z-50 top-5 right-4 fixed" variant={alertVariant}  onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
-        </div>
       )}
       <div className="flex min-h-screen">
         {/* Left Column - Hidden on mobile and tablet */}
