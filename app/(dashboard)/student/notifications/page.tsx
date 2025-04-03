@@ -323,7 +323,7 @@ export default function NotificationsPage() {
                 Next
               </Button>
             </div>
-          </div>
+    </div>
         )}
 
         {/* Alert Dialog for Success/Error messages */}
