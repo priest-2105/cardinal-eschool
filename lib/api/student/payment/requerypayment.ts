@@ -10,7 +10,7 @@ interface TransactionDetailResponse {
   };
 }
 
-export async function getTransactionDetails(token: string, transactionRef: string): Promise<TransactionDetailResponse> {
+export async function requeryPayment(token: string, transactionRef: string): Promise<TransactionDetailResponse> {
   const response = await fetchWithAuth(`${apiUrl}/student/payments/requery?transaction_ref=${transactionRef}`, {
     method: "GET",
     headers: {

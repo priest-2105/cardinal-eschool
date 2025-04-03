@@ -12,17 +12,7 @@ import { useAppSelector } from "@/lib/hooks"
 import { Search, X, MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown"
-import { getTransactionDetails } from "@/lib/api/student/payment/requerypayment"
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog"
+import { requeryPayment } from "@/lib/api/student/payment/requerypayment"
 import {
   Dialog,
   DialogContent,
@@ -33,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
-// Define the Transaction type
+
 interface Transaction {
   id: number
   transaction_ref: string
@@ -131,7 +121,7 @@ export default function TransactionList() {
   const handleRequeryPayment = async (transactionId: string) => {
     setIsRequeryingPayment(true)
     try {
-      const response = await getTransactionDetails(authState.token, transactionId)
+      const response = await requeryPayment(authState.token, transactionId)
       setTransactions(prevTransactions =>
         prevTransactions.map(transaction =>
           transaction.id === transactionId

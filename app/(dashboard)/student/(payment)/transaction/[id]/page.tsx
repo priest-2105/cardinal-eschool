@@ -1,106 +1,44 @@
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Button } from "@/components/ui/button"
-// import { ArrowLeft, Download } from "lucide-react"
+"use client"
 
-// export default function TransactionDetailsPage() {
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="mb-6 flex items-center">
-//         <Button variant="ghost" size="icon" className="mr-2">
-//           <ArrowLeft className="h-6 w-6" />
-//         </Button>
-//         <h1 className="text-2xl font-bold">Transaction Details</h1>
-//       </div>
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { useAppSelector } from "@/lib/hooks"
+import { getTransactionDetails } from "@/lib/api/student/payment/transactiondetails"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
+import { format } from "date-fns"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
-//       <Card className="mb-6">
-//         <CardHeader>
-//           <CardTitle>Payment Information</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="grid grid-cols-2 gap-4">
-//             <div>
-//               <p className="text-sm text-gray-500">Transaction ID</p>
-//               <p className="font-medium">#TRX-123456</p>
-//             </div>
-//             <div>
-//               <p className="text-sm text-gray-500">Date</p>
-//               <p className="font-medium">May 15, 2023</p>
-//             </div>
-//             <div>
-//               <p className="text-sm text-gray-500">Amount</p>
-//               <p className="font-medium">$120.00</p>
-//             </div>
-//             <div>
-//               <p className="text-sm text-gray-500">Status</p>
-//               <p className="font-medium text-green-600">Successful</p>
-//             </div>
-//           </div>
-//         </CardContent>
-//       </Card>
+interface PaymentDetails {
+  flutterwave_transaction_id: string;
+  is_subscription_active: boolean;
+  subscription_expires_at: string;
+}
 
-//       <Card className="mb-6">
-//         <CardHeader>
-//           <CardTitle>Payment Method</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <p className="font-medium">Credit Card</p>
-//           <p className="text-sm text-gray-500">Visa ending in 4242</p>
-//         </CardContent>
-//       </Card>
+interface TransactionDetail {
+  id: number;
+  subscription_plan_id: number;
+  subscription_plan_name: string;
+  amount: string;
+  quantity: number;
+  discount: string;
+  transaction_ref: string;
+  status: string;
+  coupon_code: string | null;
+  created_at: string;
+  updated_at: string;
+  payment_details: PaymentDetails;
+}
 
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Transaction Details</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           <div className="space-y-2">
-//             <div className="flex justify-between">
-//               <p className="text-sm text-gray-500">Subtotal</p>
-//               <p className="font-medium">$100.00</p>
-//             </div>
-//             <div className="flex justify-between">
-//               <p className="text-sm text-gray-500">Tax</p>
-//               <p className="font-medium">$20.00</p>
-//             </div>
-//             <div className="flex justify-between border-t pt-2">
-//               <p className="text-sm font-bold">Total</p>
-//               <p className="font-bold">$120.00</p>
-//             </div>
-//           </div>
-//         </CardContent>
-//       </Card>
-
-//       <div className="mt-6 flex justify-center">
-//         <Button variant="outline" className="flex items-center">
-//           <Download className="mr-2 h-4 w-4" />
-//           Download Receipt
-//         </Button>
-//       </div>
-//     </div>
-//   )
-// }
-
-
-
-"use client";
-
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAppSelector } from "@/lib/hooks";
-import { getTransactionDetails } from "@/lib/api/student/payment/transactiondetails";
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-
-
-export default function TransactionDetails() {
-  const params = useParams();
-  const transactionRef = params.id as string;
-  const [transactionDetails, setTransactionDetails] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const authState = useAppSelector((state) => state.auth);
-  const router = useRouter();
+export default function AdminTransactionDetailsPage() {
+  const router = useRouter()
+  const params = useParams<{ id: string }>()
+  const token = useAppSelector((state) => state.auth?.token)
+  const [transaction, setTransaction] = useState<TransactionDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
@@ -118,76 +56,241 @@ export default function TransactionDetails() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  
+  // Add logging for URL parameters
+  useEffect(() => {
+    if (!params?.id) {
+      console.log('No transaction ID found in URL')
+      return
+    }
+    
+    const transactionId = params.id
+    console.log('URL Parameters:', {
+      fullUrl: window.location.href,
+      transactionId: transactionId,
+      hasToken: !!token
+    })
+  }, [params, token])
 
   useEffect(() => {
-    const fetchDetails = async () => {
-      if (!authState?.token) return;
+    const fetchTransactionDetails = async () => {
+      if (!params?.id) {
+        console.log('No transaction ID found in URL')
+        setError("Transaction ID not found")
+        setLoading(false)
+        return
+      }
+
+      const transactionId = params.id
+      console.log('Transaction ID:', transactionId) 
+      console.log('Token available:', !!token) 
+
+      if (!token || !transactionId) {
+        console.log('Missing required data:', { token: !!token, transactionId }) 
+        setError("Transaction ID not found")
+        setLoading(false)
+        return
+      }
 
       try {
-        const response = await getTransactionDetails(authState.token, transactionRef);
-        setTransactionDetails(response.data);
-        console.log(response.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch transaction details");
-      } finally {
-        setLoading(false);
-      }
-    };
+        setLoading(true)
+        console.log('Fetching transaction details for:', transactionId) 
+        
+        const response = await getTransactionDetails(token, transactionId)
+        console.log('API Response:', {
+          status: response.status,
+          message: response.message,
+          data: response.data
+        }) 
 
-    fetchDetails();
-  }, [transactionRef, authState?.token]);
+        if (response.data) {
+          console.log('Transaction Data:', {
+            id: response.data.id,
+            ref: response.data.transaction_ref,
+            status: response.data.status,
+            amount: response.data.amount
+          }) 
+          setTransaction(response.data)
+        } else {
+          console.log('No transaction data in response')  
+          setError("No transaction data found")
+        }
+      } catch (error) {
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          error: error
+        }) 
+        setError(error instanceof Error ? error.message : "Failed to fetch transaction details")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTransactionDetails()
+  }, [token, params])
+
+  // Also log when component state changes
+  useEffect(() => {
+    console.log('Current component state:', {
+      loading,
+      hasError: !!error,
+      hasTransaction: !!transaction,
+      errorMessage: error
+    })
+  }, [loading, error, transaction])
 
   if (loading) {
-    return <div className="text-center py-12">Loading transaction details...</div>;
+    return (
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-[200px]" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-[150px]" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <div className="p-4">
-        <Alert variant="danger">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-red-500">{error}</p>
       </div>
-    );
+      </div>
+    )
   }
 
-  const handleBack = () => {
-      router.back();
+  if (!transaction) {
+    return (
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">No transaction details found</p>
+      </div>
+      </div>
+    )
   }
 
   return (
-    <div className={`transition-all bg-white p-6 rounded-lg shadow-sm ease-in-out duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-    <div className="flex flex-col w-full mx-auto px-4">
-    <div className="border-b">
-          <Button variant="ghost" onClick={handleBack}> <ArrowLeft/> Back</Button>
-      </div>
-    <div className="max-w-4xl p-4">
-        <h1 className="text-2xl font-bold mb-6">Transaction Details</h1>
-        <div className="rounded-lg p-6">
-          <div className="grid gap-4">
-            <div className="flex justify-between border-b py-2">
-              <span className="font-semibold">Transaction Reference:</span>
-              <span>{transactionRef}</span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="font-semibold">Status:</span>
-              <span className={`${
-                transactionDetails?.status === "success" 
-                  ? "text-green-600" 
-                  : "text-red-600"
-              }`}>
-                {transactionDetails?.status}
-              </span>
-            </div>
-            <div className="flex justify-between border-b py-2">
-              <span className="font-semibold">Message:</span>
-              <span>{transactionDetails?.message}</span>
-            </div>
+    <div className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <div className="flex-1 flex justify-between items-center">
+            <h1 className="text-2xl font-bold">Transaction Details</h1>
+            <Badge
+              className={`
+                ${transaction.status.toLowerCase() === "successful" && "bg-green-100 text-green-800"}
+                ${transaction.status.toLowerCase() === "pending" && "bg-yellow-100 text-yellow-800"} 
+                ${transaction.status.toLowerCase() === "failed" && "bg-red-100 text-red-800"}
+              `}
+            >
+              {transaction.status}
+            </Badge>
           </div>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Payment Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Transaction ID</p>
+                <p className="font-medium">#{transaction.id}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Transaction Reference</p>
+                <p className="font-medium">{transaction.transaction_ref}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Amount</p>
+                <p className="font-medium">${transaction.amount}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Subscription Plan</p>
+                <p className="font-medium">{transaction.subscription_plan_name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Plan ID</p>
+                <p className="font-medium">#{transaction.subscription_plan_id}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Quantity</p>
+                <p className="font-medium">{transaction.quantity}</p>
+              </div>
+              {transaction.discount !== "0.00" && (
+                <div>
+                  <p className="text-sm text-gray-500">Discount</p>
+                  <p className="font-medium">${transaction.discount}</p>
+                </div>
+              )}
+              {transaction.coupon_code && (
+                <div>
+                  <p className="text-sm text-gray-500">Coupon Code</p>
+                  <p className="font-medium">{transaction.coupon_code}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <h3 className="font-medium mb-2">Payment Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Flutterwave Transaction ID</p>
+                  <p className="font-medium">{transaction.payment_details.flutterwave_transaction_id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Subscription Status</p>
+                  <Badge 
+                    className={`
+                      ${transaction.payment_details.is_subscription_active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                    `}
+                  >
+                    {transaction.payment_details.is_subscription_active ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Subscription Expires</p>
+                  <p className="font-medium">{transaction.payment_details.subscription_expires_at}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <h3 className="font-medium mb-2">Timestamps</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Created At</p>
+                  <p className="font-medium">{transaction.created_at}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Last Updated</p>
+                  <p className="font-medium">{transaction.updated_at}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
-    </div>
-  );
+  )
 }
+
