@@ -25,6 +25,19 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
+  const isAssessmentComplete = (assessment: any) => {
+    const requiredFields = [
+      'education_level',
+      'subjects_interested_in',
+      'tests_interested_in',
+      'learning_expectations',
+      'specific_goals'
+    ];
+
+    
+    return requiredFields.every(field => assessment[field] !== null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,24 +66,21 @@ export default function LoginPage() {
         );
 
         if (user.role === "student") {
+          const assessmentResponse = await fetchStudentsAssessment(token);
+          const assessment = assessmentResponse.data.Assessment;
+
+          // First check if assessment is complete
+          if (!isAssessmentComplete(assessment)) {
+            router.push("/assessment");
+            return;
+          }
+
+          // If assessment is complete, then check subscription
           if (!user.has_subscription) {
             router.push("/planpick");
           } else {
-            const assessmentResponse = await fetchStudentsAssessment(response.data.token);
-            const assessment = assessmentResponse.data.Assessment;
-
-            if (
-              !assessment.education_level ||
-              !assessment.subjects_interested_in ||
-              !assessment.tests_interested_in ||
-              !assessment.learning_expectations ||
-              !assessment.specific_goals
-            ) {
-              router.push("/assessment");
-            } else {
-              setAlert({ type: "success", message: response.message });
-              router.push("/student");
-            }
+            setAlert({ type: "success", message: response.message });
+            router.push("/student");
           }
         } else {
           setAlert({ type: "error", message: "Unauthorized role." });

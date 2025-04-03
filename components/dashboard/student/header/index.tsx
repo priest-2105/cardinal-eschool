@@ -14,6 +14,7 @@ import { RootState } from "@/lib/store"
 import { clearAuthState, setSubscriptionStatus } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -24,18 +25,20 @@ const notifications = [
 const profileOptions = [
   { name: "Profile", href: "/student/studentinformation" },
   { name: "Settings", href: "/student/settings" },
-  { name: "Support", href: "/student/support" },
+  { name: "Support", href: "/student/ticketlist" },
   { name: "Logout", href: "#" },
 ]
 
 interface Notification {
   message: string
   time: string
+  onClick?: () => void
 }
 
 interface ProfileOption {
   name: string
   href: string
+  onClick?: () => void
 }
 
 const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode }> = ({ items, icon }) => {
@@ -112,30 +115,55 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
     getProfile()
   }, [token])
 
+  const isAssessmentComplete = (assessment: any) => {
+    // Required fields that must not be null
+    const requiredFields = [
+      'education_level',
+      'subjects_interested_in',
+      'tests_interested_in',
+      'learning_expectations',
+      'specific_goals'
+    ];
+
+    // Check if all required fields are filled
+    return requiredFields.every(field => assessment[field] !== null);
+  };
+
   useEffect(() => {
     const checkSubscription = async () => {
       try {
         if (token) {
-          const response = await checkSubscriptionStatus(token)
+          const response = await checkSubscriptionStatus(token);
           if (response.status === "success") {
-            dispatch(
-              setSubscriptionStatus({
-                plan: response.data.plan,
-                expiresAt: response.data.expires_at,
-              })
-            )
-          } else {
-            // router.push("/planpick")
+            // First check if assessment is complete
+            const assessmentResponse = await fetchStudentsAssessment(token);
+            const assessment = assessmentResponse.data.Assessment;
+
+            if (!isAssessmentComplete(assessment)) {
+              router.push("/assessment");
+              return;
+            }
+
+            // If assessment is complete, then check subscription
+            if (response.data.plan) {
+              dispatch(
+                setSubscriptionStatus({
+                  plan: response.data.plan,
+                  expiresAt: response.data.expires_at,
+                })
+              );
+            } else {
+              router.push("/planpick");
+            }
           }
         }
       } catch (error) {
-        console.error("Failed to check subscription:", error)
-        // router.push("/planpick")
+        console.error("Failed to check subscription:", error);
       }
-    }
+    };
 
-    checkSubscription()
-  }, [token, dispatch, router])
+    checkSubscription();
+  }, [token, dispatch, router]);
 
   const handleLogout = async () => {
     try {
