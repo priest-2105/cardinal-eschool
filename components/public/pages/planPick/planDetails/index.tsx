@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
 import { Check } from "lucide-react";
 import { validateCoupon } from "@/lib/api/student/payment/validatecoupon";
 import { useAppSelector } from "@/lib/hooks";
+import { getPlans } from "@/lib/api/student/profile/fetchplans";
 
 interface Plan {
+  id: number;
   title: string;
   price: string;
   duration: string;
@@ -33,8 +35,111 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const authState = useAppSelector((state) => state.auth);
-  
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const response = await getPlans();
+        if (response.data?.subscription_plans) {
+          setPlans(response.data.subscription_plans);
+        }
+      } catch (error) {
+        console.error('Failed to load plans:', error);
+      }
+    };
+    loadPlans();
+  }, []);
+
+  const pricingPlans = [
+    {
+      id: 1,
+      title: "Basic Plan",
+      price: "$60",
+      duration: "/ Month",
+      features: [
+        "For students needing occasional guidance",
+        "Register 2 school subjects only",
+        "1 session per course weekly",
+        "Access to private classes and resources",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Take-home Assessments",
+        "Not available for Test Preppers",
+      ],
+    },
+    {
+      id: 2,
+      title: "Standard Plan",
+      price: "$90",
+      duration: "/ Month",
+      features: [
+        "For students requiring regular support",
+        "Register 2 school subjects only",
+        "2 sessions per course weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Take-home Assessments",
+        "Available for Test Preppers",
+      ],
+    },
+    {
+      id: 3,
+      title: "Premium Plan",
+      price: "$120",
+      duration: "/ Month",
+      features: [
+        "For students needing intensive personalized attention",
+        "Register 2 school subjects only",
+        "3 sessions per course weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Take-home Assessments",
+        "Available for Test Preppers",
+        "Access to exclusive premium content and resources",
+      ],
+    },
+   
+    {
+      id: 4,
+      title: "Group Sessions",
+      price: "$40",
+      duration: "/ Session",
+      features: [
+        "For interactive and collaborative learning",
+        "1 group session weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Regular feedback and tracking",
+        "Available for Test Preppers",
+      ],
+    },
+    {
+      id: 5,
+      title: "Custom Plan",
+      price: "",
+      duration: "Speak to Support",
+      features: [
+        "For those who need a scalable custom plan",
+        "1 group session weekly",
+        "Monthly Progress Report",
+        "In-class Activities",
+        "Regular feedback and tracking",
+        "Access to exclusive premium content and resources",
+      ],
+    },
+  ];
+
+  const getPlanFeatures = () => {
+    const localPlan = pricingPlans.find((p) => p.title === plan.title);
+    return localPlan ? localPlan.features : [];
+  };
+
+  const features = getPlanFeatures();
+
   const originalPrice = Number.parseFloat(plan.price.replace("$", "")) * months;
+  const displayPrice = isNaN(originalPrice) ? 0 : originalPrice;
 
   const applyCoupon = async () => {
     setIsLoading(true);
@@ -53,6 +158,11 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
     }
   };
 
+  const getCorrectSubId = () => {
+    const selectedPlan = plans.find((p) => p.name === plan.title);
+    return selectedPlan ? selectedPlan.sub_id : "";
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <motion.div
@@ -68,7 +178,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
               {plan.price} <span className="text-sm">{plan.duration}</span>
             </p>
             <ul className="space-y-2">
-              {plan.features.map((feature: string, index: number) => (
+              {features.map((feature: string, index: number) => (
                 <li key={index} className="flex items-center">
                   <Check size={16} className="mr-2" />
                   <span>{feature}</span>
@@ -128,9 +238,9 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
           </div>
         </div>
         <div className="bg-gray-50 p-6 flex items-center justify-between">
-          <div className="text-2xl font-bold">Total: ${finalPrice !== null ? finalPrice.toFixed(2) : originalPrice.toFixed(2)}</div>
+          <div className="text-2xl font-bold">Total: ${finalPrice !== null ? finalPrice.toFixed(2) : displayPrice.toFixed(2)}</div>
           <CheckoutButton
-            subscriptionPlanId={plan.sub_id}
+            subscriptionPlanId={getCorrectSubId()}
             quantity={months}
             couponCode={coupon}
           />

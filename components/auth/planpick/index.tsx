@@ -9,6 +9,7 @@ import { useAppSelector } from "@/lib/hooks";
 import { updateAssessment } from "@/lib/api/student/profile/updateAssessment";
 import { X } from "lucide-react";
 
+
 interface Plan {
   id: number;
   title: string;
@@ -68,23 +69,28 @@ export default function PlanPickComponent() {
         const assessmentResponse = await fetchStudentsAssessment(authState.token);
         const assessmentData = assessmentResponse.data.Assessment;
 
+        // Log the assessment data to inspect its structure
+        console.log("Existing assessment data:", assessmentData);
+
         // Update the assessment data with the new plan ID and preserve other fields
         const updatedAssessment = {
           subscription_plan_id: plan.id,
-          edu_level: 'grade 1',
+          edu_level: assessmentData.education_level,
           subjects_interested_in: assessmentData.subjects_interested_in,
           tests_interested_in: assessmentData.tests_interested_in,
           learning_expectations: assessmentData.learning_expectations,
           learning_difficulties: assessmentData.learning_difficulties,
           learning_difficulty_description: assessmentData.learning_difficulty_description,
           specific_goals: assessmentData.specific_goals,
+          other_subjects: assessmentData.other_subjects,
         };
+
+        // Log the updated assessment data before sending it
+        console.log("Updated assessment data:", updatedAssessment);
 
         // Update assessment with new plan ID
         await updateAssessment(authState.token, updatedAssessment);
         setChosenPlan(plan);
-        console.log(updateAssessment);
-        
       }
     } catch (error: any) {
       console.error("Failed to update assessment with new plan:", error);

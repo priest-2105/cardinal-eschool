@@ -24,7 +24,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ subscriptionPlanId, qua
       return;
     }
 
-    if (!subscriptionPlanId || quantity <= 0) {
+    if (!subscriptionPlanId || subscriptionPlanId === "" || quantity <= 0) {
       setAlert({ type: "error", message: "Invalid subscription plan or quantity." });
       return;
     }
