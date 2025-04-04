@@ -1,95 +1,114 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
-import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
-import { updateAssessment } from "@/lib/api/student/profile/updateAssessment";
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
-import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm";
-import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
+import { updateAssessment } from "@/lib/api/student/profile/updateAssessment"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
+import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm/index"
+import Image from "next/image"
+import { getPlans } from "@/lib/api/student/api"
+import { redirect } from 'next/navigation';
 
+export default function AssessmentPageComponent() {
+  const router = useRouter()
+  const token: string | null = useSelector((state: RootState) => state.auth?.token)
+  const [isLoading, setIsLoading] = useState(true); 
 
-export default function AssessmentPageComponent
-() {
-  const router = useRouter();
-  const token: string | null = useSelector((state: RootState) => state.auth?.token);
-
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default");
-  const [initialData, setInitialData] = useState<FormData | null>(null);
-
-  useEffect(() => {
-    const loadAssessment = async () => {
-      if (!token) return;
-
-      try {
-        const response = await fetchStudentsAssessment(token);
-        setInitialData(response.data.Assessment);
-      } catch (error) {
-        console.error("Failed to fetch assessment:", error);
-        setAlertMessage("Failed to load assessment. Please try again.");
-        setAlertVariant("danger");
-      }
-    };
-
-    loadAssessment();
-  }, [token]);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null)
+  const [alertVariant, setAlertVariant] = useState<"default" | "danger">("default")
+  const [initialData, setInitialData] = useState<FormData | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (formData: FormData) => {
-    console.log("FormData received from AssessmentForm:", formData); 
-
-    if (!token) return;
+    setIsSubmitting(true);
+    console.log("FormData received from AssessmentForm:", formData);
+    
+    if (!token) {
+      setAlertMessage("No authentication token found");
+      setAlertVariant("danger");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
+      // Log the plan_id to verify it's being passed correctly
+      console.log("Plan ID being submitted:", formData.plan_id);
+      
       const payload = {
-        subscription_plan_id: parseInt(formData.plan_id, 10),  
+        subscription_plan_id: formData.plan_id,
         edu_level: formData.education_level,
-        subjects_interested_in: formData.subjects_interested_in, 
-        tests_interested_in: formData.tests_interested_in, 
+        subjects_interested_in: [1,2] || [1,2],
+        tests_interested_in: formData.tests_interested_in || [],
         learning_expectations: formData.learning_expectations,
         learning_difficulties: formData.learning_difficulties,
         learning_difficulty_description: formData.learning_difficulty_description,
         specific_goals: formData.specific_goals,
       };
 
-      console.log("Payload being sent to backend:", payload); 
-
+      console.log("Sending payload:", payload);
       const response = await updateAssessment(token, payload);
-      console.log("API Response:", response);
+      console.log("Update successful:", response);
 
-      setAlertMessage(response.message || "Assessment updated successfully!");
+      setAlertMessage("Assessment updated successfully!");
       setAlertVariant("default");
-      router.push("/planpick");
+      
+      // Fix routing path
+      setTimeout(() => {
+        router.push("/planpick");
+      }, 1000);
     } catch (error: any) {
       console.error("Failed to update assessment:", error);
-
-      // Handle API error response
-      if (error.message) {
-        try {
-          const errorData = JSON.parse(error.message);
-          setAlertMessage(
-            `${errorData.message} ${
-              errorData.data ? `Details: ${errorData.data}` : ""
-            }`
-          );
-        } catch {
-          setAlertMessage("Failed to update assessment. Please try again.");
-        }
-      } else {
-        setAlertMessage("Failed to update assessment. Please try again.");
-      }
-
       setAlertVariant("danger");
+      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
+    } finally {
+      setIsSubmitting(false)
     }
   };
+
+  useEffect(() => {
+    const loadAssessment = async () => {
+      if (!token) {
+        // Redirect to login if no token
+        router.push('/login');
+        return;
+      }
+
+      try {
+        const response = await fetchStudentsAssessment(token);
+        setInitialData(response.data.Assessment);
+      } catch (error: any) {
+        console.error("Failed to fetch assessment:", error);
+        setAlertMessage("Failed to load assessment. Please try again.");
+        setAlertVariant("danger");
+        if (error.message === 'Unauthorized') {
+          // Redirect to login if token is invalid
+          router.push('/login');
+          return;
+        }
+      } finally {
+        setIsLoading(false); // Set loading to false after fetch
+      }
+    };
+
+    loadAssessment();
+  }, [token, router]);
+
+  // Show loading indicator while fetching data
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       {alertMessage && (
-        <Alert variant={alertVariant} className="fixed top-4 right-4 bg-white" onClose={() => setAlertMessage(null)}>
+        <Alert
+          variant={alertVariant}
+          className="fixed top-4 right-4 z-50 bg-white"
+          onClose={() => setAlertMessage(null)}
+        >
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
@@ -112,21 +131,15 @@ export default function AssessmentPageComponent
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="w-full lg:w-1/2 lg:ml-auto px-4 sm:px-6 lg:px-8 py-12 overflow-y-auto">
-          <button
-            onClick={() => router.push("/login")}
-            className="text-[#1BC2C2] hover:underline mb-4 flex items-center"
-          >
-            <ArrowLeft className="mr-2" />
-            Back to Login
-          </button>
-          <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
-          <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>
-          <AssessmentForm onSubmit={handleSubmit} initialData={initialData} />
+        <div className="w-full lg:w-1/2 lg:ml-auto flex flex-col justify-center min-h-screen px-4 sm:px-6 lg:px-8 overflow-y-auto">
+          <div className="max-w-2xl mx-auto w-full">
+            <h2 className="text-3xl font-bold mb-2">Assessment Form</h2>
+            <p className="text-gray-600 mb-8">Help us understand your learning needs better</p>
+            <AssessmentForm onSubmit={handleSubmit} initialData={initialData} isSubmitting={isSubmitting} />
+          </div>
         </div>
       </div>
     </>
-  );
+  )
 }
 

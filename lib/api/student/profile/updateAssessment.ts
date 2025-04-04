@@ -1,6 +1,8 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 export async function updateAssessment(token: string, payload: any) {
+  console.log("Sending assessment update with payload:", payload);
+  
   const response = await fetchWithAuth(`${apiUrl}/student/assements`, {
     method: "PUT",
     headers: {
@@ -26,3 +28,4 @@ export async function updateAssessment(token: string, payload: any) {
 
   return responseData;
 }
+
