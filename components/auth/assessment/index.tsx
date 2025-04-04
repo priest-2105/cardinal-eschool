@@ -87,7 +87,7 @@ export default function AssessmentPageComponent
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
       {alertMessage && (
         <Alert variant={alertVariant} className="fixed top-4 right-4 bg-white" onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
@@ -126,7 +126,7 @@ export default function AssessmentPageComponent
           <AssessmentForm onSubmit={handleSubmit} initialData={initialData} />
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
