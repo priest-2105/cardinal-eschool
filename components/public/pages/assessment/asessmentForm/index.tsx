@@ -34,7 +34,7 @@ const subjectOptions = [
 const testOptions = ["SAT", "IELTS", "TOEFL", "GRE", "CELPIP", "PTE", "GMAT", "LSAT", "PSAT", "ACT"]
 
 export interface FormData {
-  plan_id: string
+  plan_id: number
   education_level: string
   subjects_interested_in: string[]
   tests_interested_in: string[]
@@ -77,7 +77,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
     // Fall back to initialData or default values
     return (
       initialData || {
-        plan_id: "",
+        plan_id: 0,
         education_level: "",
         subjects_interested_in: [],
         tests_interested_in: [],
@@ -220,10 +220,10 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a plan">
-                    {formData.plan_id === "1" && "Basic Plan - $60"}
-                    {formData.plan_id === "2" && "Standard Plan - $90"}
-                    {formData.plan_id === "3" && "Premium Plan - $120"}
-                    {formData.plan_id === "4" && "Group Sessions - $40"}
+                    {formData.plan_id === 1 && "Basic Plan - $60"}
+                    {formData.plan_id === 2 && "Standard Plan - $90"}
+                    {formData.plan_id === 3 && "Premium Plan - $120"}
+                    {formData.plan_id === 4 && "Group Sessions - $40"}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -409,7 +409,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   const handleSelectChange = (name: string, value: any) => {
     console.log(`Selecting ${name}:`, value)
     setFormData((prev) => {
-      const updatedData = { ...prev, [name]: value }
+      const updatedData = { ...prev, [name]: name === "plan_id" ? Number(value) : value }
       return updatedData
     })
   }
@@ -469,7 +469,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         const finalFormData = JSON.parse(JSON.stringify(formData))
 
         // Ensure all fields are properly initialized
-        finalFormData.plan_id = finalFormData.plan_id || ""
+        finalFormData.plan_id = finalFormData.plan_id || 0
         finalFormData.education_level = finalFormData.education_level || ""
         finalFormData.subjects_interested_in = finalFormData.subjects_interested_in || []
         finalFormData.tests_interested_in = finalFormData.tests_interested_in || []

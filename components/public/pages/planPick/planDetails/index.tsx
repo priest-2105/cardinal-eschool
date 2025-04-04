@@ -22,10 +22,9 @@ interface UserProfile {
   email: string;
 }
 
-const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null; onDeselect: () => void }> = ({
+const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null }> = ({
   plan,
   userProfile,
-  onDeselect,
 }) => {
   const [months, setMonths] = useState(1);
   const [coupon, setCoupon] = useState("");

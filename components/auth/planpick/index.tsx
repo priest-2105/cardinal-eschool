@@ -6,22 +6,26 @@ import ChosenPlanDetails from "@/components/public/pages/planPick/planDetails";
 import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
 import { getPlans } from "@/lib/api/student/profile/fetchsingleplan";
 import { useAppSelector } from "@/lib/hooks";
+import { updateAssessment } from "@/lib/api/student/profile/updateAssessment";
+import { X } from "lucide-react";
 
 interface Plan {
+  id: number;
   title: string;
   price: string;
   duration: string;
   features: string[];
-  sub_id?: string; 
 }
 
 export default function PlanPickComponent() {
   const [chosenPlan, setChosenPlan] = useState<Plan | null>(null);
   const [userProfile, setUserProfile] = useState<{ firstname: string; lastname: string; email: string } | null>(null);
   const authState = useAppSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchAssessmentAndPlan = async () => {
+      setIsLoading(true);
       if (authState?.token) {
         try {
           const assessmentResponse = await fetchStudentsAssessment(authState?.token);
@@ -42,11 +46,13 @@ export default function PlanPickComponent() {
               price: `$${planData.price}`,
               duration: "/ Month",
               features: ["Details of the plan will be displayed here."],
-              sub_id: planData.sub_id,
+              id: planData.id,
             });
           }
         } catch (error) {
           console.error("Failed to fetch assessment or plan:", error);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -54,8 +60,39 @@ export default function PlanPickComponent() {
     fetchAssessmentAndPlan();
   }, [authState?.token, authState?.user]);
 
-  const handlePlanSelect = (plan: Plan) => {
-    setChosenPlan(plan);
+  const handlePlanSelect = async (plan: Plan) => {
+    setIsLoading(true);
+    try {
+      if (authState?.token) {
+        // Fetch existing assessment data first
+        const assessmentResponse = await fetchStudentsAssessment(authState.token);
+        const assessmentData = assessmentResponse.data.Assessment;
+
+        // Update the assessment data with the new plan ID and preserve other fields
+        const updatedAssessment = {
+          subscription_plan_id: plan.id,
+          edu_level: 'grade 1',
+          subjects_interested_in: assessmentData.subjects_interested_in,
+          tests_interested_in: assessmentData.tests_interested_in,
+          learning_expectations: assessmentData.learning_expectations,
+          learning_difficulties: assessmentData.learning_difficulties,
+          learning_difficulty_description: assessmentData.learning_difficulty_description,
+          specific_goals: assessmentData.specific_goals,
+        };
+
+        // Update assessment with new plan ID
+        await updateAssessment(authState.token, updatedAssessment);
+        setChosenPlan(plan);
+        console.log(updateAssessment);
+        
+      }
+    } catch (error: any) {
+      console.error("Failed to update assessment with new plan:", error);
+      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
+      setAlertVariant("danger");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDeselectPlan = () => {
@@ -64,10 +101,20 @@ export default function PlanPickComponent() {
 
   return (
     <div>
-      {!chosenPlan ? (
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : !chosenPlan ? (
         <PlanList onPlanSelect={handlePlanSelect} />
       ) : (
-        <ChosenPlanDetails plan={chosenPlan} userProfile={userProfile} onDeselect={handleDeselectPlan} />
+        <div>
+          <button
+            onClick={handleDeselectPlan}
+            className="absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition"
+          >
+            <X size={20} />
+          </button>
+          <ChosenPlanDetails plan={chosenPlan} userProfile={userProfile} />
+        </div>
       )}
     </div>
   );
