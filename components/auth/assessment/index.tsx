@@ -9,8 +9,6 @@ import { updateAssessment } from "@/lib/api/student/profile/updateAssessment"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
 import AssessmentForm, { type FormData } from "@/components/public/pages/assessment/asessmentForm/index"
 import Image from "next/image"
-import { getPlans } from "@/lib/api/student/api"
-import { redirect } from 'next/navigation';
 
 export default function AssessmentPageComponent() {
   const router = useRouter()
@@ -40,7 +38,7 @@ export default function AssessmentPageComponent() {
       const payload = {
         subscription_plan_id: formData.plan_id,
         edu_level: formData.education_level,
-        subjects_interested_in: [1,2] || [1,2],
+        subjects_interested_in: formData.subjects_interested_in || [1,2],
         tests_interested_in: formData.tests_interested_in || [],
         learning_expectations: formData.learning_expectations,
         learning_difficulties: formData.learning_difficulties,

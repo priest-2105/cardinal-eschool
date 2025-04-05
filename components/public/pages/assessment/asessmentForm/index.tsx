@@ -117,18 +117,22 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
 
         // Set current step based on saved data
         if (parsedData.specific_goals) setCurrentStep(6)
-        else if (parsedData.learning_difficulties !== undefined) setCurrentStep(5)
+        else if (parsedData.learning_difficulty_description) setCurrentStep(5)
         else if (parsedData.learning_expectations) setCurrentStep(4)
-        else if (parsedData.tests_interested_in?.length) setCurrentStep(3)
-        else if (parsedData.subjects_interested_in?.length) setCurrentStep(2)
+        else if (parsedData.tests_interested_in?.length > 0) setCurrentStep(3)
+        else if (parsedData.subjects_interested_in?.length > 0) setCurrentStep(2)
         else if (parsedData.education_level) setCurrentStep(1)
         else if (parsedData.plan_id) setCurrentStep(0)
+        else setCurrentStep(0) // Ensure it defaults to 0 if nothing is set
       } catch (e) {
         console.error("Error loading saved form data:", e)
       }
     } else if (initialData) {
       setFormData(initialData)
       setOtherSubjects(initialData.other_subjects || ["", ""])
+      if (initialData.plan_id) setCurrentStep(0) // Set to first step if initialData has plan_id
+    } else {
+      setCurrentStep(0) // Ensure it defaults to 0 if no saved data or initialData
     }
   }, [initialData])
 

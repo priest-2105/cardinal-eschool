@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { fetchStudentProfile, logout } from "@/lib/api/student/api"
 import { checkSubscriptionStatus } from "@/lib/api/student/payment/subscriptionstatus"
 import { RootState } from "@/lib/store"
-import { clearAuthState, setSubscriptionStatus } from "@/lib/authSlice"
+import { clearAuthState, setSubscriptionStatus, clearSubscriptionStatus } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
@@ -135,7 +135,6 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
         if (token) {
           const response = await checkSubscriptionStatus(token);
           if (response.status === "success") {
-            // First check if assessment is complete
             const assessmentResponse = await fetchStudentsAssessment(token);
             const assessment = assessmentResponse.data.Assessment;
 
@@ -144,7 +143,6 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
               return;
             }
 
-            // If assessment is complete, then check subscription
             if (response.data.plan) {
               dispatch(
                 setSubscriptionStatus({
@@ -153,12 +151,17 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
                 })
               );
             } else {
-              router.push("/planpick");
+              // router.push("/planpick");
             }
+          } else {
+            // Clear subscription status if the check fails
+            dispatch(clearSubscriptionStatus());
+            // router.push("/planpick");
           }
         }
       } catch (error) {
         console.error("Failed to check subscription:", error);
+        dispatch(clearSubscriptionStatus()); 
       }
     };
 
@@ -168,11 +171,12 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
   const handleLogout = async () => {
     try {
       if (token) {
-        await logout(token)
-        dispatch(clearAuthState())
+        await logout(token);
+        dispatch(clearAuthState());
+        dispatch(clearSubscriptionStatus()); // Clear subscription status on logout
       }
     } catch (error) {
-      console.error("Logout failed", error)
+      console.error("Logout failed", error);
     }
     router.push("/student/login")
   }

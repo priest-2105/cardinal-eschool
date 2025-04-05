@@ -29,12 +29,17 @@ const VerifyPaymentPage = () => {
         const response = await verifyPayment(authState?.token, txRef, transactionId);
         if (response.status === "success") {
           setStatus("success");
-          setTimeout(() => router.push("/student"), 3000);
+          // Redirect immediately after setting status to success
         } else {
           setStatus("failed");
         }
       } catch (error) {
         setStatus("failed");
+      } finally {
+        // Redirect after a delay, regardless of success or failure
+        setTimeout(() => {
+          router.push("/student");
+        }, 3000);
       }
     };
 
