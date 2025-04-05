@@ -28,6 +28,7 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+import { Pagination } from "@/components/ui/pagination"
 
 // Notification type definition
 interface Notification {
@@ -58,6 +59,26 @@ export function NotificationList() {
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [perPage, setPerPage] = useState(10)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
 
   // Clear alert after 3 seconds
   useEffect(() => {
@@ -75,7 +96,7 @@ export function NotificationList() {
       if (!token) return
       try {
         setIsLoading(true)
-        const response = await fetchNotifications(token)
+        const response = await fetchNotifications(token, currentPage, perPage)
         const notificationsWithDates = response.data.notifications.map((notification: any) => ({
           ...notification,
           id: notification.id.toString(),
@@ -88,6 +109,7 @@ export function NotificationList() {
           link: notification.link || undefined,
         }))
         setNotifications(notificationsWithDates)
+        setTotalPages(response.data.totalPages)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
         setAlert({ type: "error", message: "Failed to load notifications." })
@@ -97,7 +119,7 @@ export function NotificationList() {
     }
 
     loadNotifications()
-  }, [token])
+  }, [token, currentPage, perPage])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -427,7 +449,12 @@ export function NotificationList() {
   // Check if there are any unread notifications
   const hasUnreadNotifications = notifications.some((n) => !n.isRead)
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
+
   return (
+   <div className={`transition-all ease-in-out  rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>      
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardTitle className="flex items-center">
@@ -807,6 +834,17 @@ export function NotificationList() {
         </Alert>
       )}
     </Card>
+     {/* Pagination */}
+     {!isLoading && notifications.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+    </div>
   )
 }
 

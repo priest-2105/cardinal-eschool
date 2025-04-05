@@ -15,6 +15,7 @@ import { clearAuthState, setSubscriptionStatus, clearSubscriptionStatus } from "
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
+import { fetchNotifications } from "@/lib/api/student/notifcation/fetchnotification"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -98,6 +99,8 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const router = useRouter()
+  const [recentNotifications, setRecentNotifications] = useState<any[]>([])
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
 
   useEffect(() => {
     const getProfile = async () => {
@@ -113,6 +116,29 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
     }
 
     getProfile()
+  }, [token])
+
+  useEffect(() => {
+    const fetchRecentNotifications = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter((notification: any) => !notification.read_at)
+          setHasUnreadNotifications(unread.length > 0)
+          const recent = unread.slice(0, 3).map((notification: any) => ({
+            message: notification.message,
+            time: notification.created_at,
+            href: `/student/notifications/${notification.id}`,
+          }))
+          setRecentNotifications(recent)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchRecentNotifications()
   }, [token])
 
   const isAssessmentComplete = (assessment: any) => {
@@ -203,11 +229,16 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
           </button>
           <div className="flex items-center gap-x-4 z-40">
             <Dropdown
-              items={notifications}
+              items={[
+                ...recentNotifications,
+                { name: "See All", href: "/student/notifications" },
+              ]}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  {hasUnreadNotifications && (
+                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
                 </Button>
               }
             />

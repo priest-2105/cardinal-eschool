@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -21,6 +21,9 @@ import cardinalConfig from "@/config"
 import type React from "react" 
 import NotificationIcon from "@/public/assets/icons/notification-03.png"
 import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
+import { fetchNotifications } from "@/lib/api/student/notifcation/fetchnotification"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
 
 const navigation = [
   {
@@ -90,6 +93,8 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
   setIsOpen,
 }) => {
   const pathname = usePathname()
+  const [unreadCount, setUnreadCount] = useState(0)
+  const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
     const handleResize = () => {
@@ -105,6 +110,23 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
 
     return () => window.removeEventListener("resize", handleResize)
   }, [setIsOpen])
+
+  useEffect(() => {
+    const fetchUnreadNotificationsCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter((notification: any) => !notification.read_at)
+          setUnreadCount(unread.length)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchUnreadNotificationsCount()
+  }, [token])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -166,7 +188,16 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
                 alt={`${item.name} icon light`}
                 className="h-5 w-5 hidden group-hover:block"
               />
-              {isOpen && <span>{item.name}</span>}
+              {isOpen && (
+                <>
+                  <span>{item.name}</span>
+                  {item.name === "Notification" && unreadCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {unreadCount}
+                    </div>
+                  )}
+                </>
+              )}
               {!isOpen && (
                 <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {item.name}

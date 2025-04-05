@@ -1,7 +1,7 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
 
-export async function fetchNotifications(token: string, page: number = 1, perPage: number = 20) {
+export async function fetchNotifications(token: string, page: number = 1, perPage: number = 10) {
     const response = await fetchWithAuth(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
@@ -16,5 +16,10 @@ export async function fetchNotifications(token: string, page: number = 1, perPag
         throw new Error(`Failed to fetch notifications: ${response.status} ${response.statusText} - ${errorMessage}`);
     }
 
-    return response.json();
+    const data = await response.json();
+
+    return {
+        notifications: data.notifications,
+        totalPages: data.total_pages,
+    };
 }
