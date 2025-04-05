@@ -135,7 +135,7 @@ export function TicketList() {
                   {filteredTickets.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center">
-                        No Ticket Initiated
+                        No ticket has been created
                       </TableCell>
                     </TableRow>
                   ) : (
