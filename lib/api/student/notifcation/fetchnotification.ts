@@ -19,7 +19,7 @@ export async function fetchNotifications(token: string, page: number = 1, perPag
     const data = await response.json();
 
     return {
-        notifications: data.notifications,
-        totalPages: data.total_pages,
+        notifications: data.data.notifications,
+        pagination: data.data.pagination,
     };
 }

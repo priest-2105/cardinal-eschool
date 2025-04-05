@@ -17,12 +17,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
 import { fetchNotifications } from "@/lib/api/student/notifcation/fetchnotification"
 
-const notifications = [
-  { message: "New assessment available", time: "2 hours ago" },
-  { message: "Class rescheduled", time: "1 day ago" },
-  { message: "New message from instructor", time: "3 days ago" },
-]
-
 const profileOptions = [
   { name: "Profile", href: "/student/studentinformation" },
   { name: "Settings", href: "/student/settings" },
@@ -42,54 +36,6 @@ interface ProfileOption {
   onClick?: () => void
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode }> = ({ items, icon }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen)
-  }
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setIsOpen(false)
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, []) // Removed handleClickOutside from dependencies
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button onClick={toggleDropdown} className="flex items-center">
-        {icon}
-      </button>
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-          <ul className="py-1">
-            {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 hover:bg-gray-100" onClick={item.onClick}>
-                {"href" in item ? (
-                  <Link href={item.href}>{item.name}</Link>
-                ) : (
-                  <div>
-                    <p className="font-medium">{item.message}</p>
-                    <p className="text-sm text-gray-500">{item.time}</p>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  )
-}
-
 const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen: boolean }> = ({
   toggleSidebar,
   isSidebarOpen,
@@ -101,6 +47,8 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
   const router = useRouter()
   const [recentNotifications, setRecentNotifications] = useState<any[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
+  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
+  const notificationDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const getProfile = async () => {
@@ -140,6 +88,19 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
 
     fetchRecentNotifications()
   }, [token])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationDropdownOpen && notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target as Node)) {
+        setNotificationDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [notificationDropdownOpen])
 
   const isAssessmentComplete = (assessment: any) => {
     // Required fields that must not be null
@@ -228,43 +189,47 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
             )}
           </button>
           <div className="flex items-center gap-x-4 z-40">
-            <Dropdown
-              items={[
-                ...recentNotifications,
-                { name: "See All", href: "/student/notifications" },
-              ]}
-              icon={
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  {hasUnreadNotifications && (
-                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
-                  )}
-                </Button>
-              }
-            />
-            <Dropdown
-              items={profileOptions.map((option) => ({
-                ...option,
-                onClick: option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined,
-              }))}
-              icon={
-                <Button variant="ghost" className="relative w-fit flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
-                    <AvatarFallback>
-                      {profile.firstname[0]} {profile.lastname[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-bold text-sm">
-                      {profile.firstname} {profile.lastname}
-                    </h3>
-                    {/* <p className="text-xs text-gray-500">{profile.email}</p> */}
-                  </div>
-                  <FaAngleDown />
-                </Button>
-              }
-            />
+            <div className="relative" ref={notificationDropdownRef}>
+              <Button variant="ghost" size="icon" className="relative" onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}>
+                <Bell className="h-5 w-5" />
+                {hasUnreadNotifications && (
+                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </Button>
+              {notificationDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <ul className="py-1">
+                    {recentNotifications.map((item, index) => (
+                      <li key={index} className="px-4 py-2 hover:bg-gray-100">
+                        <Link href={item.href}>
+                          <p className="font-medium">{item.message}</p>
+                          <p className="text-sm text-gray-500">{item.time}</p>
+                        </Link>
+                      </li>
+                    ))}
+                    <li className="px-4 py-2 hover:bg-gray-100">
+                      <Link href="/student/notifications">See All</Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <Button variant="ghost" className="relative w-fit flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
+                  <AvatarFallback>
+                    {profile.firstname[0]} {profile.lastname[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-bold text-sm">
+                    {profile.firstname} {profile.lastname}
+                  </h3>
+                </div>
+                <FaAngleDown />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -28,18 +28,17 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { Pagination } from "@/components/ui/pagination"
+import { Pagination } from "@/src/components/ui/pagination"
+
 
 // Notification type definition
 interface Notification {
   id: string
   title: string
   message: string
-  type: "system" | "course" | "announcement" | "message"
+  type: string
   isRead: boolean
-  isDone: boolean
-  createdAt: Date
-  link?: string
+  created: string
 }
 
 export function NotificationList() {
@@ -97,19 +96,17 @@ export function NotificationList() {
       try {
         setIsLoading(true)
         const response = await fetchNotifications(token, currentPage, perPage)
-        const notificationsWithDates = response.data.notifications.map((notification: any) => ({
+        const notificationsWithDates = response.notifications.map((notification: any) => ({
           ...notification,
           id: notification.id.toString(),
           title: notification.title || "Notification",
           message: notification.message || notification.content || "",
           type: notification.type || "system",
           isRead: !!notification.read_at,
-          isDone: false,
-          createdAt: new Date(notification.created_at),
-          link: notification.link || undefined,
+          createdAt: notification.created_at,
         }))
         setNotifications(notificationsWithDates)
-        setTotalPages(response.data.totalPages)
+        setTotalPages(response.pagination.last_page)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
         setAlert({ type: "error", message: "Failed to load notifications." })
@@ -144,26 +141,21 @@ export function NotificationList() {
       filtered = filtered.filter((notification) => notification.isRead)
     } else if (statusFilter === "unread") {
       filtered = filtered.filter((notification) => !notification.isRead)
-    } else if (statusFilter === "done") {
-      filtered = filtered.filter((notification) => notification.isDone)
-    } else if (statusFilter === "not-done") {
-      filtered = filtered.filter((notification) => !notification.isDone)
-    }
+    } 
 
     // Apply sorting
     filtered.sort((a, b) => {
       if (sortOrder === "newest") {
-        return b.createdAt.getTime() - a.createdAt.getTime()
+        return new Date(b.created).getTime() - new Date(a.created).getTime()
       } else {
-        return a.createdAt.getTime() - b.createdAt.getTime()
+        return new Date(a.created).getTime() - new Date(b.created).getTime()
       }
     })
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
   // Selection handlers
-  const toggleSelectAll = () => {
-    if (selectedNotifications.size === filteredNotifications.length) {
+  const toggleSelectAll = () => {    if (selectedNotifications.size === filteredNotifications.length) {
       // Deselect all
       setSelectedNotifications(new Set())
     } else {
@@ -195,7 +187,7 @@ export function NotificationList() {
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === id
-            ? { ...notification, isRead: true, read_at: response.data.notification.read_at }
+            ? { ...notification, isRead: true }
             : notification,
         ),
       )
@@ -214,7 +206,7 @@ export function NotificationList() {
     try {
       await markAllNotificationsAsRead(token)
       setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, isRead: true, read_at: new Date().toISOString() })),
+        prev.map((notification) => ({ ...notification, isRead: true })),
       )
       setAlert({ type: "success", message: "All notifications marked as read." })
     } catch (error) {
@@ -508,8 +500,6 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                    <SelectItem value="not-done">Not Done</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -669,12 +659,21 @@ export function NotificationList() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
+                        {/* <div className="flex-1">
                           <h4 className={`text-sm font-medium ${!notification.isRead ? "font-semibold" : ""}`}>
                             {notification.title}
                           </h4>
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
+                          <span>{notification.createdAt}</span>
+                        </div> */}
+                         <div>
+                        <h3 className="font-medium">{notification.title}</h3>
+                        <p className="text-gray-600 mt-1">{notification.message}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge>{notification.type}</Badge>
+                          <span className="text-sm text-gray-500">{notification.createdAt}</span>
                         </div>
+                      </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -720,7 +719,7 @@ export function NotificationList() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
-                              onClick={() => handleSingleAction("delete", notification.id)}
+                              onClick={() => handleDeleteNotification(notification.id)}
                               className="text-destructive"
                               disabled={processingNotificationId === notification.id}
                             >
@@ -760,18 +759,7 @@ export function NotificationList() {
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {renderTypeBadge(notification.type)}
-                        <span className="text-xs text-muted-foreground">{/* {notification.createdAt} */}</span>
-                        {notification.isDone && (
-                          <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                            <CheckCheck className="mr-1 h-3 w-3" />
-                            Done
-                          </Badge>
-                        )}
-                        {notification.link && (
-                          <Button variant="link" size="sm" className="h-auto p-0 text-xs">
-                            View Details
-                          </Button>
-                        )}
+                        {/* <span className="text-xs text-muted-foreground">{notification.createdAt}</span> */}
                       </div>
                     </div>
                   </div>
