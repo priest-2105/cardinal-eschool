@@ -323,6 +323,7 @@ export function NotificationList() {
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
         } finally {
           setIsMarkingAsRead(false)
+          setSelectedNotifications(new Set());
         }
         break
       case "delete":

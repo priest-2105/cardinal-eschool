@@ -116,8 +116,8 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
       if (token) {
         try {
           const response = await fetchNotifications(token)
-          const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const notifications = response.notifications
+          const unread = notifications.filter((notification: any) => !notification.isRead)
           setUnreadCount(unread.length)
         } catch (error) {
           console.error("Error fetching notifications:", error)

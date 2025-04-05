@@ -71,12 +71,12 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
       if (token) {
         try {
           const response = await fetchNotifications(token)
-          const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const notifications = response.notifications
+          const unread = notifications.filter((notification: any) => !notification.isRead)
           setHasUnreadNotifications(unread.length > 0)
           const recent = unread.slice(0, 3).map((notification: any) => ({
             message: notification.message,
-            time: notification.created_at,
+            time: notification.createdAt,
             href: `/student/notifications/${notification.id}`,
           }))
           setRecentNotifications(recent)
