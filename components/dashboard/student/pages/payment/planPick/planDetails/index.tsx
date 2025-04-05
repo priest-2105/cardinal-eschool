@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
+import CheckoutButton from "@/components/dashboard/student/pages/payment/planPick/checkoutButton/index";
 import { Check } from "lucide-react";
 import { validateCoupon } from "@/lib/api/student/payment/validatecoupon";
 import { useAppSelector } from "@/lib/hooks";

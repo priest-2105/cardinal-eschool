@@ -38,7 +38,7 @@ export default function AssessmentPageComponent() {
       const payload = {
         subscription_plan_id: formData.plan_id,
         edu_level: formData.education_level,
-        subjects_interested_in: formData.subjects_interested_in || [1,2],
+        subjects_interested_in: formData.subjects_interested_in || [],
         tests_interested_in: formData.tests_interested_in || [],
         learning_expectations: formData.learning_expectations,
         learning_difficulties: formData.learning_difficulties,

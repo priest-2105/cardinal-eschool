@@ -1,276 +1,148 @@
 "use client"
 
-import { useState, useEffect } from "react";
-import { useAppSelector } from "@/lib/hooks";
-import { CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { validateCoupon } from "@/lib/api/student/payment/validatecoupon";
-import { makePayment } from "@/lib/api/student/payment/makepayment";
-import { getPlans } from "@/lib/api/student/profile/fetchplans";
+import { useState, useEffect } from "react"
+import { useAppSelector } from "@/lib/hooks"
+import { CheckCircle2 } from "lucide-react"
+import PlanList from "@/components/dashboard/student/pages/payment/planPick/planList/index";
+import ChosenPlanDetails from "@/components/dashboard/student/pages/payment/planPick/planDetails/index";
+import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment";
+import { getPlans } from "@/lib/api/student/profile/fetchsingleplan";
 import { updateAssessment } from "@/lib/api/student/profile/updateAssessment";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { X } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+
 
 interface Plan {
-  sub_id: string;
-  name: string;
+  id: number;
+  title: string;
   price: string;
   duration: string;
   features: string[];
-  id: number;
 }
 
 const StudentCardPayment = () => {
-  const subscription = useAppSelector((state) => state.auth.subscription);
+  const subscription = useAppSelector((state) => state?.auth?.subscription)
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
+  const [chosenPlan, setChosenPlan] = useState<Plan | null>(null);
+  const [userProfile, setUserProfile] = useState<{ firstname: string; lastname: string; email: string } | null>(null);
   const authState = useAppSelector((state) => state.auth);
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [months, setMonths] = useState(1);
-  const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState<number | null>(null);
-  const [finalPrice, setFinalPrice] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
-    const loadPlans = async () => {
-      try {
-        const response = await getPlans();
-        if (response.data?.subscription_plans) {
-          setPlans(response.data.subscription_plans);
+    const fetchAssessmentAndPlan = async () => {
+      setIsLoading(true);
+      if (authState?.token) {
+        try {
+          const assessmentResponse = await fetchStudentsAssessment(authState?.token);
+          const assessment = assessmentResponse.data.Assessment;
+
+          setUserProfile({
+            firstname: authState?.user?.name.split(" ")[0] || "",
+            lastname: authState?.user?.name.split(" ")[1] || "",
+            email: authState?.user?.email || "",
+          });
+
+          if (assessment.plan_id) {
+            const planResponse = await getPlans(authState?.token, assessment.plan_id);
+            const planData = planResponse.data.subscription_plan;
+
+            setChosenPlan({
+              title: planData.name,
+              price: `$${planData.price}`,
+              duration: "/ Month",
+              features: ["Details of the plan will be displayed here."],
+              id: planData.id,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to fetch assessment or plan:", error);
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Failed to load plans:', error);
       }
     };
-    loadPlans();
-  }, []);
 
-  const pricingPlans = [
-    {
-      id: 1,
-      sub_id: "3e9f13cb782842fc3a3899e9789c5503jQ==",
-      title: "Basic",
-      price: "60.00",
-      duration: "/ Month",
-      features: [
-        "For students needing occasional guidance",
-        "Register 2 school subjects only",
-        "1 session per course weekly",
-        "Access to private classes and resources",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Take-home Assessments",
-        "Not available for Test Preppers",
-      ],
-    },
-    {
-      id: 2,
-      sub_id: "9d2b50afa441d037cc25d653dbc0fb80+w==",
-      title: "Standard",
-      price: "90.00",
-      duration: "/ Month",
-      features: [
-        "For students requiring regular support",
-        "Register 2 school subjects only",
-        "2 sessions per course weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Take-home Assessments",
-        "Available for Test Preppers",
-      ],
-    },
-    {
-      id: 3,
-      sub_id: "91b5e1eae74940cfe8ee5ce7a42d79aevw==",
-      title: "Premium",
-      price: "120.00",
-      duration: "/ Month",
-      features: [
-        "For students needing intensive personalized attention",
-        "Register 2 school subjects only",
-        "3 sessions per course weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Take-home Assessments",
-        "Available for Test Preppers",
-        "Access to exclusive premium content and resources",
-      ],
-    },
-   
-    {
-      id: 4,
-      sub_id: "38783129f7341fca10c5d28f4a50186amg==",
-      title: "Session",
-      price: "40.00",
-      duration: "/ Session",
-      features: [
-        "For interactive and collaborative learning",
-        "1 group session weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Regular feedback and tracking",
-        "Available for Test Preppers",
-      ],
-    },
-  ];
+    fetchAssessmentAndPlan();
+  }, [authState?.token, authState?.user]);
 
-  const getPlanFeatures = (planName: string) => {
-    const localPlan = pricingPlans.find((p) => p.title === planName);
-    return localPlan ? localPlan.features : [];
-  };
-
-  const getPlanSubId = (planName: string) => {
-    const localPlan = pricingPlans.find((p) => p.title === planName);
-    return localPlan ? localPlan.sub_id : "";
-  };
-
-  const features = selectedPlan ? getPlanFeatures(selectedPlan.name) : [];
-
-  const originalPrice = selectedPlan ? Number.parseFloat(selectedPlan.price.replace("$", "")) * months : 0;
-  const displayPrice = isNaN(originalPrice) ? 0 : originalPrice;
-
-  const applyCoupon = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await validateCoupon(authState?.token, coupon, originalPrice);
-      setDiscount(parseFloat(response.data.coupon.discount_percentage));
-      setFinalPrice(response.data.coupon.final_amount);
-    } catch (error) {
-      setError("Invalid coupon or failed to validate");
-      setDiscount(null);
-      setFinalPrice(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePlanSelect = (plan: Plan) => {
-    setSelectedPlan(plan);
-  };
-
-  const handlePayment = async () => {
+  const handlePlanSelect = async (plan: Plan) => {
     setIsLoading(true);
     try {
-      if (!authState?.token) {
-        router.push("/login");
-        return;
-      }
+      if (authState?.token) {
+        // Fetch existing assessment data first
+        const assessmentResponse = await fetchStudentsAssessment(authState.token);
+        const assessmentData = assessmentResponse.data.Assessment;
 
-      if (!selectedPlan) {
-        setError("Please select a plan before proceeding.");
-        return;
-      }
+        // Log the assessment data to inspect its structure
+        console.log("Existing assessment data:", assessmentData);
 
-      const response = await makePayment(authState.token, {
-        subscription_plan_id: getPlanSubId(selectedPlan.name),
-        quantity: months,
-        coupon_code: coupon || "",
-      });
+        // Update the assessment data with the new plan ID and preserve other fields
+        const updatedAssessment = {
+          subscription_plan_id: plan.id,
+          edu_level: assessmentData.education_level,
+          subjects_interested_in: assessmentData.subjects_interested_in,
+          tests_interested_in: assessmentData.tests_interested_in,
+          learning_expectations: assessmentData.learning_expectations,
+          learning_difficulties: assessmentData.learning_difficulties,
+          learning_difficulty_description: assessmentData.learning_difficulty_description,
+          specific_goals: assessmentData.specific_goals,
+          other_subjects: assessmentData.other_subjects,
+        };
 
-      if (response.data?.payment_link) {
+        // Log the updated assessment data before sending it
+        console.log("Updated assessment data:", updatedAssessment);
+
         // Update assessment with new plan ID
-        await updateAssessment(authState.token, { subscription_plan_id: selectedPlan.id });
-        window.location.href = response.data.payment_link;
-      } else {
-        setError("Payment link not received.");
+        await updateAssessment(authState.token, updatedAssessment);
+        setChosenPlan(plan);
       }
     } catch (error: any) {
-      console.error("Payment failed:", error);
-      setError(error.message || "Payment failed. Please try again.");
+      console.error("Failed to update assessment with new plan:", error);
+      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
+      setAlertVariant("danger");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const renderPlanList = () => (
-    <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-4xl">
-      {plans.map((plan) => (
-        <motion.div
-          key={plan.sub_id}
-          className="bg-white rounded-3xl shadow-lg min-w-[250px] p-6 border-2 hover:border-white-2 hover:bg-[#1BC2C2] hover:text-white transition cursor-pointer"
-          onClick={() => handlePlanSelect(plan)}
-          layout
-        >
-          <h3 className="text-xl font-bold mb-4">{plan.name}</h3>
-          <p className="text-gray-600">${plan.price}/month</p>
-        </motion.div>
-      ))}
-    </div>
-  );
-
-  const renderChosenPlan = () => (
-    <motion.div
-      className="bg-white rounded-3xl shadow-lg p-6 max-w-4xl"
-      layout
-    >
-      <Button variant="outline" onClick={() => setSelectedPlan(null)} className="mb-4">
-        Back to Plans
-      </Button>
-      <h2 className="text-2xl font-bold mb-4">Selected Plan: {selectedPlan?.name}</h2>
-       <p className="text-gray-600">Price: ${selectedPlan?.price}/month</p>
-      <ul className="list-disc pl-5 mt-2">
-        {features.map((feature, index) => (
-          <li key={index}>{feature}</li>
-        ))}
-      </ul>
-      <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Number of Months</label>
-        <input
-          type="number"
-          value={months}
-          onChange={(e) => setMonths(Number.parseInt(e.target.value))}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
-          min="1"
-        />
-      </div>
-      <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Coupon Code</label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={coupon}
-            onChange={(e) => setCoupon(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] outline-none focus:border-transparent"
-            placeholder="Enter coupon code"
-          />
-          <button
-            onClick={applyCoupon}
-            className="bg-[#1BC2C2] text-white px-4 py-2 rounded-md hover:bg-[#139797] disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {isLoading ? "Apply" : "Apply"}
-          </button>
-        </div>
-        {discount !== null && (
-          <p className="text-green-600 mt-2">Coupon applied! {discount}% off</p>
-        )}
-        {error && <p className="text-red-600 mt-2">{error}</p>}
-      </div>
-      <div className="mt-6">
-        <p className="text-xl font-semibold">Total: ${finalPrice !== null ? finalPrice.toFixed(2) : displayPrice.toFixed(2)}</p>
-        <button
-          onClick={handlePayment}
-          className="bg-[#1BC2C2] text-white py-2 px-4 rounded-md hover:bg-[#139797] disabled:opacity-50 disabled:cursor-not-allowed mt-4"
-          disabled={isLoading}
-        >
-          {isLoading ? "Processing Payment..." : "Make Payment"}
-        </button>
-      </div>
-    </motion.div>
-  );
+  const handleDeselectPlan = () => {
+    setChosenPlan(null);
+  };
+ 
+ 
 
   return (
-    <div className="p-4">
-      {error && <div className="text-red-600 mb-4">{error}</div>}
+    <div className="p-4 relative">
+      {alert && (
+        <Alert
+          variant={alert.type === "success" ? "default" : "danger"}
+          className="absolute top-4 right-4 z-[9999] bg-white"
+          onClose={() => setAlert(null)}
+        >
+          <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
       {!subscription?.isActive ? (
         <>
-          <h2 className="text-2xl font-bold mb-4">Choose Your Plan</h2>
-          {!selectedPlan ? renderPlanList() : renderChosenPlan()}
+           <div>
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : !chosenPlan ? (
+        <PlanList onPlanSelect={handlePlanSelect} />
+      ) : (
+        <div>
+          <button
+            onClick={handleDeselectPlan}
+            className="absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition"
+          >
+            <X size={20} />
+          </button>
+          <ChosenPlanDetails plan={chosenPlan} userProfile={userProfile} />
+        </div>
+      )}
+    </div>
         </>
       ) : (
         <div className="flex flex-col lg:flex-row bg-white justify-between rounded-lg p-4 sm:p-6 space-y-6 lg:space-y-0 lg:space-x-6">
@@ -279,7 +151,10 @@ const StudentCardPayment = () => {
             <div className="bg-[#E6FFFC] p-6 rounded-lg">
               <div className="flex items-center mb-4">
                 <CheckCircle2 className="h-6 w-6 text-[#1BC2C2] mr-2" />
-                <h3 className="text-lg font-semibold">{subscription.plan[0].toUpperCase()}{subscription.plan.slice(1)} Plan</h3>
+                <h3 className="text-lg font-semibold">
+                  {subscription.plan[0].toUpperCase()}
+                  {subscription.plan.slice(1)} Plan
+                </h3>
               </div>
               <div className="space-y-4">
                 <div>
@@ -289,11 +164,11 @@ const StudentCardPayment = () => {
                 <div>
                   <p className="text-sm text-gray-600">Expires On</p>
                   <p className="font-semibold">
-                    {new Date(subscription.expiresAt).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
+                    {new Date(subscription.expiresAt).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })}
                   </p>
                 </div>
@@ -331,7 +206,10 @@ const StudentCardPayment = () => {
                   className="w-24 sm:w-32 h-auto rounded-lg shadow-md"
                 />
                 <div className="px-3">
-                  <h3 className="text-base sm:text-lg font-semibold">{subscription.plan[0].toUpperCase()}{subscription.plan.slice(1)} Plan</h3>
+                  <h3 className="text-base sm:text-lg font-semibold">
+                    {subscription.plan[0].toUpperCase()}
+                    {subscription.plan.slice(1)} Plan
+                  </h3>
                   <p className="text-xl sm:text-2xl font-bold text-teal-600">$60/month</p>
                 </div>
               </div>
@@ -343,8 +221,8 @@ const StudentCardPayment = () => {
                 <h3 className="text-base sm:text-lg ms-2 font-bold">Payment & Invoice</h3>
               </div>
               <p className="text-sm sm:text-base text-gray-600">
-                We&apos;ll worry about all the transactions and payment. You can sit back and relax while you get ready to take
-                your classes. Check Your E-mail for your payment receipt.
+                We&apos;ll worry about all the transactions and payment. You can sit back and relax while you get ready
+                to take your classes. Check Your E-mail for your payment receipt.
               </p>
             </div>
 
@@ -354,15 +232,16 @@ const StudentCardPayment = () => {
                 <h3 className="text-base sm:text-lg ms-2 font-bold">Updates & Benefits</h3>
               </div>
               <p className="text-sm sm:text-base text-gray-600">
-                You&apos;ll be provided with updates from time to time and have access to perks and benefits in basic plan.
+                You&apos;ll be provided with updates from time to time and have access to perks and benefits in basic
+                plan.
               </p>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default StudentCardPayment;
+export default StudentCardPayment
 
