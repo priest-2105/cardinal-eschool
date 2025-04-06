@@ -94,7 +94,15 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
         <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">
           Course Details: {courseDetails.class.name}
         </h1>
-        <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
+        <Button 
+          variant="outline" 
+          className="ml-auto mr-4"
+          onClick={() => route.push(`/admin/course/edit/${courseDetails.class.id}`)}
+        >
+          <Edit className="mr-2 h-5 w-5" />
+          Edit Course
+        </Button>
+        <Button variant="ghost" size="icon" className="rounded-full lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
       </div>
@@ -125,7 +133,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
             {activeTab === "description" && (
-              <CourseDescription courseData={courseDetails.class} />
+              <CourseDescription coursedetails={courseDetails.class} />
             )}
             {activeTab === "resources" && (
               <ResourcesList resources={courseDetails.resources} />
