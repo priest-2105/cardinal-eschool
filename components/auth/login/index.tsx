@@ -89,7 +89,7 @@ export default function LoginPageComponent() {
         setAlert({ type: "error", message: response.message });
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      // console.error("Login failed:", error);
       setAlert({ type: "error", message: (error as Error).message });
     } finally {
       setIsSubmitting(false);

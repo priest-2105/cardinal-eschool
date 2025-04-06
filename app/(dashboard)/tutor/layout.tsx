@@ -1,22 +1,12 @@
 "use client"
 
-import { Geist, Geist_Mono } from "next/font/google";
-import "../../globals.css";
+
 import TutorDashboardHeader from "@/components/dashboard/tutor/header";
 import TutorDashboardSideBar from "@/components/dashboard/tutor/sidebar";
 import { useState, useEffect } from "react";
 import ProtectedDashboardLayout from "@/components/dashboard/protectedDashboardLayout";
 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export default function RootLayout({
   children,
@@ -45,12 +35,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <head>
-      <title>Cardinal E School || Tutor</title>
-        <link rel="shortcut icon" href="/assets/img/favicon-logo.png" type="image/x-icon" />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+    <>
         <div className="min-h-screen w-[100vw] overflow-hidden bg-gray-50 flex">
           <TutorDashboardSideBar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           <div className={`flex-1 transition-all ease-in-out overflow-hidden duration-300`}>
@@ -62,8 +47,7 @@ export default function RootLayout({
             </main>
           </div>
         </div>
-      </body>
-    </html>
+    </>
   );
 }
 
