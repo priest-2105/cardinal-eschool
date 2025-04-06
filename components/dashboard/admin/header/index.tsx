@@ -89,9 +89,6 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                 )}
               </li>
             ))}
-              <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
-                <Link className="w-full" href="/admin/notifications">See All</Link>
-              </li>
           </ul>
         </div>
       )}

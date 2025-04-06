@@ -18,7 +18,7 @@ import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import NotificationIcon from "@/public/assets/icons/notification-03.png"
 import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 import cardinalConfig from "@/config"
-import { fetchNotifications } from "@/lib/api/tutor/api"
+import { fetchNotifications, fetchTicketList } from "@/lib/api/tutor/api"
 import { useSelector } from "react-redux"
 import { RootState } from "@/lib/store"
 import type React from "react"
@@ -82,6 +82,7 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   const router = useRouter()
   const token = useSelector((state: RootState) => state.auth.token)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [openInProgressTicketCount, setOpenInProgressTicketCount] = useState(0)
 
   const handleLinkClick = (href: string) => {
     if (href !== pathname) {
@@ -119,6 +120,25 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     }
 
     fetchUnreadNotificationsCount()
+  }, [token])
+
+  useEffect(() => {
+    const fetchOpenInProgressTicketCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchTicketList(token)
+          const tickets = response.data.tickets
+          const openInProgressCount = tickets.filter(
+            (ticket: any) => ticket.status === "open" || ticket.status === "in_progress",
+          ).length
+          setOpenInProgressTicketCount(openInProgressCount)
+        } catch (error) {
+          console.error("Error fetching tickets:", error)
+        }
+      }
+    }
+
+    fetchOpenInProgressTicketCount()
   }, [token])
 
   const toggleSidebar = () => {
@@ -190,6 +210,11 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
                   {item.name === "Notification" && unreadCount > 0 && (
                     <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       {unreadCount}
+                    </div>
+                  )}
+                  {item.name === "Admin Support" && openInProgressTicketCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openInProgressTicketCount}
                     </div>
                   )}
                 </>

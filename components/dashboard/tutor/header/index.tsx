@@ -23,9 +23,9 @@ const notifications = [
 ]
 
 const profileOptions = [
-  { name: "Profile", href: "/tutor/profile" },
+  { name: "Profile", href: "/tutor/tutorinformation" },
   { name: "Settings", href: "/tutor/settings" },
-  { name: "Support", href: "/tutor/support" },
+  { name: "Support", href: "/tutor/ticketlist" },
   { name: "Logout", href: "#" },
 ]
 
@@ -40,7 +40,7 @@ interface ProfileOption {
   href: string
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean }> = ({ items, icon, isNotification }) => {
+const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean; handleItemClick?: (href: string) => void; setShowLogoutDialog?: (show: boolean) => void }> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -58,6 +58,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
 
   const handleNotification = () => {
     router.push("/tutor/notifications")
+    toggleDropdown()
   }
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside)
@@ -75,9 +76,23 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100" onClick={handleNotification}>
+              <li
+                key={index}
+                className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100"
+                onClick={() => {
+                  if (item.name === "Logout") {
+                    setShowLogoutDialog(true)
+                    toggleDropdown()
+                  } else if ("href" in item && handleItemClick) {
+                    handleItemClick(item.href)
+                    toggleDropdown()
+                  } else {
+                    handleNotification()
+                  }
+                }}
+              >
                 {"href" in item ? (
-                  <Link href="/tutor/notifications">{item.name}</Link>
+                  <Link href={item.href}>{item.name}</Link>
                 ) : (
                   <div>
                     <p className="font-medium text-[13px]">{item.message}</p>
@@ -86,11 +101,13 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                 )}
               </li>
             ))}
-              {isNotification && items[0]?.message !== "No notifications" && (
-                <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
-                  <Link className="w-full" href="/tutor/notifications">See All</Link>
-                </li>
-              )}
+            {isNotification && items[0]?.message !== "No notifications" && (
+              <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
+                <Link className="w-full" href="/tutor/notifications">
+                  See All
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -167,8 +184,8 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
-      setShowLogoutDialog(false)
       setIsLoggingOut(false)
+      setShowLogoutDialog(false)
       router.push("/tutor/login")
     }
   };
@@ -205,12 +222,10 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
                 </Button>
               }
               isNotification={true}
+              handleItemClick={() => router.push("/tutor/notifications")}
             />
             <Dropdown
-              items={profileOptions.map(option => ({
-                ...option,
-                onClick: option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined
-              }))}
+              items={profileOptions}
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
@@ -224,6 +239,8 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
                   <FaAngleDown />
                 </Button>
               }
+              handleItemClick={(href) => router.push(href)}
+              setShowLogoutDialog={setShowLogoutDialog}
             />
           </div>
         </div>
