@@ -159,8 +159,8 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
           <p>Loading assessments...</p>
         </div>
       ) : error ? (
-        <div className="flex-1 flex items-center justify-center text-red-500">
-          <p>{error}</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p>Assessments not available</p>
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
