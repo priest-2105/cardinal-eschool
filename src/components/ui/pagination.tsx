@@ -20,8 +20,8 @@ export function Pagination({
   const hasNextPage = currentPage < totalPages
 
   return (
-    <div className="flex items-center justify-between">
-      <Button
+    <div className="flex items-center justify-end">
+      {/* <Button
         variant="outline"
         className="h-8 w-8 p-0"
         disabled={!hasPreviousPage}
@@ -29,7 +29,7 @@ export function Pagination({
       >
         <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">Previous</span>
-      </Button>
+      </Button> */}
       <Select
         value={String(currentPage)}
         onValueChange={(value) => onPageChange(Number(value))}
@@ -45,7 +45,7 @@ export function Pagination({
           ))}
         </SelectContent>
       </Select>
-      <Button
+      {/* <Button
         variant="outline"
         className="h-8 w-8 p-0"
         disabled={!hasNextPage}
@@ -53,7 +53,7 @@ export function Pagination({
       >
         <ChevronRight className="h-4 w-4" />
         <span className="sr-only">Next</span>
-      </Button>
+      </Button> */}
     </div>
   )
 }
