@@ -8,7 +8,7 @@ import { CourseTable } from '../coursetable/index'
 import { getTutorClasses } from '@/lib/api/tutor/courses/courselist'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
-
+import { Pagination } from "@/src/components/ui/pagination"
 
 interface Course {
   class_id: number
@@ -30,14 +30,20 @@ export function CourseList() {
   const [selectedDateRange, setSelectedDateRange] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
   const token = useSelector((state: RootState) => state.auth?.token)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalClasses, setTotalClasses] = useState(0)
+  const perPage = 10
 
   useEffect(() => {
     const fetchCourses = async () => {
       if (!token) return
       setLoading(true)
       try {
-        const response = await getTutorClasses(token)
+        const response = await getTutorClasses(token, currentPage, perPage)
         setCourses(response.data.classes)
+        setTotalPages(response.data.total_pages)
+        setTotalClasses(response.data.total_classes)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch courses')
       } finally {
@@ -46,7 +52,7 @@ export function CourseList() {
     }
 
     fetchCourses()
-  }, [token])
+  }, [token, currentPage, perPage])
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = 
@@ -59,6 +65,10 @@ export function CourseList() {
     
     return matchesSearch && matchesGrade && matchesStatus && matchesDate
   })
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
 
   if (loading) {
     return <div className="text-center py-12">Loading courses...</div>
@@ -135,6 +145,16 @@ export function CourseList() {
       </div>
 
       <CourseTable courses={filteredCourses} />
+       {/* Pagination */}
+       {!loading && courses.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
     </div>
   )
 }

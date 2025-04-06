@@ -20,17 +20,19 @@ export interface TutorClassResponse {
   };
 }
 
-export async function getTutorClasses(token: string): Promise<TutorClassResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/tutor/classes`, {
+export async function getTutorClasses(token: string, page: number = 1, perPage: number = 10): Promise<TutorClassResponse> {
+  const response = await fetchWithAuth(`${apiUrl}/tutor/classes?page=${page}&per_page=${perPage}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch classes");
+    const errorMessage = await response.text();
+    throw new Error(`Failed to fetch classes: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
 
   return response.json();

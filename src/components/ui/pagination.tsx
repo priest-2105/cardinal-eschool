@@ -3,6 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface PaginationProps {
   currentPage: number
@@ -19,27 +20,39 @@ export function Pagination({
   const hasNextPage = currentPage < totalPages
 
   return (
-    <div className="join">
+    <div className="flex items-center justify-between">
       <Button
         variant="outline"
-        className="join-item"
+        className="h-8 w-8 p-0"
         disabled={!hasPreviousPage}
         onClick={() => onPageChange(currentPage - 1)}
       >
-        <ChevronLeft className="h-4 w-4 mr-2" />
-        Previous
+        <ChevronLeft className="h-4 w-4" />
+        <span className="sr-only">Previous</span>
       </Button>
-      <Button variant="outline" className="join-item" disabled>
-        Page {currentPage} of {totalPages}
-      </Button>
+      <Select
+        value={String(currentPage)}
+        onValueChange={(value) => onPageChange(Number(value))}
+      >
+        <SelectTrigger className="w-[100px]">
+          <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
+        </SelectTrigger>
+        <SelectContent>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <SelectItem key={page} value={String(page)}>
+              {page}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <Button
         variant="outline"
-        className="join-item"
+        className="h-8 w-8 p-0"
         disabled={!hasNextPage}
         onClick={() => onPageChange(currentPage + 1)}
       >
-        Next
-        <ChevronRight className="h-4 w-4 ml-2" />
+        <ChevronRight className="h-4 w-4" />
+        <span className="sr-only">Next</span>
       </Button>
     </div>
   )
