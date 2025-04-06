@@ -1,11 +1,17 @@
 export interface Course {
-  id: number
-  grade: number,
-  name: string
-  noOfStudent: number
-  schedule: string
-  status: "Upcoming" | "Active" | "Completed"
-  dateAdded: string
+  id: number;
+  name: string;
+  code: string;
+  schedule: {
+    days: string[];
+    time: string[];
+  };
+  tutor_id: string;
+  tutor_name: string;
+  status: string;
+  progress_percentage: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface FilterValues {
