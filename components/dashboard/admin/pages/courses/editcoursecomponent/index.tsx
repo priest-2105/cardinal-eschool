@@ -12,13 +12,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Plus, Trash2, User, Users } from "lucide-react"
 import { AssignTutorModal } from "../assignTutorModal/index"
 import { AssignStudentsModal } from "../assignStudentModal/index"
-import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse"
 import { getAdminCourseDetails } from "@/lib/api/admin/managecourses/fetchsinglecourse"
 import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors"
 import { getStudentForClasses } from "@/lib/api/admin/managestudent/getstudentforclassess"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse"
 
 interface Schedule {
   day: string
@@ -72,6 +72,7 @@ export default function EditCoursePage() {
   const [errors, setErrors] = useState<ValidationErrors>({})
   const token = useSelector((state: RootState) => state.auth?.token)
   const [loading, setLoading] = useState(false)
+  const [fetchLoading, setFetchLoading] = useState(false)
 
   useEffect(() => {
     const loadTutorsAndStudents = async () => {
@@ -104,7 +105,7 @@ export default function EditCoursePage() {
     const fetchCourseDetails = async () => {
       if (!token || !isEditMode) return
       
-      setLoading(true)
+      setFetchLoading(true)
       try {
         const response = await getAdminCourseDetails(token, courseId)
         const courseData = response.data.class
@@ -130,11 +131,11 @@ export default function EditCoursePage() {
         }
         
         // Set tutor if available
-        if (courseData.tutor_id) {
+        if (courseData.tutor_codec) {
           // Need to get tutor name from students data
           setAssignedTutor({
-            id: courseData.tutor_id,
-            name: "Assigned Tutor" // This will be replaced when you fetch full tutor details
+            id: courseData.tutor_codec,
+            name: "Assigned Tutor"
           })
         }
         
@@ -153,7 +154,7 @@ export default function EditCoursePage() {
           message: "Failed to load course details"
         })
       } finally {
-        setLoading(false)
+        setFetchLoading(false)
       }
     }
 
@@ -253,10 +254,16 @@ export default function EditCoursePage() {
         department,
         semester
       };
+      
+      console.log("Request body:", requestBody);
+      console.log("Is edit mode:", isEditMode);
+      console.log("Course ID:", courseId);
 
+      let response;
       if (isEditMode) {
         // Update existing course
-        const response = await updateCourse(token, courseId, requestBody);
+        console.log("Calling updateCourse function");
+        response = await updateCourse(token, courseId, requestBody);
         console.log("Course updated successfully:", response);
         setAlert({
           type: "success",
@@ -264,7 +271,8 @@ export default function EditCoursePage() {
         });
       } else {
         // Create new course
-        const response = await editClass(token, requestBody);
+        console.log("Calling editClass function");
+        response = await editClass(token, requestBody);
         console.log("Course created successfully:", response);
         setAlert({
           type: "success",
@@ -272,6 +280,7 @@ export default function EditCoursePage() {
         });
       }
       
+      // After successful update/creation, redirect after a delay
       setTimeout(() => {
         if (isEditMode) {
           router.push(`/admin/course/${courseId}`);
@@ -309,7 +318,16 @@ export default function EditCoursePage() {
         <h1 className="text-3xl font-bold">{isEditMode ? "Edit Course" : "Create New Course"}</h1>
       </div>
 
-      {loading ? (
+      {alert && (
+        <div className="fixed top-5 right-5 z-50">
+          <Alert variant={alert.type === "success" ? "success" : "danger"}>
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {fetchLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1BC2C2]"></div>
           <span className="ml-3">Loading course details...</span>
@@ -548,12 +566,21 @@ export default function EditCoursePage() {
           </Card>
 
           <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" onClick={() => router.back()}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => router.back()}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className={isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+            >
               {isSubmitting ? (
-                <>
+                <div className="flex items-center">
                   <svg
                     className="animate-spin -ml-1 mr-2 h-4 w-4"
                     xmlns="http://www.w3.org/2000/svg"
@@ -575,9 +602,9 @@ export default function EditCoursePage() {
                     ></path>
                   </svg>
                   {isEditMode ? "Updating..." : "Creating..."}
-                </>
+                </div>
               ) : (
-                isEditMode ? "Update Course" : "Create Course"
+                <span>{isEditMode ? "Update Course" : "Create Course"}</span>
               )}
             </Button>
           </div>
