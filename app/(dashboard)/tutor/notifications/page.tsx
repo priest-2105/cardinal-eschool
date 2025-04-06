@@ -1,6 +1,5 @@
 "use client"
 
-
 import { NotificationList } from "@/components/dashboard/tutor/pages/notification"
 import { useState, useEffect } from "react"
 

@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchTutorProfile, logout } from "@/lib/api/tutor/api"
+import { fetchTutorProfile, fetchNotifications, logout } from "@/lib/api/tutor/api"
 import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
@@ -32,6 +32,7 @@ const profileOptions = [
 interface Notification {
   message: string
   time: string
+  createdAt: string
 }
 
 interface ProfileOption {
@@ -98,6 +99,8 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter()
+  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
 
   useEffect(() => {
     const getProfile = async () => {
@@ -113,6 +116,29 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
 
     getProfile();
   }, [token]);
+
+  useEffect(() => {
+    const fetchRecentNotifications = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter((notification: any) => !notification.read_at)
+          setHasUnreadNotifications(unread.length > 0)
+          const recent = unread.slice(0, 3).map((notification: any) => ({
+            message: notification.message,
+            time: notification.created_at,
+            createdAt: notification.created_at,
+          }))
+          setRecentNotifications(recent)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchRecentNotifications()
+  }, [token])
 
   useEffect(() => {
     if (showLogoutDialog) {
@@ -159,11 +185,13 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
           </button>
           <div className="flex items-center gap-x-4 z-40">
             <Dropdown
-              items={notifications}
+              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "" , createdAt: ""}]}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  {hasUnreadNotifications && (
+                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
                 </Button>
               }
             />
