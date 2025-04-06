@@ -20,10 +20,6 @@ export async function fetchTicketList(
         ...(filters.department && { department: filters.department }),
     });
 
-    if (filters.status) queryParams.append("status", filters.status);
-    if (filters.ticket_id) queryParams.append("ticket_id", filters.ticket_id);
-    if (filters.department) queryParams.append("department", filters.department);
-
     const response = await fetchWithAuth(`${apiUrl}/admin/tickets?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
