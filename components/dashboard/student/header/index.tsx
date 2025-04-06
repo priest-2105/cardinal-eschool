@@ -49,6 +49,8 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
   const notificationDropdownRef = useRef<HTMLDivElement>(null)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false) // Profile dropdown state
+  const profileDropdownRef = useRef<HTMLDivElement>(null) // Profile dropdown ref
 
   useEffect(() => {
     const getProfile = async () => {
@@ -101,6 +103,19 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [notificationDropdownOpen])
+
+  useEffect(() => {
+    const handleClickOutsideProfile = (event: MouseEvent) => {
+      if (profileDropdownOpen && profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutsideProfile)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideProfile)
+    }
+  }, [profileDropdownOpen])
 
   const isAssessmentComplete = (assessment: any) => {
     // Required fields that must not be null
@@ -160,12 +175,12 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
       if (token) {
         await logout(token);
         dispatch(clearAuthState());
-        dispatch(clearSubscriptionStatus()); // Clear subscription status on logout
+        dispatch(clearSubscriptionStatus());
       }
     } catch (error) {
       console.error("Logout failed", error);
     }
-    router.push("/student/login")
+    router.push("/login")
   }
 
   return (
@@ -193,29 +208,29 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
               <Button variant="ghost" size="icon" className="relative" onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}>
                 <Bell className="h-5 w-5" />
                 {hasUnreadNotifications && (
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  <span className="absolute top-2 right-2 h-2 w-2rounded-full bg-red-500" />
                 )}
               </Button>
               {notificationDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-                  <ul className="py-1">
+                <div className="absolute right-0 mt-2 z-50 w-56 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <ul className="">
                     {recentNotifications.map((item, index) => (
                       <li key={index} className="px-4 py-2 hover:bg-gray-100">
-                        <Link href={item.href}>
-                          <p className="font-medium">{item.message}</p>
+                        <Link href="/student/notifications">
+                          <p className="font-small text-[12px]">{item.message}</p>
                           <p className="text-sm text-gray-500">{item.time}</p>
                         </Link>
                       </li>
                     ))}
-                    <li className="px-4 py-2 hover:bg-gray-100">
-                      <Link href="/student/notifications">See All</Link>
+                    <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
+                      <Link className="w-full" href="/student/notifications">See All</Link>
                     </li>
                   </ul>
                 </div>
               )}
             </div>
-            <div className="relative">
-              <Button variant="ghost" className="relative w-fit flex items-center gap-2">
+            <div className="relative" ref={profileDropdownRef}>
+              <Button variant="ghost" className="relative w-fit flex items-center gap-2" onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
                   <AvatarFallback>
@@ -229,7 +244,19 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
                 </div>
                 <FaAngleDown />
               </Button>
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <ul className="py-1">
+                    {profileOptions.map((option) => (
+                      <li key={option.name} className="px-4 py-2 hover:bg-gray-100" onClick={option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined}>
+                        <Link href={option.href}>{option.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
+            
           </div>
         </div>
       </div>
@@ -242,7 +269,7 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setShowLogoutDialog(false)}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleLogout}>
               Logout
             </AlertDialogAction>
@@ -254,4 +281,3 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
 }
 
 export default StudentDashboardHeader
-

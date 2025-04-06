@@ -210,6 +210,7 @@ export function NotificationList() {
       setAlert({ type: "error", message: "Failed to mark notification as read." })
     } finally {
       setProcessingNotificationId(null)
+      loadNotifications()
     }
   }
 
@@ -227,6 +228,7 @@ export function NotificationList() {
       setAlert({ type: "error", message: "Failed to mark all notifications as read." })
     } finally {
       setIsMarkingAllAsRead(false)
+      loadNotifications()
     }
   }
 

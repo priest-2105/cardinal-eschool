@@ -192,11 +192,24 @@ export function NotificationList() {
         ),
       )
       setAlert({ type: "success", message: "Notification marked as read." })
+      const response = await fetchNotifications(token, currentPage, perPage)
+      const notificationsWithDates = response.notifications.map((notification: any) => ({
+        ...notification,
+        id: notification.id.toString(),
+        title: notification.title || "Notification",
+        message: notification.message || notification.content || "",
+        type: notification.type || "system",
+        isRead: !!notification.read_at,
+        createdAt: notification.created_at,
+      }))
+      setNotifications(notificationsWithDates)
+      setTotalPages(response.pagination.last_page)
     } catch (error) {
       console.error("Failed to mark notification as read:", error)
       setAlert({ type: "error", message: "Failed to mark notification as read." })
     } finally {
       setProcessingNotificationId(null)
+      loadNotifications()
     }
   }
 
@@ -209,11 +222,24 @@ export function NotificationList() {
         prev.map((notification) => ({ ...notification, isRead: true })),
       )
       setAlert({ type: "success", message: "All notifications marked as read." })
+      const response = await fetchNotifications(token, currentPage, perPage)
+      const notificationsWithDates = response.notifications.map((notification: any) => ({
+        ...notification,
+        id: notification.id.toString(),
+        title: notification.title || "Notification",
+        message: notification.message || notification.content || "",
+        type: notification.type || "system",
+        isRead: !!notification.read_at,
+        createdAt: notification.created_at,
+      }))
+      setNotifications(notificationsWithDates)
+      setTotalPages(response.pagination.last_page)
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error)
       setAlert({ type: "error", message: "Failed to mark all notifications as read." })
     } finally {
       setIsMarkingAllAsRead(false)
+      loadNotifications()
     }
   }
 
@@ -817,7 +843,7 @@ export function NotificationList() {
       </CardContent>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "default" : "danger"} className="absolute top-12 bg-white right-4">
+        <Alert variant={alert.type === "success" ? "default" : "danger"} className="fixed z-50 top-12 bg-white right-4">
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>

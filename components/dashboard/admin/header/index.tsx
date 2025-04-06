@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchAdminProfile } from "@/lib/api/admin/api"
+import { fetchAdminProfile, fetchNotifications } from "@/lib/api/admin/api"
 import { RootState } from "@/lib/store"
 import { useRouter } from "next/navigation"
 import { logout } from "@/lib/api/admin/auth/logout"
@@ -40,6 +40,7 @@ const profileOptions = [
 interface Notification {
   message: string
   time: string
+  createdAt: string
 }
 
 interface ProfileOption {
@@ -74,20 +75,23 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         {icon}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 hover:bg-gray-100" onClick={item.onClick}>
+              <li key={index} className="px-4 py-2 text-[15px] hover:bg-gray-100" onClick={item.onClick}>
                 {"href" in item ? (
                   <Link href={item.href}>{item.name}</Link>
                 ) : (
                   <div>
-                    <p className="font-medium">{item.message}</p>
-                    <p className="text-sm text-gray-500">{item.time}</p>
+                    <p className="font-medium text-[12px]">{item.message}</p>
+                    <p className="text-sm text-gray-500 text-[12px]">{item.time}</p>
                   </div>
                 )}
               </li>
             ))}
+              <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
+                <Link className="w-full" href="/admin/notifications">See All</Link>
+              </li>
           </ul>
         </div>
       )}
@@ -104,6 +108,8 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
   const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const router = useRouter()
+  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
 
   useEffect(() => {
     const getProfile = async () => {
@@ -119,6 +125,29 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
 
     getProfile();
   }, [token]);
+
+  useEffect(() => {
+    const fetchRecentNotifications = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter((notification: any) => !notification.read_at)
+          setHasUnreadNotifications(unread.length > 0)
+          const recent = unread.slice(0, 3).map((notification: any) => ({
+            message: notification.message,
+            time: notification.created_at,
+            createdAt: notification.created_at,
+          }))
+          setRecentNotifications(recent)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchRecentNotifications()
+  }, [token])
 
   const handleLogout = async () => {
     try {
@@ -152,13 +181,15 @@ const AdminDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
               </svg>
             )}
           </button>
-          <div className="flex items-center gap-x-4 z-40">
+          <div className="flex items-center w-58 gap-x-4 z-40">
             <Dropdown
-              items={notifications}
+              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "" , createdAt: ""}]}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  {hasUnreadNotifications && (
+                    <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500" />
+                  )}
                 </Button>
               }
             />
