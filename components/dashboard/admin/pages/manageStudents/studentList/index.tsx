@@ -22,6 +22,8 @@ interface Student {
   dateJoined: string
   status: "Active" | "Suspended" | "Inactive"
   has_subscription: boolean
+  edu_level: string | null
+  subscription_plan: string | null
 }
 
 export function StudentList() {
@@ -35,6 +37,8 @@ export function StudentList() {
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
   const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -45,8 +49,9 @@ export function StudentList() {
         const hasSubscription =
           subscriptionFilter === "subscribed" ? true : subscriptionFilter === "unsubscribed" ? false : undefined
 
-        const data = await getStudentList(token, hasSubscription)
-        setStudents(data)
+        const data = await getStudentList(token, hasSubscription, currentPage);
+        setStudents(data.students);
+        setTotalPages(data.pagination.last_page);
       } catch (error: any) {
         console.error("Failed to fetch students:", error.message)
         setAlert({ type: "danger", message: error.message })
@@ -56,7 +61,7 @@ export function StudentList() {
     }
 
     fetchStudents()
-  }, [token, subscriptionFilter])
+  }, [token, subscriptionFilter, currentPage])
 
   const filterStudents = () => {
     return students.filter((student) => {
@@ -187,18 +192,20 @@ export function StudentList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[15%]">Student ID</TableHead>
                     <TableHead className="w-[20%]">Name</TableHead>
                     <TableHead className="w-[20%]">Email</TableHead>
+                    <TableHead className="w-[15%]">Grade</TableHead>
+                    <TableHead className="w-[15%]">Plan</TableHead>
                     <TableHead className="w-[10%]">Subscription</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredStudents.map((student) => (
                     <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
-                      <TableCell className="font-medium">{student.id}</TableCell>
                       <TableCell>{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>
+                      <TableCell className="font-medium">{student.edu_level}</TableCell>
+                      <TableCell className="font-medium">{student.subscription_plan}</TableCell>
                       <TableCell> 
                       <Badge variant={student.has_subscription ? "default" : "warning"}>
                       {student.has_subscription ? "Subscribed" : "Unsubscribed"}
@@ -212,7 +219,20 @@ export function StudentList() {
           </div>
         )}
       </div>
+       <div className="flex justify-end items-center gap-4 py-4">
+        <Select value={String(currentPage)} onValueChange={(value) => setCurrentPage(parseInt(value))}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <SelectItem key={page} value={String(page)}>
+                Page {page}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   )
 }
-

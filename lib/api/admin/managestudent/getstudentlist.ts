@@ -1,10 +1,12 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-export async function getStudentList(token: string, hasSubscription?: boolean) {
+export async function getStudentList(token: string, hasSubscription?: boolean, page: number = 1) {
   const url = new URL(`${apiUrl}/admin/getAllStudents`);
   if (hasSubscription !== undefined) {
     url.searchParams.append("has_subscription", String(hasSubscription));
   }
+
+  url.searchParams.append("page", String(page));
 
   const response = await fetchWithAuth(url.toString(), {
     method: "GET",
@@ -21,5 +23,6 @@ export async function getStudentList(token: string, hasSubscription?: boolean) {
   }
 
   const result = await response.json();
-  return result.data.students;
+  console.log("API Response:", result);
+  return result.data;
 }
