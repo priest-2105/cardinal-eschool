@@ -35,6 +35,8 @@ export function TicketList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
   const [loading, setLoading] = useState(true)
+  const [isSearching, setIsSearching] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("all")
   const [pagination, setPagination] = useState<Pagination>({
     current_page: 1,
     per_page: 15,
@@ -46,38 +48,61 @@ export function TicketList() {
   useEffect(() => {
     const loadTickets = async () => {
       if (!token) return
+      
+      setLoading(true)
       try {
-        setLoading(true)
-        const response = await fetchTicketList(token, pagination.current_page, pagination.per_page)
+        const filters: {status?: string, search?: string} = {};
+        
+        if (statusFilter !== "all") {
+          filters.status = statusFilter;
+        }
+        
+        if (searchQuery) {
+          filters.search = searchQuery;
+        }
+        
+        const response = await fetchTicketList(
+          token, 
+          pagination.current_page, 
+          pagination.per_page,
+          filters
+        )
+        
         setTickets(response.data.tickets)
-        setPagination(response.data)
+        setPagination({
+          current_page: response.data.current_page,
+          per_page: response.data.per_page,
+          total_pages: response.data.total_pages,
+          total_items: response.data.total_items
+        })
       } catch (error) {
         console.error("Failed to fetch tickets:", error)
       } finally {
         setLoading(false)
+        setIsSearching(false)
       }
     }
 
     loadTickets()
-  }, [token, pagination.current_page, pagination.per_page])
+  }, [token, pagination.current_page, pagination.per_page, searchQuery, statusFilter])
 
   const handlePageChange = (page: string) => {
     setPagination(prev => ({ ...prev, current_page: parseInt(page) }))
   }
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setIsSearching(true);
+  }
 
+  // Sort tickets after they're retrieved from API
   const sortedTickets = [...tickets].sort((a, b) => {
     if (sortBy === "latest") {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     }
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   })
-
-  const filteredTickets = sortedTickets.filter(
-    (ticket) =>
-      ticket.ticket_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.department.toLowerCase().includes(searchQuery.toLowerCase())
-  )
 
   const handleRowClick = (codec: string) => {
     router.push(`/student/ticket/${codec}`)
@@ -102,13 +127,26 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by Ticket ID, Department, Subject..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               className="pl-8 w-full"
             />
           </div>
@@ -116,8 +154,11 @@ export function TicketList() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        {loading ? (
-          <div className="flex justify-center items-center h-full">Loading tickets...</div>
+        {loading || isSearching ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
+            {searchQuery ? "Searching tickets..." : "Loading tickets..."}
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
@@ -132,14 +173,14 @@ export function TicketList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTickets.length === 0 ? (
+                  {sortedTickets.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center">
-                        No ticket has been created
+                      <TableCell colSpan={5} className="text-center h-24">
+                        {searchQuery ? `No results found for "${searchQuery}"` : "No ticket has been created"}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredTickets.map((ticket) => (
+                    sortedTickets.map((ticket) => (
                       <TableRow
                         key={ticket.codec}
                         onClick={() => handleRowClick(ticket.codec)}
@@ -164,7 +205,7 @@ export function TicketList() {
         )}
       </div>
 
-      {!loading && pagination.total_pages > 1 && (
+      {!loading && !isSearching && pagination.total_pages > 1 && (
         <div className="flex justify-end p-4">
           <Select value={pagination.current_page.toString()} onValueChange={handlePageChange}>
             <SelectTrigger className="w-[180px]">

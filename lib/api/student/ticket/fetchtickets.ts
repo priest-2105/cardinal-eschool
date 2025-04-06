@@ -21,8 +21,27 @@ export interface TicketListResponse {
     };
 }
 
-export async function fetchTicketList(token: string, page: number = 1, perPage: number = 15): Promise<TicketListResponse> {
-    const response = await fetchWithAuth(`${apiUrl}/student/tickets?page=${page}&per_page=${perPage}`, {
+interface TicketFilters {
+    status?: string;
+    search?: string;
+    department?: string;
+}
+
+export async function fetchTicketList(
+    token: string, 
+    page: number = 1, 
+    perPage: number = 15,
+    filters: TicketFilters = {}
+): Promise<TicketListResponse> {
+    const queryParams = new URLSearchParams({
+        page: page.toString(),
+        per_page: perPage.toString(),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.search && { search: filters.search }),
+        ...(filters.department && { department: filters.department }),
+    });
+
+    const response = await fetchWithAuth(`${apiUrl}/student/tickets?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

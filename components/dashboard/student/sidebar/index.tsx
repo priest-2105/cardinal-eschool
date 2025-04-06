@@ -24,6 +24,7 @@ import NotificationLightIcon from "@/public/assets/icons/notification-0-light.pn
 import { fetchNotifications } from "@/lib/api/student/notifcation/fetchnotification"
 import { useSelector } from "react-redux"
 import { RootState } from "@/lib/store"
+import { fetchTicketList } from "@/lib/api/student/ticket/fetchtickets"
 
 const navigation = [
   {
@@ -94,6 +95,7 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
 }) => {
   const pathname = usePathname()
   const [unreadCount, setUnreadCount] = useState(0)
+  const [openTicketsCount, setOpenTicketsCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
@@ -127,6 +129,21 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
 
     fetchUnreadNotificationsCount()
   }, [token])
+
+  useEffect(() => {
+    const fetchOpenTicketsCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchTicketList(token, 1, 100, { status: "open" });
+          setOpenTicketsCount(response.data.tickets.length);
+        } catch (error) {
+          console.error("Error fetching open tickets:", error);
+        }
+      }
+    };
+
+    fetchOpenTicketsCount();
+  }, [token]);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -196,12 +213,24 @@ const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: b
                       {unreadCount}
                     </div>
                   )}
+                  {item.name === "Admin Support" && openTicketsCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
                 </>
               )}
               {!isOpen && (
-                <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {item.name}
-                </span>
+                <>
+                  <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {item.name}
+                  </span>
+                  {item.name === "Admin Support" && openTicketsCount > 0 && (
+                    <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
+                </>
               )}
             </Link>
           )
