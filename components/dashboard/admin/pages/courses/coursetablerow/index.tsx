@@ -46,17 +46,29 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
       className="hover:bg-slate-100 cursor-pointer text-sm md:text-base"
       onClick={() => handleViewDetails(courseId)}
     >
-      <TableCell className="w-[25%] font-medium">{course.name}</TableCell>
-      <TableCell className="w-[10%] font-medium">{course.grade || course.code}</TableCell>
-      <TableCell className="w-[15%] hidden md:table-cell">
+      <TableCell className="w-[20%] font-medium">{course.name}</TableCell>
+      <TableCell className="w-[10%] font-medium">{course.tutor_name}</TableCell>
+      <TableCell className="w-[10%] hidden md:table-cell">
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 md:h-8 md:w-8">
             <AvatarFallback>{studentCount}</AvatarFallback>
           </Avatar>
         </div>
       </TableCell>
-      <TableCell className="w-[20%] hidden lg:table-cell">{formatSchedule(course.schedule)}</TableCell>
-      <TableCell className="w-[15%]">
+      <TableCell className="w-[25%] hidden lg:table-cell  lg:flex">
+        {course.schedule.days.map((day, index) => (
+          <div key={index}
+          className="flex items-center justify-between w-fit p-2 bg-white mr-1 rounded-lg border border-gray-200"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 mr-1 rounded-full bg-[#1BC2C2]" />
+            <span className="font-medium text-[13px]">{day}</span>
+          </div>
+          <span className="text-gray-600  text-[13px]">{course.schedule.time[index]}</span>
+        </div>
+      ))}   
+      </TableCell>
+      <TableCell className="w-[10%]">
         <span
           className={cn(
             "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
