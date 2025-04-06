@@ -597,20 +597,32 @@ export function StudentDetails({ id }: { id: string }) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {student?.currentCourses?.map((cls) => (
+                    {studentDetails?.classes?.map((cls) => (
                       <div key={cls.id} className="p-4 border rounded-lg">
                         <div className="flex justify-between items-center">
                           <h3 className="font-medium">{cls.name}</h3>
-                          <Badge variant="outline">{cls.id}</Badge>
+                          <Badge variant="outline">{cls.code}</Badge>
                         </div>
                         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                           <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {/* <Calendar className="h-4 w-4 mr-2 text-muted-foreground" /> */}
                             {/* <span>{cls.schedule}</span> */}
+                            {cls.schedule.days.map((day, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-3 bg-white mr-1 rounded-lg border border-gray-200"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-2 h-2 mr-1 rounded-full bg-[#1BC2C2]" />
+                                  <span className="font-medium text-[13px]">{day}</span>
+                                </div>
+                                <span className="text-gray-600  text-[13px]">{cls.schedule.time[index]}</span>
+                              </div>
+                            ))}
                           </div>
-                          <div className="flex items-center">
+                          <div className="flex items-end ml-auto">
                             {/* <Users className="h-4 w-4 mr-2 text-muted-foreground" /> */}
-                            {/* <span>{cls.students} students</span> */}
+                            <span>{cls.students.length} students</span>
                           </div>
                         </div>
                       </div>
