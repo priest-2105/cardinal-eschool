@@ -115,6 +115,20 @@ export function StudentDetails({ id }: { id: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
 
+  // Function to calculate age
+  const calculateAge = (dateOfBirth: string): number => {
+    const today = new Date()
+    const birthDate = new Date(dateOfBirth)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const month = today.getMonth() - birthDate.getMonth()
+    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
+
+  const studentAge = studentDetails?.dob ? calculateAge(studentDetails.dob) : null
+
   const openModal = (status: "active" | "suspended" | "banned") => {
     setStatusToUpdate(status)
     setIsModalOpen(true)
@@ -462,8 +476,7 @@ export function StudentDetails({ id }: { id: string }) {
                   </div>
                 </CardContent>
               </Card>
-
-              {studentDetails?.guardian && (
+              {studentAge !== null && studentAge < 16 && studentDetails?.guardian && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Guardian Information</CardTitle>
