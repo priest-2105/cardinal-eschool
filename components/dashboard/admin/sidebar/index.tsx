@@ -33,6 +33,7 @@ import { useSelector } from "react-redux"
 import { RootState } from "@/lib/store"
 import type React from "react"
 import { getPendingReports } from "@/lib/api/admin/pendingreport/fetchpendingreport"
+import { fetchTicketList } from "@/lib/api/admin/ticket/fetchtickets"
 
 const navigation = [
   {
@@ -169,6 +170,7 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
   const [unreadCount, setUnreadCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
   const [pendingReportsCount, setPendingReportsCount] = useState(0)
+  const [openTicketsCount, setOpenTicketsCount] = useState(0)
 
   const handleLinkClick = (href: string) => {
     // Only prefetch if not current path
@@ -224,6 +226,22 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
 
     fetchPendingReportsCount()
   }, [token, updatePendingReportsCount])
+
+  useEffect(() => {
+    const fetchOpenTicketsCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchTicketList(token, 1, 100, { status: "open" })
+          const openTickets = response.data.tickets
+          setOpenTicketsCount(openTickets.length)
+        } catch (error) {
+          console.error("Error fetching open tickets:", error)
+        }
+      }
+    }
+
+    fetchOpenTicketsCount()
+  }, [token])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -300,12 +318,24 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
                       {pendingReportsCount}
                     </div>
                   )}
+                  {item.name === "Support Tickets" && openTicketsCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
                 </>
               )}
               {!isOpen && (
-                <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {item.name}
-                </span>
+                <>
+                  <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {item.name}
+                  </span>
+                  {item.name === "Support Tickets" && openTicketsCount > 0 && (
+                    <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
+                </>
               )}
             </Link>
           )
