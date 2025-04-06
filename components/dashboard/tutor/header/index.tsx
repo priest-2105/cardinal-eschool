@@ -40,7 +40,7 @@ interface ProfileOption {
   href: string
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode }> = ({ items, icon }) => {
+const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean }> = ({ items, icon, isNotification }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -54,6 +54,11 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
     }
   }
 
+  const router = useRouter()
+
+  const handleNotification = () => {
+    router.push("/tutor/notifications")
+  }
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
@@ -67,20 +72,25 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         {icon}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 hover:bg-gray-100" onClick={item.onClick}>
+              <li key={index} className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100" onClick={handleNotification}>
                 {"href" in item ? (
-                  <Link href={item.href}>{item.name}</Link>
+                  <Link href="/tutor/notifications">{item.name}</Link>
                 ) : (
                   <div>
-                    <p className="font-medium">{item.message}</p>
-                    <p className="text-sm text-gray-500">{item.time}</p>
+                    <p className="font-medium text-[13px]">{item.message}</p>
+                    <p className="text-sm text-gray-500 text-[11px]">{item.time}</p>
                   </div>
                 )}
               </li>
             ))}
+              {isNotification && items[0]?.message !== "No notifications" && (
+                <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
+                  <Link className="w-full" href="/tutor/notifications">See All</Link>
+                </li>
+              )}
           </ul>
         </div>
       )}
@@ -194,6 +204,7 @@ const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen:
                   )}
                 </Button>
               }
+              isNotification={true}
             />
             <Dropdown
               items={profileOptions.map(option => ({
