@@ -53,7 +53,24 @@ interface PendingReport {
   tutorProfile?: TutorProfile
 }
 
-export default function PendingReportsList() {
+interface PendingReportsListProps {
+  updatePendingReportsCount?: () => Promise<void>;
+}
+
+const spinnerProps = {
+  width: "1rem",
+  height: "1rem",
+  fill: "none",
+  stroke: "currentColor",
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  strokeWidth: "2",
+  className: "animate-spin",
+  viewBox: "0 0 24 24",
+  xmlns: "http://www.w3.org/2000/svg",
+};
+
+export default function PendingReportsList({ updatePendingReportsCount }: PendingReportsListProps) {
   const [pendingReports, setPendingReports] = useState<PendingReport[]>([])
   const [filteredReports, setFilteredReports] = useState<PendingReport[]>([])
   const [loading, setLoading] = useState(true)
@@ -152,6 +169,9 @@ export default function PendingReportsList() {
       setFilteredReports(filteredReports.filter((report) => report.id !== reportId))
       setSuccessMessage("Report approved successfully")
       setIsViewModalOpen(false)
+      if (updatePendingReportsCount) {
+        await updatePendingReportsCount();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to approve report")
     } finally {
@@ -169,6 +189,9 @@ export default function PendingReportsList() {
       setFilteredReports(filteredReports.filter((report) => report.id !== reportId))
       setSuccessMessage("Report rejected successfully")
       setIsViewModalOpen(false)
+      if (updatePendingReportsCount) {
+        await updatePendingReportsCount();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to reject report")
     } finally {

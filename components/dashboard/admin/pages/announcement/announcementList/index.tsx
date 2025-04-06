@@ -34,7 +34,7 @@ interface Announcement {
   status: "active" | "inactive" | "draft"
   expirationDate?: Date
   created_at: Date
-  created_by: stirng
+  created_by: string
   updated_at: Date
 }
 

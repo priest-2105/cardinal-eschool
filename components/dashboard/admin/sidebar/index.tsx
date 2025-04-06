@@ -31,7 +31,8 @@ import cardinalConfig from "@/config"
 import { fetchNotifications } from "@/lib/api/admin/notifcation/fetchnotification"
 import { useSelector } from "react-redux"
 import { RootState } from "@/lib/store"
-import type React from "react" 
+import type React from "react"
+import { getPendingReports } from "@/lib/api/admin/pendingreport/fetchpendingreport"
 
 const navigation = [
   {
@@ -65,7 +66,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
     dynamicPath: null,
-  }, 
+  },
   {
     name: "Support Tickets",
     href: cardinalConfig.routes.dashboard.admin.adminticketlist,
@@ -86,14 +87,14 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
       cardinalConfig.routes.dashboard.admin.admincreatecourse,
-      cardinalConfig.routes.dashboard.admin.courseDetails,      
+      cardinalConfig.routes.dashboard.admin.courseDetails,
     ],
     dynamicPath: "/admin/course/",
   },
   {
     name: "Manage Students",
     href: cardinalConfig.routes.dashboard.admin.adminManageStudents,
-    icon:  ManageStudentsIcon,
+    icon: ManageStudentsIcon,
     iconLight: ManageStudentsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
@@ -104,7 +105,7 @@ const navigation = [
   {
     name: "Manage Tutors",
     href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
-    icon:  ManageTutorsIcon,
+    icon: ManageTutorsIcon,
     iconLight: ManageTutorsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
@@ -116,11 +117,9 @@ const navigation = [
   {
     name: "Pending Reports",
     href: cardinalConfig.routes.dashboard.admin.adminPendingReports,
-    icon:  ManageTutorsIcon,
+    icon: ManageTutorsIcon,
     iconLight: ManageTutorsLightIcon,
-    activePaths: [
-      cardinalConfig.routes.dashboard.admin.adminPendingReports,
-    ],
+    activePaths: [cardinalConfig.routes.dashboard.admin.adminPendingReports],
     dynamicPath: "/admin/pendingreports/",
   },
   {
@@ -146,7 +145,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminEditCoupon,
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
-    dynamicPath: "/admin/coupon",  
+    dynamicPath: "/admin/coupon",
   },
   {
     name: "Notification",
@@ -160,14 +159,16 @@ const navigation = [
   },
 ]
 
-const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
+const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void; updatePendingReportsCount?: () => Promise<void> }> = ({
   isOpen,
   setIsOpen,
+  updatePendingReportsCount
 }) => {
   const pathname = usePathname()
   const router = useRouter()
   const [unreadCount, setUnreadCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
+  const [pendingReportsCount, setPendingReportsCount] = useState(0)
 
   const handleLinkClick = (href: string) => {
     // Only prefetch if not current path
@@ -207,6 +208,22 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
 
     fetchUnreadNotificationsCount()
   }, [token])
+
+  useEffect(() => {
+    const fetchPendingReportsCount = async () => {
+      if (token) {
+        try {
+          const response = await getPendingReports(token)
+          const pendingOnly = response.data.reports.filter((report) => report.status === "pending")
+          setPendingReportsCount(pendingOnly.length)
+        } catch (error) {
+          console.error("Error fetching pending reports:", error)
+        }
+      }
+    }
+
+    fetchPendingReportsCount()
+  }, [token, updatePendingReportsCount])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -276,6 +293,11 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
                   {item.name === "Notification" && unreadCount > 0 && (
                     <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       {unreadCount}
+                    </div>
+                  )}
+                  {item.name === "Pending Reports" && pendingReportsCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {pendingReportsCount}
                     </div>
                   )}
                 </>
