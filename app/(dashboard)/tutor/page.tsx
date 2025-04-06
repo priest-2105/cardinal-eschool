@@ -11,7 +11,7 @@ import { DashboardSkeleton } from "@/components/dashboard/tutor/pages/skeletons/
 import { AnnouncementMarquee } from "@/components/dashboard/tutor/announcementMarquee"
 import { DashboardStats } from "@/components/dashboard/tutor/pages/home/dashboardStats"
 import Assessments from "@/components/dashboard/tutor/pages/home/assessments"
-import PendingReportsList from "@/components/dashboard/tutor/pages/home/pendingreports"
+import PendingReportsList from "@/components/dashboard/tutor/pages/home/pendingreports/index"
 
 
 export default function TutorDashboard() {

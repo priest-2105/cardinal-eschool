@@ -106,7 +106,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
       {successMessage && (
         <Alert 
           variant="success" 
-          className="fixed top-4 right-4 z-50"
+          className="fixed top-8 bg-white right-4 z-50"
           onClose={() => setSuccessMessage(null)}
         >
           <AlertDescription>{successMessage}</AlertDescription>
