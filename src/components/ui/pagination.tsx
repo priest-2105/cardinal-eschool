@@ -35,7 +35,7 @@ export function Pagination({
         onValueChange={(value) => onPageChange(Number(value))}
       >
         <SelectTrigger className="w-fit">
-          <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
+          <SelectValue>{`Page ${currentPage} of ${totalPages}`}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (

@@ -10,6 +10,7 @@ import { Button } from "@/components/dashboard/tutor/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/tutor/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/tutor/ui/select"
 import { Search } from "lucide-react"
+import { Pagination } from "@/src/components/ui/pagination"
 
 interface Ticket {
   codec: string
@@ -22,21 +23,37 @@ interface Ticket {
   created_at: string
 }
 
+interface PaginationType {
+  current_page: number
+  per_page: number
+  total_pages: number
+  total_items: number
+}
+
 export function TicketList() {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
   const [loading, setLoading] = useState(true)
+  const [pagination, setPagination] = useState<PaginationType>({
+    current_page: 1,
+    per_page: 15,
+    total_pages: 1,
+    total_items: 0
+  })
   const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1)
+  const perPage = 15 // Corrected perPage value
 
   useEffect(() => {
     const loadTickets = async () => {
       if (!token) return
       try {
         setLoading(true)
-        const response = await fetchTicketList(token)
+        const response = await fetchTicketList(token, currentPage, perPage)
         setTickets(response.data.tickets)
+        setPagination(response.data.pagination)
       } catch (error) {
         console.error("Failed to fetch tickets:", error)
       } finally {
@@ -45,7 +62,7 @@ export function TicketList() {
     }
 
     loadTickets()
-  }, [token])
+  }, [token, currentPage, perPage])
 
   const sortedTickets = [...tickets].sort((a, b) => {
     if (sortBy === "latest") {
@@ -63,6 +80,10 @@ export function TicketList() {
 
   const handleRowClick = (codec: string) => {
     router.push(`/tutor/ticket/${codec}`)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
   }
 
   return (
@@ -114,29 +135,54 @@ export function TicketList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTickets.map((ticket) => (
-                    <TableRow
-                      key={ticket.codec}
-                      onClick={() => handleRowClick(ticket.codec)}
-                      className="cursor-pointer hover:bg-gray-100"
-                    >
-                      <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
-                      <TableCell>{ticket.subject}</TableCell>
-                      <TableCell>{ticket.department}</TableCell>
-                      <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
-                      <TableCell>
-                      <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
-                          {ticket.status}
-                        </Button>
+                  {filteredTickets.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center">
+                        No ticket has been created
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    filteredTickets.map((ticket) => (
+                      <TableRow
+                        key={ticket.codec}
+                        onClick={() => handleRowClick(ticket.codec)}
+                        className="cursor-pointer hover:bg-gray-100"
+                      >
+                        <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
+                        <TableCell>{ticket.subject}</TableCell>
+                        <TableCell>{ticket.department}</TableCell>
+                        <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                            {ticket.status}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </div>
           </div>
         )}
       </div>
+      {/* Pagination */}
+      {!loading && pagination.total_pages > 1 && (
+        <div className="flex justify-end p-4">
+          <Select value={currentPage.toString()} onValueChange={(value) => handlePageChange(Number(value))}>
+            <SelectTrigger className="w-fit">
+              <SelectValue placeholder={`Page ${currentPage} of ${pagination.total_pages}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map((page) => (
+                <SelectItem key={page} value={page.toString()}>
+                  Page {page} of {pagination.total_pages}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   )
 }

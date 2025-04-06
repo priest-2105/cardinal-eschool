@@ -50,7 +50,7 @@ export function TicketList() {
         setLoading(true)
         const response = await fetchTicketList(token, pagination.current_page, pagination.per_page)
         setTickets(response.data.tickets)
-        setPagination(response.data.pagination)
+        setPagination(response.data)
       } catch (error) {
         console.error("Failed to fetch tickets:", error)
       } finally {
@@ -168,12 +168,12 @@ export function TicketList() {
         <div className="flex justify-end p-4">
           <Select value={pagination.current_page.toString()} onValueChange={handlePageChange}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select page" />
+              <SelectValue placeholder={`Page ${pagination.current_page} of ${pagination.total_pages}`} />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map((page) => (
                 <SelectItem key={page} value={page.toString()}>
-                  Page {page}
+                  Page {page} of {pagination.total_pages}
                 </SelectItem>
               ))}
             </SelectContent>

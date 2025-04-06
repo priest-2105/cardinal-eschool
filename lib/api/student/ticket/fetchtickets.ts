@@ -1,8 +1,27 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
+export interface TicketListResponse {
+    status: string;
+    message: string;
+    data: {
+        tickets: {
+            codec: string;
+            ticket_id: string;
+            subject: string;
+            status: string;
+            department: string;
+            last_response: string | null;
+            responded_by: string | null;
+            created_at: string;
+        }[];
+        current_page: number;
+        per_page: number;
+        total_pages: number;
+        total_items: number;
+    };
+}
 
-
-export async function fetchTicketList(token: string, page: number = 1, perPage: number = 15) {
+export async function fetchTicketList(token: string, page: number = 1, perPage: number = 15): Promise<TicketListResponse> {
     const response = await fetchWithAuth(`${apiUrl}/student/tickets?page=${page}&per_page=${perPage}`, {
         method: 'GET',
         headers: {
