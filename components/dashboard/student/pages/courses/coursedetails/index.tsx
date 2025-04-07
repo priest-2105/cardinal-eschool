@@ -17,7 +17,6 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
 import { FileText } from "lucide-react"
-// import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -134,9 +133,9 @@ export default function CourseDetailsComponent() {
                 assignedResources={courseDetails.resources_assigned}
               />
             )}
-            {activeTab === "reports" && <ReportsList classId={courseId}  courseDetails={courseDetails} />}
-            {activeTab === "assessments" && <AssessmentsList classId={courseId} />}
-            {/* {activeTab === "students" && <StudentList coursedetails={courseDetails} />} */}
+            {activeTab === "reports" && <ReportsList classId={courseDetails.id}  courseDetails={courseDetails} />}
+            {activeTab === "assessments" && <AssessmentsList classId={courseDetails.id} />}
+            {/* {activeTab === "students" && <StudentList students={courseDetails.students_assigned} />} */}
           </CardContent>
         </Card>
 

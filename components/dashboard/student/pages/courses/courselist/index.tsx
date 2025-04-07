@@ -53,9 +53,9 @@ export function CourseList() {
       course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.tutor_name.toLowerCase().includes(searchQuery.toLowerCase())
     
-    const matchesGrade = selectedGrade === "all" // Add grade filtering logic if needed
-    const matchesStatus = selectedStatus === "all" // Add status filtering logic if needed
-    const matchesDate = selectedDateRange === "all" // Add date filtering logic if needed
+    const matchesGrade = selectedGrade === "all"
+    const matchesStatus = selectedStatus === "all" 
+    const matchesDate = selectedDateRange === "all"
     
     return matchesSearch && matchesGrade && matchesStatus && matchesDate
   })

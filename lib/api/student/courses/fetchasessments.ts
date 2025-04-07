@@ -4,11 +4,9 @@ interface Assignment {
   id: number;
   title: string;
   description: string;
-  file_url: string;
+  file_path: string;
   deadline: string;
-  student: {
-    name: string;
-  };
+  tutor_id: string;
 }
 
 interface AssignmentsResponse {
@@ -20,7 +18,7 @@ interface AssignmentsResponse {
 }
 
 export async function getClassAssignments(token: string, classId: string): Promise<AssignmentsResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/student/class/assignments/${classId}`, {
+  const response = await fetchWithAuth(`${apiUrl}/student/classes/assignments/${classId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
