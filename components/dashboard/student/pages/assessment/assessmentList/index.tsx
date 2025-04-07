@@ -191,21 +191,6 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     })
   }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder])
 
-  // Calculate stats
-  // const stats = useMemo(() => {
-    // const now = new Date()
-    const total = assignments.length
-    const overdue = assignments.filter(assignment => isOverdue(assignment.deadline)).length
-    const pending = total - overdue
-    
-    return {
-      total,
-      overdue,
-      pending,
-      turned_in: 0, // Not available in the API data
-      percentage_turned_in: 0 // Not available in the API data
-    }
-  }, [assignments])
 
   // Helper function to get filename from path
   const getFileName = (path: string) => {
