@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, Plus, Edit, Eye } from "lucide-react"
+import { Search, Calendar, Plus, Eye } from "lucide-react"
 import { format } from "date-fns"
 import { CreateResourceModal } from "../createResourceModal"
 import { EditResourceModal } from "../editresourcesModal"
@@ -96,17 +96,6 @@ export default function ResourcesList({ classId, assignedResources = [] }: Resou
   const handleView = (resource: Resource) => {
     setSelectedResource(resource)
     setIsViewModalOpen(true)
-  }
-
-  const handleCreateResource = (newResource: Omit<Resource, "id">) => {
-    const id = (resources.length + 1).toString()
-    setResources([...resources, { ...newResource, id }])
-    setIsCreateModalOpen(false)
-  }
-
-  const handleEditResource = (resource: Resource) => {
-    setSelectedResource(resource)
-    setIsEditModalOpen(true)
   }
 
   const handleDeleteResource = (id: string) => {
