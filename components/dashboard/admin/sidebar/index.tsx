@@ -160,28 +160,16 @@ const navigation = [
   },
 ]
 
-const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void; updatePendingReportsCount?: () => Promise<void> }> = ({
-  isOpen,
-  setIsOpen,
-  updatePendingReportsCount
-}) => {
+const AdminDashboardSideBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
   const [unreadCount, setUnreadCount] = useState(0)
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const [pendingReportsCount, setPendingReportsCount] = useState(0)
   const [openTicketsCount, setOpenTicketsCount] = useState(0)
-
-  const handleLinkClick = (href: string) => {
-    // Only prefetch if not current path
-    if (href !== pathname) {
-      router.prefetch(href)
-    }
-  }
+  const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      if (window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)
@@ -192,7 +180,7 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [setIsOpen])
+  }, [])
 
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {
@@ -225,7 +213,7 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     }
 
     fetchPendingReportsCount()
-  }, [token, updatePendingReportsCount])
+  }, [token])
 
   useEffect(() => {
     const fetchOpenTicketsCount = async () => {
