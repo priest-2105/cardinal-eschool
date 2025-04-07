@@ -74,25 +74,17 @@ const navigation = [
   },
 ]
 
-const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
-  isOpen,
-  setIsOpen,
-}) => {
+const TutorDashboardSideBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const token = useSelector((state: RootState) => state.auth.token)
   const [unreadCount, setUnreadCount] = useState(0)
   const [openInProgressTicketCount, setOpenInProgressTicketCount] = useState(0)
 
-  const handleLinkClick = (href: string) => {
-    if (href !== pathname) {
-      router.prefetch(href)
-    }
-  }
-
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      if (window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)
@@ -103,7 +95,7 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [setIsOpen])
+  }, [])
 
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {

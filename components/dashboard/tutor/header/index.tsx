@@ -115,17 +115,39 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
   )
 }
 
-const TutorDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen: boolean }> = ({
-  toggleSidebar,
-  isSidebarOpen,
-}) => {
-  const token = useSelector((state: RootState) => state.auth?.token);
-  const dispatch = useDispatch();
-  const [profile, setProfile] = useState({ firstname: '', lastname: '', email: '' });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+const TutorDashboardHeader: React.FC = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false)
+  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const token = useSelector((state: RootState) => state.auth?.token)
+  const dispatch = useDispatch()
   const router = useRouter()
+  const notificationDropdownRef = useRef<HTMLDivElement>(null)
+  const profileDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
 
