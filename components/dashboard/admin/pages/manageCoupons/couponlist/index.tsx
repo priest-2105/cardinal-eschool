@@ -87,7 +87,7 @@ export default function CouponsList() {
   });
 
   return (
-    <div className="p-6 space-y-6 ">
+    <div className="p-6 space-y-6 overflow-hidden rounded-xl border bg-white shadow-sm transition-shadow">
       {alertMessage && (
         <Alert className="fixed top-18 bg-white right-4" variant={alertVariant} onClose={() => setAlertMessage(null)}>
           <AlertTitle>{alertVariant === "default" ? "Success" : "Error"}</AlertTitle>
@@ -126,7 +126,7 @@ export default function CouponsList() {
       {isLoading ? (
         <div className="text-center py-12">Loading coupons...</div>
       ) : filteredCoupons.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-3  max-h-[65vh] overflow-y-scroll custom-scrollbar divide-y">
           {filteredCoupons.map((coupon) => (
             <Card key={coupon.coupon_codec} className="cursor-pointer transition-shadow hover:shadow-md">
               <CardContent className="p-6">

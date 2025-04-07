@@ -1,9 +1,7 @@
-import "../globals.css";
 import PublicNavbar from "@/components/public/Navbar";
 import PublicFooter from "@/components/public/Footer"; 
 import { Metadata } from "next"; 
 // import StoreProvider from "../providers";
-
 
 export const metadata: Metadata = {
   title: "Cardinal E School",

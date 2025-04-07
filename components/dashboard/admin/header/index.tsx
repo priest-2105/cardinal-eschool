@@ -1,39 +1,23 @@
 "use client"
 
 import type React from "react"
-
-import { Bell } from "lucide-react"
+import { Bell, Loader2 } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/dashboard/admin/ui/avatar"
 import { Button } from "@/components/dashboard/admin/ui/button"
 import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchAdminProfile, fetchNotifications } from "@/lib/api/admin/api"
+import { fetchAdminProfile, fetchNotifications, logout } from "@/lib/api/admin/api"
 import { RootState } from "@/lib/store"
+import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
-import { logout } from "@/lib/api/admin/auth/logout"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-
-const notifications = [
-  { message: "New assessment available", time: "2 hours ago" },
-  { message: "Class rescheduled", time: "1 day ago" },
-  { message: "New message from instructor", time: "3 days ago" },
-]
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import cardinalConfig from "@/config"
 
 const profileOptions = [
-  { name: "Profile", href: "/admin/profile" },
+  { name: "Profile", href: "/admin/admininformation" },
   { name: "Settings", href: "/admin/settings" },
-  { name: "Support", href: "/admin/support" },
   { name: "Logout", href: "#" },
 ]
 
@@ -48,7 +32,7 @@ interface ProfileOption {
   href: string
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode }> = ({ items, icon }) => {
+const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean; handleItemClick?: (href: string) => void; setShowLogoutDialog?: (show: boolean) => void }> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -62,12 +46,18 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
     }
   }
 
+  const router = useRouter()
+
+  const handleNotification = () => {
+    router.push("/admin/notifications")
+    toggleDropdown()
+  }
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, []) // Removed handleClickOutside from dependencies
+  }, []) 
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -78,17 +68,40 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
           <ul className="py-1">
             {items.map((item, index) => (
-              <li key={index} className="px-4 py-2 text-[15px] hover:bg-gray-100" onClick={item.onClick}>
+              <li
+                key={index}
+                className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100"
+                onClick={() => {
+                  if ('name' in item) {
+                    if (item.name === "Logout") {
+                      setShowLogoutDialog(true)
+                      toggleDropdown()
+                    } else if (handleItemClick) {
+                      handleItemClick(item.href)
+                      toggleDropdown()
+                    }
+                  } else {
+                    handleNotification()
+                  }
+                }}
+              >
                 {"href" in item ? (
                   <Link href={item.href}>{item.name}</Link>
                 ) : (
                   <div>
-                    <p className="font-medium text-[12px]">{item.message}</p>
-                    <p className="text-sm text-gray-500 text-[12px]">{item.time}</p>
+                    <p className="font-medium text-[13px]">{item.message}</p>
+                    <p className="text-sm text-gray-500 text-[11px]">{item.time}</p>
                   </div>
                 )}
               </li>
             ))}
+            {isNotification && items.length > 0 && items[0]?.message !== "No notifications" && (
+              <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
+                <Link className="w-full" href="/admin/notifications">
+                  See All
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -102,6 +115,8 @@ const AdminDashboardHeader: React.FC = () => {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
   const dispatch = useDispatch()
   const router = useRouter()
@@ -126,6 +141,9 @@ const AdminDashboardHeader: React.FC = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -165,16 +183,27 @@ const AdminDashboardHeader: React.FC = () => {
     fetchRecentNotifications()
   }, [token])
 
+  useEffect(() => {
+    if (showLogoutDialog) {
+      router.prefetch("/admin/login")
+    }
+  }, [showLogoutDialog, router])
+
   const handleLogout = async () => {
+    setIsLoggingOut(true)
     try {
       if (token) {
-        await logout(token)
-        dispatch({ type: "CLEAR_AUTH" })
+        await logout(token);
+        dispatch(clearAuthState());
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     } catch (error) {
       console.error("Logout failed", error);
+    } finally {
+      setIsLoggingOut(false)
+      setShowLogoutDialog(false)
+      router.push("/admin/login")
     }
-    router.push("/admin/login")
   };
 
   return (
@@ -199,7 +228,7 @@ const AdminDashboardHeader: React.FC = () => {
           </button>
           <div className="flex items-center w-58 gap-x-4 z-40">
             <Dropdown
-              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "" , createdAt: ""}]}
+              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "", createdAt: "" }]}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
@@ -208,17 +237,16 @@ const AdminDashboardHeader: React.FC = () => {
                   )}
                 </Button>
               }
+              isNotification={true}
+              handleItemClick={() => router.push("/admin/notifications")}
             />
             <Dropdown
-              items={profileOptions.map(option => ({
-                ...option,
-                onClick: option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined
-              }))}
+              items={profileOptions}
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/assets/img/dashboard/admin/Ellipse 2034.png" alt="User" />
-                    <AvatarFallback>{profile.firstname[0]} {profile.lastname[0]}</AvatarFallback>
+                    <AvatarFallback>{profile.firstname?.[0]} {profile.lastname?.[0]}</AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-bold text-sm">{profile.firstname} {profile.lastname}</h3>
@@ -227,11 +255,12 @@ const AdminDashboardHeader: React.FC = () => {
                   <FaAngleDown />
                 </Button>
               }
+              handleItemClick={(href) => router.push(href)}
+              setShowLogoutDialog={setShowLogoutDialog}
             />
           </div>
         </div>
       </div>
-
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
@@ -241,9 +270,16 @@ const AdminDashboardHeader: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleLogout}>
-              Logout
+            <AlertDialogCancel disabled={isLoggingOut}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleLogout} 
+              disabled={isLoggingOut}
+              className="relative"
+            >
+              {isLoggingOut && (
+                <Loader2 className="h-4 w-4 animate-spin absolute left-3" />
+              )}
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

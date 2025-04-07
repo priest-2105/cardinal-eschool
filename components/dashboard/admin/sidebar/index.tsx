@@ -165,6 +165,7 @@ const AdminDashboardSideBar: React.FC = () => {
   const pathname = usePathname()
   const [unreadCount, setUnreadCount] = useState(0)
   const [openTicketsCount, setOpenTicketsCount] = useState(0)
+  const [pendingReportsCount, setPendingReportsCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {

@@ -9,8 +9,8 @@ import { format } from "date-fns"
 import { CreateResourceModal } from "../createResourceModal"
 import { EditResourceModal } from "../editresourcesModal"
 import { ViewResourceModal } from "../resourcesDetails"
-import { AssignResourceModal } from "../assignResourceModal"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AssignResourceModal } from "../assignresourceModal"
 
 export interface Student {
   id: string
