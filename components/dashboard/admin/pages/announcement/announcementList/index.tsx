@@ -42,7 +42,6 @@ export function AnnouncementsList() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [recipientFilter, setRecipientFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
   const [announcementToDelete, setAnnouncementToDelete] = useState<Announcement | null>(null)
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
@@ -56,9 +55,9 @@ export function AnnouncementsList() {
         if (!token) throw new Error("Authentication token is missing")
         const data = await getAnnouncements(token)
         setAnnouncements(data)
-      } catch (error: any) {
-        console.error("Failed to fetch announcements:", error.message)
-        setAlert({ type: "danger", message: error.message })
+      } catch (error: unknown) {
+        console.error("Failed to fetch announcements:", error instanceof Error ? error.message : "An unknown error")
+        setAlert({ type: "danger", message: error instanceof Error ? error.message : "An unknown error" })
       } finally {
         setLoading(false)
       }
@@ -70,8 +69,7 @@ export function AnnouncementsList() {
   const filteredAnnouncements = announcements.filter((announcement) => {
     const matchesSearch = announcement.title.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesRecipient = recipientFilter === "all" || announcement.target_role === recipientFilter
-    const matchesStatus = statusFilter === "all" || announcement.status === statusFilter
-    return matchesSearch && matchesRecipient && matchesStatus
+    return matchesSearch && matchesRecipient
   })
 
   const handleCreateAnnouncement = () => {
@@ -101,9 +99,9 @@ export function AnnouncementsList() {
       await deleteAnnouncement(token, Number(announcementToDelete.id))
       setAnnouncements(announcements.filter((a) => a.id !== announcementToDelete.id))
       setAlert({ type: "success", message: "Announcement deleted successfully!" })
-    } catch (error: any) {
-      console.error("Failed to delete announcement:", error.message)
-      setAlert({ type: "danger", message: error.message })
+    } catch (error: unknown) {
+      console.error("Failed to delete announcement:", error instanceof Error ? error.message : "An unknown error")
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "An unknown error" })
     } finally {
       setLoading(false)
       setAnnouncementToDelete(null)
@@ -162,17 +160,6 @@ export function AnnouncementsList() {
               <SelectItem value="both">Both</SelectItem>
             </SelectContent>
           </Select>
-          {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-            </SelectContent>
-          </Select> */}
         </div>
       </div>
 
@@ -216,7 +203,6 @@ export function AnnouncementsList() {
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  {/* Created: {format(announcement.createdAt, "MMM d, yyyy")} */}
                   Created: {announcement.created_at}
                 </div>
                 {announcement.expirationDate && <div>Expires: {format(announcement.expirationDate, "MMM d, yyyy")}</div>}

@@ -71,7 +71,6 @@ export default function EditCoursePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<ValidationErrors>({})
   const token = useSelector((state: RootState) => state.auth?.token)
-  const [loading, setLoading] = useState(false)
   const [fetchLoading, setFetchLoading] = useState(false)
 
   useEffect(() => {
@@ -147,8 +146,8 @@ export default function EditCoursePage() {
           }))
           setAssignedStudents(students)
         }
-      } catch (err) {
-        console.error("Failed to fetch course details:", err)
+      } catch (error: unknown) {
+        console.error("Failed to fetch course details:", error instanceof Error ? error.message : "Unknown error");
         setAlert({
           type: "error",
           message: "Failed to load course details"

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, CalendarIcon, Edit, Trash2 } from "lucide-react"
+import { ArrowLeft,  Edit, Trash2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -47,7 +47,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
   const [editedContent, setEditedContent] = useState("");
   const [editedRecipients, setEditedRecipients] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
-  const [editedStatus, setEditedStatus] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -81,7 +80,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
     setEditedTitle(announcement?.title)
     setEditedContent(announcement?.content)
     setEditedRecipients(announcement?.recipients)
-    setEditedStatus(announcement?.status)
   }
 
   const handleSave = async () => {
@@ -112,20 +110,6 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
       setAlertMessage({ type: "danger", message: error.message });
     }
   };
-
-  const handleStatusChange = (status: "active" | "inactive" | "draft") => {
-    if (!isEditing) {
-      const updatedAnnouncement: Announcement = {
-        ...announcement,
-        status,
-        updatedAt: new Date(),
-      }
-      // Here you would typically send the update to your backend
-      setAnnouncement(updatedAnnouncement)
-    } else {
-      setEditedStatus(status)
-    }
-  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {

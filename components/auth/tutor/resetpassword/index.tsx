@@ -26,7 +26,7 @@ export default function ResetPasswordPageComponent() {
       console.log('Response:', response)  
       console.log('Reset password email sent')
       setAlert({ type: 'success', message: 'Password reset email sent. Link expires in 30 minutes.' })
-      // router.push('/tutor')
+      router.push('/tutor/login')
     } catch (error) {
       console.error('Reset password email failed', error)
       const errorMessage = (error as any).response?.data?.message || (error as any).message

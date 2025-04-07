@@ -86,6 +86,7 @@ export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: As
             value={selectedTutor?.tutor_codec}
             onValueChange={(value) => setSelectedTutor(tutors.find((t) => t.tutor_codec === value) || null)}
           >
+            {loading && <div className="py-3"> Loading... </div>}
             {filteredTutors.map((tutor) => (
               <div key={tutor.tutor_codec} className="flex items-center space-x-2">
                 <RadioGroupItem value={tutor.tutor_codec} id={`tutor-${tutor.tutor_codec}`} />

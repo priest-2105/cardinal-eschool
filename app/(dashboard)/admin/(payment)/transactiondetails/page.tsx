@@ -7,7 +7,6 @@ import { getTransactionDetails } from "@/lib/api/admin/payment/transactiondetail
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { format } from "date-fns"
 
 interface PaymentDetails {
   flutterwave_transaction_id: string;

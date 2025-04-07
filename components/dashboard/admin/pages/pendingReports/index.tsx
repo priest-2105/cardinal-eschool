@@ -74,7 +74,7 @@ export default function PendingReportsList({ updatePendingReportsCount }: Pendin
   const [pendingReports, setPendingReports] = useState<PendingReport[]>([])
   const [filteredReports, setFilteredReports] = useState<PendingReport[]>([])
   const [loading, setLoading] = useState(true)
-  const [approving, setapproving] = useState(true)
+  // const [approving, setapproving] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedReport, setSelectedReport] = useState<PendingReport | null>(null)

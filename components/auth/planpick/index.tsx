@@ -92,10 +92,9 @@ export default function PlanPickComponent() {
         await updateAssessment(authState.token, updatedAssessment);
         setChosenPlan(plan);
       }
-    } catch (error: any) {
-      console.error("Failed to update assessment with new plan:", error);
-      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
-      setAlertVariant("danger");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlert({ type: "error", message: errorMessage });
     } finally {
       setIsLoading(false);
     }

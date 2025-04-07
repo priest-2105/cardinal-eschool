@@ -10,7 +10,7 @@ import { Button } from "@/components/dashboard/tutor/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/tutor/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/tutor/ui/select"
 import { Search } from "lucide-react"
-import { Pagination } from "@/src/components/ui/pagination"
+// import { Pagination } from "@/src/components/ui/pagination"
 
 interface Ticket {
   codec: string

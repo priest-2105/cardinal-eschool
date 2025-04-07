@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, Plus, Download, CheckCircle } from "lucide-react"
+import { Search, Calendar, FileText, CheckCircle } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
@@ -50,10 +50,8 @@ export default function ReportsList({ classId, students }: ReportListProps) {
   const [monthFilter, setMonthFilter] = useState("all")
   const [studentFilter, setStudentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)

@@ -11,10 +11,11 @@ import type { RootState } from "@/lib/store";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import type { Course } from "../types"
 
 export function CourseList() {
     const [searchQuery, setSearchQuery] = useState("");
-    const [courses, setCourses] = useState<any[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [perPage, setPerPage] = useState(10);

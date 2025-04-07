@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge" 
+// import { Badge } from "@/components/ui/badge" 
 import {
   BarChart3,
   BookOpen,
@@ -29,6 +29,7 @@ import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
+import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes" // new import
 
 
 
@@ -53,7 +54,7 @@ export default function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [dashboardData, setDashboardData] = useState<any>(null)
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
   const route = useRouter()
 
@@ -167,11 +168,11 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                 <div>
-                <div className="text-2xl font-bold">{dashboardData.overview.students.total}</div>
-                <StatChange value={dashboardData.overview.students.percentage_change} />
+                <div className="text-2xl font-bold">{dashboardData?.overview.students.total}</div>
+                <StatChange value={dashboardData?.overview.students.percentage_change} />
                   </div>
                 <p className="text-xs text-muted-foreground">
-                {dashboardData.overview.students.new_this_month} new students this month
+                {dashboardData?.overview.students.new_this_month} new students this month
                 </p>
               </CardContent>
             </Card>
@@ -182,11 +183,11 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                 <div>
-                  <div className="text-2xl font-bold">{dashboardData.overview.tutors.total}</div>
-                <StatChange value={dashboardData.overview.tutors.percentage_change} />
+                  <div className="text-2xl font-bold">{dashboardData?.overview.tutors.total}</div>
+                <StatChange value={dashboardData?.overview.tutors.percentage_change} />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                  {dashboardData.overview.students.new_this_month} new tutors this month
+                  {dashboardData?.overview.students.new_this_month} new tutors this month
                 </p>
               </CardContent>
             </Card>
@@ -197,11 +198,11 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                <div>
-                <div className="text-2xl font-bold">{dashboardData.overview.classes.total}</div>
-                <StatChange value={dashboardData.overview.classes.percentage_change} />
+                <div className="text-2xl font-bold">{dashboardData?.overview.classes.total}</div>
+                <StatChange value={dashboardData?.overview.classes.percentage_change} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {dashboardData.overview.classes.new_this_month} new tutors this month
+                  {dashboardData?.overview.classes.new_this_month} new tutors this month
                 </p>
               </CardContent>
             </Card>
@@ -211,9 +212,9 @@ export default function AdminDashboard() {
                 <LineChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboardData.overview.completion_rate}%</div>
+                <div className="text-2xl font-bold">{dashboardData?.overview.completion_rate}%</div>
                 <p className="text-xs text-muted-foreground">
-                  +{dashboardData.overview.completion_rate_change}% from last month
+                  +{dashboardData?.overview.completion_rate_change}% from last month
                 </p>
               </CardContent>
             </Card>
@@ -224,12 +225,12 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle>Recent Courses</CardTitle>
                 <CardDescription>
-                  {dashboardData.extras.recent_courses.length} courses added this month
+                  {dashboardData?.extras.recent_courses.length} courses added this month
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {dashboardData.extras.recent_courses.map((course) => (
+                  {dashboardData?.extras.recent_courses.map((course) => (
                     <div key={course.id} className="flex items-center">
                       <div className="w-full space-y-1">
                         <p className="text-sm font-medium leading-none">{course.name}</p>

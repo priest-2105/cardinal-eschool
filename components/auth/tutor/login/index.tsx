@@ -35,20 +35,19 @@ export default function LoginPageComponent() {
     setAlert(null);
     try {
       const response = await login(formData.email, formData.password);
-      console.log('Response:', response)  
       dispatch(setAuthState({
         token: response.data.token,
         user: response.data.user,
-      }))
-      console.log('Login successful')
-      setAlert({ type: 'success', message: 'Login successful' })
-      router.push('/tutor')
-    } catch (error) {
-      console.error('Login failed', error)
-      const errorMessage = (error as any).response?.data?.message || (error as any).message
-      setAlert({ type: 'error', message: errorMessage })
+      }));
+      console.log('Login successful');
+      setAlert({ type: 'success', message: 'Login successful' });
+      router.push('/tutor');
+    } catch (error: unknown) {
+      console.error('Login failed', error);
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlert({ type: 'error', message: errorMessage });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 

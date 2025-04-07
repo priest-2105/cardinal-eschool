@@ -36,9 +36,9 @@ export function AnnouncementMarquee() {
     fetchAnnouncements()
   }, [token])
 
-  const togglePause = () => {
-    setIsPaused(!isPaused)
-  }
+  // const togglePause = () => {
+  //   setIsPaused(!isPaused)
+  // }
 
   useEffect(() => {
     if (marqueeRef.current) {

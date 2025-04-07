@@ -7,10 +7,9 @@ interface MultiSelectProps {
   onChange: (selected: string[]) => void
   value: string[]
   className?: string
-  placeholder?: string
 }
 
-export function MultiSelect({ options, onChange, value = [], className, placeholder }: MultiSelectProps) {
+export function MultiSelect({ options, onChange, value = [], className }: MultiSelectProps) {
   // Ensure value is always an array
   const safeValue = Array.isArray(value) ? value : []
 

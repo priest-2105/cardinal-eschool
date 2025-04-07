@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Logo from "@/public/assets/img/logo.png"
 import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
@@ -77,7 +77,6 @@ const navigation = [
 const TutorDashboardSideBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
   const token = useSelector((state: RootState) => state.auth.token)
   const [unreadCount, setUnreadCount] = useState(0)
   const [openInProgressTicketCount, setOpenInProgressTicketCount] = useState(0)
@@ -98,12 +97,14 @@ const TutorDashboardSideBar: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    const fetchUnreadNotificationsCount = async () => {
+    const fetchNotificationsData = async () => {
       if (token) {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const unread = notifications.filter(
+            (notification: { read_at: string | null }) => !notification.read_at
+          )
           setUnreadCount(unread.length)
         } catch (error) {
           console.error("Error fetching notifications:", error)
@@ -111,7 +112,7 @@ const TutorDashboardSideBar: React.FC = () => {
       }
     }
 
-    fetchUnreadNotificationsCount()
+    fetchNotificationsData()
   }, [token])
 
   useEffect(() => {
@@ -121,7 +122,7 @@ const TutorDashboardSideBar: React.FC = () => {
           const response = await fetchTicketList(token)
           const tickets = response.data.tickets
           const openInProgressCount = tickets.filter(
-            (ticket: any) => ticket.status === "open" || ticket.status === "in_progress",
+            (ticket: { status: string }) => ticket.status === "open" || ticket.status === "in_progress",
           ).length
           setOpenInProgressTicketCount(openInProgressCount)
         } catch (error) {

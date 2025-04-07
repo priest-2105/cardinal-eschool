@@ -76,10 +76,6 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     fetchDetails();
   }, [decodedTicketId, token]);  
 
-  const handleCloseTicket = async () => {
-    setConfirmModalState({ showConfirmModal: true });
-  };
-
   const confirmCloseTicket = async () => {
     setTicket((prevTicket) => (prevTicket ? { ...prevTicket, status: "Closed" } : null));
     setConfirmModalState({ showConfirmModal: false });

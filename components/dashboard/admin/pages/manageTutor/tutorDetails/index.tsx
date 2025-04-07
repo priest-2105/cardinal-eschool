@@ -76,7 +76,6 @@ const SAMPLE_TUTOR: Tutor = {
 }
 
 export function TutorDetails({ id }: { id: string }) {
-  const [tutor, setTutor] = useState<Tutor>(SAMPLE_TUTOR)
   const [activeTab, setActiveTab] = useState("overview")
   const router = useRouter()
   const tutorId = decodeURIComponent(id)
@@ -95,10 +94,9 @@ export function TutorDetails({ id }: { id: string }) {
       if (!token) throw new Error("Authentication token is missing")
       const data = await getTutorDetails(token, tutorId)
       setTutorDetails(data)
-    } catch (error: any) {
-      console.error("Failed to fetch tutor details:", error.message)
-      console.log("tutor id ", tutorId)
-      setAlert({ type: "danger", message: error.message })
+    } catch (error: unknown) { // changed from any to unknown
+      console.error("Failed to fetch tutor details:", error instanceof Error ? error.message : "Unknown error")
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "Unknown error" })
     } finally {
       setLoading(false)
     }
@@ -133,9 +131,9 @@ export function TutorDetails({ id }: { id: string }) {
 
       // Close the modal
       closeModal()
-    } catch (error: any) {
-      console.error("Failed to update status:", error.message)
-      setAlert({ type: "danger", message: error.message })
+    } catch (error: unknown) { // changed from any to unknown
+      console.error("Failed to update status:", error instanceof Error ? error.message : "Unknown error")
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "Unknown error" })
     } finally {
       setIsUpdating(false)
     }
@@ -182,7 +180,7 @@ export function TutorDetails({ id }: { id: string }) {
   // Initial fetch of tutor details
   useEffect(() => {
     fetchTutorDetails()
-  }, [token, tutorId])
+  }, [token, tutorId, fetchTutorDetails])
 
   const handleBack = () => {
     router.push("/admin/tutors")
@@ -447,7 +445,7 @@ export function TutorDetails({ id }: { id: string }) {
             {/* Modal Body */}
             <div className="p-6">
               <p className="text-gray-700">
-                Are you sure you want to set the status to "{statusToUpdate}"?
+                Are you sure you want to set the status to &quot;{statusToUpdate}&quot;?
               </p>
             </div>
 

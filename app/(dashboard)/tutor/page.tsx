@@ -1,6 +1,5 @@
 "use client"
 
-
 import UpcomingClasses from "@/components/dashboard/tutor/pages/home/upcomingClasses" 
 import { useEffect, useState } from "react"
 import { getTutorDashboard } from "@/lib/api/tutor/home/dashboard"
@@ -12,13 +11,13 @@ import { AnnouncementMarquee } from "@/components/dashboard/tutor/announcementMa
 import { DashboardStats } from "@/components/dashboard/tutor/pages/home/dashboardStats"
 import Assessments from "@/components/dashboard/tutor/pages/home/assessments"
 import PendingReportsList from "@/components/dashboard/tutor/pages/home/pendingreports/index"
-
+import type { TutorDashboardData } from "@/lib/api/tutor/home/dashboardTypes"
 
 export default function TutorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [dashboardData, setDashboardData] = useState<any>(null)
+  const [dashboardData, setDashboardData] = useState<TutorDashboardData | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
@@ -74,18 +73,18 @@ export default function TutorDashboard() {
 
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-    { dashboardData.announcements.length >= 1  && <AnnouncementMarquee announcements={dashboardData.announcements} />}
+    { (dashboardData?.announcements?.length ?? 0) >= 1 && <AnnouncementMarquee announcements={dashboardData?.announcements ?? []} />}
       
       <div className="space-y-6 p-6 bg-white rounded-lg border">
-      <DashboardStats overview={dashboardData.overview} />
+      <DashboardStats overview={dashboardData?.overview} />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2">
-            {dashboardData.upcoming_classes.length >= 1 &&<UpcomingClasses upcomingClasses={dashboardData.upcoming_classes} />}
-            {dashboardData.pending_reports.length >= 1 && <PendingReportsList reports={dashboardData.pending_reports} />}
+            {(dashboardData?.upcoming_classes.length ?? 0) >= 1 &&<UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes} />}
+            { (dashboardData?.pending_reports.length ?? 0) >= 1 && <PendingReportsList reports={dashboardData?.pending_reports} />}
           </div>
           <div className="space-y-6">
-           {dashboardData.active_assignments.length >= 1 && <Assessments assignments={dashboardData.active_assignments} /> }
+           {(dashboardData?.active_assignments.length ?? 0) >= 1 && <Assessments assignments={dashboardData?.active_assignments} /> }
           </div>
         </div>
       </div>

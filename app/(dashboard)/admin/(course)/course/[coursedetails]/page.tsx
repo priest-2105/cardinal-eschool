@@ -7,12 +7,13 @@ import { getAdminCourseDetails } from "@/lib/api/admin/managecourses/fetchsingle
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { Alert } from "@/components/ui/alert"
+import type { CourseDetailsResponse } from "@/lib/api/admin/managecourses/fetchsinglecourse"
 
 export default function CourseDetails() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [courseDetails, setCourseDetails] = useState<any>(null)
+  const [courseDetails, setCourseDetails] = useState<CourseDetailsResponse["data"] | null>(null)
   const params = useParams()
   const token = useSelector((state: RootState) => state.auth?.token)
 

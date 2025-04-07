@@ -63,9 +63,8 @@ export default function AdminLoginComponent() {
       console.log('Login successful')
       setAlert({ type: 'success', message: 'Login successful' })
       router.push('/admin')
-    } catch (error) {
-      console.error('Login failed', error)
-      const errorMessage = (error as any).response?.data?.message || (error as any).message
+    } catch (error: unknown) { // replaced explicit any with unknown
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
       setAlert({ type: 'error', message: errorMessage })
     } finally {
       setIsSubmitting(false)

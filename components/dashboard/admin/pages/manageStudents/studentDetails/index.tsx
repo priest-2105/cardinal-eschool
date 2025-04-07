@@ -109,7 +109,6 @@ export function StudentDetails({ id }: { id: string }) {
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
-  const [student, setStudent] = useState<Student>(SAMPLE_STUDENT)
   const [activeTab, setActiveTab] = useState("profileinfo")
   const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -158,9 +157,9 @@ export function StudentDetails({ id }: { id: string }) {
 
       // Close the modal
       closeModal()
-    } catch (error: any) {
-      console.error("Failed to update status:", error.message)
-      setAlert({ type: "danger", message: error.message })
+    } catch (error: unknown) {
+      console.error("Failed to update status:", error instanceof Error ? error.message : "Unknown error")
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "Unknown error" })
     } finally {
       setIsUpdating(false)
     }
@@ -175,10 +174,10 @@ export function StudentDetails({ id }: { id: string }) {
       setStudentDetails(data)
       console.log(data);
       
-    } catch (error: any) {
-      console.error("Failed to fetch student details:", error.message)
+    } catch (error: unknown) {
+      console.error("Failed to fetch student details:", error instanceof Error ? error.message : "Unknown error")
       console.log("student id ", studentId)
-      setAlert({ type: "danger", message: error.message })
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "Unknown error" })
     } finally {
       setLoading(false)
     }
@@ -225,7 +224,8 @@ export function StudentDetails({ id }: { id: string }) {
   // Initial fetch of student details
   useEffect(() => {
     fetchStudentDetails()
-  }, [token, studentId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, studentId, fetchStudentDetails])
 
   const handleBack = () => {
     router.push("/admin/students")
@@ -669,7 +669,7 @@ export function StudentDetails({ id }: { id: string }) {
             {/* Modal Body */}
             <div className="p-6">
               <p className="text-gray-700">
-                Are you sure you want to set the status to "{statusToUpdate}"?
+                Are you sure you want to set the status to &quot;{statusToUpdate}&quot;?
               </p>
             </div>
 

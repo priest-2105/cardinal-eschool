@@ -57,10 +57,11 @@ export default function AssessmentPageComponent() {
       setTimeout(() => {
         router.push("/planpick");
       }, 1000);
-    } catch (error: any) {
-      console.error("Failed to update assessment:", error);
+    } catch (error: unknown) { // replaced explicit any with unknown
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      // Set alert or handle error accordingly
+      setAlertMessage(errorMessage);
       setAlertVariant("danger");
-      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
     } finally {
       setIsSubmitting(false)
     }
@@ -77,11 +78,12 @@ export default function AssessmentPageComponent() {
       try {
         const response = await fetchStudentsAssessment(token);
         setInitialData(response.data.Assessment);
-      } catch (error: any) {
-        console.error("Failed to fetch assessment:", error);
+      } catch (error: unknown) { // replaced explicit any with unknown
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        console.error("Failed to fetch assessment:", errorMessage);
         setAlertMessage("Failed to load assessment. Please try again.");
         setAlertVariant("danger");
-        if (error.message === 'Unauthorized') {
+        if (errorMessage === 'Unauthorized') {
           // Redirect to login if token is invalid
           router.push('/login');
           return;

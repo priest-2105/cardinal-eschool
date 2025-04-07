@@ -92,7 +92,7 @@ export default function CreateCoursePage() {
     }
 
     loadTutorsAndStudents()
-  }, [token])
+  }, [token, router])
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {}
@@ -204,15 +204,14 @@ export default function CreateCoursePage() {
       setTimeout(() => {
         router.push("/admin/courses");
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Class creation error details:", {
-        message: error.message,
-        stack: error.stack
+        message: error instanceof Error ? error.message : "Unknown error"
       });
       
       setAlert({
         type: "error",
-        message: error.message || "Failed to create course. Please check the console for details."
+        message: error instanceof Error ? error.message : "Failed to create course. Please check the console for details."
       });
       
       // Log validation errors if present

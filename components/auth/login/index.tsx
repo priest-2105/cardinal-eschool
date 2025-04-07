@@ -88,9 +88,9 @@ export default function LoginPageComponent() {
       } else {
         setAlert({ type: "error", message: response.message });
       }
-    } catch (error) {
-      // console.error("Login failed:", error);
-      setAlert({ type: "error", message: (error as Error).message });
+    } catch (error: unknown) { // replaced explicit any with unknown
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlert({ type: "error", message: errorMessage });
     } finally {
       setIsSubmitting(false);
     }

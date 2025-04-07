@@ -1,4 +1,4 @@
-import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
+import {  apiUrl } from "../fetchWithAuth";
 
 export async function getPlans() {
     const response = await fetch(`${apiUrl}/getPlans`, {

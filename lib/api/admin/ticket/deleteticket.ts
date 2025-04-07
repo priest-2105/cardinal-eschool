@@ -1,10 +1,5 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-interface TicketFilters {
-    status?: string;
-    ticket_id?: string;
-    department?: string;
-}
 
 export async function DeleteTicket(token: string, ticketId: string) {
   const response = await fetchWithAuth(`${apiUrl}/admin/tickets/${ticketId}`, {

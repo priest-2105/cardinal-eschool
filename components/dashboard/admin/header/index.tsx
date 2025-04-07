@@ -113,15 +113,11 @@ const AdminDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
   const dispatch = useDispatch()
   const router = useRouter()
-  const notificationDropdownRef = useRef<HTMLDivElement>(null)
-  const profileDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -142,7 +138,6 @@ const AdminDashboardHeader: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
@@ -152,8 +147,9 @@ const AdminDashboardHeader: React.FC = () => {
           const response = await fetchAdminProfile(token);
           setProfile(response.data);
         }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        console.error("Failed to fetch profile:", errorMessage);
       }
     };
 
@@ -174,8 +170,9 @@ const AdminDashboardHeader: React.FC = () => {
             createdAt: notification.created_at,
           }))
           setRecentNotifications(recent)
-        } catch (error) {
-          console.error("Error fetching notifications:", error)
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+          console.error("Error fetching notifications:", errorMessage)
         }
       }
     }
@@ -197,8 +194,9 @@ const AdminDashboardHeader: React.FC = () => {
         dispatch(clearAuthState());
         await new Promise(resolve => setTimeout(resolve, 500));
       }
-    } catch (error) {
-      console.error("Logout failed", error);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      console.error("Logout failed", errorMessage);
     } finally {
       setIsLoggingOut(false)
       setShowLogoutDialog(false)

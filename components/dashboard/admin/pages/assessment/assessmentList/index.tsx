@@ -48,7 +48,6 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Stats derived from assignments
@@ -81,7 +80,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
   useEffect(() => {
     fetchAssignments()
-  }, [classId, token])
+  }, [classId, token, fetchAssignments])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
@@ -95,15 +94,6 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const handleCloseAssessmentModal = () => {
     setIsAssessmentModalOpen(false)
     setSelectedAssignment(null)
-  }
-
-  const handleAssessmentSuccess = (message: string) => {
-    setSuccessMessage(message)
-    fetchAssignments() // Refresh the list
-    // Hide success message after 3 seconds
-    setTimeout(() => {
-      setSuccessMessage(null)
-    }, 3000)
   }
 
   // Filter assignments based on search term

@@ -7,24 +7,23 @@ import type { Ticket } from "../types";
 import { Input } from "@/components/dashboard/admin/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/admin/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/admin/ui/select";
-import { FilterModal } from "../ticketfilter/index";
+// import { FilterModal } from "../ticketfilter/index";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 
-interface FilterValues {
-    departments?: string[];
-    dateRange?: { from: Date | undefined; to: Date | undefined };
-    status?: string[];
-}
+// interface FilterValues {
+//     departments?: string[];
+//     dateRange?: { from: Date | undefined; to: Date | undefined };
+//     status?: string[];
+// }
 
 export function TicketList() {
     const token = useSelector((state: RootState) => state.auth?.token);
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [sortBy, setSortBy] = useState("latest");
-    const [filters, setFilters] = useState<FilterValues>({});
+    // const [_filters, setFilters] = useState<FilterValues>({});
     const router = useRouter();
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -61,9 +60,9 @@ export function TicketList() {
         fetchTickets();
     }, [token, currentPage, selectedStatus, selectedTicketId, selectedDepartment]);
 
-    const handleFilterChange = (newFilters: FilterValues) => {
-        setFilters(newFilters);
-    };
+    // const handleFilterChange = (newFilters: FilterValues) => {
+    //     setFilters(newFilters);
+    // };
 
     const handleRowClick = (codec: string) => {
         router.push(`/admin/ticket/${codec}`);

@@ -27,9 +27,8 @@ export default function AdminResetPasswordComponent() {
       console.log('Reset password email sent')
       setAlert({ type: 'success', message: 'Password reset email sent. Link expires in 30 minutes.' })
       router.push('/admin')
-    } catch (error) {
-      console.error('Reset password email failed', error)
-      const errorMessage = (error as any).response?.data?.message || (error as any).message
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
       setAlert({ type: 'error', message: errorMessage })
     } finally {
       setIsSubmitting(false)

@@ -1,8 +1,3 @@
-import { Button } from "@/components/ui/button"
-import {
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface PaginationProps {
@@ -16,8 +11,6 @@ export function Pagination({
   totalPages,
   onPageChange,
 }: PaginationProps) {
-  const hasPreviousPage = currentPage > 1
-  const hasNextPage = currentPage < totalPages
 
   return (
     <div className="flex items-center justify-end">

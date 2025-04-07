@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import Logo from "@/public/assets/img/logo.png"
 import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
@@ -189,7 +189,7 @@ const AdminDashboardSideBar: React.FC = () => {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const unread = notifications.filter((notification: { read_at: string | null }) => !notification.read_at)
           setUnreadCount(unread.length)
         } catch (error) {
           console.error("Error fetching notifications:", error)

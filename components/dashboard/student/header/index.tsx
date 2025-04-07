@@ -24,17 +24,6 @@ const profileOptions = [
   { name: "Logout", href: "#" },
 ]
 
-interface Notification {
-  message: string
-  time: string
-  onClick?: () => void
-}
-
-interface ProfileOption {
-  name: string
-  href: string
-  onClick?: () => void
-}
 
 const StudentDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -77,8 +66,8 @@ const StudentDashboardHeader: React.FC = () => {
           setProfile(response.data)
           console.log("user data", response.data)
         }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error)
+      } catch (error: unknown) {
+        console.error("Failed to fetch profile:", error instanceof Error ? error.message : "Unknown error")
       }
     }
 
@@ -99,8 +88,8 @@ const StudentDashboardHeader: React.FC = () => {
             href: `/student/notifications/${notification.id}`,
           }))
           setRecentNotifications(recent)
-        } catch (error) {
-          console.error("Error fetching notifications:", error)
+        } catch (error: unknown) {
+          console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error")
         }
       }
     }
@@ -178,8 +167,8 @@ const StudentDashboardHeader: React.FC = () => {
             // router.push("/planpick");
           }
         }
-      } catch (error) {
-        console.error("Failed to check subscription:", error);
+      } catch (error: unknown) {
+        console.error("Failed to check subscription:", error instanceof Error ? error.message : "Unknown error");
         dispatch(clearSubscriptionStatus()); 
       }
     };
@@ -194,8 +183,8 @@ const StudentDashboardHeader: React.FC = () => {
         dispatch(clearAuthState());
         dispatch(clearSubscriptionStatus());
       }
-    } catch (error) {
-      console.error("Logout failed", error);
+    } catch (error: unknown) {
+      console.error("Logout failed", error instanceof Error ? error.message : "Unknown error");
     }
     router.push("/login")
   }

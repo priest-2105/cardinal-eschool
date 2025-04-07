@@ -187,7 +187,7 @@ export default function CouponsList() {
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-bold mb-4">Confirm Deactivation</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Are you sure you want to deactivate the coupon "{couponToDeactivate.coupon_code}"?
+              Are you sure you want to deactivate the coupon &quot;{couponToDeactivate.coupon_code}&quot;?
             </p>
             <div className="flex justify-end gap-4">
               <Button variant="outline" onClick={() => setCouponToDeactivate(null)}>
