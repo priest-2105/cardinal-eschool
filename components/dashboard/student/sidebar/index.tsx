@@ -89,14 +89,32 @@ const navigation = [
   },
 ]
 
-const StudentDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
-  isOpen,
-  setIsOpen,
-}) => {
+const StudentDashboardSideBar: React.FC<{  }> = ({}) => {
   const pathname = usePathname()
   const [unreadCount, setUnreadCount] = useState(0)
   const [openTicketsCount, setOpenTicketsCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+ 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
 
   useEffect(() => {
     const handleResize = () => {

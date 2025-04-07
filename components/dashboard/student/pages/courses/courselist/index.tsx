@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
-import { Search } from 'lucide-react'
+import { Search, BookOpen } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CourseTable } from '../coursetable/index'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
+import { Button } from "@/components/ui/button"
 
 interface Course {
   class_id: number
@@ -28,7 +29,11 @@ export function CourseList() {
   const [selectedGrade, setSelectedGrade] = useState("all")
   const [selectedDateRange, setSelectedDateRange] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalClasses, setTotalClasses] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
+  const perPage = 10
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -36,16 +41,26 @@ export function CourseList() {
       setLoading(true)
       try {
         const response = await getStudentClasses(token)
-        setCourses(response.data.classes)
+        if (response.status === "success") {
+          setCourses(response.data.classes)
+          setTotalPages(response.data.total_pages)
+          setTotalClasses(response.data.total_classes)
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch courses. Please contact Support')
+        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+        if (errorMessage.includes('401')) {
+          setError('Session expired. Please login again.')
+        } else {
+          setError('No courses available at this time. Please contact support.')
+        }
+        console.error("Error fetching courses:", err)
       } finally {
         setLoading(false)
       }
     }
 
     fetchCourses()
-  }, [token])
+  }, [token, currentPage])
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = 
@@ -61,15 +76,37 @@ export function CourseList() {
   })
 
   if (loading) {
-    return <div className="text-center py-12">Loading courses...</div>
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
+        <p>Loading courses...</p>
+      </div>
+    )
   }
 
   if (error) {
-    return <div className="text-center py-12 text-red-500">{error}</div>
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="text-red-500 text-lg font-medium">{error}</div>
+        <Button 
+          variant="outline" 
+          onClick={() => window.location.reload()}
+          className="mt-4"
+        >
+          Try Again
+        </Button>
+      </div>
+    )
   }
 
-  if (courses.length === 0) {
-    return <div className="text-center py-12">No courses available</div>
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <BookOpen className="h-16 w-16 text-gray-300" />
+        <p className="text-lg font-medium text-gray-600">No courses available</p>
+        <p className="text-sm text-gray-500">Please contact support for assistance</p>
+      </div>
+    )
   }
 
   return (
@@ -135,6 +172,24 @@ export function CourseList() {
       </div>
 
       <CourseTable courses={filteredCourses} />
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-end mt-4">
+          <Select value={currentPage.toString()} onValueChange={(value) => setCurrentPage(parseInt(value))}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <SelectItem key={page} value={page.toString()}>
+                  Page {page} of {totalPages}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   )
 }
