@@ -20,18 +20,34 @@ export interface StudentClassResponse {
   };
 }
 
-export async function getStudentClasses(token: string): Promise<StudentClassResponse> {
-  const response = await fetchWithAuth(`${apiUrl}/student/classes`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getStudentClasses(
+  token: string, 
+  page: number = 1, 
+  perPage: number = 10
+): Promise<StudentClassResponse> {
+  try {
+    const response = await fetchWithAuth(
+      `${apiUrl}/student/classes?page=${page}&per_page=${perPage}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch classes");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(
+        errorData?.message || 
+        `Failed to fetch classes: ${response.status} ${response.statusText}`
+      );
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error in getStudentClasses:", error);
+    throw error;
   }
-
-  return response.json();
 }
