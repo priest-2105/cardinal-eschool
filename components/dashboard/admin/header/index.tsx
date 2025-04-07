@@ -13,7 +13,7 @@ import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import cardinalConfig from "@/config"
+
 
 const profileOptions = [
   { name: "Profile", href: "/admin/admininformation" },

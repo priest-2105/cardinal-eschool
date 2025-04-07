@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Bell, CheckCheck, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
+import { Bell, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -183,17 +183,16 @@ export function NotificationList() {
     if (!token) return
     setProcessingNotificationId(id)
     try {
-      const response = await markNotificationAsRead(token, Number.parseInt(id))
+      const markResponse = await markNotificationAsRead(token, Number.parseInt(id))
       setNotifications((prev) =>
         prev.map((notification) =>
-          notification.id === id
-            ? { ...notification, isRead: true }
-            : notification,
-        ),
+          notification.id === id ? { ...notification, isRead: true } : notification
+        )
       )
       setAlert({ type: "success", message: "Notification marked as read." })
-      const response = await fetchNotifications(token, currentPage, perPage)
-      const notificationsWithDates = response.notifications.map((notification: any) => ({
+      // Rename the second response to avoid duplicate declaration:
+      const fetchResponse = await fetchNotifications(token, currentPage, perPage)
+      const notificationsWithDates = fetchResponse.notifications.map((notification: any) => ({
         ...notification,
         id: notification.id.toString(),
         title: notification.title || "Notification",
@@ -203,7 +202,7 @@ export function NotificationList() {
         createdAt: notification.created_at,
       }))
       setNotifications(notificationsWithDates)
-      setTotalPages(response.pagination.last_page)
+      setTotalPages(fetchResponse.pagination.last_page)
     } catch (error) {
       console.error("Failed to mark notification as read:", error)
       setAlert({ type: "error", message: "Failed to mark notification as read." })

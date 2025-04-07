@@ -96,7 +96,7 @@ export function StudentList() {
   const filteredStudents = filterStudents()
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col max-h-[75vh]">
       {alert && (
         <div className="fixed top-5 right-5 z-50">
           <Alert variant={alert.type} onClose={() => setAlert(null)}>

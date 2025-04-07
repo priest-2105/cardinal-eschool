@@ -132,7 +132,7 @@ export function TicketList() {
             </div>
 
             <div className="flex-1 overflow-hidden">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-[65vh]">
                     <div className="inline-block min-w-full align-middle">
                         <Table>
                             <TableHeader>
