@@ -31,9 +31,9 @@ export function CourseList() {
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [totalClasses, setTotalClasses] = useState(0)
+  const [_totalClasses, setTotalClasses] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
-  const perPage = 10
+  // const perPage = 10
 
   useEffect(() => {
     const fetchCourses = async () => {
