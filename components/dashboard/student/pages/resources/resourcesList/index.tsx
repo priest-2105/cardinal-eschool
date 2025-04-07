@@ -18,7 +18,7 @@ interface ResourcesListProps {
   classId?: string;
 }
 
-export default function ResourcesList({ resources }: ResourcesListProps) {
+export default function ResourcesList({ resources = [] }: ResourcesListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredResources, setFilteredResources] = useState<Resource[]>([])
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
@@ -109,20 +109,27 @@ export default function ResourcesList({ resources }: ResourcesListProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="relative mb-4">
-        <Input
-          type="text"
-          placeholder="Search resources..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="pl-10"
-        />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-      </div>
+      {/* Only show search if there are resources */}
+      {filteredResources.length > 0 && (
+        <div className="relative mb-4">
+          <Input
+            type="text"
+            placeholder="Search resources..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {filteredResources.length === 0 ? (
-          <p className="text-center text-gray-500">No resources found</p>
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+            <FileText className="h-16 w-16 mb-4 text-gray-300" />
+            <p className="text-lg font-medium">No resources available</p>
+            <p className="text-sm">No resources have been assigned to this course yet.</p>
+          </div>
         ) : (
           filteredResources.map((resource) => {
             const fileInfo = getFileType(resource.file_path);
