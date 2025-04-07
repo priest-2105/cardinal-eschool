@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { format, parseISO } from "date-fns"
-import { Calendar, FileText, Users, Clock, Download } from "lucide-react"
+import { Calendar, Users, Clock, Download } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getAssignmentDetails } from "@/lib/api/tutor/courses/fetchsingleassessment"

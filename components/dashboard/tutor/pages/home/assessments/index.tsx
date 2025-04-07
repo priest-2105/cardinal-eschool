@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText, Upload } from "lucide-react"
+import { FileText } from "lucide-react"
 
 interface Assessment {
   id: number

@@ -32,7 +32,7 @@ export function CourseList() {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [totalClasses, setTotalClasses] = useState(0)
+  const [_totalClasses, setTotalClasses] = useState(0)
   const perPage = 10
 
   useEffect(() => {

@@ -14,7 +14,6 @@ import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
-import cardinalConfig from "@/config"
 
 const notifications = [
   { message: "New assessment available", time: "2 hours ago" },
@@ -119,13 +118,9 @@ const TutorDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
   const dispatch = useDispatch()
   const router = useRouter()
-  const notificationDropdownRef = useRef<HTMLDivElement>(null)
-  const profileDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleResize = () => {
@@ -146,7 +141,6 @@ const TutorDashboardHeader: React.FC = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)

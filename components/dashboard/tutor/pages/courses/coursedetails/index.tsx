@@ -21,9 +21,6 @@ import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
-interface CourseDetailsComponentProps {
-  courseName?: string
-}
 
 export default function CourseDetailsComponent() {
   const params = useParams()
