@@ -5,7 +5,6 @@ import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, FileText, Plus, Edit } from "lucide-react"
-import { format, parseISO } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreateReportModal } from "../createReportModal/index"
 import { ViewReportModal } from "../viewReportModal/index"
@@ -47,7 +46,6 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const [reports, setReports] = useState<Report[]>([])
   const [filteredReports, setFilteredReports] = useState<Report[]>([])
   const [monthFilter, setMonthFilter] = useState("all")
-  const [studentFilter, setStudentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
@@ -78,7 +76,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
 
   useEffect(() => {
     fetchReports()
-  }, [classId, token])
+  }, [classId, token, fetchReports])
 
   useEffect(() => {
     setFilteredReports(reports)
@@ -96,19 +94,12 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   }
 
   const handleStudentFilter = (value: string) => {
-    setStudentFilter(value)
     filterReports(searchTerm, monthFilter, statusFilter)
   }
 
   const handleStatusFilter = (value: string) => {
     setStatusFilter(value)
     filterReports(searchTerm, monthFilter, value)
-  }
-
-  const handleDeleteReport = (id: number) => {
-    const updatedReports = reports.filter((report) => report.id !== id)
-    setReports(updatedReports)
-    setIsEditModalOpen(false)
   }
 
   const filterReports = (term: string, month: string, status: string) => {
@@ -142,12 +133,6 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const handleEditReport = (report: Report) => {
     setSelectedReport(report)
     setIsEditModalOpen(true)
-  }
-
-  const handleUpdateReport = (updatedReport: Report) => {
-    const updatedReports = reports.map((report) => (report.id === updatedReport.id ? updatedReport : report))
-    setReports(updatedReports)
-    setIsEditModalOpen(false)
   }
 
   const handleAssessmentSuccess = (message: string) => {

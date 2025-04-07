@@ -3,12 +3,6 @@ import { Button } from "@/components/ui/button"
 import { format, parseISO } from "date-fns"
 import { Badge } from "@/components/ui/badge"
 
-interface Student {
-  id: string;
-  name: string;
-  dp_url: string | null;
-}
-
 interface Report {
   id: number;
   student_id: string;
