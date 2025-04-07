@@ -26,17 +26,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { formatDate } from "@/utils/dateformat";
 
-interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  message: string; 
-  recipients: "students" | "tutors" | "both";
-  target_role: "students" | "tutors" | "both"; 
-  status: "active" | "inactive" | "draft";
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export function AnnouncementDetails({ announcementId }: { announcementId: string }) {
   const router = useRouter();

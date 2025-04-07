@@ -96,7 +96,7 @@ export function CourseList() {
                 </div>
             ) : courses.length === 0 && searchQuery ? (
                 <div className="py-12 text-center">
-                    <p className="text-lg font-medium">No courses match your search "{searchQuery}"</p>
+                    <p className="text-lg font-medium">No courses match your search &quot;{searchQuery}&quot;</p>
                     <p className="text-sm text-muted-foreground mt-2">Try adjusting your search or filters</p>
                 </div>
             ) : courses.length === 0 ? (

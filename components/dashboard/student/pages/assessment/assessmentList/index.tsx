@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, Eye, Download, Upload } from "lucide-react"
-import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval, subDays } from "date-fns"
+import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
@@ -111,12 +111,12 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     setIsSubmitting(true)
     
     try {
-      const response = await submitAssignment(
-        token,
-        selectedAssignment.id.toString(),
-        submissionText,
-        submissionFile
-      )
+      // const response = await submitAssignment(
+      //   token,
+      //   selectedAssignment.id.toString(),
+      //   submissionText,
+      //   submissionFile
+      // )
       
       setSuccessMessage("Assignment submitted successfully!")
       handleCloseTurnInModal()
@@ -151,7 +151,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
     // Apply status filter
     if (statusFilter !== "all") {
-      const now = new Date()
+      // const now = new Date()
       if (statusFilter === "overdue") {
         filtered = filtered.filter(assignment => isOverdue(assignment.deadline))
       } else if (statusFilter === "pending") {
@@ -192,8 +192,8 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder])
 
   // Calculate stats
-  const stats = useMemo(() => {
-    const now = new Date()
+  // const stats = useMemo(() => {
+    // const now = new Date()
     const total = assignments.length
     const overdue = assignments.filter(assignment => isOverdue(assignment.deadline)).length
     const pending = total - overdue

@@ -15,7 +15,7 @@ interface Announcement {
 }
 
 export function AnnouncementMarquee() {
-  const [isPaused, setIsPaused] = useState(false)
+  const [isPaused, _setIsPaused] = useState(false)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)

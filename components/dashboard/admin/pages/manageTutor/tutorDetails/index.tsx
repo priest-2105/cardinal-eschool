@@ -51,29 +51,6 @@ interface Tutor {
   }>
 }
 
-const SAMPLE_TUTOR: Tutor = {
-  id: "TUT001",
-  name: "John Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 987-6543",
-  subject: "Mathematics",
-  dateJoined: "2023-09-01",
-  lastLogin: "2024-03-09T10:30:00",
-  status: "Active",
-  avatar: "https://i.pravatar.cc/150?img=68",
-  bio: "Experienced mathematics tutor with a passion for making complex concepts easy to understand.",
-  totalStudents: 45,
-  totalClasses: 12,
-  averageRating: 4.8,
-  classesThisWeek: 5,
-  experience: 7,
-  specializations: ["Calculus", "Algebra", "Statistics"],
-  assignedClasses: [
-    { id: "C001", name: "Advanced Calculus", schedule: "Mon, Wed 10:00-11:30", students: 15 },
-    { id: "C002", name: "Algebra 101", schedule: "Tue, Thu 14:00-15:30", students: 20 },
-    { id: "C003", name: "Statistics for Beginners", schedule: "Fri 13:00-15:00", students: 10 },
-  ],
-}
 
 export function TutorDetails({ id }: { id: string }) {
   const [activeTab, setActiveTab] = useState("overview")

@@ -65,42 +65,7 @@ interface Student {
   }>
 }
 
-const SAMPLE_STUDENT: Student = {
-  id: "STU001",
-  name: "John Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Main St, Anytown, USA",
-  dateOfBirth: "2000-05-15",
-  grade: "A",
-  program: "Advanced Mathematics",
-  dateJoined: "2023-09-01",
-  lastLogin: "2024-03-09T10:30:00",
-  status: "Active",
-  avatar: "https://i.pravatar.cc/150?img=12",
-  totalCourses: 5,
-  averageGrade: "A-",
-  attendance: 95,
-  examScores: {
-    sat: {
-      reading: 680,
-      math: 720,
-      total: 1400,
-    },
-    ielts: {
-      listening: 8.5,
-      reading: 8.0,
-      writing: 7.5,
-      speaking: 8.0,
-      overall: 8.0,
-    },
-  },
-  currentCourses: [
-    { id: "C001", name: "Advanced Calculus", progress: 75 },
-    { id: "C002", name: "Physics 101", progress: 60 },
-    { id: "C003", name: "English Literature", progress: 90 },
-  ],
-}
+
 
 export function StudentDetails({ id }: { id: string }) {
   const studentId = decodeURIComponent(id)
