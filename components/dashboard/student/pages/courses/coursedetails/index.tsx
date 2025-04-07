@@ -20,9 +20,6 @@ import { FileText } from "lucide-react"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
-interface CourseDetailsComponentProps {
-  courseName?: string
-}
 
 export default function CourseDetailsComponent() {
   const params = useParams()
