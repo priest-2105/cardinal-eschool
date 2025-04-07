@@ -89,36 +89,16 @@ const navigation = [
   },
 ]
 
-const StudentDashboardSideBar: React.FC<{  }> = ({}) => {
+const StudentDashboardSideBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname()
   const [unreadCount, setUnreadCount] = useState(0)
-  const [openTicketsCount, setOpenTicketsCount] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
- 
+  const [openTicketsCount, setOpenTicketsCount] = useState(0)
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 1024) {
-        setIsSidebarOpen(false);
-      } else {
-        setIsSidebarOpen(true);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)
@@ -129,7 +109,7 @@ const StudentDashboardSideBar: React.FC<{  }> = ({}) => {
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [setIsOpen])
+  }, [])
 
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {

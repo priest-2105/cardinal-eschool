@@ -36,10 +36,8 @@ interface ProfileOption {
   onClick?: () => void
 }
 
-const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpen: boolean }> = ({
-  toggleSidebar,
-  isSidebarOpen,
-}) => {
+const StudentDashboardHeader: React.FC = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
   const dispatch = useDispatch()
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
@@ -51,6 +49,25 @@ const StudentDashboardHeader: React.FC<{ toggleSidebar: () => void; isSidebarOpe
   const notificationDropdownRef = useRef<HTMLDivElement>(null)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false) // Profile dropdown state
   const profileDropdownRef = useRef<HTMLDivElement>(null) // Profile dropdown ref
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
 
   useEffect(() => {
     const getProfile = async () => {
