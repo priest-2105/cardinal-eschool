@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckoutButton from "@/components/public/pages/planPick/checkoutButton/index";
 import { Check } from "lucide-react";
@@ -32,11 +31,9 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState<number | null>(null);
   const [finalPrice, setFinalPrice] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const authState = useAppSelector((state) => state.auth);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     const loadPlans = async () => {
@@ -143,14 +140,12 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
 
   const applyCoupon = async () => {
     setIsLoading(true);
-    setError(null);
 
     try {
       const response = await validateCoupon(authState?.token, coupon, originalPrice);
       setDiscount(parseFloat(response.data.coupon.discount_percentage));
       setFinalPrice(response.data.coupon.final_amount);
     } catch (error) {
-      setError("Invalid coupon or failed to validate");
       setDiscount(null);
       setFinalPrice(null);
     } finally {
@@ -232,7 +227,6 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
                 {discount !== null && (
                   <p className="text-green-600 mt-2">Coupon applied! {discount}% off</p>
                 )}
-                {error && <p className="text-red-600 mt-2">{error}</p>}
               </div>
             </div>
           </div>

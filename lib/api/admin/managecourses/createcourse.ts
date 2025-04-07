@@ -63,7 +63,7 @@ export async function createClass(token: string, classData: CreateClassRequest):
       try {
         const errorData = JSON.parse(responseText);
         throw new Error(errorData.message || 'Failed to create class');
-      } catch (_) {  // replaced e with _
+      } catch {  // removed parameter
         throw new Error(`Server Error: ${response.status} - ${responseText.slice(0, 200)}`);
       }
     }
@@ -72,7 +72,7 @@ export async function createClass(token: string, classData: CreateClassRequest):
       const jsonResponse = JSON.parse(responseText);
       console.log("Parsed API Response:", jsonResponse);
       return jsonResponse;
-    } catch (_) {  // replaced e with _
+    } catch { 
       throw new Error('Invalid JSON response from server');
     }
   } catch (error) {

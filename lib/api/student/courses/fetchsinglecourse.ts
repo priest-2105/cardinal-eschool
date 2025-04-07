@@ -18,7 +18,7 @@ export interface CourseDetails {
         name: string;
         dp_url: string | null;
       }[];
-      resources_assigned: any[];
+      resources_assigned: unknown[]; // changed from any[] to unknown[]
     };
   };
 }

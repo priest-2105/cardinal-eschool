@@ -14,7 +14,7 @@ interface AssignmentDetails {
     submitted_students: number;
     pending_students: number;
   };
-  submissions: any[]; // You can type this based on your needs
+  submissions: unknown[]; // changed from any[] to unknown[]
 }
 
 interface AssignmentResponse {

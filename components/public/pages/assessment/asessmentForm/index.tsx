@@ -410,7 +410,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   }
 
   // Add console log to debug plan selection
-  const handleSelectChange = (name: string, value: any) => {
+  const handleSelectChange = (name: string, value: string) => {
     console.log(`Selecting ${name}:`, value)
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: name === "plan_id" ? Number(value) : value }
@@ -444,7 +444,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   }
 
   const transitionClass = "transition-transform duration-500 ease-in-out"
-  const stepPosition = currentStep * 100
 
   const isFinalStep = currentStep === totalSteps - 1
 

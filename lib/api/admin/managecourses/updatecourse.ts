@@ -68,7 +68,7 @@ export async function updateCourse(
       try {
         const errorData = JSON.parse(responseText);
         throw new Error(errorData.message || 'Failed to update course');
-      } catch (_) {  // replaced e with _
+      } catch {  // removed parameter
         throw new Error(`Server Error: ${response.status} - ${responseText.slice(0, 200)}`);
       }
     }
@@ -77,7 +77,7 @@ export async function updateCourse(
       const jsonResponse = JSON.parse(responseText);
       console.log("Parsed API Response:", jsonResponse);
       return jsonResponse;
-    } catch (_) {  // replaced e with _
+    } catch {  // removed parameter
       throw new Error('Invalid JSON response from server');
     }
   } catch (error) {
