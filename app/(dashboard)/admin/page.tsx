@@ -108,7 +108,7 @@ export default function AdminDashboard() {
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  }, []); // added semicolon to end useEffect
 
   const handleNewCourse = () => {
     route.push("/admin/createcourse")
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/courses" passHref></Link>
+                <Link href="/admin/courses" passHref>
                   <Button variant="outline" className="w-full">
                     View All Courses
                     <ChevronRight className="ml-2 h-4 w-4" />
