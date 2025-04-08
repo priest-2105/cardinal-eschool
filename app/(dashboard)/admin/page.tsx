@@ -142,7 +142,7 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}></div>
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
       <div className="text-center py-12 border rounded-lg">
         <div className="p-4">
           <Alert variant="danger">{error}</Alert>
