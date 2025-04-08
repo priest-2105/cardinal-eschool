@@ -29,7 +29,7 @@ import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
-import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes" // new import
+import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes"
 
 
 
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
   const recentTutors = dashboardData?.extras.recent_tutors.slice(0, 3) || [];
   
   return (
-    <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+    <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>     
       <AnnouncementMarquee />
       
       <div className="p-6 bg-white my-4 border border-gray-200 rounded-lg space-y-6">
@@ -398,7 +398,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </div>
   )
 }
 
