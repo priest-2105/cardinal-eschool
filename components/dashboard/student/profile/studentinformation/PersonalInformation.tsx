@@ -218,7 +218,8 @@ export default function PersonalInformation() {
               <SelectContent>
                 <SelectItem value="Employed">Employed</SelectItem>
                 <SelectItem value="Unemployed">Unemployed</SelectItem>
-                <SelectItem value="Student">Student</SelectContent>
+                <SelectItem value="Student">Student</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
