@@ -17,16 +17,17 @@ const VerifyPaymentPage = () => {
   useEffect(() => {
     const txRef = searchParams.get("tx_ref");
     const transactionId = searchParams.get("transaction_id");
-    router.prefetch("/student")
+    router.prefetch("/student");
 
-    if (!txRef || !transactionId) {
+    // Ensure all required strings are available before proceeding
+    if (!authState?.token || !txRef || !transactionId) {
       setStatus("failed");
       return;
     }
 
     const verify = async () => {
       try {
-        const response = await verifyPayment(authState?.token, txRef, transactionId);
+        const response = await verifyPayment(authState.token, txRef, transactionId);
         if (response.status === "success") {
           setStatus("success");
           // Redirect immediately after setting status to success
