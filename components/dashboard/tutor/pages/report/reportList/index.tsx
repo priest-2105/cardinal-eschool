@@ -93,7 +93,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     filterReports(searchTerm, value, statusFilter)
   }
 
-  const handleStudentFilter = (_value: string) => {
+  const handleStudentFilter = () => {
     filterReports(searchTerm, monthFilter, statusFilter)
   }
 
