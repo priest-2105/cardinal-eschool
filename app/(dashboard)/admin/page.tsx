@@ -73,6 +73,15 @@ export default function AdminDashboard() {
             ...data.overview,
             completion_rate: data.overview.completion_rate ?? 0,
             completion_rate_change: data.overview.completion_rate_change ?? 0,
+          },
+          extras: {
+            ...data.extras,
+            recent_students: data.extras.recent_students.map(student => ({
+              id: student.user_codec,
+              name: student.name,
+              email: student.email,
+              courses: student.courses_enrolled,
+            }))
           }
         };
         setDashboardData(adjustedData);
@@ -133,7 +142,7 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
+      <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}></div>
       <div className="text-center py-12 border rounded-lg">
         <div className="p-4">
           <Alert variant="danger">{error}</Alert>
@@ -252,7 +261,7 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/courses" passHref>
+                <Link href="/admin/courses" passHref></Link>
                   <Button variant="outline" className="w-full">
                     View All Courses
                     <ChevronRight className="ml-2 h-4 w-4" />
