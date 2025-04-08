@@ -27,7 +27,7 @@ const VerifyPaymentPage = () => {
 
     const verify = async () => {
       try {
-        const response = await verifyPayment(authState.token, txRef, transactionId);
+        const response = await verifyPayment(authState.token, txRef!, transactionId!);
         if (response.status === "success") {
           setStatus("success");
           // Redirect immediately after setting status to success
