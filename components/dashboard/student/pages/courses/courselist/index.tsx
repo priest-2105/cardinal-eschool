@@ -31,7 +31,6 @@ export function CourseList() {
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [_totalClasses, setTotalClasses] = useState(0)
   const token = useSelector((state: RootState) => state.auth?.token)
   // const perPage = 10
 
@@ -44,7 +43,6 @@ export function CourseList() {
         if (response.status === "success") {
           setCourses(response.data.classes)
           setTotalPages(response.data.total_pages)
-          setTotalClasses(response.data.total_classes)
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'

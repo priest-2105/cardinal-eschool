@@ -13,7 +13,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
-import { submitAssignment } from "@/lib/api/student/courses/turninassessment"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
@@ -64,7 +63,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
   useEffect(() => {
     fetchAssignments()
-  }, [classId, token])
+  }, [classId, token, fetchAssignments])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)

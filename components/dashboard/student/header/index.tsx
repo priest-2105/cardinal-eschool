@@ -80,9 +80,9 @@ const StudentDashboardHeader: React.FC = () => {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.notifications
-          const unread = notifications.filter((notification: any) => !notification.isRead)
+          const unread = notifications.filter((notification: unknown) => !notification.isRead)
           setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: any) => ({
+          const recent = unread.slice(0, 3).map((notification: unknown) => ({
             message: notification.message,
             time: notification.createdAt,
             href: `/student/notifications/${notification.id}`,
@@ -123,7 +123,7 @@ const StudentDashboardHeader: React.FC = () => {
     }
   }, [profileDropdownOpen])
 
-  const isAssessmentComplete = (assessment: any) => {
+  const isAssessmentComplete = (assessment: unknown) => {
     // Required fields that must not be null
     const requiredFields = [
       'education_level',

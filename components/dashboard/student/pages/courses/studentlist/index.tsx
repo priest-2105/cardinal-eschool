@@ -6,12 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-}
-
 interface StudentListProps {
   students: {
     id: string;

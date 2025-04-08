@@ -2,6 +2,7 @@
 
 import { TableCell, TableRow } from "@/components/ui/table"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface Course {
   id: number
@@ -33,10 +34,12 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
   return (
     <TableRow className="hover:bg-gray-50 cursor-pointer " onClick={handleCourseDetails}>
       <TableCell className="flex items-center space-x-2">
-        <img
+        <Image
           src={course.tutor.dp_url}
           alt={course.tutor.name}
           className="w-8 h-8 rounded-full"
+          width={32}
+          height={32}
         />
         <span>{course.tutor.name}</span>
       </TableCell>
