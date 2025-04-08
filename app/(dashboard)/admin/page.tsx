@@ -87,6 +87,14 @@ export default function AdminDashboard() {
               name: student.name,
               email: student.email,
               courses: student.courses_enrolled,
+            })),
+            recent_courses: data.extras.recent_courses,
+            recent_tutors: data.extras.recent_tutors.map(tutor => ({
+              id: tutor.tutor_codec,  // use tutor_codec as id
+              name: tutor.name,
+              email: tutor.email,
+              courses: tutor.courses_assigned,
+              rating: tutor.rating ?? 0,  // default to 0 if rating is missing
             }))
           }
         };
