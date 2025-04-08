@@ -93,8 +93,7 @@ export default function AdminDashboard() {
               id: tutor.tutor_codec,  // use tutor_codec as id
               name: tutor.name,
               email: tutor.email,
-              courses: tutor.courses_assigned,
-              rating: tutor.rating ?? 0,  // default to 0 if rating is missing
+              courses: tutor.courses_assigned, 
             }))
           }
         };
