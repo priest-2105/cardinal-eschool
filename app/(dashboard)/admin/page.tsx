@@ -66,7 +66,16 @@ export default function AdminDashboard() {
       setLoading(true)
       try {
         const response = await getDashboardData(token)
-        setDashboardData(response.data)
+        const data = response.data;
+        const adjustedData: AdminDashboardData = {
+          ...data,
+          overview: {
+            ...data.overview,
+            completion_rate: data.overview.completion_rate ?? 0,
+            completion_rate_change: data.overview.completion_rate_change ?? 0,
+          }
+        };
+        setDashboardData(adjustedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
       } finally {
