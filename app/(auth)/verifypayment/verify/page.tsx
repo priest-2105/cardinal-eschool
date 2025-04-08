@@ -19,15 +19,21 @@ const VerifyPaymentPage = () => {
     const transactionId = searchParams.get("transaction_id");
     router.prefetch("/student");
 
-    // Ensure all required strings are available before proceeding
+    // Guard clause ensuring all required values are present
     if (!authState?.token || !txRef || !transactionId) {
+      console.error("Missing token or transaction references");
       setStatus("failed");
       return;
     }
 
+    // Declare local constants to satisfy TypeScript's type checks
+    const token = authState.token;
+    const validTxRef = txRef;
+    const validTransactionId = transactionId;
+
     const verify = async () => {
       try {
-        const response = await verifyPayment(authState.token, txRef!, transactionId!);
+        const response = await verifyPayment(token, validTxRef, validTransactionId);
         if (response.status === "success") {
           setStatus("success");
           // Redirect immediately after setting status to success
