@@ -567,7 +567,7 @@ export function StudentDetails({ id }: { id: string }) {
           {activeTab === "payments" && (
             <Card className="py-5">
               <CardContent>
-                <TransactionList transactions={studentDetails?.payments as any} />
+                <TransactionList transactions={studentDetails?.payments as unknown} />
               </CardContent>
             </Card>
           )}

@@ -11,6 +11,7 @@ import { RootState } from "@/lib/store"
 import { fetchAdminProfile, updateAdminProfile } from "@/lib/api/admin/api"
 import { setUser } from "@/store/userSlice"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+import Image from 'next/image';
 
 export default function PersonalInformation() {
   const token = useSelector((state: RootState) => state.auth?.token);
@@ -76,10 +77,12 @@ export default function PersonalInformation() {
       <div className="space-y-8">
         <div className="sm:flex max-sm:block items-center gap-8">
           <div className="relative w-fit">
-            <img
-              src="/assets/img/dashboard/admin/Ellipse 2034.png"
-              alt="Profile"
-              className="w-24 h-24 rounded-full "
+            <Image 
+              src="/assets/img/dashboard/admin/Ellipse 2034.png" 
+              alt="Profile" 
+              width={96}  // set the desired width
+              height={96} // set the desired height
+              className="rounded-full"
             />
             <Button
               size="icon"

@@ -32,7 +32,7 @@ const StudentDashboardHeader: React.FC = () => {
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const router = useRouter()
-  const [recentNotifications, setRecentNotifications] = useState<any[]>([])
+  const [recentNotifications, setRecentNotifications] = useState<unknown[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
   const notificationDropdownRef = useRef<HTMLDivElement>(null)

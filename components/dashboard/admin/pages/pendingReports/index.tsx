@@ -133,8 +133,8 @@ export default function PendingReportsList({ updatePendingReportsCount }: Pendin
   }
 
   useEffect(() => {
-    fetchPendingReports()
-  }, [token])
+    fetchPendingReports();
+  }, [fetchPendingReports]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value

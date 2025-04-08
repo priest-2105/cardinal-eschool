@@ -88,7 +88,7 @@ export function NotificationList() {
       try {
         setIsLoading(true)
         const response = await fetchNotifications(token, currentPage)
-        const notificationsWithDates = response.data.notifications.map((notification: any) => ({
+        const notificationsWithDates = response.data.notifications.map((notification: unknown) => ({
           ...notification,
           id: notification.id.toString(),
           title: notification.title || "Notification",

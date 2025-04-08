@@ -89,7 +89,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
 
   useEffect(() => {
     fetchReports()
-  }, [classId, token])
+  }, [fetchReports])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
