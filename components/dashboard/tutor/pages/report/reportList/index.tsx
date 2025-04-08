@@ -60,7 +60,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     "July", "August", "September", "October", "November", "December"
   ]
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     if (!token) return
 
     setLoading(true)
@@ -72,15 +72,11 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     } finally {
       setLoading(false)
     }
-  }
-
-  const fetchReportsStable = useCallback(() => {
-    fetchReports()
-  }, [fetchReports])
+  }, [token, classId])
 
   useEffect(() => {
-    fetchReportsStable()
-  }, [fetchReportsStable])
+    fetchReports()
+  }, [fetchReports])
 
   useEffect(() => {
     setFilteredReports(reports)
@@ -97,7 +93,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     filterReports(searchTerm, value, statusFilter)
   }
 
-  const handleStudentFilter = (value: string) => {
+  const handleStudentFilter = (_value: string) => {
     filterReports(searchTerm, monthFilter, statusFilter)
   }
 
