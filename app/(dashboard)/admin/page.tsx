@@ -70,9 +70,9 @@ export default function AdminDashboard() {
         const adjustedData: AdminDashboardData = {
           ...data,
           overview: {
-            ...data.overview,
-            completion_rate: data.overview.completion_rate ?? 0,
-            completion_rate_change: data.overview.completion_rate_change ?? 0,
+            ...(data.overview as any), // cast to any to allow extra properties
+            completion_rate: (data.overview as any).completion_rate ?? 0,
+            completion_rate_change: (data.overview as any).completion_rate_change ?? 0,
           },
           extras: {
             ...data.extras,
