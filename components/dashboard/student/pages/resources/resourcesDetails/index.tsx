@@ -91,7 +91,7 @@ export function ViewResourceModal({ isOpen, onClose, resource }: ViewResourceMod
   const fileInfo = getFileType(resource.file_path);
 
   // Function to check if we should display preview (for PDFs and images)
-  const canShowPreview = (fileType: string, extension: string): boolean => {
+  const canShowPreview = (fileType: string): boolean => {
     return fileType === 'pdf' || fileType === 'image';
   };
 
@@ -128,7 +128,7 @@ export function ViewResourceModal({ isOpen, onClose, resource }: ViewResourceMod
                 </div>
               </div>
               
-              {canShowPreview(fileInfo.type, fileInfo.extension) && (
+              {canShowPreview(fileInfo.type) && (
                 <div className="border rounded-md overflow-hidden mb-3">
                   {fileInfo.type === 'pdf' && (
                     <iframe
