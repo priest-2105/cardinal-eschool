@@ -31,7 +31,7 @@ interface TransactionDetail {
 
 export default function AdminTransactionDetailsPage() {
   const searchParams = useSearchParams()
-  const token = useAppSelector((state) => state.auth.token)
+  const token = useAppSelector((state) => state?.auth?.token)
   const [transaction, setTransaction] = useState<TransactionDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
