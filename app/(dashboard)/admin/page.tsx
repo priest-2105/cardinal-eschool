@@ -31,7 +31,11 @@ import { useRouter } from "next/navigation"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
 import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes"
 
-
+// Add this new type definition
+interface ExtendedOverview extends Omit<AdminDashboardData["overview"], "completion_rate" | "completion_rate_change"> {
+	completion_rate: number;
+	completion_rate_change: number;
+}
 
 interface StatChangeProps {
   value: number;
@@ -67,13 +71,15 @@ export default function AdminDashboard() {
       try {
         const response = await getDashboardData(token)
         const data = response.data;
+        // Create new overview using our ExtendedOverview type
+        const extendedOverview: ExtendedOverview = {
+          ...data.overview,
+          completion_rate: ((data.overview as unknown as Partial<ExtendedOverview>).completion_rate) ?? 0,
+          completion_rate_change: ((data.overview as unknown as Partial<ExtendedOverview>).completion_rate_change) ?? 0,
+        };
         const adjustedData: AdminDashboardData = {
           ...data,
-          overview: {
-            ...(data.overview as any), // cast to any to allow extra properties
-            completion_rate: (data.overview as any).completion_rate ?? 0,
-            completion_rate_change: (data.overview as any).completion_rate_change ?? 0,
-          },
+          overview: extendedOverview,
           extras: {
             ...data.extras,
             recent_students: data.extras.recent_students.map(student => ({
