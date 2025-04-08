@@ -152,9 +152,9 @@ export default function AdminDashboard() {
     )
   }
 
-  const recentStudents = dashboardData?.extras.recent_students.slice(0, 3) || []
-  const recentTutors = dashboardData?.extras.recent_tutors.slice(0, 3) || []
-
+  const recentStudents = dashboardData?.extras.recent_students.slice(0, 3) || [];
+  const recentTutors = dashboardData?.extras.recent_tutors.slice(0, 3) || [];
+  
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
       <AnnouncementMarquee />
