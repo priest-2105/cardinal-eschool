@@ -32,7 +32,7 @@ interface AssessmentModalProps {
 export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [details, setDetails] = useState<any>(null)
+  const [details, setDetails] = useState<unknown>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {

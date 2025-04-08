@@ -97,7 +97,7 @@ const StudentCardPayment = () => {
         await updateAssessment(authState.token, updatedAssessment);
         setChosenPlan(plan);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to update assessment with new plan:", error);
       setAlertMessage(error.message || "Failed to update assessment. Please try again.");
       setAlertVariant("danger");

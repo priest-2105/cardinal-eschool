@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, Eye, Trash2 } from "lucide-react"
@@ -67,9 +67,13 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     }
   }
 
+  const fetchAssessmentsStable = useCallback(() => {
+    fetchAssessments() // existing fetchAssessments call
+  }, [fetchAssessments])
+
   useEffect(() => {
-    fetchAssessments()
-  }, [classId, token])
+    fetchAssessmentsStable()
+  }, [fetchAssessmentsStable])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value

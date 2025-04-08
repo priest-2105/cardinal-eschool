@@ -15,12 +15,6 @@ import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
-const notifications = [
-  { message: "New assessment available", time: "2 hours ago" },
-  { message: "Class rescheduled", time: "1 day ago" },
-  { message: "New message from instructor", time: "3 days ago" },
-]
-
 const profileOptions = [
   { name: "Profile", href: "/tutor/tutorinformation" },
   { name: "Settings", href: "/tutor/settings" },
@@ -166,9 +160,9 @@ const TutorDashboardHeader: React.FC = () => {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const unread = notifications.filter((notification: unknown) => !notification.read_at)
           setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: any) => ({
+          const recent = unread.slice(0, 3).map((notification: unknown) => ({
             message: notification.message,
             time: notification.created_at,
             createdAt: notification.created_at,

@@ -145,7 +145,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
       const response = await validateCoupon(authState?.token, coupon, originalPrice);
       setDiscount(parseFloat(response.data.coupon.discount_percentage));
       setFinalPrice(response.data.coupon.final_amount);
-    } catch (error) {
+    } catch {
       setDiscount(null);
       setFinalPrice(null);
     } finally {

@@ -59,7 +59,7 @@ export function StudentList() {
         const data = await getStudentList(token, hasSubscription, currentPage);
         setStudents(data.students);
         setTotalPages(data.pagination.last_page);
-      } catch (error: any) {
+      } catch (error: Record<string, unknown>) {
         console.error("Failed to fetch students:", error.message)
         setAlert({ type: "danger", message: error.message })
       } finally {

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, FileText, Plus, Edit } from "lucide-react"
@@ -74,9 +74,13 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     }
   }
 
-  useEffect(() => {
+  const fetchReportsStable = useCallback(() => {
     fetchReports()
-  }, [classId, token, fetchReports])
+  }, [fetchReports])
+
+  useEffect(() => {
+    fetchReportsStable()
+  }, [fetchReportsStable])
 
   useEffect(() => {
     setFilteredReports(reports)

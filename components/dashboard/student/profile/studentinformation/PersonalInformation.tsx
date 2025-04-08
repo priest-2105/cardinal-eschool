@@ -12,6 +12,7 @@ import { RootState } from "@/lib/store";
 import { fetchStudentProfile, updateStudentProfile, updateStudentProfilePicture } from "@/lib/api/student/api";
 import { setUser } from "@/store/userSlice";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
+import Image from 'next/image';
 
 export default function PersonalInformation() {
   const token = useSelector((state: RootState) => state.auth?.token);
@@ -118,9 +119,11 @@ export default function PersonalInformation() {
       <div className="space-y-8">
         <div className="sm:flex max-sm:block items-center gap-8">
           <div className="relative w-fit">
-            <img
+            <Image
               src={profile.profile_picture || profilePicture}
               alt="Profile"
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-full"
             />
             <label htmlFor="profile-picture-upload" className="absolute bottom-0 right-0 rounded-full bg-white cursor-pointer">
@@ -215,8 +218,7 @@ export default function PersonalInformation() {
               <SelectContent>
                 <SelectItem value="Employed">Employed</SelectItem>
                 <SelectItem value="Unemployed">Unemployed</SelectItem>
-                <SelectItem value="Student">Student</SelectItem>
-              </SelectContent>
+                <SelectItem value="Student">Student</SelectContent>
             </Select>
           </div>
           <div className="space-y-2">

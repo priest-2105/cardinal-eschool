@@ -67,7 +67,6 @@ export default function TransactionList() {
   const [selectedTransactionRef, setSelectedTransactionRef] = useState<string>("")
   const authState = useAppSelector((state) => state.auth)
   const [isRequeryingPayment, setIsRequeryingPayment] = useState(false)
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null)
 
   useEffect(() => {
     const fetchTransactions = async () => {

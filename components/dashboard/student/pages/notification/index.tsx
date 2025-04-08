@@ -61,7 +61,7 @@ export function NotificationList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [perPage, setPerPage] = useState(10)
+  const [perPage] = useState(10)
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,7 +96,7 @@ export function NotificationList() {
       try {
         setIsLoading(true)
         const response = await fetchNotifications(token, currentPage, perPage)
-        const notificationsWithDates = response.notifications.map((notification: any) => ({
+        const notificationsWithDates = response.notifications.map((notification: unknown) => ({
           ...notification,
           id: notification.id.toString(),
           title: notification.title || "Notification",
@@ -183,7 +183,7 @@ export function NotificationList() {
     if (!token) return
     setProcessingNotificationId(id)
     try {
-      const markResponse = await markNotificationAsRead(token, Number.parseInt(id))
+      await markNotificationAsRead(token, Number.parseInt(id))
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === id ? { ...notification, isRead: true } : notification
@@ -192,7 +192,7 @@ export function NotificationList() {
       setAlert({ type: "success", message: "Notification marked as read." })
       // Rename the second response to avoid duplicate declaration:
       const fetchResponse = await fetchNotifications(token, currentPage, perPage)
-      const notificationsWithDates = fetchResponse.notifications.map((notification: any) => ({
+      const notificationsWithDates = fetchResponse.notifications.map((notification: unknown) => ({
         ...notification,
         id: notification.id.toString(),
         title: notification.title || "Notification",
@@ -222,7 +222,7 @@ export function NotificationList() {
       )
       setAlert({ type: "success", message: "All notifications marked as read." })
       const response = await fetchNotifications(token, currentPage, perPage)
-      const notificationsWithDates = response.notifications.map((notification: any) => ({
+      const notificationsWithDates = response.notifications.map((notification: unknown) => ({
         ...notification,
         id: notification.id.toString(),
         title: notification.title || "Notification",

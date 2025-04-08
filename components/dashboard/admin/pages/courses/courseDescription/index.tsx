@@ -33,10 +33,6 @@ export default function CourseDescription({ coursedetails }: CourseDescriptionPr
     return text.slice(0, maxLength) + "..."
   }
 
-  function renderContent(content: string): JSX.Element {
-    return <p>{content}</p>;
-  }
-
   return (
     <div className="space-y-6">
       {/* Course Header */}

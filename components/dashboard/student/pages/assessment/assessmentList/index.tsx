@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Calendar, Eye, Download, Upload } from "lucide-react"
@@ -47,7 +47,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const fetchAssignments = async () => {
+  const fetchAssignments = useCallback(async () => {
     if (!token) return
 
     setLoading(true)
@@ -59,7 +59,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [classId, token])
 
   useEffect(() => {
     fetchAssignments()

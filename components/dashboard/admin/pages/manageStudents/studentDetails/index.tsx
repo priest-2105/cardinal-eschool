@@ -30,7 +30,7 @@ import { formatDate } from "@/utils/dateformat"
 
 export function StudentDetails({ id }: { id: string }) {
   const studentId = decodeURIComponent(id)
-  const [studentDetails, setStudentDetails] = useState<any>(null)
+  const [studentDetails, setStudentDetails] = useState<Record<string, unknown> | null>(null)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
@@ -52,7 +52,7 @@ export function StudentDetails({ id }: { id: string }) {
     return age
   }
 
-  const studentAge = studentDetails?.dob ? calculateAge(studentDetails.dob) : null
+  const studentAge = studentDetails?.dob ? calculateAge(studentDetails.dob as string) : null
 
   const openModal = (status: "active" | "suspended" | "banned") => {
     setStatusToUpdate(status)
@@ -194,8 +194,8 @@ export function StudentDetails({ id }: { id: string }) {
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-32 h-32 mb-4">
               <AvatarImage
-                src={studentDetails?.dp_url || "/assets/img/dashboard/admin/Ellipse2036.png"}
-                alt={studentDetails?.name}
+                src={studentDetails?.dp_url as string || "/assets/img/dashboard/admin/Ellipse2036.png"}
+                alt={studentDetails?.name as string}
               />
             </Avatar>
             {/* <h2 className="text-2xl font-bold mb-2">{studentDetails?.name}</h2> */}
@@ -214,7 +214,7 @@ export function StudentDetails({ id }: { id: string }) {
                   Name
                 </span>
                 <span className="text-sm font-medium">
-                  {studentDetails?.user?.name}
+                  {studentDetails?.user?.name as string}
                 </span>
               </div>
 
@@ -223,7 +223,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.user?.email}</span>
+                <span className="text-sm font-medium">{studentDetails?.user?.email as string}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -231,7 +231,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Phone className="mr-2 h-4 w-4" />
                   Phone
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.phone_number || "N/A"}</span>
+                <span className="text-sm font-medium">{studentDetails?.phone_number as string || "N/A"}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -239,7 +239,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <GraduationCap className="mr-2 h-4 w-4" />
                   Grade
                 </span>
-                <span className="text-sm font-medium">{studentDetails?.edu_level || "N/A"}</span>
+                <span className="text-sm font-medium">{studentDetails?.edu_level as string || "N/A"}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -249,7 +249,7 @@ export function StudentDetails({ id }: { id: string }) {
                 </span>
                 <span className="text-sm font-medium">
                   {" "}
-                  {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}
+                  {studentDetails?.assessment?.tests_interested_in?.join(", ") as string || "N/A"}
                 </span>
               </div>
 
@@ -258,7 +258,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Calendar className="mr-2 h-4 w-4" />
                   Joined
                 </span>
-                <span className="text-sm font-medium">{formatDate(studentDetails?.created_at)}</span>
+                <span className="text-sm font-medium">{formatDate(studentDetails?.created_at as string)}</span>
               </div>
 
               <div className="flex items-center justify-between">
@@ -266,7 +266,7 @@ export function StudentDetails({ id }: { id: string }) {
                   <Clock className="mr-2 h-4 w-4" />
                   Last Login
                 </span>
-                <span className="text-sm font-medium">{formatDate(studentDetails?.user?.last_login)}</span>
+                <span className="text-sm font-medium">{formatDate(studentDetails?.user?.last_login as string)}</span>
               </div>
             </div>
 
@@ -371,31 +371,31 @@ export function StudentDetails({ id }: { id: string }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Date of Birth</h3>
-                      <p>{studentDetails?.dob}</p>
+                      <p>{studentDetails?.dob as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Phone Number</h3>
-                      <p>{studentDetails?.phone_number}</p>
+                      <p>{studentDetails?.phone_number as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Education Level</h3>
-                      <p>{studentDetails?.edu_level}</p>
+                      <p>{studentDetails?.edu_level as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Country</h3>
-                      <p>{studentDetails?.country}</p>
+                      <p>{studentDetails?.country as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">State</h3>
-                      <p>{studentDetails?.state}</p>
+                      <p>{studentDetails?.state as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Employment status</h3>
-                      <p>{studentDetails?.employment_status}</p>
+                      <p>{studentDetails?.employment_status as string}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
-                      <p>{studentDetails?.address}</p>
+                      <p>{studentDetails?.address as string}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -409,32 +409,32 @@ export function StudentDetails({ id }: { id: string }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Name</h3>
-                        <p>{studentDetails?.guardian?.name || "N/A"}</p>
+                        <p>{studentDetails?.guardian?.name as string || "N/A"}</p>
                       </div>
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Email</h3>
-                        <p>{studentDetails?.guardian?.email || "N/A"} </p>
+                        <p>{studentDetails?.guardian?.email as string || "N/A"} </p>
                       </div>
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Phone</h3>
-                        <p>{studentDetails?.guardian?.phone || "N/A"}</p>
+                        <p>{studentDetails?.guardian?.phone as string || "N/A"}</p>
                       </div>
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Gender</h3>
-                        <p> {studentDetails?.guardian?.gender || "N/A"}</p>
+                        <p> {studentDetails?.guardian?.gender as string || "N/A"}</p>
                       </div>
 
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Country</h3>
-                        <p>{studentDetails?.guardian?.country || "N/A"}</p>
+                        <p>{studentDetails?.guardian?.country as string || "N/A"}</p>
                       </div>
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">State</h3>
-                        <p>{studentDetails?.guardian?.state || "N/A"}</p>
+                        <p>{studentDetails?.guardian?.state as string || "N/A"}</p>
                       </div>
                       <div>
                         <h3 className="text-sm font-medium text-muted-foreground mb-1">Address</h3>
-                        <p>{studentDetails?.guardian?.address || "N/A"}</p>
+                        <p>{studentDetails?.guardian?.address as string || "N/A"}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -452,15 +452,15 @@ export function StudentDetails({ id }: { id: string }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Education Level</h3>
-                    <p> {studentDetails?.assessment?.edu_level || "N/A"}</p>
+                    <p> {studentDetails?.assessment?.edu_level as string || "N/A"}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Subjects Interested In:</h3>
-                    <p>{studentDetails?.assessment?.subjects_interested_in?.join(", ") || "N/A"} </p>
+                    <p>{studentDetails?.assessment?.subjects_interested_in?.join(", ") as string || "N/A"} </p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Tests Interested In</h3>
-                    <p> {studentDetails?.assessment?.tests_interested_in?.join(", ") || "N/A"}</p>
+                    <p> {studentDetails?.assessment?.tests_interested_in?.join(", ") as string || "N/A"}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Learning Difficulties </h3>
@@ -469,19 +469,19 @@ export function StudentDetails({ id }: { id: string }) {
 
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Specific Goals </h3>
-                    <p> {studentDetails?.assessment?.specific_goals || "N/A"}</p>
+                    <p> {studentDetails?.assessment?.specific_goals as string || "N/A"}</p>
                   </div>
                 </div>
 
                 <div className="mt-6">
                   <h3 className="text-sm font-medium text-muted-foreground mb-1"> Learning Expectations</h3>
-                  <p> {studentDetails?.assessment?.learning_expectations || "N/A"}</p>
+                  <p> {studentDetails?.assessment?.learning_expectations as string || "N/A"}</p>
                 </div>
 
                 {studentDetails?.assessment?.learning_difficulty_description && (
                   <div className="mt-6">
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Difficulty Description:</h3>
-                    <p>{studentDetails?.assessment?.learning_difficulty_description || "N/A"}</p>
+                    <p>{studentDetails?.assessment?.learning_difficulty_description as string || "N/A"}</p>
                   </div>
                 )}
               </CardContent>
@@ -499,17 +499,17 @@ export function StudentDetails({ id }: { id: string }) {
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <BookOpen className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Total Courses</span>
-                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.total_classes}</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.total_classes as number}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Award className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Assigned Assignment </span>
-                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.assigned_assignments}</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.assigned_assignments as number}</span>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-gray-50 rounded-lg">
                       <Calendar className="h-6 w-6 mb-2 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Submission Rate</span>
-                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.submission_rate}</span>
+                      <span className="text-2xl font-bold">{studentDetails?.academic_info?.submission_rate as number}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -522,10 +522,10 @@ export function StudentDetails({ id }: { id: string }) {
                 <CardContent>
                   <div className="space-y-4">
                     {studentDetails?.classes?.map((cls) => (
-                      <div key={cls.id} className="p-4 border rounded-lg">
+                      <div key={cls.id as string} className="p-4 border rounded-lg">
                         <div className="flex justify-between items-center">
-                          <h3 className="font-medium">{cls.name}</h3>
-                          <Badge variant="outline">{cls.code}</Badge>
+                          <h3 className="font-medium">{cls.name as string}</h3>
+                          <Badge variant="outline">{cls.code as string}</Badge>
                         </div>
                         <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                           <div className="flex items-center">
@@ -538,15 +538,15 @@ export function StudentDetails({ id }: { id: string }) {
                               >
                                 <div className="flex items-center gap-3">
                                   <div className="w-2 h-2 mr-1 rounded-full bg-[#1BC2C2]" />
-                                  <span className="font-medium text-[13px]">{day}</span>
+                                  <span className="font-medium text-[13px]">{day as string}</span>
                                 </div>
-                                <span className="text-gray-600  text-[13px]">{cls.schedule.time[index]}</span>
+                                <span className="text-gray-600  text-[13px]">{cls.schedule.time[index] as string}</span>
                               </div>
                             ))}
                           </div>
                           <div className="flex items-end ml-auto">
                             {/* <Users className="h-4 w-4 mr-2 text-muted-foreground" /> */}
-                            <span>{cls.students.length} students</span>
+                            <span>{cls.students.length as number} students</span>
                           </div>
                         </div>
                       </div>
@@ -567,7 +567,7 @@ export function StudentDetails({ id }: { id: string }) {
           {activeTab === "payments" && (
             <Card className="py-5">
               <CardContent>
-                <TransactionList transactions={studentDetails?.payments} />
+                <TransactionList transactions={studentDetails?.payments as any} />
               </CardContent>
             </Card>
           )}

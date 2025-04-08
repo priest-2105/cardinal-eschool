@@ -366,7 +366,7 @@ export function NotificationList() {
     }
   }
 
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: Record<string, unknown>) => {
     if (!notification.data) return
 
     switch (notification.type) {

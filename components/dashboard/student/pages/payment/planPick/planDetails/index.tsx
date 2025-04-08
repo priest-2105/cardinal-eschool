@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import CheckoutButton from "@/components/dashboard/student/pages/payment/planPick/checkoutButton/index";
 import { Check } from "lucide-react";
@@ -36,7 +35,6 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
   const [isLoading, setIsLoading] = useState(false);
   const authState = useAppSelector((state) => state.auth);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     const loadPlans = async () => {

@@ -34,7 +34,6 @@ export default function ProfileLayout({
   const pathname = usePathname()
   const token = useSelector((state: RootState) => state.auth?.token)
   const [profile, setProfile] = useState<ProfileData>({})
-  const [isLoading, setIsLoading] = useState(true)
 
   
   const calculateAge = (dateOfBirth: string): number => {
@@ -56,7 +55,6 @@ export default function ProfileLayout({
 
   useEffect(() => {
     const getProfile = async () => {
-      setIsLoading(true)
       try {
         if (token) {
           const response = await fetchStudentProfile(token)
@@ -65,8 +63,6 @@ export default function ProfileLayout({
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)
-      } finally {
-        setIsLoading(false)
       }
     }
 
@@ -96,7 +92,7 @@ export default function ProfileLayout({
 
   return (
     <div className="flex flex-col w-full mx-auto px-4 max-sm:w-[100%]">
-      <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+      <div className="border-b mb-4 md:mb6 overflow-x-auto">
         <div className="flex space-x-4 md:space-x-8">
           {filteredTabs.map((tab) => {
             const isActive = tab.exact ? pathname === tab.href : pathname?.startsWith(tab.href)

@@ -38,7 +38,6 @@ export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: s
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
-  const [_showConfirmModal, setShowConfirmModal] = useState(false)
 
   useEffect(() => {
     const loadTicketDetails = async () => {

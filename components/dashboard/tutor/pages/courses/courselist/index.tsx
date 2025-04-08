@@ -32,7 +32,6 @@ export function CourseList() {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [_totalClasses, setTotalClasses] = useState(0)
   const perPage = 10
 
   useEffect(() => {
@@ -43,7 +42,6 @@ export function CourseList() {
         const response = await getTutorClasses(token, currentPage, perPage)
         setCourses(response.data.classes)
         setTotalPages(response.data.total_pages)
-        setTotalClasses(response.data.total_classes)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch courses')
       } finally {

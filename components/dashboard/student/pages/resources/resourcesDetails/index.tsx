@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { FileText, FileImage, FileVideo, FileAudio, File, Download, ExternalLink } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import Image from 'next/image'
 
 interface Resource {
   id: string;
@@ -137,9 +138,11 @@ export function ViewResourceModal({ isOpen, onClose, resource }: ViewResourceMod
                     />
                   )}
                   {fileInfo.type === 'image' && (
-                    <img
+                    <Image
                       src={resource.file_path}
                       alt={resource.name}
+                      width={300}
+                      height={200}
                       className="w-full max-h-[200px] object-contain"
                     />
                   )}

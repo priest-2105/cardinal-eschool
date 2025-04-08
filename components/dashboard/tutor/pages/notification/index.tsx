@@ -157,7 +157,7 @@ export function NotificationList() {
     }
 
     // Apply sorting
-      filtered.sort((a, b) => {
+      filtered.sort((a: { created_at: string }, b: { created_at: string }) => {
         const dateA = new Date(a.created_at);
         const dateB = new Date(b.created_at);
         if (sortOrder === "newest") {
@@ -367,7 +367,7 @@ export function NotificationList() {
     }
   }
 
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: unknown) => {
     if (!notification.data) return
 
     const route = getNotificationRoute(notification)
@@ -377,7 +377,7 @@ export function NotificationList() {
     }
   }
 
-  const getNotificationRoute = (notification: any) => {
+  const getNotificationRoute = (notification: unknown) => {
     switch (notification.type) {
         case "ticket_created":
         case "ticket_updated":
