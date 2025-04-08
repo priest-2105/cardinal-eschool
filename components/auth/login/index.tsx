@@ -25,7 +25,7 @@ export default function LoginPageComponent() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const isAssessmentComplete = (assessment: any) => {
+  const isAssessmentComplete = (assessment: unknown) => {
     const requiredFields = [
       'education_level',
       'subjects_interested_in',

@@ -18,7 +18,7 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
   const token = useSelector((state: RootState) => state.auth?.token)
   const userId = useSelector((state: RootState) => state.auth?.user?.id)
   const [unreadCount, setUnreadCount] = useState(0)
-  const [recentNotifications, setRecentNotifications] = useState<any[]>([])
+  const [recentNotifications, setRecentNotifications] = useState<unknown[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
   // Load initial notifications
@@ -33,7 +33,7 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
         setRecentNotifications(notifications.slice(0, 5))
 
         // Count unread notifications
-        const unreadNotifications = notifications.filter((n: any) => !n.read_at)
+        const unreadNotifications = notifications.filter((n: unknown) => !n.read_at)
         setUnreadCount(unreadNotifications.length)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
@@ -54,7 +54,7 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
     const channel = pusher.subscribe(channelName)
 
     // Listen for the 'notification.created' event
-    channel.bind("notification.created", (data: any) => {
+    channel.bind("notification.created", (data: unknown) => {
       // Add the new notification to the recent list
       setRecentNotifications((prev) => {
         const newNotifications = [data, ...prev.slice(0, 4)]

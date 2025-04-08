@@ -162,9 +162,9 @@ const AdminDashboardHeader: React.FC = () => {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.data.notifications
-          const unread = notifications.filter((notification: any) => !notification.read_at)
+          const unread = notifications.filter((notification: unknown) => !notification.read_at)
           setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: any) => ({
+          const recent = unread.slice(0, 3).map((notification: unknown) => ({
             message: notification.message,
             time: notification.created_at,
             createdAt: notification.created_at,

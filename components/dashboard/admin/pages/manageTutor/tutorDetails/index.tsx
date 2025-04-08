@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,37 +26,11 @@ import { getTutorDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-interface Tutor {
-  id: string
-  name: string
-  email: string
-  phone: string
-  subject: string
-  dateJoined: string
-  lastLogin: string
-  status: "Active" | "Suspended" | "Inactive"
-  avatar?: string
-  bio?: string
-  totalStudents?: number
-  totalClasses?: number
-  averageRating?: number
-  classesThisWeek?: number
-  experience?: number
-  specializations?: string[]
-  assignedClasses?: Array<{
-    id: string
-    name: string
-    schedule: string
-    students: number
-  }>
-}
-
-
 export function TutorDetails({ id }: { id: string }) {
   const [activeTab, setActiveTab] = useState("overview")
   const router = useRouter()
   const tutorId = decodeURIComponent(id)
-  const [tutorDetails, setTutorDetails] = useState<any>(null)
+  const [tutorDetails, setTutorDetails] = useState<unknown>(null)
   const [loading, setLoading] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
@@ -65,7 +39,7 @@ export function TutorDetails({ id }: { id: string }) {
   const [isUpdating, setIsUpdating] = useState(false)
 
   // Function to fetch tutor details
-  const fetchTutorDetails = async () => {
+  const fetchTutorDetails = useCallback(async () => {
     setLoading(true)
     try {
       if (!token) throw new Error("Authentication token is missing")
@@ -77,7 +51,7 @@ export function TutorDetails({ id }: { id: string }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, tutorId])
 
   const openModal = (status: "active" | "suspended" | "banned") => {
     setStatusToUpdate(status)

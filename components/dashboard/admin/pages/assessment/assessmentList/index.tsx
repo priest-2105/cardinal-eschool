@@ -48,7 +48,6 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const token = useSelector((state: RootState) => state.auth?.token)
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Stats derived from assignments
   const stats = {
@@ -64,23 +63,23 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
         : 0,
   }
 
-  const fetchAssignments = async () => {
-    if (!token) return
-
-    setLoading(true)
-    try {
-      const response = await getClassAssignments(token, classId)
-      setAssignments(response.data.assignments)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch assignments")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
+    const fetchAssignments = async () => {
+      if (!token) return
+
+      setLoading(true)
+      try {
+        const response = await getClassAssignments(token, classId)
+        setAssignments(response.data.assignments)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch assignments")
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchAssignments()
-  }, [classId, token, fetchAssignments])
+  }, [classId, token])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)

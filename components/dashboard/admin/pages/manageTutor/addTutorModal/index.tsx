@@ -12,10 +12,18 @@ import { RootState } from "@/lib/store"
 import { createTutor } from "@/lib/api/admin/api"
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
+// Define a TutorData interface if not defined already
+interface TutorData {
+  tutor_codec: string;
+  name: string;
+  email: string;
+  // ...other properties as needed
+}
+
 interface AddTutorModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddTutor: (tutor: any) => void
+  onAddTutor: (tutor: TutorData) => void
 }
 
 export function AddTutorModal({ isOpen, onClose, onAddTutor }: AddTutorModalProps) {
@@ -41,9 +49,10 @@ export function AddTutorModal({ isOpen, onClose, onAddTutor }: AddTutorModalProp
         onAddTutor(response.data.tutor);
         onClose();
       }
-    } catch (error) {
-      console.error('Tutor creation failed', error);
-      setAlert({ type: 'error', message: (error as Error).message });
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : "Unknown error";
+      console.error("Tutor creation failed", errMsg);
+      setAlert({ type: "error", message: errMsg });
     } finally {
       setIsSubmitting(false);
     }

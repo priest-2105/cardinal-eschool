@@ -26,6 +26,13 @@ interface Student {
   subscription_plan: string | null
 }
 
+interface StudentRecord {
+  id: string;
+  name: string;
+  email: string;
+  // ... add other properties as needed
+}
+
 export function StudentList() {
   const [students, setStudents] = useState<Student[]>([])
   const [searchQuery, setSearchQuery] = useState("")
@@ -200,7 +207,7 @@ export function StudentList() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredStudents.map((student) => (
+                  {filteredStudents.map((student: StudentRecord) => (
                     <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
                       <TableCell>{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>

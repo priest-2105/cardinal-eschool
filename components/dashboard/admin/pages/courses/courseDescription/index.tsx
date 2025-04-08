@@ -20,7 +20,7 @@ interface CourseDescriptionProps {
       name: string;
       dp_url: string | null;
     }[];
-    resources_assigned: any[];
+    resources_assigned: string[];
   }
 }
 
@@ -33,7 +33,9 @@ export default function CourseDescription({ coursedetails }: CourseDescriptionPr
     return text.slice(0, maxLength) + "..."
   }
 
-  
+  function renderContent(content: string): JSX.Element {
+    return <p>{content}</p>;
+  }
 
   return (
     <div className="space-y-6">

@@ -287,15 +287,12 @@ export default function EditCoursePage() {
           router.push("/admin/courses");
         }
       }, 2000);
-    } catch (error: any) {
-      console.error("Error:", {
-        message: error.message,
-        stack: error.stack
-      });
-      
+    } catch (error: unknown) { // use unknown instead of any
+      const err = error instanceof Error ? error.message : "Unknown error";
+      console.error("Error:", { message: err });
       setAlert({
         type: "error",
-        message: error.message || "Failed to save course. Please check the console for details."
+        message: err
       });
       
       // Log validation errors if present

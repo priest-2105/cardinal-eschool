@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,45 +27,6 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { getStudentDetails, updateUserStatus } from "@/lib/api/admin/api"
 import { formatDate } from "@/utils/dateformat"
-
-interface Student {
-  id: string
-  name: string
-  email: string
-  phone: string
-  address: string
-  dateOfBirth: string
-  grade: string
-  program: string
-  dateJoined: string
-  lastLogin: string
-  status: "Active" | "Suspended" | "Inactive"
-  avatar?: string
-  totalCourses?: number
-  averageGrade?: string
-  attendance?: number
-  examScores?: {
-    sat?: {
-      reading: number
-      math: number
-      total: number
-    }
-    ielts?: {
-      listening: number
-      reading: number
-      writing: number
-      speaking: number
-      overall: number
-    }
-  }
-  currentCourses?: Array<{
-    id: string
-    name: string
-    progress: number
-  }>
-}
-
-
 
 export function StudentDetails({ id }: { id: string }) {
   const studentId = decodeURIComponent(id)
@@ -130,8 +91,7 @@ export function StudentDetails({ id }: { id: string }) {
     }
   }
 
-  // Function to fetch student details
-  const fetchStudentDetails = async () => {
+  const fetchStudentDetails = useCallback(async () => {
     setLoading(true)
     try {
       if (!token) throw new Error("Authentication token is missing")
@@ -140,13 +100,18 @@ export function StudentDetails({ id }: { id: string }) {
       console.log(data);
       
     } catch (error: unknown) {
-      console.error("Failed to fetch student details:", error instanceof Error ? error.message : "Unknown error")
+      const errMsg = error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to fetch student details:", errMsg);
       console.log("student id ", studentId)
-      setAlert({ type: "danger", message: error instanceof Error ? error.message : "Unknown error" })
+      setAlert({ type: "danger", message: errMsg })
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, studentId])
+
+  useEffect(() => {
+    fetchStudentDetails()
+  }, [fetchStudentDetails])
 
   useEffect(() => {
     if (alert) {
@@ -185,12 +150,6 @@ export function StudentDetails({ id }: { id: string }) {
       document.body.style.overflow = "auto"
     }
   }, [isModalOpen])
-
-  // Initial fetch of student details
-  useEffect(() => {
-    fetchStudentDetails()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, studentId, fetchStudentDetails])
 
   const handleBack = () => {
     router.push("/admin/students")

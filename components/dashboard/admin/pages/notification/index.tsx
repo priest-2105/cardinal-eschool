@@ -101,8 +101,8 @@ export function NotificationList() {
         }))
         setNotifications(notificationsWithDates)
         setPagination(response.data.pagination)
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error)
+      } catch (error: unknown) {
+        console.error("Failed to fetch notifications:", error instanceof Error ? error.message : "Unknown error")
         setAlert({ type: "error", message: "Failed to load notifications." })
       } finally {
         setIsLoading(false)
@@ -205,8 +205,8 @@ export function NotificationList() {
         ),
       )
       setAlert({ type: "success", message: "Notification marked as read." })
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error)
+    } catch (error: unknown) {
+      console.error("Failed to mark notification as read:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to mark notification as read." })
     } finally {
       setProcessingNotificationId(null)
@@ -223,8 +223,8 @@ export function NotificationList() {
         prev.map((notification) => ({ ...notification, isRead: true, read_at: new Date().toISOString() })),
       )
       setAlert({ type: "success", message: "All notifications marked as read." })
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error)
+    } catch (error: unknown) {
+      console.error("Failed to mark all notifications as read:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to mark all notifications as read." })
     } finally {
       setIsMarkingAllAsRead(false)
@@ -239,8 +239,8 @@ export function NotificationList() {
       await deleteNotification(token, Number.parseInt(id))
       setNotifications((prev) => prev.filter((notification) => notification.id !== id))
       setAlert({ type: "success", message: "Notification deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notification:", error)
+    } catch (error: unknown) {
+      console.error("Failed to delete notification:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to delete notification." })
     } finally {
       setProcessingNotificationId(null)
@@ -294,8 +294,8 @@ export function NotificationList() {
       setSelectedNotifications(new Set())
 
       setAlert({ type: "success", message: "Notifications deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notifications:", error)
+    } catch (error: unknown) {
+      console.error("Failed to delete notifications:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to delete notifications." })
     } finally {
       setIsDeleting(false)
@@ -328,8 +328,8 @@ export function NotificationList() {
           }
           setAlert({ type: "success", message: "Selected notifications marked as read." })
           setSelectedNotifications(new Set())
-        } catch (error) {
-          console.error("Failed to mark notifications as read:", error)
+        } catch (error: unknown) {
+          console.error("Failed to mark notifications as read:", error instanceof Error ? error.message : "Unknown error")
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
         } finally {
           setIsMarkingAsRead(false)

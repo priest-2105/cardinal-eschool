@@ -46,7 +46,7 @@ export function CourseList() {
         };
         router.prefetch("createcourse");
         fetchCourses();
-    }, [token, searchQuery, perPage, currentPage]);
+    }, [token, searchQuery, perPage, currentPage, router]);
 
     return (
         <div className="space-y-4">
@@ -118,7 +118,7 @@ export function CourseList() {
                                 <SelectItem key={i + 1} value={(i + 1).toString()}>
                                     Page {i + 1}
                                 </SelectItem>
-                            ))}
+                            ))} 
                         </SelectContent>
                     </Select>
                 </div>

@@ -33,7 +33,7 @@ const VerifyPaymentPage = () => {
         } else {
           setStatus("failed");
         }
-      } catch (_error) { // renamed variable to _error to avoid unused variable error
+      } catch { // removed unused variable _error
         setStatus("failed");
       } finally {
         // Redirect after a delay, regardless of success or failure
