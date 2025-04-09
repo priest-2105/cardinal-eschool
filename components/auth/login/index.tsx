@@ -34,8 +34,13 @@ export default function LoginPageComponent() {
       'specific_goals'
     ];
 
+    if (!assessment || typeof assessment !== 'object') {
+      return false;
+    }
     
-    return requiredFields.every(field => assessment[field] !== null);
+    return requiredFields.every(field => 
+      field in assessment && (assessment as Record<string, unknown>)[field] !== null
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
