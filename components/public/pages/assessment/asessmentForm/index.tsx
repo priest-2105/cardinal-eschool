@@ -180,7 +180,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
               <Label htmlFor="plan_id">Subscription Plan</Label>
               <Select
                 name="plan_id"
-                value={formData.plan_id || ""}
+                value={formData.plan_id ? formData.plan_id.toString() : ""}
                 onValueChange={(value) => {
                   console.log("Selected plan ID:", value)
                   handleSelectChange("plan_id", value)
@@ -258,9 +258,11 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                     subjects_interested_in: selected.map((id) => parseInt(id)),
                   }))
                 }
-                placeholder="Select up to 2 subjects"
                 className="mt-1"
               />
+              {formData.subjects_interested_in.length === 0 && (
+                <p className="text-gray-500 text-sm mt-1">Select up to 2 subjects</p>
+              )}
               {formData.subjects_interested_in?.length === 0 && (
                 <p className="text-red-500 text-sm mt-1">Please select at least one subject</p>
               )}
@@ -271,13 +273,21 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         return (
           <>
             <div>
-              <Label>Test Preparation</Label>
-              <MultiSelect
+                <Label>Test Preparation</Label>
+                <MultiSelect
                 options={testOptions.map((test) => ({ value: test, label: test }))}
                 value={formData.tests_interested_in || []}
-                onChange={(selected) => handleSelectChange("tests_interested_in", selected)}
-                placeholder="Select tests you're interested in"
-              />
+                onChange={(selected) => 
+                  setFormData((prev) => ({
+                  ...prev,
+                  tests_interested_in: selected
+                  }))
+                }
+                className="mt-1"
+                />
+              {formData.tests_interested_in.length === 0 && (
+                <p className="text-gray-500 text-sm mt-1">Select tests you're interested in</p>
+              )}
             </div>
           </>
         )
@@ -360,7 +370,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
     })
   }
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (name: string, value: string | boolean) => {
     console.log(`Selecting ${name}:`, value)
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: name === "plan_id" ? Number(value) : value }

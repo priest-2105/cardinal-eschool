@@ -12,10 +12,12 @@ import { X } from "lucide-react";
 
 interface Plan {
   id: number;
+  name: string;
   title: string;
   price: string;
   duration: string;
   features: string[];
+  sub_id: string;
 }
 
 export default function PlanPickComponent() {
@@ -44,11 +46,13 @@ export default function PlanPickComponent() {
             const planData = planResponse.data.subscription_plan;
 
             setChosenPlan({
+              name: planData.name,
               title: planData.name,
               price: `$${planData.price}`,
               duration: "/ Month",
               features: ["Details of the plan will be displayed here."],
               id: planData.id,
+              sub_id: planData.sub_id || String(planData.id),
             });
           }
         } catch (error) {

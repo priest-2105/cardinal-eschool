@@ -29,7 +29,8 @@ export default function ResetPasswordPageComponent() {
       router.push('/tutor/login')
     } catch (error) {
       console.error('Reset password email failed', error)
-      const errorMessage = (error as unknown).response?.data?.message || (error as unknown).message
+      const err = error as { response?: { data?: { message?: string } }; message?: string }
+      const errorMessage = err.response?.data?.message || err.message || 'An error occurred'
       setAlert({ type: 'error', message: errorMessage })
     } finally {
       setIsSubmitting(false)
