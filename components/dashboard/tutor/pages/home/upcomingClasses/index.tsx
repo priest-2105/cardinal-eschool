@@ -5,23 +5,24 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 
 interface UpcomingClassprop {
-  id: number,
-  name: string,
-  code: string,
-  schedule: {
-      days: [
-          string,
-          string
-      ],
-      time: [
-          string,
-          string
-      ]
-  },
-  meeting_link: string,
-  student_count: number,
-  department: string,
-  semester: string
+  upcomingClasses: {
+    id: number;
+    name: string;
+    code: string;
+    schedule: {
+      days: string[];
+      time: string[];
+    };
+    meeting_link: string;
+    student_count: number;
+    department: string;
+    semester: string;
+    status: string;
+    progress_percentage: number;
+    days_remaining: number | null;
+    start_date: string | null;
+    end_date: string | null;
+  }[];
 }
 
 export default function UpcomingClasses({ upcomingClasses }: UpcomingClassprop) {

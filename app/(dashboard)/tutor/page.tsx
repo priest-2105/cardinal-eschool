@@ -100,7 +100,21 @@ export default function TutorDashboard() {
       setLoading(true);
       try {
         const response = await getTutorDashboard(token);
-        setDashboardData(response.data);
+        const data = response.data;
+        
+        const transformedData = {
+          ...data,
+          upcoming_classes: data.upcoming_classes.map(cls => ({
+            ...cls,
+            status: 'active',
+            progress_percentage: 0,
+            days_remaining: null,
+            start_date: null,
+            end_date: null
+          }))
+        };
+        
+        setDashboardData(transformedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
       } finally {
@@ -154,7 +168,7 @@ export default function TutorDashboard() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2">
             {(dashboardData?.upcoming_classes ?? []).length > 0 && (
-              <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes} />
+              <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
             )}
             {(dashboardData?.pending_reports ?? []).length > 0 && (
               <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
