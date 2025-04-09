@@ -15,6 +15,14 @@ import TiktokIcon from "@/public/assets/icons/tiktok-dark.png"
 import WhatsappIcon from "@/public/assets/icons/whatsapp-dark.png"
 import cardinalConfig from "@/config"
 
+type ErrorResponse = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
+
 export default function ResetPasswordPageComponent() {
   const [formData, setFormData] = useState({
     email: "",
@@ -35,11 +43,10 @@ export default function ResetPasswordPageComponent() {
       router.push('/login')
     } catch (error) {
       console.error('Reset password email failed', error)
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : typeof error === 'object' && error !== null && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response
-          ? (error.response as any).data?.message 
-          : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : (error as ErrorResponse).response?.data?.message || 'Unknown error occurred';
       setAlert({ type: 'error', message: errorMessage })
     } finally {
       setIsSubmitting(false)
