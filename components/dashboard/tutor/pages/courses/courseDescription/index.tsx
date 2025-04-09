@@ -9,6 +9,8 @@ interface CourseDescriptionProps {
   coursdetails: {
     name: string;
     code: string;
+    semester: string;
+    department: string;
     description: string;
     schedule: {
       days: string[];

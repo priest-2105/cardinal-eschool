@@ -3,10 +3,13 @@ import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 export interface CourseDetails {
   status: string;
   message: string;
+
   data: {
     class: {
       name: string;
       code: string;
+      semester: string;
+      department: string;
       description: string;
       schedule: {
         days: string[];

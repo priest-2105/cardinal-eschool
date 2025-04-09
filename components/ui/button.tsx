@@ -12,6 +12,7 @@ const buttonVariants = cva(
         warning: "bg-[#e4d726] text-white hover:bg-[#be9a37] focus-visible:ring-[#c2b11b]",
         outline: "border border-[#1BC2C2] text-[#1BC2C2] hover:bg-[#fffde9] focus-visible:ring-[#c2951b]",
         ghost: "text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-300",
+        link: "text-[#1BC2C2]  hover:[#1fe4e4]",
       },
       size: {
         default: "h-10 px-4 py-2",

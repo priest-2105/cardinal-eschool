@@ -21,6 +21,24 @@ import StudentList from "../../student/studentList"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
+export interface Resource {
+  id: string
+  title: string
+  type: string
+  size: string
+  dateUploaded: Date
+  fileUrl: string
+  comment?: string
+}
+
+interface AssignedResource {
+  id: number
+  name: string
+  file_url: string
+  comment: string
+}
+
+
 
 export default function CourseDetailsComponent() {
   const params = useParams()
@@ -41,6 +59,7 @@ export default function CourseDetailsComponent() {
     { id: "assessments", label: "Assessments", icon: FileText },
     { id: "students", label: "Students", icon: Users },
   ]
+  
 
   const handleback = () => {
     route.back()
@@ -128,7 +147,7 @@ export default function CourseDetailsComponent() {
             {activeTab === "resources" && (
               <ResourcesList 
                 classId={courseId} 
-                assignedResources={courseDetails.resources_assigned}
+                assignedResources={courseDetails.resources_assigned as AssignedResource[]}
               />
             )}
             {activeTab === "reports" && <ReportsList classId={courseId}  courseDetails={courseDetails} />}
