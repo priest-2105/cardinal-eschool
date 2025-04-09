@@ -31,12 +31,6 @@ import { useRouter } from "next/navigation"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
 import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes"
 
-// Add this new type definition
-// interface ExtendedOverview extends Omit<AdminDashboardData["overview"], "completion_rate" | "completion_rate_change"> {
-// 	completion_rate: number;
-// 	completion_rate_change: number;
-// }
-
 interface StatChangeProps {
   value: number;
 }
@@ -73,8 +67,10 @@ export default function AdminDashboard() {
         // Ensure `completion_rate` and `completion_rate_change` are present in the overview
         const adjustedOverview = {
           ...response.data.overview,
-          completion_rate: response.data.overview.completion_rate ?? 0,
-          completion_rate_change: response.data.overview.completion_rate_change ?? 0,
+          completion_rate: "completion_rate" in response.data.overview ? response.data.overview.completion_rate : 0,
+          completion_rate_change: "completion_rate_change" in response.data.overview
+            ? response.data.overview.completion_rate_change
+            : 0,
         };
 
         // Update the dashboard data with adjusted overview
@@ -121,8 +117,10 @@ export default function AdminDashboard() {
       // Ensure `completion_rate` and `completion_rate_change` are present in the overview
       const adjustedOverview = {
         ...response.data.overview,
-        completion_rate: response.data.overview.completion_rate ?? 0,
-        completion_rate_change: response.data.overview.completion_rate_change ?? 0,
+        completion_rate: "completion_rate" in response.data.overview ? response.data.overview.completion_rate : 0,
+        completion_rate_change: "completion_rate_change" in response.data.overview
+          ? response.data.overview.completion_rate_change
+          : 0,
       };
 
       // Update the dashboard data with adjusted overview
