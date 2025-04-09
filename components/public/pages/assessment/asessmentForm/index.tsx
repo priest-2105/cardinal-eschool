@@ -8,11 +8,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { MultiSelect } from "@/components/ui/multi-select"
-import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { getSubjects } from "@/lib/api/public/fetchsubjects"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+// import Image from "next/image"
 
 const testOptions = ["SAT", "IELTS", "TOEFL", "GRE", "CELPIP", "PTE", "GMAT", "LSAT", "PSAT", "ACT"]
 
@@ -37,11 +37,9 @@ interface AssessmentFormProps {
 const STORAGE_KEY = "assessment_form_data"
 
 export default function AssessmentForm({ onSubmit, initialData, isSubmitting = false }: AssessmentFormProps) {
-  const [subjectError, setSubjectError] = useState("")
   const [subjects, setSubjects] = useState<{ id: number; name: string }[]>([])
   const token = useSelector((state: RootState) => state.auth?.token)
   const formDataRef = useRef<FormData | null>(null)
-  const [otherSubjects, setOtherSubjects] = useState<string[]>(initialData?.other_subjects || ["", ""])
   const [formData, setFormData] = useState<FormData>(() => {
     // Try to load from localStorage first
     const savedData = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null
@@ -110,10 +108,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           tests_interested_in: parsedData.tests_interested_in || [],
         }))
 
-        if (parsedData.other_subjects) {
-          setOtherSubjects(parsedData.other_subjects)
-        }
-
         // Set current step based on saved data
         if (parsedData.specific_goals) setCurrentStep(6)
         else if (parsedData.learning_difficulty_description) setCurrentStep(5)
@@ -128,7 +122,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
       }
     } else if (initialData) {
       setFormData(initialData)
-      setOtherSubjects(initialData.other_subjects || ["", ""])
       if (initialData.plan_id) setCurrentStep(0) // Set to first step if initialData has plan_id
     } else {
       setCurrentStep(0) // Ensure it defaults to 0 if no saved data or initialData
@@ -268,7 +261,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                 placeholder="Select up to 2 subjects"
                 className="mt-1"
               />
-              {subjectError && <p className="text-red-500 text-sm mt-1">{subjectError}</p>}
               {formData.subjects_interested_in?.length === 0 && (
                 <p className="text-red-500 text-sm mt-1">Please select at least one subject</p>
               )}
