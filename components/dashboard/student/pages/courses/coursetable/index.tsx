@@ -29,7 +29,7 @@ export function CourseTable({ courses }: CourseTableProps) {
             <TableHead>Tutor</TableHead>
             <TableHead>Course Name</TableHead>
             <TableHead>Course Code</TableHead>
-            <TableHead>No. of Students</TableHead>
+            <TableHead>Completion</TableHead>
             <TableHead>Schedule</TableHead>
           </TableRow>
         </TableHeader>

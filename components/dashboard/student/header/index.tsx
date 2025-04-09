@@ -24,7 +24,6 @@ const profileOptions = [
   { name: "Logout", href: "#" },
 ]
 
-
 const StudentDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
@@ -85,7 +84,7 @@ const StudentDashboardHeader: React.FC = () => {
           const recent = unread.slice(0, 3).map((notification: unknown) => ({
             message: notification.message,
             time: notification.createdAt,
-            href: `/student/notifications/${notification.id}`,
+            href: `/student/notifications`,
           }))
           setRecentNotifications(recent)
         } catch (error: unknown) {
@@ -159,12 +158,9 @@ const StudentDashboardHeader: React.FC = () => {
                 })
               );
             } else {
-              // router.push("/planpick");
             }
           } else {
-            // Clear subscription status if the check fails
             dispatch(clearSubscriptionStatus());
-            // router.push("/planpick");
           }
         }
       } catch (error: unknown) {
@@ -190,7 +186,7 @@ const StudentDashboardHeader: React.FC = () => {
   }
 
   return (
-    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-40 shadow-md">
+    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-90 shadow-md">
       <div className="border-b">
         <div className="flex h-16 items-center max-lg:justify-between justify-end gap-x-4 px-6">
           <button onClick={toggleSidebar} className="ml-26 mr-2 mb-0 lg:hidden">
@@ -214,7 +210,7 @@ const StudentDashboardHeader: React.FC = () => {
               <Button variant="ghost" size="icon" className="relative" onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}>
                 <Bell className="h-5 w-5" />
                 {hasUnreadNotifications && (
-                  <span className="absolute top-2 right-2 h-2 w-2rounded-full bg-red-500" />
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" /> 
                 )}
               </Button>
               {notificationDropdownOpen && (

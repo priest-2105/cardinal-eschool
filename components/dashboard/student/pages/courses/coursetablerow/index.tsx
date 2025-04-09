@@ -48,7 +48,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
       </TableCell>
       <TableCell>{course.name}</TableCell>
       <TableCell>{course.code}</TableCell>
-      <TableCell>{course.no_of_students}</TableCell>
+      <TableCell>{course.progress_percentage}%</TableCell>
       <TableCell>
         {schedule.days.map((day, index) => (
           <div key={`${course.id}-${day}`}>
