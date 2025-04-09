@@ -29,7 +29,52 @@ import { DashboardSkeleton } from "@/components/dashboard/admin/pages/skeletons/
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMarquee"
-import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes"
+
+// Update the AdminDashboardData type to match the API response
+interface AdminDashboardData {
+  overview: {
+    students: {
+      total: number;
+      new_this_month: number;
+      percentage_change: number;
+    };
+    tutors: {
+      total: number;
+      new_this_month: number;
+      percentage_change: number;
+    };
+    classes: {
+      total: number;
+      new_this_month: number;
+      percentage_change: number;
+    };
+    revenue: {
+      total: string;
+      this_month: string;
+    };
+  };
+  extras: {
+    recent_courses: {
+      id: number;
+      name: string;
+      student_count: number;
+      created_at: string;
+    }[];
+    recent_students: {
+      user_codec: string;
+      name: string;
+      email: string;
+      is_subscribed: boolean;
+      courses_enrolled: number;
+    }[];
+    recent_tutors: {
+      tutor_codec: string;
+      name: string;
+      email: string;
+      courses_assigned: number;
+    }[];
+  };
+}
 
 interface StatChangeProps {
   value: number;
@@ -64,20 +109,8 @@ export default function AdminDashboard() {
       try {
         const response = await getDashboardData(token);
 
-        // Ensure `completion_rate` and `completion_rate_change` are present in the overview
-        const adjustedOverview = {
-          ...response.data.overview,
-          completion_rate: "completion_rate" in response.data.overview ? response.data.overview.completion_rate : 0,
-          completion_rate_change: "completion_rate_change" in response.data.overview
-            ? response.data.overview.completion_rate_change
-            : 0,
-        };
-
-        // Update the dashboard data with adjusted overview
-        setDashboardData({
-          ...response.data,
-          overview: adjustedOverview,
-        });
+        // Update the dashboard data directly from the API response
+        setDashboardData(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
       } finally {
@@ -114,20 +147,8 @@ export default function AdminDashboard() {
     try {
       const response = await getDashboardData(token);
 
-      // Ensure `completion_rate` and `completion_rate_change` are present in the overview
-      const adjustedOverview = {
-        ...response.data.overview,
-        completion_rate: "completion_rate" in response.data.overview ? response.data.overview.completion_rate : 0,
-        completion_rate_change: "completion_rate_change" in response.data.overview
-          ? response.data.overview.completion_rate_change
-          : 0,
-      };
-
-      // Update the dashboard data with adjusted overview
-      setDashboardData({
-        ...response.data,
-        overview: adjustedOverview,
-      });
+      // Update the dashboard data directly from the API response
+      setDashboardData(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
     } finally {
@@ -331,7 +352,7 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {recentStudents.map((student) => (
-                    <div key={student.id} className="flex items-center gap-4">
+                    <div key={student.user_codec} className="flex items-center gap-4">
                       <Avatar>
                         <AvatarImage src={`/placeholder.svg?height=40&width=40&text=${student.name.charAt(0)}`} />
                         <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
@@ -341,7 +362,7 @@ export default function AdminDashboard() {
                         <p className="text-sm text-muted-foreground">{student.email}</p>
                         <div className="flex items-center pt-1">
                           <BookOpen className="mr-1 h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{student.courses} courses</span>
+                          <span className="text-xs text-muted-foreground">{student.courses_enrolled} courses</span>
                         </div>
                       </div>
                     </div>
@@ -368,7 +389,7 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {recentTutors.map((tutor) => (
-                    <div key={tutor.id} className="flex items-center gap-4">
+                    <div key={tutor.tutor_codec} className="flex items-center gap-4">
                       <Avatar>
                         <AvatarImage src={`/placeholder.svg?height=40&width=40&text=${tutor.name.charAt(0)}`} />
                         <AvatarFallback>{tutor.name.charAt(0)}</AvatarFallback>
@@ -379,11 +400,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-3 pt-1">
                           <div className="flex items-center">
                             <BookOpen className="mr-1 h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">{tutor.courses} courses</span>
-                          </div>
-                          <div className="flex items-center">
-                            <BarChart3 className="mr-1 h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">{tutor.rating} rating</span>
+                            <span className="text-xs text-muted-foreground">{tutor.courses_assigned} courses</span>
                           </div>
                         </div>
                       </div>
