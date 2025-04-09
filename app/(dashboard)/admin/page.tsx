@@ -81,25 +81,28 @@ interface StatChangeProps {
 }
 
 function StatChange({ value }: StatChangeProps) {
-  if (value === 0) return <p className="text-xs text-muted-foreground">No change</p>
-  
+  if (value === 0) return <p className="text-xs text-muted-foreground">No change</p>;
+
   return (
-    <p className={cn(
-      "text-xs flex items-center",
-      value > 0 ? "text-green-600" : "text-red-600"
-    )}>
-      {value > 0 ? '+' : ''}{value}% from last month
+    <p
+      className={cn(
+        "text-xs flex items-center",
+        value > 0 ? "text-green-600" : "text-red-600"
+      )}
+    >
+      {value > 0 ? "+" : ""}
+      {value}% from last month
     </p>
-  )
+  );
 }
 
 export default function AdminDashboard() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null)
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const route = useRouter()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [dashboardData, setDashboardData] = useState<AdminDashboardData | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const route = useRouter();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -154,7 +157,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -163,28 +166,28 @@ export default function AdminDashboard() {
           <DashboardSkeleton />
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      <div className="text-center py-12 border rounded-lg">
-        <div className="p-4">
-          <Alert variant="danger">{error}</Alert>
+        <div className="text-center py-12 border rounded-lg">
+          <div className="p-4">
+            <Alert variant="danger">{error}</Alert>
+          </div>
         </div>
-       </div>
-       </div>
-    )
+      </div>
+    );
   }
 
   const recentStudents = dashboardData?.extras.recent_students.slice(0, 3) || [];
   const recentTutors = dashboardData?.extras.recent_tutors.slice(0, 3) || [];
-  
+
   return (
-    <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>     
+    <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
       <AnnouncementMarquee />
-      
+
       <div className="p-6 bg-white my-4 border border-gray-200 rounded-lg space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -212,11 +215,11 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                 <div>
-                <div className="text-2xl font-bold">{dashboardData?.overview.students.total}</div>
-                <StatChange value={dashboardData?.overview.students.percentage_change} />
-                  </div>
+                  <div className="text-2xl font-bold">{dashboardData?.overview.students.total ?? 0}</div>
+                  <StatChange value={dashboardData?.overview.students.percentage_change ?? 0} />
+                </div>
                 <p className="text-xs text-muted-foreground">
-                {dashboardData?.overview.students.new_this_month} new students this month
+                  {dashboardData?.overview.students.new_this_month ?? 0} new students this month
                 </p>
               </CardContent>
             </Card>
@@ -227,11 +230,11 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                 <div>
-                  <div className="text-2xl font-bold">{dashboardData?.overview.tutors.total}</div>
-                <StatChange value={dashboardData?.overview.tutors.percentage_change} />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                  {dashboardData?.overview.students.new_this_month} new tutors this month
+                  <div className="text-2xl font-bold">{dashboardData?.overview.tutors.total ?? 0}</div>
+                  <StatChange value={dashboardData?.overview.tutors.percentage_change ?? 0} />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {dashboardData?.overview.tutors.new_this_month ?? 0} new tutors this month
                 </p>
               </CardContent>
             </Card>
@@ -241,24 +244,24 @@ export default function AdminDashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="flex justify-between items-center">
-               <div>
-                <div className="text-2xl font-bold">{dashboardData?.overview.classes.total}</div>
-                <StatChange value={dashboardData?.overview.classes.percentage_change} />
+                <div>
+                  <div className="text-2xl font-bold">{dashboardData?.overview.classes.total ?? 0}</div>
+                  <StatChange value={dashboardData?.overview.classes.percentage_change ?? 0} />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {dashboardData?.overview.classes.new_this_month} new tutors this month
+                  {dashboardData?.overview.classes.new_this_month ?? 0} new courses this month
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                <CardTitle className="text-sm font-medium">Revenue</CardTitle>
                 <LineChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboardData?.overview.completion_rate}%</div>
+                <div className="text-2xl font-bold">${dashboardData?.overview.revenue.total ?? "0.00"}</div>
                 <p className="text-xs text-muted-foreground">
-                  +{dashboardData?.overview.completion_rate_change}% from last month
+                  ${dashboardData?.overview.revenue.this_month ?? "0.00"} this month
                 </p>
               </CardContent>
             </Card>
@@ -420,7 +423,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-      </div>
-  )
+    </div>
+  );
 }
 
