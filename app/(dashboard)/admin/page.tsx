@@ -62,51 +62,35 @@ export default function AdminDashboard() {
   const token = useSelector((state: RootState) => state.auth?.token)
   const route = useRouter()
 
-
   useEffect(() => {
     const fetchDashboard = async () => {
-      if (!token) return
-      
-      setLoading(true)
-      try {
-        const response = await getDashboardData(token)
-        const data = response.data;
-        // Create new overview using our ExtendedOverview type
-        const extendedOverview: ExtendedOverview = {
-          ...data.overview,
-          completion_rate: ((data.overview as unknown as Partial<ExtendedOverview>).completion_rate) ?? 0,
-          completion_rate_change: ((data.overview as unknown as Partial<ExtendedOverview>).completion_rate_change) ?? 0,
-        };
-        const adjustedData: AdminDashboardData = {
-          ...data,
-          overview: extendedOverview,
-          extras: {
-            ...data.extras,
-            recent_students: data.extras.recent_students.map(student => ({
-              id: student.user_codec,
-              name: student.name,
-              email: student.email,
-              courses: student.courses_enrolled,
-            })),
-            recent_courses: data.extras.recent_courses,
-            recent_tutors: data.extras.recent_tutors.map(tutor => ({
-              id: tutor.tutor_codec, 
-              name: tutor.name,
-              email: tutor.email,
-              courses: tutor.courses_assigned, 
-            }))
-          }
-        };
-        setDashboardData(adjustedData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
-      } finally {
-        setLoading(false)
-      }
-    }
+      if (!token) return;
 
-    fetchDashboard()
-  }, [token])
+      setLoading(true);
+      try {
+        const response = await getDashboardData(token);
+
+        // Ensure `completion_rate` and `completion_rate_change` are present in the overview
+        const adjustedOverview = {
+          ...response.data.overview,
+          completion_rate: response.data.overview.completion_rate ?? 0,
+          completion_rate_change: response.data.overview.completion_rate_change ?? 0,
+        };
+
+        // Update the dashboard data with adjusted overview
+        setDashboardData({
+          ...response.data,
+          overview: adjustedOverview,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, [token]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -128,20 +112,30 @@ export default function AdminDashboard() {
   }
 
   const handleRefresh = async () => {
-      if (!token) return
-   
-      setLoading(true)
-      try {
-        const response = await getDashboardData(token)
-        setDashboardData(response.data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch dashboard data")
-      } finally {
-        setLoading(false)
-      }
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const response = await getDashboardData(token);
+
+      // Ensure `completion_rate` and `completion_rate_change` are present in the overview
+      const adjustedOverview = {
+        ...response.data.overview,
+        completion_rate: response.data.overview.completion_rate ?? 0,
+        completion_rate_change: response.data.overview.completion_rate_change ?? 0,
+      };
+
+      // Update the dashboard data with adjusted overview
+      setDashboardData({
+        ...response.data,
+        overview: adjustedOverview,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
+    } finally {
+      setLoading(false);
+    }
   }
-  
-  
 
   if (loading) {
     return (
