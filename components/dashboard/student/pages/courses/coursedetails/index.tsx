@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useSelector } from "react-redux"
@@ -17,9 +17,18 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
 import { FileText } from "lucide-react"
+import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
+interface Assignment {
+  id: number
+  title: string
+  description: string
+  file_path: string
+  deadline: string
+  tutor_id: string
+}
 
 export default function CourseDetailsComponent() {
   const params = useParams()
@@ -28,7 +37,7 @@ export default function CourseDetailsComponent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
-
+  const [assignments, setAssignments] = useState<Assignment[]>([])
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
@@ -40,6 +49,20 @@ export default function CourseDetailsComponent() {
     { id: "assessments", label: "Assessments", icon: FileText },
     // { id: "students", label: "Students", icon: Users },
   ]
+
+  const fetchAssignments = useCallback(async () => {
+    if (!token || !courseDetails) return
+    try {
+      const response = await getClassAssignments(token, courseDetails.id)
+      setAssignments(response.data.assignments)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch assignments")
+    }
+  }, [courseDetails, token])
+
+  useEffect(() => {
+    fetchAssignments()
+  }, [fetchAssignments])
 
   const handleback = () => {
     route.back()
@@ -173,12 +196,12 @@ export default function CourseDetailsComponent() {
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Enrolled Students</p>
-                  <p className="font-medium">{courseDetails?.students_assigned?.length}</p>
+                  <p className="font-medium">{courseDetails?.students?.length || 0}</p>
                 </div>
                 <div className="space-y-2">
                   <Clock className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Resources</p>
-                  <p className="font-medium"> {courseDetails?.resources_assigned?.length} </p>
+                  <p className="font-medium">{courseDetails?.resources?.length || 0}</p>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
@@ -188,7 +211,7 @@ export default function CourseDetailsComponent() {
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Assessments</p>
-                  <p className="font-medium">12</p>
+                  <p className="font-medium">{assignments.length}</p>
                 </div>
               </div>
             </CardContent>
