@@ -149,7 +149,7 @@ export default function TutorDashboard() {
       )}
 
       <div className="space-y-6 p-6 bg-white rounded-lg border">
-        <DashboardStats overview={dashboardData?.overview} />
+        {dashboardData?.overview && <DashboardStats overview={dashboardData.overview} />}
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="md:col-span-2">
@@ -157,12 +157,12 @@ export default function TutorDashboard() {
               <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes} />
             )}
             {(dashboardData?.pending_reports ?? []).length > 0 && (
-              <PendingReportsList reports={dashboardData?.pending_reports} />
+              <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
             )}
           </div>
           <div className="space-y-6">
             {(dashboardData?.active_assignments ?? []).length > 0 && (
-              <Assessments assignments={dashboardData?.active_assignments} />
+              <Assessments assignments={dashboardData?.active_assignments ?? []} />
             )}
           </div>
         </div>
