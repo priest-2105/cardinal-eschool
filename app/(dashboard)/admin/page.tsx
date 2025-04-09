@@ -32,10 +32,10 @@ import { AnnouncementMarquee } from "@/components/dashboard/admin/announcementMa
 import type { AdminDashboardData } from "@/lib/api/admin/home/dashboardTypes"
 
 // Add this new type definition
-interface ExtendedOverview extends Omit<AdminDashboardData["overview"], "completion_rate" | "completion_rate_change"> {
-	completion_rate: number;
-	completion_rate_change: number;
-}
+// interface ExtendedOverview extends Omit<AdminDashboardData["overview"], "completion_rate" | "completion_rate_change"> {
+// 	completion_rate: number;
+// 	completion_rate_change: number;
+// }
 
 interface StatChangeProps {
   value: number;
