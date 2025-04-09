@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 
 interface Plan {
   id: number;
+  name: string;
   title: string;
   price: string;
   duration: string;
@@ -144,7 +145,8 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
     setIsLoading(true);
 
     try {
-      const response = await validateCoupon(authState?.token, coupon, originalPrice);
+      const token = authState?.token || '';
+      const response = await validateCoupon(token, coupon, originalPrice);
       setDiscount(parseFloat(response.data.coupon.discount_percentage));
       setFinalPrice(response.data.coupon.final_amount);
     } catch (error: unknown) {
