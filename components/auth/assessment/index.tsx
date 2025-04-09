@@ -12,7 +12,7 @@ import Image from "next/image"
 
 export default function AssessmentPageComponent() {
   const router = useRouter()
-  const token: string | null | undefined = useSelector((state: RootState) => state.auth?.token)
+  const token: string | null = useSelector((state: RootState) => state.auth?.token)
   const [isLoading, setIsLoading] = useState(true); 
 
   const [alertMessage, setAlertMessage] = useState<string | null>(null)
