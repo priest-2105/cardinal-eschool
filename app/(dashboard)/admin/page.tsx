@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 // import { Badge } from "@/components/ui/badge" 
 import {
-  BarChart3,
+  // BarChart3,
   BookOpen,
   ChevronRight,
   GraduationCap,
