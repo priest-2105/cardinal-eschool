@@ -23,6 +23,29 @@ interface Assessment {
   };
 }
 
+interface SubmissionStats {
+  total_students: number;
+  submitted_students: number;
+  pending_students: number;
+}
+
+interface Submission {
+  id: number;
+  student_name: string;
+  submitted_at: string;
+  file_url: string;
+}
+
+interface AssessmentDetails {
+  id: number;
+  title: string;
+  description: string;
+  file_url: string;
+  deadline: string;
+  submission_stats: SubmissionStats;
+  submissions: Submission[];
+}
+
 interface AssessmentModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,32 +53,32 @@ interface AssessmentModalProps {
 }
 
 export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModalProps) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [details, setDetails] = useState<unknown>(null)
-  const token = useSelector((state: RootState) => state.auth?.token)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [details, setDetails] = useState<AssessmentDetails | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token);
 
   useEffect(() => {
     const fetchDetails = async () => {
-      if (!assessment?.id || !token) return
-      
-      setLoading(true)
+      if (!assessment?.id || !token) return;
+
+      setLoading(true);
       try {
-        const response = await getAssignmentDetails(token, assessment.id)
-        setDetails(response.data.assignment)
+        const response = await getAssignmentDetails(token, assessment.id);
+        setDetails(response.data.assignment as AssessmentDetails);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch assessment details")
+        setError(err instanceof Error ? err.message : "Failed to fetch assessment details");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (isOpen) {
-      fetchDetails()
+      fetchDetails();
     }
-  }, [assessment?.id, isOpen, token])
+  }, [assessment?.id, isOpen, token]);
 
-  if (!assessment) return null
+  if (!assessment) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -115,17 +138,17 @@ export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModal
 
                 <div className="space-y-2">
                   <h3 className="font-medium">Assignment File</h3>
-                  <Button variant="outline" asChild className="w-full sm:w-auto">
+                  {/* <Button variant="outline" asChild className="w-full sm:w-auto"> */}
                     <a 
                       href={details.file_url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 bg-[#1BC2C2] px-3 py-2 rounded-xl"
                     >
                       <Download size={16} />
                       Download Assignment
                     </a>
-                  </Button>
+                  {/* </Button> */}
                 </div>
               </div>
             </TabsContent>
@@ -174,6 +197,6 @@ export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModal
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
