@@ -286,7 +286,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                 className="mt-1"
                 />
               {formData.tests_interested_in.length === 0 && (
-                <p className="text-gray-500 text-sm mt-1">Select tests you're interested in</p>
+                <p className="text-gray-500 text-sm mt-1">Select tests you&lsquo;re interested in</p>
               )}
             </div>
           </>
