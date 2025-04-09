@@ -147,8 +147,8 @@ const PricingPlans: React.FC = () => {
         <div className="flex  justify-center gap-8 max-w-7xl max-sm:block mx-auto">
           {pricingDiscounts.map((plan, index) => (
             <motion.div
-              drag="y"
-              dragConstraints={{ top: -10, bottom: 10 }}
+              // drag="y"
+              // dragConstraints={{ top: -10, bottom: 10 }}
               key={index}
               custom={index} 
               variants={cardVariants}
