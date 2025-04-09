@@ -25,7 +25,7 @@ export default function PlanPickComponent() {
   const [userProfile, setUserProfile] = useState<{ firstname: string; lastname: string; email: string } | null>(null);
   const authState = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<{ type: string; message: string } | null>(null);
+  const [, setAlert] = useState<{ type: string; message: string } | null>(null);
 
   useEffect(() => {
     const fetchAssessmentAndPlan = async () => {
