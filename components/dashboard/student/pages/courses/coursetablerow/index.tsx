@@ -9,7 +9,10 @@ interface Course {
   name: string
   code: string
   no_of_students: number
-  schedule: string   
+  schedule: {
+    days: string[]
+    time: string[]
+  }
   tutor: {
     name: string
     dp_url: string
@@ -28,11 +31,11 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
     router.push(`/student/course/${course.id}`)
   }
 
-  // Parse the schedule string into an object
-  const schedule = JSON.parse(course.schedule)
+  // Use the schedule object directly
+  const schedule = course.schedule;
 
   return (
-    <TableRow className="hover:bg-gray-50 cursor-pointer " onClick={handleCourseDetails}>
+    <TableRow className="hover:bg-gray-50 cursor-pointer" onClick={handleCourseDetails}>
       <TableCell className="flex items-center space-x-2">
         <Image
           src={course.tutor.dp_url}
@@ -48,7 +51,7 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
       <TableCell>{course.no_of_students}</TableCell>
       <TableCell>
         {schedule.days.map((day, index) => (
-          <div key={`${course.class_id}-${day}`}>
+          <div key={`${course.id}-${day}`}>
             {`${day} at ${schedule.time[index]}`}
           </div>
         ))}
