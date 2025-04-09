@@ -26,6 +26,7 @@ interface Notification {
   message: string
   time: string
   createdAt: string
+  read_at?: string | null
 }
 
 interface ProfileOption {
@@ -33,32 +34,39 @@ interface ProfileOption {
   href: string
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean; handleItemClick?: (href: string) => void; setShowLogoutDialog?: (show: boolean) => void }> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+const Dropdown: React.FC<{
+  items: Notification[] | ProfileOption[];
+  icon: React.ReactNode;
+  isNotification?: boolean;
+  handleItemClick?: (href: string) => void;
+  setShowLogoutDialog?: (show: boolean) => void;
+}> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setIsOpen(false)
+      setIsOpen(false);
     }
-  }
+  };
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleNotification = () => {
-    router.push("/tutor/notifications")
-    toggleDropdown()
-  }
+    router.push("/tutor/notifications");
+    toggleDropdown();
+  };
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, []) 
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -73,14 +81,14 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                 key={index}
                 className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100"
                 onClick={() => {
-                  if (item.name === "Logout") {
-                    setShowLogoutDialog(true)
-                    toggleDropdown()
+                  if ("name" in item && item.name === "Logout") {
+                    setShowLogoutDialog?.(true);
+                    toggleDropdown();
                   } else if ("href" in item && handleItemClick) {
-                    handleItemClick(item.href)
-                    toggleDropdown()
+                    handleItemClick(item.href);
+                    toggleDropdown();
                   } else {
-                    handleNotification()
+                    handleNotification();
                   }
                 }}
               >
@@ -94,7 +102,7 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                 )}
               </li>
             ))}
-            {isNotification && items[0]?.message !== "No notifications" && (
+            {isNotification && items.length > 0 && "message" in items[0] && items[0].message !== "No notifications" && (
               <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
                 <Link className="w-full" href="/tutor/notifications">
                   See All
@@ -105,8 +113,8 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const TutorDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -158,24 +166,24 @@ const TutorDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token)
-          const notifications = response.data.notifications
-          const unread = notifications.filter((notification: unknown) => !notification.read_at)
-          setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: unknown) => ({
+          const response = await fetchNotifications(token);
+          const notifications: Notification[] = response.data.notifications;
+          const unread = notifications.filter((notification) => !notification.read_at);
+          setHasUnreadNotifications(unread.length > 0);
+          const recent = unread.slice(0, 3).map((notification) => ({
             message: notification.message,
-            time: notification.created_at,
-            createdAt: notification.created_at,
-          }))
-          setRecentNotifications(recent)
+            time: notification.createdAt,
+            createdAt: notification.createdAt,
+          }));
+          setRecentNotifications(recent);
         } catch (error) {
-          console.error("Error fetching notifications:", error)
+          console.error("Error fetching notifications:", error);
         }
       }
-    }
+    };
 
-    fetchRecentNotifications()
-  }, [token])
+    fetchRecentNotifications();
+  }, [token]);
 
   useEffect(() => {
     if (showLogoutDialog) {
@@ -184,19 +192,19 @@ const TutorDashboardHeader: React.FC = () => {
   }, [showLogoutDialog, router])
 
   const handleLogout = async () => {
-    setIsLoggingOut(true)
+    setIsLoggingOut(true);
     try {
       if (token) {
         await logout(token);
         dispatch(clearAuthState());
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
-      setIsLoggingOut(false)
-      setShowLogoutDialog(false)
-      router.push("/tutor/login")
+      setIsLoggingOut(false);
+      setShowLogoutDialog(false);
+      router.push("/tutor/login");
     }
   };
 

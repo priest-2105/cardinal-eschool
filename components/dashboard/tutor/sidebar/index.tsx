@@ -77,7 +77,7 @@ const navigation = [
 const TutorDashboardSideBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
-  const token = useSelector((state: RootState) => state.auth.token)
+  const token = useSelector((state: RootState) => state?.auth?.token)
   const [unreadCount, setUnreadCount] = useState(0)
   const [openInProgressTicketCount, setOpenInProgressTicketCount] = useState(0)
 
@@ -181,7 +181,7 @@ const TutorDashboardSideBar: React.FC = () => {
               key={item.name}
               href={item.href}
               prefetch={true}
-              onMouseEnter={() => handleLinkClick(item.href)}
+              // onMouseEnter={() => handleLinkClick(item.href)}
               className={cn(
                 "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
