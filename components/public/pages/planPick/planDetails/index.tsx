@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { validateCoupon } from "@/lib/api/student/payment/validatecoupon";
 import { useAppSelector } from "@/lib/hooks";
 import { getPlans } from "@/lib/api/student/profile/fetchplans";
+import { useRouter } from "next/navigation";
 
 interface Plan {
   id: number;
@@ -34,6 +35,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
   const [isLoading, setIsLoading] = useState(false);
   const authState = useAppSelector((state) => state.auth);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const loadPlans = async () => {
@@ -145,9 +147,17 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
       const response = await validateCoupon(authState?.token, coupon, originalPrice);
       setDiscount(parseFloat(response.data.coupon.discount_percentage));
       setFinalPrice(response.data.coupon.final_amount);
-    } catch {
-      setDiscount(null);
-      setFinalPrice(null);
+    } catch (error: unknown) {
+      if (
+        error instanceof Error &&
+        error.message.includes("You have a pending payment")
+      ) {
+        console.error("Redirecting due to pending payment error:", error.message);
+        router.push("/student/transactionhistory");
+      } else {
+        setDiscount(null);
+        setFinalPrice(null);
+      }
     } finally {
       setIsLoading(false);
     }

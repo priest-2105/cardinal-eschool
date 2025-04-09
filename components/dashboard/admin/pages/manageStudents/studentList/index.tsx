@@ -211,8 +211,8 @@ export function StudentList() {
                     <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
                       <TableCell>{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>
-                      <TableCell className="font-medium">{student.edu_level}</TableCell>
-                      <TableCell className="font-medium">{student.subscription_plan}</TableCell>
+                      <TableCell className="font-medium">{student.education_level}</TableCell>
+                      <TableCell className="font-medium">{student.subscription?.name}</TableCell>
                       <TableCell> 
                       <Badge variant={student.has_subscription ? "default" : "warning"}>
                       {student.has_subscription ? "Subscribed" : "Unsubscribed"}

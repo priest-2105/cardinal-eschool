@@ -90,7 +90,7 @@ export default function AdminDashboard() {
             })),
             recent_courses: data.extras.recent_courses,
             recent_tutors: data.extras.recent_tutors.map(tutor => ({
-              id: tutor.tutor_codec,  // use tutor_codec as id
+              id: tutor.tutor_codec, 
               name: tutor.name,
               email: tutor.email,
               courses: tutor.courses_assigned, 

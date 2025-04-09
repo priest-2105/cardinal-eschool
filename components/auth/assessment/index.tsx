@@ -70,7 +70,7 @@ export default function AssessmentPageComponent() {
   useEffect(() => {
     const loadAssessment = async () => {
       if (!token) {
-        // Redirect to login if no token
+    
         router.push('/login');
         return;
       }
@@ -78,25 +78,24 @@ export default function AssessmentPageComponent() {
       try {
         const response = await fetchStudentsAssessment(token);
         setInitialData(response.data.Assessment);
-      } catch (error: unknown) { // replaced explicit any with unknown
+      } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
         console.error("Failed to fetch assessment:", errorMessage);
         setAlertMessage("Failed to load assessment. Please try again.");
         setAlertVariant("danger");
         if (errorMessage === 'Unauthorized') {
-          // Redirect to login if token is invalid
+          
           router.push('/login');
           return;
         }
       } finally {
-        setIsLoading(false); // Set loading to false after fetch
+        setIsLoading(false);
       }
     };
 
     loadAssessment();
   }, [token, router]);
 
-  // Show loading indicator while fetching data
   if (isLoading) {
     return <div>Loading...</div>;
   }

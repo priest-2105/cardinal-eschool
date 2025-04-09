@@ -10,33 +10,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { MultiSelect } from "@/components/ui/multi-select"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
-
-const subjectOptions = [
-  "Maths",
-  "English",
-  "Science",
-  "French",
-  "Spanish",
-  "Yoruba",
-  "Igbo",
-  "Hausa",
-  "Music",
-  "Coding",
-  "Biology",
-  "Chemistry",
-  "Physics",
-  "Literature",
-  "Data Analytics",
-  "Economics",
-  "Other",
-]
+import { getSubjects } from "@/lib/api/public/fetchsubjects"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
 
 const testOptions = ["SAT", "IELTS", "TOEFL", "GRE", "CELPIP", "PTE", "GMAT", "LSAT", "PSAT", "ACT"]
 
 export interface FormData {
   plan_id: number
   education_level: string
-  subjects_interested_in: string[]
+  subjects_interested_in: number[]
   tests_interested_in: string[]
   learning_expectations: string
   learning_difficulties: boolean
@@ -55,6 +38,8 @@ const STORAGE_KEY = "assessment_form_data"
 
 export default function AssessmentForm({ onSubmit, initialData, isSubmitting = false }: AssessmentFormProps) {
   const [subjectError, setSubjectError] = useState("")
+  const [subjects, setSubjects] = useState<{ id: number; name: string }[]>([])
+  const token = useSelector((state: RootState) => state.auth?.token)
   const formDataRef = useRef<FormData | null>(null)
   const [otherSubjects, setOtherSubjects] = useState<string[]>(initialData?.other_subjects || ["", ""])
   const [formData, setFormData] = useState<FormData>(() => {
@@ -92,6 +77,20 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
 
   const [currentStep, setCurrentStep] = useState(0)
   const totalSteps = 7
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      if (!token) return
+      try {
+        const fetchedSubjects = await getSubjects(token)
+        setSubjects(fetchedSubjects)
+      } catch (error) {
+        console.error("Failed to fetch subjects:", error)
+      }
+    }
+
+    fetchSubjects()
+  }, [token])
 
   // Keep a reference to the current form data
   useEffect(() => {
@@ -177,34 +176,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
     </div>
   )
 
-  // Calculate how many "Other" input fields to show
-  const calculateOtherInputsToShow = () => {
-    // Safely handle potential null/undefined
-    const selectedSubjects = formData.subjects_interested_in || []
-    const hasOther = selectedSubjects.includes("Other")
-
-    if (!hasOther) return 0
-
-    // Count non-Other selections
-    const nonOtherCount = selectedSubjects.filter((subj) => subj !== "Other").length
-
-    // If we have Other and one other selection, show 1 input
-    // If we have only Other, show 2 inputs
-    return nonOtherCount === 1 ? 1 : 2
-  }
-
-  // Handle changes to "Other" subject inputs
-  const handleOtherSubjectChange = (index: number, value: string) => {
-    const newOtherSubjects = [...otherSubjects]
-    newOtherSubjects[index] = value
-    setOtherSubjects(newOtherSubjects)
-
-    setFormData((prev) => ({
-      ...prev,
-      other_subjects: newOtherSubjects,
-    }))
-  }
-
   // Render each step's part of the form
   const renderStepContent = () => {
     switch (currentStep) {
@@ -281,37 +252,25 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           </>
         )
       case 2:
-        const otherInputsToShow = calculateOtherInputsToShow()
-
         return (
           <>
             <div>
               <Label>Subjects Interested In (Maximum 2)</Label>
               <MultiSelect
-                options={subjectOptions.map((subj) => ({ value: subj, label: subj }))}
-                value={formData.subjects_interested_in || []}
-                onChange={handleSubjectMultiSelect}
+                options={subjects.map((subject) => ({ value: subject.id.toString(), label: subject.name }))}
+                value={formData.subjects_interested_in.map((id) => id.toString())}
+                onChange={(selected) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    subjects_interested_in: selected.map((id) => parseInt(id)),
+                  }))
+                }
                 placeholder="Select up to 2 subjects"
                 className="mt-1"
               />
               {subjectError && <p className="text-red-500 text-sm mt-1">{subjectError}</p>}
               {formData.subjects_interested_in?.length === 0 && (
                 <p className="text-red-500 text-sm mt-1">Please select at least one subject</p>
-              )}
-
-              {otherInputsToShow > 0 && (
-                <div className="mt-3 space-y-3">
-                  <Label>Please specify your subject{otherInputsToShow > 1 ? "s" : ""}</Label>
-                  {[...Array(otherInputsToShow)].map((_, index) => (
-                    <Input
-                      key={index}
-                      placeholder={`Enter subject ${index + 1}`}
-                      value={otherSubjects[index] || ""}
-                      onChange={(e) => handleOtherSubjectChange(index, e.target.value)}
-                      className="mt-1"
-                    />
-                  ))}
-                </div>
               )}
             </div>
           </>
@@ -409,38 +368,12 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
     })
   }
 
-  // Add console log to debug plan selection
   const handleSelectChange = (name: string, value: string) => {
     console.log(`Selecting ${name}:`, value)
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: name === "plan_id" ? Number(value) : value }
       return updatedData
     })
-  }
-
-  const handleSubjectMultiSelect = (selected: string[]) => {
-    const previousSelections = formData.subjects_interested_in || [] // Add default empty array
-    const hadOther = previousSelections.includes("Other")
-    const hasOther = selected.includes("Other")
-
-    // Check if we're trying to add a third option
-    if (selected.length > 2) {
-      // If trying to add "Other" but already have 2 selections
-      if (hasOther && !hadOther) {
-        setSubjectError("You can only select a maximum of two subjects. Please deselect one to select 'Other'.")
-      } else {
-        setSubjectError("You can only select a maximum of two subjects.")
-      }
-      return
-    }
-
-    setSubjectError("")
-    setFormData((prev) => ({
-      ...prev,
-      subjects_interested_in: selected,
-      // Initialize other_subjects if "Other" is selected
-      other_subjects: selected.includes("Other") ? prev.other_subjects || ["", ""] : [],
-    }))
   }
 
   const transitionClass = "transition-transform duration-500 ease-in-out"
@@ -480,16 +413,6 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         finalFormData.learning_difficulties = !!finalFormData.learning_difficulties
         finalFormData.learning_difficulty_description = finalFormData.learning_difficulty_description || ""
         finalFormData.specific_goals = finalFormData.specific_goals || ""
-
-        // Safe check for "Other" in subjects
-        if (finalFormData.subjects_interested_in.includes("Other")) {
-          const filledOtherSubjects = otherSubjects.filter((subj) => subj.trim() !== "")
-
-          if (filledOtherSubjects.length > 0) {
-            const nonOtherSubjects = finalFormData.subjects_interested_in.filter((subj) => subj !== "Other")
-            finalFormData.subjects_interested_in = [...nonOtherSubjects, ...filledOtherSubjects]
-          }
-        }
 
         console.log("Final form data being submitted:", finalFormData)
         await onSubmit(finalFormData)
