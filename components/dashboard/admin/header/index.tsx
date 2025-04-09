@@ -14,7 +14,6 @@ import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 
-
 const profileOptions = [
   { name: "Profile", href: "/admin/admininformation" },
   { name: "Settings", href: "/admin/settings" },
@@ -25,6 +24,7 @@ interface Notification {
   message: string
   time: string
   createdAt: string
+  read_at?: string | null
 }
 
 interface ProfileOption {
@@ -32,32 +32,39 @@ interface ProfileOption {
   href: string
 }
 
-const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.ReactNode; isNotification?: boolean; handleItemClick?: (href: string) => void; setShowLogoutDialog?: (show: boolean) => void }> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+const Dropdown: React.FC<{
+  items: Notification[] | ProfileOption[];
+  icon: React.ReactNode;
+  isNotification?: boolean;
+  handleItemClick?: (href: string) => void;
+  setShowLogoutDialog?: (show: boolean) => void;
+}> = ({ items, icon, isNotification, handleItemClick, setShowLogoutDialog }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-      setIsOpen(false)
+      setIsOpen(false);
     }
-  }
+  };
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleNotification = () => {
-    router.push("/admin/notifications")
-    toggleDropdown()
-  }
+    router.push("/admin/notifications");
+    toggleDropdown();
+  };
+
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, []) 
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -72,16 +79,16 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                 key={index}
                 className="px-4 py-2 cursor-pointer text-[14px] hover:bg-gray-100"
                 onClick={() => {
-                  if ('name' in item) {
+                  if ("href" in item) {
                     if (item.name === "Logout") {
-                      setShowLogoutDialog(true)
-                      toggleDropdown()
+                      setShowLogoutDialog?.(true);
+                      toggleDropdown();
                     } else if (handleItemClick) {
-                      handleItemClick(item.href)
-                      toggleDropdown()
+                      handleItemClick(item.href);
+                      toggleDropdown();
                     }
                   } else {
-                    handleNotification()
+                    handleNotification();
                   }
                 }}
               >
@@ -89,13 +96,13 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
                   <Link href={item.href}>{item.name}</Link>
                 ) : (
                   <div>
-                    <p className="font-medium text-[13px]">{item.message}</p>
-                    <p className="text-sm text-gray-500 text-[11px]">{item.time}</p>
+                    <p className="font-medium text-[13px]">{(item as Notification).message}</p>
+                    <p className="text-sm text-gray-500 text-[11px]">{(item as Notification).time}</p>
                   </div>
                 )}
               </li>
             ))}
-            {isNotification && items.length > 0 && items[0]?.message !== "No notifications" && (
+            {isNotification && items.length > 0 && (items[0] as Notification)?.message !== "No notifications" && (
               <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
                 <Link className="w-full" href="/admin/notifications">
                   See All
@@ -106,8 +113,8 @@ const Dropdown: React.FC<{ items: Notification[] | ProfileOption[]; icon: React.
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 const AdminDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -160,25 +167,25 @@ const AdminDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token)
-          const notifications = response.data.notifications
-          const unread = notifications.filter((notification: unknown) => !notification.read_at)
-          setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: unknown) => ({
+          const response = await fetchNotifications(token);
+          const notifications = response.data.notifications as Notification[];
+          const unread = notifications.filter((notification) => !notification.read_at);
+          setHasUnreadNotifications(unread.length > 0);
+          const recent = unread.slice(0, 3).map((notification) => ({
             message: notification.message,
-            time: notification.created_at,
-            createdAt: notification.created_at,
-          }))
-          setRecentNotifications(recent)
+            time: notification.createdAt,
+            createdAt: notification.createdAt,
+          }));
+          setRecentNotifications(recent);
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-          console.error("Error fetching notifications:", errorMessage)
+          console.error("Error fetching notifications:", errorMessage);
         }
       }
-    }
+    };
 
-    fetchRecentNotifications()
-  }, [token])
+    fetchRecentNotifications();
+  }, [token]);
 
   useEffect(() => {
     if (showLogoutDialog) {
