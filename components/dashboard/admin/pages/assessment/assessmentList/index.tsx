@@ -54,7 +54,7 @@ export default function AssessmentsList({ classId, stats }: AssessmentListProps)
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [successMessage,] = useState<string | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
 
   useEffect(() => {
