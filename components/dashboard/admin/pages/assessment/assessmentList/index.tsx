@@ -64,25 +64,25 @@ export default function AssessmentsList({ classId, stats }: AssessmentListProps)
       setLoading(true);
       try {
         const response = await getClassAssignments(token, classId);
-        const assignmentsData = response.data.assignments.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          deadline: item.deadline,
+        const assignmentsData = response.data.assignments.map((item: Partial<Assignment>) => ({
+          id: item.id || 0,
+          title: item.title || "Untitled",
+          description: item.description || "No description",
+          deadline: item.deadline || new Date().toISOString(),
           file_path: item.file_path || "",
           tutor_id: item.tutor_id || "",
-          tutor_name: item.tutor_name || "",
+          tutor_name: item.tutor_name || "Unknown",
           submissions: {
             total: item.submissions?.total || 0,
             turned_in: item.submissions?.turned_in || 0,
             pending: item.submissions?.pending || 0,
             overdue: item.submissions?.overdue || 0,
           },
-          created_at: item.created_at,
-          updated_at: item.updated_at,
+          created_at: item.created_at || new Date().toISOString(),
+          updated_at: item.updated_at || new Date().toISOString(),
         }));
         setAssignments(assignmentsData);
-      } catch (err: unknown) {
+      } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Failed to fetch assignments";
         setError(errorMessage);
       } finally {

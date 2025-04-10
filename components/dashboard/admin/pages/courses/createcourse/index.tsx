@@ -205,7 +205,7 @@ export default function CreateCoursePage() {
         semester,
       }
 
-      const response = await createClass(token, requestBody)
+      await createClass(token, requestBody)
       setAlert({
         type: "success",
         message: "Course created successfully!",
