@@ -48,7 +48,7 @@ interface DeleteModalState {
 
 export default function TicketDetailsComponent({ ticketId }: TicketDetailsComponentProps) {
   const decodedTicketId = decodeURIComponent(ticketId); 
-  const token: string | null = useSelector((state: RootState) => state.auth?.token);
+  const token: string | null = useSelector((state: RootState) => state.auth?.token ?? null);
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [alertState, setAlertState] = useState<AlertState>({ showAlert: false, message: "", variant: "default" });
   const [confirmModalState, setConfirmModalState] = useState<ConfirmationModalState>({ showConfirmModal: false });
