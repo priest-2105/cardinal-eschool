@@ -38,7 +38,7 @@ export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: As
       setLoading(true)
       try {
         const response = await getTutors(token)
-        setTutors(response.data)
+        setTutors(response)
       } catch (error) {
         console.error("Failed to load tutors:", error)
       } finally {
