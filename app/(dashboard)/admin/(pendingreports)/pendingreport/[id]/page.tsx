@@ -76,7 +76,13 @@ export default function CourseDetails() {
 
   return (
     <div className={`transition-all w-[85%] ease-in-out max-sm:h-[calc(80vh-50px)] overflow-hidden py-4 bg-white border border-gray-200 rounded-lg p-4 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-      <CourseDetailsComponent courseDetails={courseDetails} />
+      <CourseDetailsComponent 
+        courseDetails={{
+          ...courseDetails,
+          tutor: courseDetails.tutor || { id: "unknown", name: "Unknown Tutor", email: "unknown@example.com" }
+        }} 
+      />
     </div>
+    
   )
 }
