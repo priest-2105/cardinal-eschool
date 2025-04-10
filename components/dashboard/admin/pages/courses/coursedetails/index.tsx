@@ -161,12 +161,17 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
             )}
             {activeTab === "reports" && (
               <ReportsList 
-                stats={courseDetails.reports} 
                 classId={courseDetails.class.id.toString()}
+                courseDetails={{
+                  students: courseDetails.students,
+                }}
               />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList classId={courseDetails.class.id.toString()} stats={courseDetails.assignments} />
+              <AssessmentsList 
+                classId={courseDetails.class.id.toString()}
+                stats={courseDetails.assignments} // Remove or update `AssessmentListProps` to include `stats`
+              />
             )}
             {activeTab === "students" && (
               <StudentList students={courseDetails.students} />

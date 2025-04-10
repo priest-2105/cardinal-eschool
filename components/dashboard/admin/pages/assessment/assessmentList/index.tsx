@@ -36,9 +36,16 @@ interface Assignment {
 
 interface AssessmentListProps {
   classId: string;
+  stats: {
+    total: number;
+    turned_in: number;
+    pending: number;
+    overdue: number;
+    percentage_turned_in: number;
+  };
 }
 
-export default function AssessmentsList({ classId }: AssessmentListProps) {
+export default function AssessmentsList({ classId, stats }: AssessmentListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
@@ -49,20 +56,6 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
-
-  // Stats derived from assignments
-  const stats = {
-    total: assignments.length,
-    turned_in: assignments.reduce((acc, curr) => acc + curr.submissions.turned_in, 0),
-    pending: assignments.reduce((acc, curr) => acc + curr.submissions.pending, 0),
-    overdue: assignments.reduce((acc, curr) => acc + curr.submissions.overdue, 0),
-    percentage_turned_in:
-      assignments.length > 0
-        ? Math.round(
-            (assignments.reduce((acc, curr) => acc + curr.submissions.turned_in, 0) / assignments.length) * 100,
-          )
-        : 0,
-  }
 
   useEffect(() => {
     const fetchAssignments = async () => {

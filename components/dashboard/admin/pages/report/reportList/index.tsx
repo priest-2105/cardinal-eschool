@@ -30,6 +30,7 @@ export interface Report {
   created_at: string
   updated_at: string
   student_name: string
+  students: string[]
   view_report: {
     download_url: string
   }
@@ -223,7 +224,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All students</SelectItem>
-              {students.map((student) => (
+              {students.map((student: Student) => (
                 <SelectItem key={student.id} value={student.id}>
                   {student.name}
                 </SelectItem>
@@ -361,7 +362,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
                   Close
                 </Button>
 
-                <Button asChild>
+                <Button>
                   <a
                     href={selectedReport.view_report.download_url}
                     target="_blank"
