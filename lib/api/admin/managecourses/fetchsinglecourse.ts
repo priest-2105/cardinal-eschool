@@ -1,6 +1,6 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-interface CourseDetailsResponse {
+export interface CourseDetailsResponse {
   data: {
     class: {
       id: number;
