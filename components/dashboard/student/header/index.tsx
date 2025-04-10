@@ -31,7 +31,13 @@ const StudentDashboardHeader: React.FC = () => {
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const router = useRouter()
-  const [recentNotifications, setRecentNotifications] = useState<unknown[]>([])
+  type Notification = {
+    message: string;
+    time: string;
+    href: string;
+  };
+  
+  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
   const notificationDropdownRef = useRef<HTMLDivElement>(null)
@@ -79,9 +85,9 @@ const StudentDashboardHeader: React.FC = () => {
         try {
           const response = await fetchNotifications(token)
           const notifications = response.notifications
-          const unread = notifications.filter((notification: unknown) => !notification.isRead)
+          const unread = notifications.filter((notification: { isRead: boolean }) => !notification.isRead)
           setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: unknown) => ({
+          const recent = unread.slice(0, 3).map((notification: { message: string; createdAt: string }) => ({
             message: notification.message,
             time: notification.createdAt,
             href: `/student/notifications`,
@@ -122,7 +128,16 @@ const StudentDashboardHeader: React.FC = () => {
     }
   }, [profileDropdownOpen])
 
-  const isAssessmentComplete = (assessment: unknown) => {
+  type Assessment = {
+    education_level: string | null;
+    subjects_interested_in: string | null;
+    tests_interested_in: string | null;
+    learning_expectations: string | null;
+    specific_goals: string | null;
+    [key: string]: unknown; 
+  };
+
+  const isAssessmentComplete = (assessment: Assessment) => {
     // Required fields that must not be null
     const requiredFields = [
       'education_level',
