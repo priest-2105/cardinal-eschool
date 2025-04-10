@@ -53,29 +53,29 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-interface CourseData {
-  id: number;
-  name: string;
-  code: string;
-  description: string;
-  schedule: {
-    days: string[];
-    time: string[];
-    start_date: string | null;
-    end_date: string | null;
-  };
-  meeting_link: string;
-  learning_outcome: string;
-  prerequisite: string;
-  department: string;
-  semester: string;
-  tutor_id: string;
-  student_ids: string[];
-  resource_ids: string;
-  created_at: string;
-  updated_at: string;
-  days_remaining: number | null;
-}
+// interface CourseData {
+//   id: number;
+//   name: string;
+//   code: string;
+//   description: string;
+//   schedule: {
+//     days: string[];
+//     time: string[];
+//     start_date: string | null;
+//     end_date: string | null;
+//   };
+//   meeting_link: string;
+//   learning_outcome: string;
+//   prerequisite: string;
+//   department: string;
+//   semester: string;
+//   tutor_id: string;
+//   student_ids: string[];
+//   resource_ids: string;
+//   created_at: string;
+//   updated_at: string;
+//   days_remaining: number | null;
+// }
 
 export default function EditCoursePage() {
   const router = useRouter();
@@ -274,7 +274,7 @@ export default function EditCoursePage() {
         semester,
       };
 
-      const response = await updateCourse(token, courseId, requestBody);
+      // const response = await updateCourse(token, courseId, requestBody);
       setAlert({
         type: "success",
         message: "Course updated successfully!",
