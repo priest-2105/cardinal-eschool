@@ -24,7 +24,7 @@ export interface Coupon {
 
 export default function CouponsList() {
   const router = useRouter();
-  const token: string | null = useSelector((state: RootState) => state.auth?.token);
+  const token: string | null = useSelector((state: RootState) => state.auth?.token ?? null);
 
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
