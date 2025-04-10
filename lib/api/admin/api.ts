@@ -27,7 +27,7 @@ export * from "./managetutor/gettutordetails";
 
 // Admin Manage Student API EXPORT
 export * from "./managestudent/getstudentlist"
-export * from "./managestudent/getstudentdetails"
+// export * from "./managestudent/getstudentdetails"
 
 
 // Admin Update User Status
@@ -63,7 +63,7 @@ export * from "./announcement/deleteannouncement"
 // Admin Notification API EXPORT
 export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
-export * from "./notifcation/markallnotificationasread";
+export * from "./notifcation/markallnotificationsasread";
 export * from "./notifcation/deletenotification";
 
 // Admin Coupon API EXPORT
