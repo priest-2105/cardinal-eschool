@@ -1,6 +1,15 @@
 import { fetchWithAuth, apiUrl } from "./fetchWithAuth";
 
-export async function getAnnouncements(token: string) {
+interface Student {
+  student_codec: string;
+  name: string;
+  email: string;
+  dp_url: string | null;
+  edu_level: string;
+  subjects_interested_in: string[];
+}
+
+export async function getStudentList(token: string): Promise<Student[]> {
   const response = await fetchWithAuth(`${apiUrl}/admin/getAllStudents`, {
     method: "GET",
     headers: {
@@ -11,9 +20,9 @@ export async function getAnnouncements(token: string) {
 
   if (!response.ok) {
     const errorMessage = await response.text();
-    throw new Error(`Failed to fetch announcements: ${response.status} ${response.statusText} - ${errorMessage}`);
+    throw new Error(`Failed to fetch students: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
 
   const result = await response.json();
-  return result.data.announcements;
+  return result.data.students;
 }

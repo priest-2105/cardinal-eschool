@@ -65,7 +65,6 @@ const spinnerProps = {
   strokeLinecap: "round",
   strokeLinejoin: "round",
   strokeWidth: "2",
-  className: "animate-spin",
   viewBox: "0 0 24 24",
   xmlns: "http://www.w3.org/2000/svg",
 };
@@ -507,7 +506,7 @@ export default function PendingReportsList({ updatePendingReportsCount }: Pendin
                   >
                     {processingAction.reportId === selectedReport.id && processingAction.action === 'approve' ? (
                       <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" {...spinnerProps} />
+                        {/* <svg className={`animate-spin -ml-1 mr-2 h-4 w-4 ${spinnerProps.className || ""}`} {...spinnerProps} /> */}
                         Approving...
                       </span>
                     ) : (
@@ -524,8 +523,6 @@ export default function PendingReportsList({ updatePendingReportsCount }: Pendin
                   >
                     {processingAction.reportId === selectedReport.id && processingAction.action === 'reject' ? (
                       <span className="flex items-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" {...spinnerProps} />
-                        Rejecting...
                       </span>
                     ) : (
                       <>

@@ -33,12 +33,17 @@ interface UpdateCourseResponse {
       prerequisite: string;
       department: string;
       semester: string;
-      schedule: string;
-      tutor_id: string;
-      student_ids: string;
-      resource_ids: string;
-      created_at: string;
-      updated_at: string;
+      schedule: {
+        days: string[];
+        time: string[];
+        start_date: string | null;
+        end_date: string | null;
+      };
+      tutor_id?: string;
+      student_ids?: string[];
+      resource_ids?: string;
+      created_at?: string;
+      updated_at?: string;
     };
   };
 }

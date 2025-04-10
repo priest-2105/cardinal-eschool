@@ -19,6 +19,7 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse"
+import type { AxiosError } from "axios";
 
 interface Schedule {
   day: string
@@ -27,11 +28,11 @@ interface Schedule {
 }
 
 interface Tutor {
-  tutor_codec: string
-  name: string
-  email: string
-  qualification: string | null
-  dp_url: string | null
+  tutor_codec: string; // Changed from `id` to `tutor_codec` to match API response
+  name: string;
+  email: string;
+  qualification: string | null;
+  dp_url: string | null;
 }
 
 interface Student {
@@ -43,8 +44,37 @@ interface Student {
   subjects_interested_in: string[]
 }
 
+interface AssignedStudent {
+  id: string; // Explicitly defined type for assigned students
+  name: string;
+}
+
 interface ValidationErrors {
   [key: string]: string
+}
+
+interface CourseData {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  schedule: {
+    days: string[];
+    time: string[];
+    start_date: string | null;
+    end_date: string | null;
+  };
+  meeting_link: string;
+  learning_outcome: string;
+  prerequisite: string;
+  department: string;
+  semester: string;
+  tutor_id: string; // Add this property
+  student_ids: string[];
+  resource_ids: string;
+  created_at: string;
+  updated_at: string;
+  days_remaining: number | null;
 }
 
 export default function EditCoursePage() {
@@ -63,8 +93,8 @@ export default function EditCoursePage() {
   const [joinClassLink, setJoinClassLink] = useState("")
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" })
-  const [assignedTutor, setAssignedTutor] = useState<{ id: string; name: string } | null>(null)
-  const [assignedStudents, setAssignedStudents] = useState<{ id: string; name: string }[]>([])
+  const [assignedTutor, setAssignedTutor] = useState<Tutor | null>(null)
+  const [assignedStudents, setAssignedStudents] = useState<AssignedStudent[]>([])
   const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
   const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
@@ -75,29 +105,29 @@ export default function EditCoursePage() {
 
   useEffect(() => {
     const loadTutorsAndStudents = async () => {
-      if (!token) return
+      if (!token) return;
       try {
         const [tutorsRes, studentsRes] = await Promise.all([
           getTutors(token),
-          getStudentForClasses(token)
-        ])
-        
+          getStudentForClasses(token),
+        ]);
+
         if (tutorsRes.status === "success" && studentsRes.status === "success") {
-          // The data is now available to pass to the modals
-          console.log("Tutors:", tutorsRes.data)
-          console.log("Students:", studentsRes.data)
+          console.log("Tutors:", tutorsRes.data);
+          console.log("Students:", studentsRes.data);
         }
       } catch (error) {
-        console.error("Failed to load tutors and students:", error)
+        const err = error as AxiosError;
+        console.error("Failed to load tutors and students:", err.message);
         setAlert({
           type: "error",
-          message: "Failed to load tutors and students"
-        })
+          message: "Failed to load tutors and students",
+        });
       }
-    }
+    };
 
-    loadTutorsAndStudents()
-  }, [token])
+    loadTutorsAndStudents();
+  }, [token]);
 
   useEffect(() => {
     // Fetch existing course data if in edit mode
@@ -107,11 +137,11 @@ export default function EditCoursePage() {
       setFetchLoading(true)
       try {
         const response = await getAdminCourseDetails(token, courseId)
-        const courseData = response.data.class
+        const courseData: CourseData = response.data.class
         
         // Set form fields with existing data
-        setCourseName(courseData.name)
-        setCourseCode(courseData.code)
+        setCourseName(courseData.name || "")
+        setCourseCode(courseData.code || "")
         setDepartment(courseData.department || "")
         setSemester(courseData.semester || "")
         setDescription(courseData.description || "")
@@ -120,38 +150,41 @@ export default function EditCoursePage() {
         setJoinClassLink(courseData.meeting_link || "")
         
         // Handle schedule data
-        if (courseData.schedule && courseData.schedule.days) {
-          const scheduleItems = courseData.schedule.days.map((day, index) => ({
+        if (courseData.schedule?.days && courseData.schedule?.time) {
+          const scheduleItems = courseData.schedule.days.map((day: string, index: number) => ({
             day,
             fromTime: courseData.schedule.time[index] || "",
-            toTime: "", // This seems to not be in your API response, so leaving blank
+            toTime: "", // Default to empty if not provided
           }))
           setSchedules(scheduleItems)
         }
         
         // Set tutor if available
-        if (courseData.tutor_codec) {
-          // Need to get tutor name from students data
+        if (courseData.tutor_id) {
           setAssignedTutor({
-            id: courseData.tutor_codec,
-            name: "Assigned Tutor"
-          })
+            tutor_codec: courseData.tutor_id,
+            name: "Assigned Tutor", // Placeholder name; replace with actual data if available
+            email: "",
+            qualification: null,
+            dp_url: null,
+          });
         }
         
         // Set students if available
-        if (response.data.students && response.data.students.length > 0) {
-          const students = response.data.students.map(student => ({
-            id: student.id,
-            name: student.name
+        if (response.data.students?.length > 0) {
+          const students = response.data.students.map((student: any) => ({
+            id: student.student_codec,
+            name: student.name,
           }))
           setAssignedStudents(students)
         }
-      } catch (error: unknown) {
-        console.error("Failed to fetch course details:", error instanceof Error ? error.message : "Unknown error");
+      } catch (error) {
+        const err = error as AxiosError;
+        console.error("Failed to fetch course details:", err.message);
         setAlert({
           type: "error",
-          message: "Failed to load course details"
-        })
+          message: "Failed to load course details",
+        });
       } finally {
         setFetchLoading(false)
       }
@@ -206,10 +239,7 @@ export default function EditCoursePage() {
   }
 
   const handleAssignTutor = (tutor: Tutor) => {
-    setAssignedTutor({
-      id: tutor.tutor_codec,
-      name: tutor.name
-    })
+    setAssignedTutor(tutor); // Directly set the tutor object
     setIsAssignTutorModalOpen(false)
   }
 
@@ -242,63 +272,41 @@ export default function EditCoursePage() {
         code: courseCode,
         description,
         schedule: {
-          days: schedules.map(s => s.day),
-          time: schedules.map(s => s.fromTime),
+          days: schedules.map((s) => s.day),
+          time: schedules.map((s) => s.fromTime),
         },
         meeting_link: joinClassLink,
-        tutor_id: assignedTutor?.id || "",
-        student_ids: assignedStudents.map(s => s.id),
+        tutor_id: assignedTutor?.tutor_codec || "",
+        student_ids: assignedStudents.map((s) => s.id),
         learning_outcome: learningOutcomes,
         prerequisite: prerequisites,
         department,
-        semester
+        semester,
       };
-      
-      console.log("Request body:", requestBody);
-      console.log("Is edit mode:", isEditMode);
-      console.log("Course ID:", courseId);
 
       let response;
-      if (isEditMode) {
-        // Update existing course
-        console.log("Calling updateCourse function");
-        response = await updateCourse(token, courseId, requestBody);
-        console.log("Course updated successfully:", response);
-        setAlert({
-          type: "success",
-          message: "Course updated successfully!"
-        });
-      } else {
-        // Create new course
-        console.log("Calling editClass function");
-        response = await editClass(token, requestBody);
-        console.log("Course created successfully:", response);
-        setAlert({
-          type: "success",
-          message: "Course created successfully!"
-        });
-      }
       
-      // After successful update/creation, redirect after a delay
+        response = await updateCourse(token, courseId, requestBody);
+        setAlert({
+          type: "success",
+          message: "Course updated successfully!",
+        });
+      
+
       setTimeout(() => {
-        if (isEditMode) {
-          router.push(`/admin/course/${courseId}`);
-        } else {
-          router.push("/admin/courses");
-        }
+        router.push(isEditMode ? `/admin/course/${courseId}` : "/admin/courses");
       }, 2000);
-    } catch (error: unknown) { // use unknown instead of any
-      const err = error instanceof Error ? error.message : "Unknown error";
-      console.error("Error:", { message: err });
+    } catch (error) {
+      const err = error as AxiosError;
+      console.error("Error:", err.message);
       setAlert({
         type: "error",
-        message: err
+        message: err.message || "An error occurred",
       });
-      
-      // Log validation errors if present
-      if (error.response?.data?.errors) {
-        console.error("Validation errors:", error.response.data.errors);
-        setErrors(error.response.data.errors);
+
+      if (err.response?.data && (err.response.data as { errors?: ValidationErrors }).errors) {
+        console.error("Validation errors:", (err.response?.data as { errors?: ValidationErrors })?.errors);
+        setErrors((err.response?.data as { errors?: ValidationErrors })?.errors || {});
       }
     } finally {
       setIsSubmitting(false);
