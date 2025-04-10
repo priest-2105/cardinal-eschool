@@ -12,29 +12,39 @@ import { Search } from "lucide-react"
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { Badge } from "@/components/ui/badge"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  grade: number
-  student_codec: string
-  course: string
-  dateJoined: string
-  status: "Active" | "Suspended" | "Inactive"
-  has_subscription: boolean
-  edu_level: string | null
-  subscription_plan: string | null
+// interface Student {
+//   id: string
+//   name: string
+//   email: string
+//   grade: number
+//   student_codec: string
+//   course: string
+//   dateJoined: string
+//   status: "Active" | "Suspended" | "Inactive"
+//   has_subscription: boolean
+//   edu_level: string | null
+//   subscription_plan: string | null
+// }
+
+interface Subscription {
+  name: string | null;
 }
 
 interface StudentRecord {
   id: string;
   name: string;
   email: string;
-  // ... add other properties as needed
+  has_subscription: boolean;
+  student_codec: string;
+  education_level: string; // Fixed typo from `education_leve`
+  grade: string;
+  course: string;
+  subscription: Subscription | null; // Added subscription object
+  joined_at: string
 }
 
 export function StudentList() {
-  const [students, setStudents] = useState<Student[]>([])
+  const [students, setStudents] = useState<StudentRecord[]>([]); // Updated type
   const [searchQuery, setSearchQuery] = useState("")
   const [gradeFilter, setGradeFilter] = useState("0")
   const [courseFilter, setCourseFilter] = useState("all")
@@ -57,11 +67,16 @@ export function StudentList() {
           subscriptionFilter === "subscribed" ? true : subscriptionFilter === "unsubscribed" ? false : undefined
 
         const data = await getStudentList(token, hasSubscription, currentPage);
-        setStudents(data.students);
+        setStudents(data.students); // Ensure API returns `StudentRecord[]`
         setTotalPages(data.pagination.last_page);
-      } catch (error: Record<string, unknown>) {
-        console.error("Failed to fetch students:", error.message)
-        setAlert({ type: "danger", message: error.message })
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Failed to fetch students:", error.message)
+          setAlert({ type: "danger", message: error.message })
+        } else {
+          console.error("Failed to fetch students:", error)
+          setAlert({ type: "danger", message: "An unknown error occurred" })
+        }
       } finally {
         setLoading(false)
       }
@@ -77,12 +92,12 @@ export function StudentList() {
         student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.id.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesGrade = gradeFilter === "0" || student.grade === parseInt(gradeFilter)
+      const matchesGrade = gradeFilter === "0" || parseInt(student.grade) === parseInt(gradeFilter)
       const matchesCourse = courseFilter === "all" || student.course === courseFilter
 
       let matchesDate = true
       if (dateFilter !== "all") {
-        const joinDate = new Date(student.dateJoined)
+        const joinDate = new Date(student.joined_at)
         const now = new Date()
         const diffTime = Math.abs(now.getTime() - joinDate.getTime())
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -161,7 +176,7 @@ export function StudentList() {
                 <SelectItem value="last365">Last 365 Days</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={subscriptionFilter} onValueChange={(value) => setSubscriptionFilter(value)}>
+            <Select value={subscriptionFilter} onValueChange={(value) => setSubscriptionFilter(value as "all" | "subscribed" | "unsubscribed")}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Subscription Status" />
               </SelectTrigger>
@@ -211,8 +226,8 @@ export function StudentList() {
                     <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
                       <TableCell>{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>
-                      <TableCell className="font-medium">{student.education_level}</TableCell>
-                      <TableCell className="font-medium">{student.subscription?.name}</TableCell>
+                      <TableCell className="font-medium">{student.education_level || "N/A"}</TableCell>
+                      <TableCell className="font-medium">{student.subscription?.name || "N/A"}</TableCell>
                       <TableCell> 
                       <Badge variant={student.has_subscription ? "default" : "warning"}>
                       {student.has_subscription ? "Subscribed" : "Unsubscribed"}
