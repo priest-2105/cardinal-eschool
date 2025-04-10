@@ -11,14 +11,19 @@ import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 import { Button } from "@/components/ui/button"
 
 interface Course {
-  class_id: number
-  name: string
-  code: string
-  tutor_name: string
+  id: number; // Changed from class_id to id
+  name: string;
+  code: string;
+  progress_percentage: string;
+  no_of_students: number; // Added this property
   schedule: {
-    days: string[]
-    time: string[]
-  }
+    days: string[];
+    time: string[];
+  };
+  tutor: {
+    name: string;
+    dp_url: string;
+  }; // Added this property
 }
 
 export function CourseList() {
@@ -41,8 +46,21 @@ export function CourseList() {
       try {
         const response = await getStudentClasses(token)
         if (response.status === "success") {
-          setCourses(response.data.classes)
-          setTotalPages(response.data.total_pages)
+          setCourses(
+            response.data.classes.map((course: any) => ({
+              id: course.class_id, // Map class_id to id
+              name: course.name,
+              code: course.code,
+              progress_percentage: course.progress_percentage,
+              no_of_students: course.no_of_students, // Map no_of_students
+              schedule: course.schedule,
+              tutor: {
+                name: course.tutor_name || "Unknown Tutor",
+                dp_url: course.tutor_dp_url || "/placeholder.svg", // Map tutor details
+              },
+            }))
+          );
+          setTotalPages(response.data.total_pages);
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
@@ -64,7 +82,7 @@ export function CourseList() {
     const matchesSearch = 
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.tutor_name.toLowerCase().includes(searchQuery.toLowerCase())
+      course.tutor.name.toLowerCase().includes(searchQuery.toLowerCase())
     
     const matchesGrade = selectedGrade === "all"
     const matchesStatus = selectedStatus === "all" 

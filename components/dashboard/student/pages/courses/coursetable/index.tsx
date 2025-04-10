@@ -4,17 +4,20 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components
 import { CourseTableRow } from "../coursetablerow"
 
 interface Course {
-  id: number
-  name: string
-  code: string
-  no_of_students: number
-  schedule: string
+  id: number;
+  name: string;
+  progress_percentage: string;
+  code: string;
+  no_of_students: number;
+  schedule: {
+    days: string[];
+    time: string[];
+  };
   tutor: {
-    name: string
-    dp_url: string
-  }
+    name: string;
+    dp_url: string;
+  };
 }
-
 
 interface CourseTableProps {
   courses: Course[]

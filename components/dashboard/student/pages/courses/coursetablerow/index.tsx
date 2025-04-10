@@ -8,6 +8,7 @@ interface Course {
   id: number
   name: string
   code: string
+  progress_percentage: string
   no_of_students: number
   schedule: {
     days: string[]
