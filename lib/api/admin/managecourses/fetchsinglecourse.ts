@@ -22,17 +22,40 @@ export interface CourseDetailsResponse {
       prerequisite: string;
       department: string;
       semester: string;
-      tutor_id: string;
-      student_ids: string[];
-      resource_ids: string;
-      created_at: string;
-      updated_at: string;
+      start_date: string | null;
+      end_date: string | null;
+      status: string;
+      progress_percentage: number;
       days_remaining: number | null;
     };
-    students: {
-      student_codec: string;
+    tutor: {
+      id: string;
       name: string;
+      email: string;
+    };
+    students: {
+      id: string;
+      name: string;
+      email: string;
     }[];
+    assignments: {
+      total: number;
+      turned_in: number;
+      pending: number;
+      overdue: number;
+      percentage_turned_in: number;
+    };
+    reports: {
+      total: number;
+    };
+    resources: {
+      total: number;
+      details: {
+        id: number;
+        name: string;
+        file_path: string;
+      }[];
+    };
   };
 }
 
