@@ -88,7 +88,7 @@ interface ReportsListProps {
   };
 }
 
-export default function ReportsList({ classId, courseDetails }: ReportsListProps) {
+export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
   const [reports, setReports] = useState(SAMPLE_REPORTS)
   const [dateFilter, setDateFilter] = useState("all")
