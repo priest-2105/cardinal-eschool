@@ -47,6 +47,14 @@ interface ValidationErrors {
   [key: string]: string
 }
 
+interface APIError {
+  response?: {
+    data?: {
+      errors?: ValidationErrors
+    }
+  }
+}
+
 export default function CreateCoursePage() {
   const router = useRouter()
   const [courseName, setCourseName] = useState("")
@@ -59,7 +67,13 @@ export default function CreateCoursePage() {
   const [joinClassLink, setJoinClassLink] = useState("")
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" })
-  const [assignedTutor, setAssignedTutor] = useState<{ id: string; name: string } | null>(null)
+  const [assignedTutor, setAssignedTutor] = useState<{
+    id: string
+    name: string
+    email: string
+    qualification: string | null
+    dp_url: string | null
+  } | null>(null)
   const [assignedStudents, setAssignedStudents] = useState<{ id: string; name: string }[]>([])
   const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
   const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
@@ -141,8 +155,11 @@ export default function CreateCoursePage() {
 
   const handleAssignTutor = (tutor: Tutor) => {
     setAssignedTutor({
-      id: tutor.tutor_codec,
-      name: tutor.name
+      id: tutor.tutor_codec, // Map `tutor_codec` to `id`
+      name: tutor.name,
+      email: tutor.email,
+      qualification: tutor.qualification,
+      dp_url: tutor.dp_url,
     })
     setIsAssignTutorModalOpen(false)
   }
@@ -158,71 +175,61 @@ export default function CreateCoursePage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token) return;
+    e.preventDefault()
+    if (!token) return
 
     if (!validateForm()) {
       setAlert({
         type: "error",
         message: "Please fix the validation errors before submitting",
-      });
-      return;
+      })
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
       const requestBody = {
         name: courseName,
         code: courseCode,
         description,
         schedule: {
-          days: schedules.map(s => s.day),
-          time: schedules.map(s => s.fromTime),
+          days: schedules.map((s) => s.day),
+          time: schedules.map((s) => `${s.fromTime}-${s.toTime}`),
         },
         meeting_link: joinClassLink,
         tutor_id: assignedTutor?.id || "",
-        student_ids: assignedStudents.map(s => s.id),
+        student_ids: assignedStudents.map((s) => s.id),
         learning_outcome: learningOutcomes,
         prerequisite: prerequisites,
         department,
-        semester
-      };
+        semester,
+      }
 
-      console.log("Submitting request to create class:", {
-        token: token ? "Present" : "Missing",
-        body: requestBody
-      });
-
-      const response = await createClass(token, requestBody);
-      console.log("Class creation successful:", response);
-
+      const response = await createClass(token, requestBody)
       setAlert({
         type: "success",
-        message: "Course created successfully!"
-      });
-      
+        message: "Course created successfully!",
+      })
+
       setTimeout(() => {
-        router.push("/admin/courses");
-      }, 2000);
+        router.push("/admin/courses")
+      }, 2000)
     } catch (error: unknown) {
-      console.error("Class creation error details:", {
-        message: error instanceof Error ? error.message : "Unknown error"
-      });
-      
+      const apiError = error as APIError
       setAlert({
         type: "error",
-        message: error instanceof Error ? error.message : "Failed to create course. Please check the console for details."
-      });
-      
-      // Log validation errors if present
-      if (error.response?.data?.errors) {
-        console.error("Validation errors:", error.response.data.errors);
-        setErrors(error.response.data.errors);
+        message: apiError.response?.data?.errors
+          ? "Validation errors occurred. Please check the form."
+          : "Failed to create course. Please try again.",
+      })
+
+      if (apiError.response?.data?.errors) {
+        setErrors(apiError.response.data.errors)
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -514,7 +521,7 @@ export default function CreateCoursePage() {
         isOpen={isAssignTutorModalOpen}
         onClose={() => setIsAssignTutorModalOpen(false)}
         onAssign={handleAssignTutor}
-        currentTutor={assignedTutor}
+        currentTutor={assignedTutor ? { tutor_codec: assignedTutor.id, name: assignedTutor.name, email: assignedTutor.email, qualification: assignedTutor.qualification, dp_url: assignedTutor.dp_url } : null}
       />
 
       <AssignStudentsModal

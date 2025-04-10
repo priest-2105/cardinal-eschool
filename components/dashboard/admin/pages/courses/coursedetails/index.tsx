@@ -12,8 +12,13 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
+import type { LucideIcon } from "lucide-react" // Import type for icons
 
-type Tab = "description" | "resources" | "reports" | "assessments" | "students"
+type Tab = {
+  id: "description" | "resources" | "reports" | "assessments" | "students"
+  label: string
+  icon: LucideIcon
+}
 
 interface CourseDetailsComponentProps {
   courseDetails: {
@@ -31,24 +36,31 @@ interface CourseDetailsComponentProps {
       prerequisite: string
       department: string
       semester: string
+      start_date: string | null
+      end_date: string | null
+      status: string
+      progress_percentage: number
+      days_remaining: number | null
+    }
+    tutor: {
+      id: string
+      name: string
+      email: string
     }
     students: {
       id: string
       name: string
       email: string
     }[]
-    students_new?: number
     assignments: {
       total: number
       turned_in: number
       pending: number
       overdue: number
       percentage_turned_in: number
-      assignments_new?: number
     }
     reports: {
       total: number
-      reports_new?: number
     }
     resources: {
       total: number
@@ -57,17 +69,16 @@ interface CourseDetailsComponentProps {
         name: string
         file_path: string
       }[]
-      resources_new?: number
     }
   }
 }
 
 export default function CourseDetailsComponent({ courseDetails }: CourseDetailsComponentProps) {
-  const [activeTab, setActiveTab] = useState<Tab>("description")
+  const [activeTab, setActiveTab] = useState<Tab["id"]>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
 
-  const tabs = [
+  const tabs: Tab[] = [
     { id: "description", label: "Description", icon: BookOpen },
     { id: "resources", label: "Resources", icon: FileText },
     { id: "reports", label: "Reports", icon: BarChart },
@@ -113,7 +124,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as Tab)}
+              onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
                 activeTab === tab.id
@@ -133,20 +144,29 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
             {activeTab === "description" && (
-              <CourseDescription coursedetails={courseDetails.class} />
+              <CourseDescription 
+                coursedetails={{
+                  ...courseDetails.class,
+                  students_assigned: courseDetails.students.map(student => ({
+                    id: student.id,
+                    name: student.name,
+                    dp_url: null,
+                  })),
+                  resources_assigned: courseDetails.resources.details.map(resource => resource.name),
+                }} 
+              />
             )}
             {activeTab === "resources" && (
               <ResourcesList resources={courseDetails.resources} />
             )}
             {activeTab === "reports" && (
               <ReportsList 
-                students={courseDetails.students} 
                 stats={courseDetails.reports} 
-                classId={courseDetails.class.id}
+                classId={courseDetails.class.id.toString()}
               />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList classId={courseDetails.class.id} stats={courseDetails.assignments} />
+              <AssessmentsList classId={courseDetails.class.id.toString()} stats={courseDetails.assignments} />
             )}
             {activeTab === "students" && (
               <StudentList students={courseDetails.students} />
@@ -192,9 +212,6 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
                   <p className="text-sm text-gray-500">Enrolled Students</p>
                   <div>
                     <p className="font-medium">{courseDetails.students.length}</p>
-                    <p className="text-xs text-gray-500">
-                      {courseDetails.students_new || 0} new this month
-                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -202,9 +219,6 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
                   <p className="text-sm text-gray-500">Resources</p>
                   <div>
                     <p className="font-medium">{courseDetails.resources.total}</p>
-                    <p className="text-xs text-gray-500">
-                      {courseDetails.resources_new || 0} new this month
-                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -212,9 +226,6 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
                   <p className="text-sm text-gray-500">Reports</p>
                   <div>
                     <p className="font-medium">{courseDetails.reports.total}</p>
-                    <p className="text-xs text-gray-500">
-                      {courseDetails.reports_new || 0} new this month
-                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -222,9 +233,6 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
                   <p className="text-sm text-gray-500">Assessments</p>
                   <div>
                     <p className="font-medium">{courseDetails.assignments.total}</p>
-                    <p className="text-xs text-gray-500">
-                      {courseDetails.assignments_new || 0} new this month
-                    </p>
                   </div>
                 </div>
               </div>

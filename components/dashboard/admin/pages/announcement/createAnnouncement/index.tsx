@@ -118,15 +118,15 @@ export function CreateAnnouncement() {
               <Label htmlFor="recipients">Recipients</Label>
               <Select
                 value={recipients}
-                onValueChange={(value: "student" | "tutor" | "both") => setRecipients(value)}
+                onValueChange={(value: "students" | "tutors" | "both") => setRecipients(value)}
                 disabled={loading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select recipients" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="student">Students</SelectItem>
-                  <SelectItem value="tutor">Tutors</SelectItem>
+                  <SelectItem value="students">Students</SelectItem>
+                  <SelectItem value="tutors">Tutors</SelectItem>
                   <SelectItem value="both">Both</SelectItem>
                 </SelectContent>
               </Select>

@@ -23,7 +23,7 @@ interface AssignStudentsModalProps {
   isOpen: boolean
   onClose: () => void
   onAssign: (students: Student[]) => void
-  currentStudents: { id: string; name: string }[] | null
+  currentStudents: { id: string; name: string }[]
 }
 
 export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents = [] }: AssignStudentsModalProps) {
@@ -42,7 +42,7 @@ export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents
       try {
         const response = await getStudentForClasses(token)
         if (response.status === "success") {
-          setStudents(response.data.students || [])
+          setStudents(response.data || [])
         }
       } catch (error) {
         console.error("Failed to fetch students:", error)
@@ -96,17 +96,14 @@ export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents
   }
 
   // Filter students based on search query
-  const filteredStudents = students && students.length > 0 
-    ? students.filter(
-        student =>
-          student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.email.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const filteredStudents = students.filter(
+    (student) =>
+      student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
-  const isStudentSelected = (student: Student) => {
-    return selectedStudents.some(s => s.student_codec === student.student_codec)
-  }
+  const isStudentSelected = (student: Student) =>
+    selectedStudents.some((s) => s.student_codec === student.student_codec)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

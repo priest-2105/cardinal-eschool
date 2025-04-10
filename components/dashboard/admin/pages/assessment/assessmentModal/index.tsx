@@ -7,21 +7,21 @@ import { parseISO } from "date-fns"
 import { Calendar, Download } from "lucide-react"
 
 interface Assignment {
-  id: number
-  title: string
-  description: string
-  deadline: string
-  file_path: string
-  tutor_id: string
-  tutor_name: string
+  id: number;
+  title: string;
+  description: string;
+  deadline: string; // ISO string
+  file_path: string;
+  tutor_id: string;
+  tutor_name: string;
   submissions: {
-    total: number
-    turned_in: number
-    pending: number
-    overdue: number
-  }
-  created_at: string
-  updated_at: string
+    total: number;
+    turned_in: number;
+    pending: number;
+    overdue: number;
+  };
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
 }
 
 interface AssessmentModalProps {
@@ -34,8 +34,9 @@ export default function AssessmentModal({ assignment, isOpen, onClose }: Assessm
   if (!assignment) return null
 
   const getFileName = (path: string) => {
-    const parts = path.split("/")
-    return parts[parts.length - 1]
+    if (!path) return "Unknown File";
+    const parts = path.split("/");
+    return parts[parts.length - 1];
   }
 
   return (
@@ -100,7 +101,7 @@ export default function AssessmentModal({ assignment, isOpen, onClose }: Assessm
             Close
           </Button>
           {assignment.file_path && (
-            <Button asChild>
+            <Button>
               <a href={assignment.file_path} target="_blank" rel="noopener noreferrer">
                 Download Assignment
               </a>

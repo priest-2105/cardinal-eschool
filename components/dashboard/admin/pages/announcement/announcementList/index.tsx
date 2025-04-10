@@ -203,7 +203,7 @@ export function AnnouncementsList() {
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  Created: {announcement.created_at}
+                  Created: {(new Date(announcement.created_at)).toLocaleDateString()}
                 </div>
                 {announcement.expirationDate && <div>Expires: {format(announcement.expirationDate, "MMM d, yyyy")}</div>}
               </div>

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft,  Edit, Trash2 } from "lucide-react"
+import { ArrowLeft, Edit, Trash2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -26,16 +26,30 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
 import { formatDate } from "@/utils/dateformat";
 
+interface Announcement {
+  id: string;
+  title: string;
+  message: string;
+  target_role: "students" | "tutors" | "both";
+  status: "active" | "inactive" | "draft";
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
+}
+
+interface AlertMessage {
+  type: "success" | "danger";
+  message: string;
+}
 
 export function AnnouncementDetails({ announcementId }: { announcementId: string }) {
   const router = useRouter();
   const token = useSelector((state: RootState) => state.auth?.token);
-  const [announcement, setAnnouncement] = useState(null);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedContent, setEditedContent] = useState("");
   const [editedRecipients, setEditedRecipients] = useState("");
-  const [alertMessage, setAlertMessage] = useState(null);
+  const [alertMessage, setAlertMessage] = useState<AlertMessage | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -44,13 +58,14 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
         if (!token) {
           throw new Error("Token is required to fetch announcement details.");
         }
-        const data = await getAnnouncementDetails(token, Number(announcementId));
+        const data: Announcement = await getAnnouncementDetails(token, Number(announcementId));
         setAnnouncement(data);
         setEditedTitle(data.title);
         setEditedContent(data.message);
         setEditedRecipients(data.target_role);
-      } catch (error) {
-        setAlertMessage({ type: "danger", message: error.message });
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        setAlertMessage({ type: "danger", message: errorMessage });
       }
     };
     fetchAnnouncement();
@@ -66,14 +81,15 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
 
   const handleCancel = () => {
     setIsEditing(false)
-    setEditedTitle(announcement?.title)
-    setEditedContent(announcement?.content)
-    setEditedRecipients(announcement?.recipients)
+    setEditedTitle(announcement?.title || "")
+    setEditedContent(announcement?.message || "")
+    setEditedRecipients(announcement?.target_role || "")
   }
 
   const handleSave = async () => {
     try {
-      const updatedData = await EditAnnouncement(
+      if (!token) throw new Error("Token is required to edit the announcement.");
+      const updatedData: Announcement = await EditAnnouncement(
         { title: editedTitle, message: editedContent, target_role: editedRecipients },
         token,
         Number(announcementId)
@@ -81,8 +97,9 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
       setAnnouncement(updatedData);
       setIsEditing(false);
       setAlertMessage({ type: "success", message: "Announcement updated successfully" });
-    } catch (error) {
-      setAlertMessage({ type: "danger", message: error.message });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlertMessage({ type: "danger", message: errorMessage });
     }
   };
 
@@ -92,11 +109,13 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
 
   const confirmDelete = async () => {
     try {
+      if (!token) throw new Error("Token is required to delete the announcement.");
       await deleteAnnouncement(token, Number(announcementId));
       setAlertMessage({ type: "success", message: "Announcement deleted successfully" });
       router.push("/admin/announcements");
-    } catch (error) {
-      setAlertMessage({ type: "danger", message: error.message });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlertMessage({ type: "danger", message: errorMessage });
     }
   };
 
@@ -192,8 +211,8 @@ export function AnnouncementDetails({ announcementId }: { announcementId: string
             </div>
 
             <div className="text-sm text-gray-500">
-              <p><b>Created:</b> {formatDate(announcement?.created_at)}</p>
-              <p><b>Last updated:</b>{formatDate(announcement?.updated_at)}</p>
+              <p><b>Created:</b>: {(new Date(announcement.created_at)).toLocaleDateString()}</p>
+              <p><b>Last updated:</b> : {(new Date(announcement.updated_at)).toLocaleDateString()}</p>
             </div>
 
             {isEditing && (

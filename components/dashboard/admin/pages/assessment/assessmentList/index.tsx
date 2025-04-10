@@ -17,25 +17,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Badge } from "@/components/ui/badge"
 
 interface Assignment {
-  id: number
-  title: string
-  description: string
-  deadline: string
-  file_path: string
-  tutor_id: string
-  tutor_name: string
+  id: number;
+  title: string;
+  description: string;
+  deadline: string; // ISO string
+  file_path: string;
+  tutor_id: string;
+  tutor_name: string;
   submissions: {
-    total: number
-    turned_in: number
-    pending: number
-    overdue: number
-  }
-  created_at: string
-  updated_at: string
+    total: number;
+    turned_in: number;
+    pending: number;
+    overdue: number;
+  };
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
 }
 
 interface AssessmentListProps {
-  classId: string
+  classId: string;
 }
 
 export default function AssessmentsList({ classId }: AssessmentListProps) {
@@ -47,6 +47,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
 
   // Stats derived from assignments
@@ -65,21 +66,39 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
   useEffect(() => {
     const fetchAssignments = async () => {
-      if (!token) return
+      if (!token) return;
 
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await getClassAssignments(token, classId)
-        setAssignments(response.data.assignments)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch assignments")
+        const response = await getClassAssignments(token, classId);
+        const assignmentsData = response.data.assignments.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          deadline: item.deadline,
+          file_path: item.file_path || "",
+          tutor_id: item.tutor_id || "",
+          tutor_name: item.tutor_name || "",
+          submissions: {
+            total: item.submissions?.total || 0,
+            turned_in: item.submissions?.turned_in || 0,
+            pending: item.submissions?.pending || 0,
+            overdue: item.submissions?.overdue || 0,
+          },
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        }));
+        setAssignments(assignmentsData);
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch assignments";
+        setError(errorMessage);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchAssignments()
-  }, [classId, token])
+    fetchAssignments();
+  }, [classId, token]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
@@ -96,14 +115,16 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   }
 
   // Filter assignments based on search term
-  const filteredAssignments = assignments.filter(
-    (assignment) =>
+  const filteredAssignments = assignments.filter((assignment) => {
+    const matchesSearch =
       assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      assignment.description.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      assignment.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
 
   // Helper function to get filename from path
   const getFileName = (path: string) => {
+    if (!path) return "Unknown File";
     const parts = path.split("/")
     return parts[parts.length - 1]
   }
@@ -301,7 +322,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                   Close
                 </Button>
                 {selectedAssignment.file_path && (
-                  <Button asChild>
+                  <Button>
                     <a
                       href={selectedAssignment.file_path}
                       target="_blank"
