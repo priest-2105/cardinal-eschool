@@ -18,7 +18,8 @@ import { getStudentList } from "@/lib/api/public/getstudentlist";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
-// import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse";
+import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse";
+import type { CourseDetailsResponse } from "@/lib/api/admin/managecourses/fetchsinglecourse";
 import type { AxiosError } from "axios";
 
 interface Schedule {
@@ -35,47 +36,19 @@ interface Tutor {
   dp_url: string | null;
 }
 
-interface Student {
-  student_codec: string;
-  name: string;
-  email: string;
-  dp_url: string | null;
-  edu_level: string;
-  subjects_interested_in: string[];
-}
-
 interface AssignedStudent {
   id: string;
+  name: string;
+}
+
+interface Student {
+  student_codec: string;
   name: string;
 }
 
 interface ValidationErrors {
   [key: string]: string;
 }
-
-// interface CourseData {
-//   id: number;
-//   name: string;
-//   code: string;
-//   description: string;
-//   schedule: {
-//     days: string[];
-//     time: string[];
-//     start_date: string | null;
-//     end_date: string | null;
-//   };
-//   meeting_link: string;
-//   learning_outcome: string;
-//   prerequisite: string;
-//   department: string;
-//   semester: string;
-//   tutor_id: string;
-//   student_ids: string[];
-//   resource_ids: string;
-//   created_at: string;
-//   updated_at: string;
-//   days_remaining: number | null;
-// }
 
 export default function EditCoursePage() {
   const router = useRouter();
@@ -133,7 +106,7 @@ export default function EditCoursePage() {
       setFetchLoading(true);
       try {
         const response = await getAdminCourseDetails(token, courseId);
-        const courseData = response.data.class;
+        const courseData: CourseDetailsResponse["data"]["class"] = response.data.class;
 
         setCourseName(courseData.name || "");
         setCourseCode(courseData.code || "");
@@ -153,11 +126,11 @@ export default function EditCoursePage() {
           setSchedules(scheduleItems);
         }
 
-        if (courseData.tutor_id) {
+        if (response.data.tutor?.id) {
           setAssignedTutor({
-            tutor_codec: courseData.tutor_id,
-            name: "Assigned Tutor",
-            email: "",
+            tutor_codec: response.data.tutor.id, 
+            name: response.data.tutor.name,
+            email: response.data.tutor.email,
             qualification: null,
             dp_url: null,
           });
@@ -165,7 +138,7 @@ export default function EditCoursePage() {
 
         if (response.data.students?.length > 0) {
           const students = response.data.students.map((student) => ({
-            id: student.student_codec,
+            id: student.id,
             name: student.name,
           }));
           setAssignedStudents(students);
@@ -234,12 +207,11 @@ export default function EditCoursePage() {
   };
 
   const handleAssignStudents = (students: Student[]) => {
-    setAssignedStudents(
-      students.map((student) => ({
-        id: student.student_codec,
-        name: student.name,
-      }))
-    );
+    const assignedStudents = students.map((student) => ({
+      id: student.student_codec, // Map `student_codec` to `id`
+      name: student.name,
+    }));
+    setAssignedStudents(assignedStudents);
     setIsAssignStudentsModalOpen(false);
   };
 
@@ -257,31 +229,31 @@ export default function EditCoursePage() {
 
     setIsSubmitting(true);
     try {
-      // const requestBody = {
-      //   name: courseName,
-      //   code: courseCode,
-      //   description,
-      //   schedule: {
-      //     days: schedules.map((s) => s.day),
-      //     time: schedules.map((s) => s.fromTime),
-      //   },
-      //   meeting_link: joinClassLink,
-      //   tutor_id: assignedTutor?.tutor_codec || "",
-      //   student_ids: assignedStudents.map((s) => s.id),
-      //   learning_outcome: learningOutcomes,
-      //   prerequisite: prerequisites,
-      //   department,
-      //   semester,
-      // };
+      const requestBody = {
+        name: courseName,
+        code: courseCode,
+        description,
+        schedule: {
+          days: schedules.map((s) => s.day),
+          time: schedules.map((s) => s.fromTime),
+        },
+        meeting_link: joinClassLink,
+        tutor_id: assignedTutor?.tutor_codec || "",
+        student_ids: assignedStudents.map((s) => s.id),
+        learning_outcome: learningOutcomes,
+        prerequisite: prerequisites,
+        department,
+        semester,
+      };
 
-      // const response = await updateCourse(token, courseId, requestBody);
+      await updateCourse(token, courseId, requestBody);
       setAlert({
         type: "success",
         message: "Course updated successfully!",
       });
 
       setTimeout(() => {
-        router.push(isEditMode ? `/admin/course/${courseId}` : "/admin/courses");
+        router.push(`/admin/course/${courseId}`);
       }, 2000);
     } catch (error) {
       const err = error as AxiosError;
@@ -575,7 +547,7 @@ export default function EditCoursePage() {
                     className="animate-spin -ml-1 mr-2 h-4 w-4"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
-                    viewBox="0 0 24 24"
+                    viewBox="0  24 24"
                   >
                     <circle
                       className="opacity-25"
