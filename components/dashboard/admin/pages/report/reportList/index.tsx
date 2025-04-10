@@ -1,62 +1,48 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, CheckCircle } from "lucide-react"
-import { format, parseISO } from "date-fns"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { getClassReports } from "@/lib/api/admin/managecourses/fetchreport"
-import { useSelector } from "react-redux"
-import type { RootState } from "@/lib/store"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Calendar, FileText, CheckCircle } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { getClassReports, Report } from "@/lib/api/admin/managecourses/fetchreport";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/lib/store";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export interface Student {
-  id: string
-  name: string
-  dp_url?: string | null
-}
-
-export interface Report {
-  id: number
-  student_id: string
-  report: string
-  status: "pending" | "completed"
-  month: string
-  created_at: string
-  updated_at: string
-  student_name: string
-  students: string[]
-  view_report: {
-    download_url: string
-  }
+  id: string;
+  name: string;
+  dp_url?: string | null;
 }
 
 interface ReportListProps {
-  classId: string
+  classId: string;
+  students: Student[];
   courseDetails: {
-    students?: Student[]
-    students_assigned?: Student[]
-  }
+    students?: Student[];
+    students_assigned?: Student[];
+  };
 }
 
 export default function ReportsList({ classId, students }: ReportListProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [reports, setReports] = useState<Report[]>([])
-  const [filteredReports, setFilteredReports] = useState<Report[]>([])
-  const [monthFilter, setMonthFilter] = useState("all")
-  const [studentFilter, setStudentFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [selectedReport, setSelectedReport] = useState<Report | null>(null)
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const token = useSelector((state: RootState) => state.auth?.token)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [reports, setReports] = useState<Report[]>([]);
+  const [filteredReports, setFilteredReports] = useState<Report[]>([]);
+  const [monthFilter, setMonthFilter] = useState("all");
+  const [studentFilter, setStudentFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token);
 
   const months = [
     "January",
@@ -71,77 +57,77 @@ export default function ReportsList({ classId, students }: ReportListProps) {
     "October",
     "November",
     "December",
-  ]
+  ];
 
   const fetchReports = async () => {
-    if (!token) return
+    if (!token) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await getClassReports(token, classId)
-      setReports(response.data.reports)
-      setFilteredReports(response.data.reports)
+      const response = await getClassReports(token, classId);
+      setReports(response.data.reports);
+      setFilteredReports(response.data.reports);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch reports")
+      setError(err instanceof Error ? err.message : "Failed to fetch reports");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchReports()
-  }, [fetchReports])
+    fetchReports();
+  }, [classId, token]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value
-    setSearchTerm(term)
-    filterReports(term, monthFilter, statusFilter, studentFilter)
-  }
+    const term = e.target.value;
+    setSearchTerm(term);
+    filterReports(term, monthFilter, statusFilter, studentFilter);
+  };
 
   const handleMonthFilter = (value: string) => {
-    setMonthFilter(value)
-    filterReports(searchTerm, value, statusFilter, studentFilter)
-  }
+    setMonthFilter(value);
+    filterReports(searchTerm, value, statusFilter, studentFilter);
+  };
 
   const handleStudentFilter = (value: string) => {
-    setStudentFilter(value)
-    filterReports(searchTerm, monthFilter, statusFilter, value)
-  }
+    setStudentFilter(value);
+    filterReports(searchTerm, monthFilter, statusFilter, value);
+  };
 
   const handleStatusFilter = (value: string) => {
-    setStatusFilter(value)
-    filterReports(searchTerm, monthFilter, value, studentFilter)
-  }
+    setStatusFilter(value);
+    filterReports(searchTerm, monthFilter, value, studentFilter);
+  };
 
   const filterReports = (term: string, month: string, status: string, student: string) => {
     let result = reports.filter(
       (report) =>
         report.report.toLowerCase().includes(term.toLowerCase()) ||
         report.student_name.toLowerCase().includes(term.toLowerCase()),
-    )
+    );
 
     if (month !== "all") {
-      result = result.filter((report) => report.month === month)
+      result = result.filter((report) => report.month === month);
     }
 
     if (status !== "all") {
-      result = result.filter((report) => report.status === status)
+      result = result.filter((report) => report.status === status);
     }
 
     if (student !== "all") {
-      result = result.filter((report) => report.student_id === student)
+      result = result.filter((report) => report.student_id === student);
     }
 
-    setFilteredReports(result)
-  }
+    setFilteredReports(result);
+  };
 
   const handleViewReport = (report: Report) => {
-    setSelectedReport(report)
-    setIsViewModalOpen(true)
-  }
+    setSelectedReport(report);
+    setIsViewModalOpen(true);
+  };
 
   const handleApproveReport = async (reportId: number) => {
-    if (!token) return
+    if (!token) return;
 
     try {
       // Implement the API call to approve the report
@@ -150,30 +136,30 @@ export default function ReportsList({ classId, students }: ReportListProps) {
       // For now, we'll just update the local state
       const updatedReports = reports.map((report) =>
         report.id === reportId ? { ...report, status: "completed" as const } : report,
-      )
+      );
 
-      setReports(updatedReports)
+      setReports(updatedReports);
       setFilteredReports(
         filteredReports.map((report) =>
           report.id === reportId ? { ...report, status: "completed" as const } : report,
         ),
-      )
+      );
 
-      setSuccessMessage("Report approved successfully")
+      setSuccessMessage("Report approved successfully");
 
       // Close the modal if the approved report is the selected one
       if (selectedReport?.id === reportId) {
-        setSelectedReport({ ...selectedReport, status: "completed" })
+        setSelectedReport({ ...selectedReport, status: "completed" });
       }
 
       // Hide success message after 3 seconds
       setTimeout(() => {
-        setSuccessMessage(null)
-      }, 3000)
+        setSuccessMessage(null);
+      }, 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to approve report")
+      setError(err instanceof Error ? err.message : "Failed to approve report");
     }
-  }
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -224,7 +210,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All students</SelectItem>
-              {students.map((student: Student) => (
+              {students.map((student) => (
                 <SelectItem key={student.id} value={student.id}>
                   {student.name}
                 </SelectItem>
@@ -293,8 +279,8 @@ export default function ReportsList({ classId, students }: ReportListProps) {
                   variant="outline"
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    handleViewReport(report)
+                    e.stopPropagation();
+                    handleViewReport(report);
                   }}
                 >
                   <FileText size={16} className="mr-2" />
@@ -310,7 +296,7 @@ export default function ReportsList({ classId, students }: ReportListProps) {
       <Dialog
         open={isViewModalOpen}
         onOpenChange={(open) => {
-          if (!open) setIsViewModalOpen(false)
+          if (!open) setIsViewModalOpen(false);
         }}
       >
         <DialogContent className="sm:max-w-[625px] bg-white">
@@ -379,6 +365,6 @@ export default function ReportsList({ classId, students }: ReportListProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 

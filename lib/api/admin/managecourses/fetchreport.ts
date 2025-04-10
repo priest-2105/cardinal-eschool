@@ -1,24 +1,32 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-interface Report {
+export interface Report {
   id: number;
-  student_id: string;
   report: string;
   status: "pending" | "completed";
   month: string;
+  student_id: string;
+  student_name: string;
   created_at: string;
   updated_at: string;
-  student_name: "TheMan Himself",
   view_report: {
-  download_url: "http://localhost:8000/api/v1/admin/classes/reports/1/1/pdf"
-  }
+    download_url: string;
+  };
 }
 
-interface ReportsResponse {
+export interface Pagination {
+  current_page: number;
+  per_page: number;
+  total: number;
+  last_page: number;
+}
+
+export interface ReportsResponse {
   status: string;
   message: string;
   data: {
     reports: Report[];
+    pagination: Pagination;
   };
 }
 
