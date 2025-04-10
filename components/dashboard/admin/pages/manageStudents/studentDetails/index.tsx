@@ -38,7 +38,7 @@ export function StudentDetails({ id }: { id: string }) {
   const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null);
   const token = useSelector((state: RootState) => state.auth?.token);
   const [activeTab, setActiveTab] = useState("profileinfo");
-  const [statusToUpdate, setStatusToUpdate] = useState<"active" | "suspended" | "banned" | null>(null);
+  const [statusToUpdate,] = useState<"active" | "suspended" | "banned" | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
