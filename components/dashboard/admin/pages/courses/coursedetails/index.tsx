@@ -162,6 +162,7 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
             {activeTab === "reports" && (
               <ReportsList 
                 classId={courseDetails.class.id.toString()}
+                students={courseDetails.students} // Pass the students prop explicitly
                 courseDetails={{
                   students: courseDetails.students,
                 }}
