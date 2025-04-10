@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/dashboard/admi
 
 export default function CreateCouponPage() {
   const router = useRouter();
-  const token: string | null = useSelector((state: RootState) => state.auth?.token);
+  const token: string | null = useSelector((state: RootState) => state.auth?.token ?? null);
 
   const [discountPercentage, setDiscountPercentage] = useState<number | "">("");
   const [isSubmitting, setIsSubmitting] = useState(false);
