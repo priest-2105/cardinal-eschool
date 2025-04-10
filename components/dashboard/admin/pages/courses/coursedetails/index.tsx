@@ -12,7 +12,7 @@ import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import type { LucideIcon } from "lucide-react" // Import type for icons
+import type { LucideIcon } from "lucide-react" 
 
 type Tab = {
   id: "description" | "resources" | "reports" | "assessments" | "students"
