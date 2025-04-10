@@ -53,7 +53,7 @@ export default function CourseDetailsComponent() {
   const fetchAssignments = useCallback(async () => {
     if (!token || !courseDetails) return
     try {
-      const response = await getClassAssignments(token, courseDetails.id)
+      const response = await getClassAssignments(token, String(courseDetails.id))
       setAssignments(response.data.assignments)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch assignments")
@@ -146,14 +146,27 @@ export default function CourseDetailsComponent() {
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
-            {activeTab === "description" && <CourseDescription coursdetails={courseDetails} />}
+            {activeTab === "description" && (
+              <CourseDescription
+                coursdetails={{
+                  ...courseDetails,
+                  students_assigned: courseDetails.students,
+                  resources_assigned: courseDetails.resources,
+                }}
+              />
+            )}
             {activeTab === "resources" && (
               <ResourcesList 
                 resources={courseDetails.resources || []}
               />
             )}
-            {activeTab === "reports" && <ReportsList classId={courseDetails.id}  courseDetails={courseDetails} />}
-            {activeTab === "assessments" && <AssessmentsList classId={courseDetails.id} />}
+            {activeTab === "reports" && (
+              <ReportsList
+                classId={Number(courseDetails.id)}
+                courseDetails={courseDetails}
+              />
+            )}
+            {activeTab === "assessments" && <AssessmentsList classId={String(courseDetails.id)} />}
             {/* {activeTab === "students" && <StudentList students={courseDetails.students_assigned} />} */}
           </CardContent>
         </Card>
@@ -176,8 +189,8 @@ export default function CourseDetailsComponent() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback> {courseDetails?.code}</AvatarFallback>
+                  <AvatarImage src={courseDetails?.tutor.dp_url || "/placeholder.svg"} />
+                  <AvatarFallback>{courseDetails?.code}</AvatarFallback>
                 </Avatar>
                 <div>
                   <h4 className="font-semibold">Course Code: {courseDetails.code}</h4>

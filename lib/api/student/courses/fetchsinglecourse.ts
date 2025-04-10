@@ -5,6 +5,7 @@ export interface CourseDetails {
   message: string;
   data: {
     class: {
+      id: number;
       name: string;
       code: string;
       description: string;
@@ -13,12 +14,29 @@ export interface CourseDetails {
         time: string[];
       };
       meeting_link: string;
-      students_assigned: {
+      status: string;
+      progress_percentage: number;
+      days_remaining: number | null;
+      start_date: string | null;
+      end_date: string | null;
+      department: string;
+      semester: string;
+      tutor: {
         id: string;
         name: string;
         dp_url: string | null;
+      };
+      students: {
+        id: string;
+        name: string;
+        dp_url: string | null;
+        is_self: boolean;
       }[];
-      resources_assigned: unknown[]; // changed from any[] to unknown[]
+      resources: {
+        id: string;
+        name: string;
+        file_path: string;
+      }[];
     };
   };
 }

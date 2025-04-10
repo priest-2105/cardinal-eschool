@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Search, Eye, FileText, FileImage, FileVideo, FileAudio, File } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -14,8 +14,7 @@ interface Resource {
 }
 
 interface ResourcesListProps {
-  resources: Resource[] | { total: number; details: Resource[] };
-  classId?: string;
+  resources: Resource[] | { details: Resource[] };
 }
 
 export default function ResourcesList({ resources = [] }: ResourcesListProps) {
