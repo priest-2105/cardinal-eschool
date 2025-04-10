@@ -90,11 +90,11 @@ export default function CreateCoursePage() {
           getTutors(token),
           getStudentForClasses(token)
         ])
-        
-        if (tutorsRes.status === "success" && studentsRes.status === "success") {
+
+        if (Array.isArray(tutorsRes) && Array.isArray(studentsRes)) {
           // The data is now available to pass to the modals
-          console.log("Tutors:", tutorsRes.data)
-          console.log("Students:", studentsRes.data)
+          console.log("Tutors:", tutorsRes)
+          console.log("Students:", studentsRes)
         }
       } catch (error) {
         console.error("Failed to load tutors and students:", error)
