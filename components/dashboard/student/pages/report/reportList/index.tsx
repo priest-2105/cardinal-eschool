@@ -50,43 +50,43 @@ const SAMPLE_REPORTS: Report[] = [
   { id: "5", title: "Quiz: Chemical Reactions", subject: "Chemistry", grade: "B", dateSubmitted: new Date(2023, 7, 5) },
 ]
 
-interface ReportsListProps {
-  classId: number;
-  courseDetails: {
-    id: number;
-    name: string;
-    code: string;
-    description: string;
-    schedule: {
-      days: string[];
-      time: string[];
-    };
-    meeting_link: string;
-    status: string;
-    progress_percentage: number;
-    days_remaining: number | null;
-    start_date: string | null;
-    end_date: string | null;
-    department: string;
-    semester: string;
-    tutor: {
-      id: string;
-      name: string;
-      dp_url: string | null;
-    };
-    students: {
-      id: string;
-      name: string;
-      dp_url: string | null;
-      is_self: boolean;
-    }[];
-    resources: {
-      id: string;
-      name: string;
-      file_path: string;
-    }[];
-  };
-}
+// interface ReportsListProps {
+//   classId: number;
+//   courseDetails: {
+//     id: number;
+//     name: string;
+//     code: string;
+//     description: string;
+//     schedule: {
+//       days: string[];
+//       time: string[];
+//     };
+//     meeting_link: string;
+//     status: string;
+//     progress_percentage: number;
+//     days_remaining: number | null;
+//     start_date: string | null;
+//     end_date: string | null;
+//     department: string;
+//     semester: string;
+//     tutor: {
+//       id: string;
+//       name: string;
+//       dp_url: string | null;
+//     };
+//     students: {
+//       id: string;
+//       name: string;
+//       dp_url: string | null;
+//       is_self: boolean;
+//     }[];
+//     resources: {
+//       id: string;
+//       name: string;
+//       file_path: string;
+//     }[];
+//   };
+// }
 
 export default function ReportsList() {
   const [searchTerm, setSearchTerm] = useState("")
