@@ -24,10 +24,10 @@ export function CourseList() {
     const token = useSelector((state: RootState) => state.auth?.token);
     const router = useRouter();
 
-    // Function to handle search input changes
+    
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        setCurrentPage(1); // Reset to first page when search changes
+        setCurrentPage(1); 
     };
 
     useEffect(() => {
@@ -126,4 +126,3 @@ export function CourseList() {
         </div>
     );
 }
-
