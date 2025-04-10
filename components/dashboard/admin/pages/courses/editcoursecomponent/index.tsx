@@ -80,12 +80,12 @@ export default function EditCoursePage() {
     const loadTutorsAndStudents = async () => {
       if (!token) return;
       try {
-        const [tutorsRes, studentsRes] = await Promise.all([getTutors(token), getStudentList(token)]);
+        // const [tutorsRes, studentsRes] = await Promise.all([getTutors(token), getStudentList(token)]);
 
-        if (tutorsRes.status === "success" && studentsRes) {
-          console.log("Tutors:", tutorsRes.data);
-          console.log("Students:", studentsRes);
-        }
+        // if (tutorsRes.status === "success" && studentsRes) {
+          // console.log("Tutors:", tutorsRes.data);
+          // console.log("Students:", studentsRes);
+        // }
       } catch (error) {
         const err = error as AxiosError;
         console.error("Failed to load tutors and students:", err.message);

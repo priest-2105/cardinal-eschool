@@ -1,43 +1,43 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSelector } from "react-redux"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Search, Plus } from "lucide-react"
-import { AddTutorModal } from "../addTutorModal/index"
-import { getTutors } from "@/lib/api/admin/api"
-import { RootState } from "@/lib/store"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Search, Plus } from "lucide-react";
+import { AddTutorModal } from "../addTutorModal/index";
+import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors";
+import { RootState } from "@/lib/store";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface Tutor {
-  tutor_codec: string
-  name: string
-  email: string
-  qualification: string | null
-  dp_url: string | null
+  tutor_codec: string;
+  name: string;
+  email: string;
+  qualification: string | null;
+  dp_url: string | null;
 }
 
 export function TutorList() {
   const token = useSelector((state: RootState) => state.auth?.token);
-  const [tutors, setTutors] = useState<Tutor[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isAddTutorModalOpen, setIsAddTutorModalOpen] = useState(false)
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
-  const router = useRouter()
+  const [tutors, setTutors] = useState<Tutor[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isAddTutorModalOpen, setIsAddTutorModalOpen] = useState(false);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
         if (token) {
-          const response = await getTutors(token);
-          setTutors(response.data);
+          const tutors = await getTutors(token);
+          setTutors(tutors);
         }
       } catch (error) {
         console.error("Failed to fetch tutors:", error);
-        setAlert({ type: 'error', message: "Failed to fetch tutors. Please try again later." });
+        setAlert({ type: "error", message: "Failed to fetch tutors. Please try again later." });
       }
     };
 
@@ -46,12 +46,12 @@ export function TutorList() {
 
   const handleRowClick = (tutor: Tutor) => {
     router.push(`/admin/tutor/${tutor.tutor_codec}`);
-  }
+  };
 
   const handleAddTutor = (newTutor: Tutor) => {
     setTutors([...tutors, newTutor]);
     setIsAddTutorModalOpen(false);
-  }
+  };
 
   const filteredTutors = tutors.filter((tutor) =>
     tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,8 +69,8 @@ export function TutorList() {
         </div>
 
         {alert && (
-          <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mb-4 absolute top-16 bg-white right-4">
-            <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+          <Alert variant={alert.type === "success" ? "default" : "danger"} className="mb-4 absolute top-16 bg-white right-4">
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
             <AlertDescription>{alert.message}</AlertDescription>
           </Alert>
         )}
@@ -124,9 +124,16 @@ export function TutorList() {
       <AddTutorModal
         isOpen={isAddTutorModalOpen}
         onClose={() => setIsAddTutorModalOpen(false)}
-        onAddTutor={handleAddTutor}
+        onAddTutor={(tutorData) => {
+          const newTutor: Tutor = {
+            ...tutorData,
+            qualification: tutorData.qualification || null,
+            dp_url: tutorData.dp_url || null,
+          };
+          handleAddTutor(newTutor);
+        }}
       />
     </div>
-  )
+  );
 }
 

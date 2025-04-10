@@ -17,7 +17,8 @@ interface TutorData {
   tutor_codec: string;
   name: string;
   email: string;
-  // ...other properties as needed
+  dp_url: string;
+  qualification: string;
 }
 
 interface AddTutorModalProps {

@@ -5,7 +5,7 @@ interface Tutor {
   name: string;
   email: string;
   qualification: string | null;
-  dp_url: string | null;
+  dp_url: string | null; 
 }
 
 interface TutorListResponse {
@@ -14,7 +14,7 @@ interface TutorListResponse {
   data: Tutor[];
 }
 
-export async function getTutors(token: string): Promise<TutorListResponse> {
+export async function getTutors(token: string): Promise<Tutor[]> {
   const response = await fetchWithAuth(`${apiUrl}/admin/getTutors`, {
     method: "GET",
     headers: {
@@ -24,8 +24,19 @@ export async function getTutors(token: string): Promise<TutorListResponse> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch tutors");
+    const errorMessage = await response.text();
+    throw new Error(`Failed to fetch tutors: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
 
-  return response.json();
+  const result: TutorListResponse = await response.json();
+
+  
+  const baseUrl = apiUrl?.replace("/api", ""); // Adjust base URL if needed
+  result.data.forEach((tutor) => {
+    if (tutor.dp_url && !tutor.dp_url.startsWith("http")) {
+      tutor.dp_url = `${baseUrl}/${tutor.dp_url}`;
+    }
+  });
+
+  return result.data;
 }
