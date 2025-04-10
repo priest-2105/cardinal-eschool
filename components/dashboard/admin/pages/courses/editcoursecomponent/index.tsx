@@ -18,7 +18,7 @@ import { getStudentList } from "@/lib/api/public/getstudentlist";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
-import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse";
+// import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse";
 import type { AxiosError } from "axios";
 
 interface Schedule {
@@ -257,22 +257,22 @@ export default function EditCoursePage() {
 
     setIsSubmitting(true);
     try {
-      const requestBody = {
-        name: courseName,
-        code: courseCode,
-        description,
-        schedule: {
-          days: schedules.map((s) => s.day),
-          time: schedules.map((s) => s.fromTime),
-        },
-        meeting_link: joinClassLink,
-        tutor_id: assignedTutor?.tutor_codec || "",
-        student_ids: assignedStudents.map((s) => s.id),
-        learning_outcome: learningOutcomes,
-        prerequisite: prerequisites,
-        department,
-        semester,
-      };
+      // const requestBody = {
+      //   name: courseName,
+      //   code: courseCode,
+      //   description,
+      //   schedule: {
+      //     days: schedules.map((s) => s.day),
+      //     time: schedules.map((s) => s.fromTime),
+      //   },
+      //   meeting_link: joinClassLink,
+      //   tutor_id: assignedTutor?.tutor_codec || "",
+      //   student_ids: assignedStudents.map((s) => s.id),
+      //   learning_outcome: learningOutcomes,
+      //   prerequisite: prerequisites,
+      //   department,
+      //   semester,
+      // };
 
       // const response = await updateCourse(token, courseId, requestBody);
       setAlert({
