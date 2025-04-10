@@ -219,12 +219,18 @@ export function NotificationList() {
   }
 
   function parseDate(created_at: string): Date {
-    const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1")
-    const dateObj = new Date(cleanDateStr)
+    // Remove ordinal suffixes (e.g., "1st", "2nd", "3rd", "4th")
+    const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1");
+
+    // Parse the cleaned date string into a Date object
+    const dateObj = new Date(cleanDateStr);
+
     if (isNaN(dateObj.getTime())) {
-      throw new Error(`Invalid date format: ${created_at}`)
+      console.error(`Invalid date format: ${created_at}`);
+      throw new Error(`Invalid date format: ${created_at}`);
     }
-    return dateObj
+
+    return dateObj;
   }
 
   const markAsUnread = (ids: number[]) => {
