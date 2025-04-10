@@ -31,11 +31,11 @@ export interface FetchTicketsResponse {
   };
 }
 
-interface TicketFilters {
-    status?: string;
-    ticket_id?: string;
-    department?: string;
-}
+// interface TicketFilters {
+//     status?: string;
+//     ticket_id?: string;
+//     department?: string;
+// }
 
 export async function fetchTicketList(
   token: string,
