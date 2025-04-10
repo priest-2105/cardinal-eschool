@@ -9,6 +9,7 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import pusher from "@/utils/pusher"
 import { fetchNotifications } from "@/lib/api/admin/api"
+import type { Notification } from "@/lib/api/admin/notifcation/fetchnotification"
 
 interface NotificationBadgeProps {
   onViewAll?: () => void
@@ -16,9 +17,9 @@ interface NotificationBadgeProps {
 
 export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
   const token = useSelector((state: RootState) => state.auth?.token)
-  const userId = useSelector((state: RootState) => state.auth?.user?.id)
+  const userId = useSelector((state: RootState) => state.auth?.user?.user_codec)
   const [unreadCount, setUnreadCount] = useState(0)
-  const [recentNotifications, setRecentNotifications] = useState<unknown[]>([])
+  const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
   // Load initial notifications
@@ -27,13 +28,13 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
       if (!token) return
       try {
         const response = await fetchNotifications(token, 1, 5)
-        const notifications = response.data.notifications || []
+        const notifications: Notification[] = response.data.notifications || []
 
         // Set recent notifications
         setRecentNotifications(notifications.slice(0, 5))
 
         // Count unread notifications
-        const unreadNotifications = notifications.filter((n: unknown) => !n.read_at)
+        const unreadNotifications = notifications.filter((n) => !n.read_at)
         setUnreadCount(unreadNotifications.length)
       } catch (error) {
         console.error("Failed to fetch notifications:", error)
@@ -54,7 +55,7 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
     const channel = pusher.subscribe(channelName)
 
     // Listen for the 'notification.created' event
-    channel.bind("notification.created", (data: unknown) => {
+    channel.bind("notification.created", (data: Notification) => {
       // Add the new notification to the recent list
       setRecentNotifications((prev) => {
         const newNotifications = [data, ...prev.slice(0, 4)]
@@ -111,17 +112,17 @@ export function NotificationBadge({ onViewAll }: NotificationBadgeProps) {
                     {notification.title || "Notification"}
                   </h4>
                   <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                    {notification.message || notification.content || ""}
+                    {notification.message || ""}
                   </p>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-muted-foreground">
                       {new Date(notification.created_at).toLocaleString()}
                     </span>
-                    {notification.link && (
+                    {/* {notification.link && (
                       <Button variant="link" size="sm" className="h-auto p-0 text-xs">
                         View
                       </Button>
-                    )}
+                    )} */}
                   </div>
                 </div>
               ))}
