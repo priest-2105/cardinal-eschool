@@ -1,60 +1,40 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
+interface Schedule {
+  days: string[];
+  time: string[];
+  start_date: string | null;
+  end_date: string | null;
+}
+
 export interface CourseDetailsResponse {
+  status: string;
+  message: string;
   data: {
     class: {
       id: number;
       name: string;
       code: string;
       description: string;
-      schedule: {
-        days: string[];
-        time: string[];
-        start_date: string | null;
-        end_date: string | null;
-      };
+      schedule: Schedule;
       meeting_link: string;
       learning_outcome: string;
       prerequisite: string;
       department: string;
       semester: string;
-      progress_percentage: number;
-      start_date: string | null;
-      end_date: string | null;
-      status: string;
+      tutor_id: string;
+      student_ids: string[];
+      resource_ids: string;
+      created_at: string;
+      updated_at: string;
       days_remaining: number | null;
     };
-    tutor: {
-      id: string;
-      name: string;
-      email: string;
-    } | null;
     students: {
-      id: string;
+      student_codec: string;
       name: string;
-      email: string;
     }[];
-    assignments: {
-      total: number;
-      turned_in: number;
-      pending: number;
-      overdue: number;
-      percentage_turned_in: number;
-    };
-    reports: {
-      total: number;
-    };
-    resources: {
-      total: number;
-      details: {
-        id: number;
-        name: string;
-        file_path: string;
-      }[];
-    };
   };
 }
-
 
 export async function getAdminCourseDetails(token: string, courseId: string): Promise<CourseDetailsResponse> {
   const response = await fetchWithAuth(`${apiUrl}/admin/classes/${courseId}`, {
@@ -65,8 +45,8 @@ export async function getAdminCourseDetails(token: string, courseId: string): Pr
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.message || "Failed to fetch course details");
+    const errorMessage = await response.text();
+    throw new Error(`Failed to fetch course details: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
 
   return response.json();

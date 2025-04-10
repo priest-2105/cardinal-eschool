@@ -1,34 +1,34 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, Plus, Trash2, User, Users } from "lucide-react"
-import { AssignTutorModal } from "../assignTutorModal/index"
-import { AssignStudentsModal } from "../assignStudentModal/index"
-import { getAdminCourseDetails } from "@/lib/api/admin/managecourses/fetchsinglecourse"
-import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors"
-import { getStudentForClasses } from "@/lib/api/admin/managestudent/getstudentforclassess"
-import { useSelector } from "react-redux"
-import type { RootState } from "@/lib/store"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
-import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Plus, Trash2, User, Users } from "lucide-react";
+import { AssignTutorModal } from "../assignTutorModal/index";
+import { AssignStudentsModal } from "../assignStudentModal/index";
+import { getAdminCourseDetails } from "@/lib/api/admin/managecourses/fetchsinglecourse";
+import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors";
+import { getStudentList } from "@/lib/api/public/getstudentlist";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/lib/store";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
+import { updateCourse } from "@/lib/api/admin/managecourses/updatecourse";
 import type { AxiosError } from "axios";
 
 interface Schedule {
-  day: string
-  fromTime: string
-  toTime: string
+  day: string;
+  fromTime: string;
+  toTime: string;
 }
 
 interface Tutor {
-  tutor_codec: string; // Changed from `id` to `tutor_codec` to match API response
+  tutor_codec: string;
   name: string;
   email: string;
   qualification: string | null;
@@ -36,21 +36,21 @@ interface Tutor {
 }
 
 interface Student {
-  student_codec: string
-  name: string
-  email: string
-  dp_url: string | null
-  edu_level: string
-  subjects_interested_in: string[]
+  student_codec: string;
+  name: string;
+  email: string;
+  dp_url: string | null;
+  edu_level: string;
+  subjects_interested_in: string[];
 }
 
 interface AssignedStudent {
-  id: string; // Explicitly defined type for assigned students
+  id: string;
   name: string;
 }
 
 interface ValidationErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface CourseData {
@@ -69,7 +69,7 @@ interface CourseData {
   prerequisite: string;
   department: string;
   semester: string;
-  tutor_id: string; // Add this property
+  tutor_id: string;
   student_ids: string[];
   resource_ids: string;
   created_at: string;
@@ -78,43 +78,40 @@ interface CourseData {
 }
 
 export default function EditCoursePage() {
-  const router = useRouter()
-  const params = useParams()
-  const courseId = params?.courseid as string
-  const isEditMode = !!courseId
+  const router = useRouter();
+  const params = useParams();
+  const courseId = params?.courseid as string;
+  const isEditMode = !!courseId;
 
-  const [courseName, setCourseName] = useState("")
-  const [courseCode, setCourseCode] = useState("")
-  const [department, setDepartment] = useState("")
-  const [semester, setSemester] = useState("")
-  const [description, setDescription] = useState("")
-  const [prerequisites, setPrerequisites] = useState("")
-  const [learningOutcomes, setLearningOutcomes] = useState("")
-  const [joinClassLink, setJoinClassLink] = useState("")
-  const [schedules, setSchedules] = useState<Schedule[]>([])
-  const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" })
-  const [assignedTutor, setAssignedTutor] = useState<Tutor | null>(null)
-  const [assignedStudents, setAssignedStudents] = useState<AssignedStudent[]>([])
-  const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState(false)
-  const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false)
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<ValidationErrors>({})
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const [fetchLoading, setFetchLoading] = useState(false)
+  const [courseName, setCourseName] = useState<string>("");
+  const [courseCode, setCourseCode] = useState<string>("");
+  const [department, setDepartment] = useState<string>("");
+  const [semester, setSemester] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [prerequisites, setPrerequisites] = useState<string>("");
+  const [learningOutcomes, setLearningOutcomes] = useState<string>("");
+  const [joinClassLink, setJoinClassLink] = useState<string>("");
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [newSchedule, setNewSchedule] = useState<Schedule>({ day: "", fromTime: "", toTime: "" });
+  const [assignedTutor, setAssignedTutor] = useState<Tutor | null>(null);
+  const [assignedStudents, setAssignedStudents] = useState<AssignedStudent[]>([]);
+  const [isAssignTutorModalOpen, setIsAssignTutorModalOpen] = useState<boolean>(false);
+  const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState<boolean>(false);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [fetchLoading, setFetchLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadTutorsAndStudents = async () => {
       if (!token) return;
       try {
-        const [tutorsRes, studentsRes] = await Promise.all([
-          getTutors(token),
-          getStudentForClasses(token),
-        ]);
+        const [tutorsRes, studentsRes] = await Promise.all([getTutors(token), getStudentList(token)]);
 
-        if (tutorsRes.status === "success" && studentsRes.status === "success") {
+        if (tutorsRes.status === "success" && studentsRes) {
           console.log("Tutors:", tutorsRes.data);
-          console.log("Students:", studentsRes.data);
+          console.log("Students:", studentsRes);
         }
       } catch (error) {
         const err = error as AxiosError;
@@ -130,53 +127,48 @@ export default function EditCoursePage() {
   }, [token]);
 
   useEffect(() => {
-    // Fetch existing course data if in edit mode
     const fetchCourseDetails = async () => {
-      if (!token || !isEditMode) return
-      
-      setFetchLoading(true)
+      if (!token || !isEditMode) return;
+
+      setFetchLoading(true);
       try {
-        const response = await getAdminCourseDetails(token, courseId)
-        const courseData: CourseData = response.data.class
-        
-        // Set form fields with existing data
-        setCourseName(courseData.name || "")
-        setCourseCode(courseData.code || "")
-        setDepartment(courseData.department || "")
-        setSemester(courseData.semester || "")
-        setDescription(courseData.description || "")
-        setPrerequisites(courseData.prerequisite || "")
-        setLearningOutcomes(courseData.learning_outcome || "")
-        setJoinClassLink(courseData.meeting_link || "")
-        
-        // Handle schedule data
+        const response = await getAdminCourseDetails(token, courseId);
+        const courseData = response.data.class;
+
+        setCourseName(courseData.name || "");
+        setCourseCode(courseData.code || "");
+        setDepartment(courseData.department || "");
+        setSemester(courseData.semester || "");
+        setDescription(courseData.description || "");
+        setPrerequisites(courseData.prerequisite || "");
+        setLearningOutcomes(courseData.learning_outcome || "");
+        setJoinClassLink(courseData.meeting_link || "");
+
         if (courseData.schedule?.days && courseData.schedule?.time) {
-          const scheduleItems = courseData.schedule.days.map((day: string, index: number) => ({
+          const scheduleItems = courseData.schedule.days.map((day, index) => ({
             day,
             fromTime: courseData.schedule.time[index] || "",
-            toTime: "", // Default to empty if not provided
-          }))
-          setSchedules(scheduleItems)
+            toTime: "",
+          }));
+          setSchedules(scheduleItems);
         }
-        
-        // Set tutor if available
+
         if (courseData.tutor_id) {
           setAssignedTutor({
             tutor_codec: courseData.tutor_id,
-            name: "Assigned Tutor", // Placeholder name; replace with actual data if available
+            name: "Assigned Tutor",
             email: "",
             qualification: null,
             dp_url: null,
           });
         }
-        
-        // Set students if available
+
         if (response.data.students?.length > 0) {
-          const students = response.data.students.map((student: any) => ({
+          const students = response.data.students.map((student) => ({
             id: student.student_codec,
             name: student.name,
-          }))
-          setAssignedStudents(students)
+          }));
+          setAssignedStudents(students);
         }
       } catch (error) {
         const err = error as AxiosError;
@@ -186,72 +178,70 @@ export default function EditCoursePage() {
           message: "Failed to load course details",
         });
       } finally {
-        setFetchLoading(false)
+        setFetchLoading(false);
       }
-    }
+    };
 
-    fetchCourseDetails()
-  }, [token, courseId, isEditMode])
+    fetchCourseDetails();
+  }, [token, courseId, isEditMode]);
 
   const validateForm = (): boolean => {
-    const newErrors: ValidationErrors = {}
+    const newErrors: ValidationErrors = {};
 
-    if (!courseName.trim()) newErrors.name = "Course name is required"
-    if (!courseCode.trim()) newErrors.code = "Course code is required"
-    if (!description.trim()) newErrors.description = "Description is required"
-    if (schedules.length === 0) newErrors.schedule = "At least one schedule is required"
-    if (!assignedTutor) newErrors.tutor = "A tutor must be assigned"
-    if (assignedStudents.length === 0) newErrors.students = "At least one student must be assigned"
+    if (!courseName.trim()) newErrors.name = "Course name is required";
+    if (!courseCode.trim()) newErrors.code = "Course code is required";
+    if (!description.trim()) newErrors.description = "Description is required";
+    if (schedules.length === 0) newErrors.schedule = "At least one schedule is required";
+    if (!assignedTutor) newErrors.tutor = "A tutor must be assigned";
+    if (assignedStudents.length === 0) newErrors.students = "At least one student must be assigned";
 
-    // Meeting link validation
     if (joinClassLink) {
-      const meetLinkRegex = /^(https?:\/\/)?(meet\.google\.com\/[a-zA-Z0-9-]+|(?:www\.)?zoom\.us\/(?:j\/)?[0-9]+(\?pwd=[a-zA-Z0-9]+)?)$/
+      const meetLinkRegex = /^(https?:\/\/)?(meet\.google\.com\/[a-zA-Z0-9-]+|(?:www\.)?zoom\.us\/(?:j\/)?[0-9]+(\?pwd=[a-zA-Z0-9]+)?)$/;
       if (!meetLinkRegex.test(joinClassLink)) {
-        newErrors.meeting_link = "Please enter a valid Google Meet or Zoom meeting link"
+        newErrors.meeting_link = "Please enter a valid Google Meet or Zoom meeting link";
       }
     }
 
-    // Schedule validation
     schedules.forEach((schedule, index) => {
-      const validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+      const validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
       if (!validDays.includes(schedule.day)) {
-        newErrors[`schedule_${index}`] = "Invalid day selected"
+        newErrors[`schedule_${index}`] = "Invalid day selected";
       }
       if (!schedule.fromTime || !schedule.toTime) {
-        newErrors[`schedule_time_${index}`] = "Both start and end time are required"
+        newErrors[`schedule_time_${index}`] = "Both start and end time are required";
       }
-    })
+    });
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleAddSchedule = () => {
     if (newSchedule.day && newSchedule.fromTime && newSchedule.toTime) {
-      setSchedules([...schedules, newSchedule])
-      setNewSchedule({ day: "", fromTime: "", toTime: "" })
+      setSchedules([...schedules, newSchedule]);
+      setNewSchedule({ day: "", fromTime: "", toTime: "" });
     }
-  }
+  };
 
   const handleRemoveSchedule = (index: number) => {
-    const updatedSchedules = schedules.filter((_, i) => i !== index)
-    setSchedules(updatedSchedules)
-  }
+    const updatedSchedules = schedules.filter((_, i) => i !== index);
+    setSchedules(updatedSchedules);
+  };
 
   const handleAssignTutor = (tutor: Tutor) => {
-    setAssignedTutor(tutor); // Directly set the tutor object
-    setIsAssignTutorModalOpen(false)
-  }
+    setAssignedTutor(tutor);
+    setIsAssignTutorModalOpen(false);
+  };
 
   const handleAssignStudents = (students: Student[]) => {
     setAssignedStudents(
-      students.map(student => ({
+      students.map((student) => ({
         id: student.student_codec,
-        name: student.name
+        name: student.name,
       }))
-    )
-    setIsAssignStudentsModalOpen(false)
-  }
+    );
+    setIsAssignStudentsModalOpen(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -284,14 +274,11 @@ export default function EditCoursePage() {
         semester,
       };
 
-      let response;
-      
-        response = await updateCourse(token, courseId, requestBody);
-        setAlert({
-          type: "success",
-          message: "Course updated successfully!",
-        });
-      
+      const response = await updateCourse(token, courseId, requestBody);
+      setAlert({
+        type: "success",
+        message: "Course updated successfully!",
+      });
 
       setTimeout(() => {
         router.push(isEditMode ? `/admin/course/${courseId}` : "/admin/courses");
@@ -305,8 +292,7 @@ export default function EditCoursePage() {
       });
 
       if (err.response?.data && (err.response.data as { errors?: ValidationErrors }).errors) {
-        console.error("Validation errors:", (err.response?.data as { errors?: ValidationErrors })?.errors);
-        setErrors((err.response?.data as { errors?: ValidationErrors })?.errors || {});
+        setErrors((err.response.data as { errors?: ValidationErrors }).errors || {});
       }
     } finally {
       setIsSubmitting(false);
@@ -442,9 +428,9 @@ export default function EditCoursePage() {
                   <Select
                     value={schedule.day}
                     onValueChange={(value) => {
-                      const updatedSchedules = [...schedules]
-                      updatedSchedules[index].day = value
-                      setSchedules(updatedSchedules)
+                      const updatedSchedules = [...schedules];
+                      updatedSchedules[index].day = value;
+                      setSchedules(updatedSchedules);
                     }}
                   >
                     <SelectTrigger className="w-[120px]">
@@ -466,9 +452,9 @@ export default function EditCoursePage() {
                       type="time"
                       value={schedule.fromTime}
                       onChange={(e) => {
-                        const updatedSchedules = [...schedules]
-                        updatedSchedules[index].fromTime = e.target.value
-                        setSchedules(updatedSchedules)
+                        const updatedSchedules = [...schedules];
+                        updatedSchedules[index].fromTime = e.target.value;
+                        setSchedules(updatedSchedules);
                       }}
                       className="w-[120px]"
                     />
@@ -479,9 +465,9 @@ export default function EditCoursePage() {
                       type="time"
                       value={schedule.toTime}
                       onChange={(e) => {
-                        const updatedSchedules = [...schedules]
-                        updatedSchedules[index].toTime = e.target.value
-                        setSchedules(updatedSchedules)
+                        const updatedSchedules = [...schedules];
+                        updatedSchedules[index].toTime = e.target.value;
+                        setSchedules(updatedSchedules);
                       }}
                       className="w-[120px]"
                     />
@@ -629,6 +615,6 @@ export default function EditCoursePage() {
         currentStudents={assignedStudents}
       />
     </div>
-  )
+  );
 }
 
