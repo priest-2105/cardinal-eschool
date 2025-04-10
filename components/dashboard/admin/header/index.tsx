@@ -23,7 +23,7 @@ const profileOptions = [
 interface Notification {
   message: string
   time: string
-  createdAt: string
+  created_at: string
   read_at?: string | null
 }
 
@@ -168,14 +168,19 @@ const AdminDashboardHeader: React.FC = () => {
       if (token) {
         try {
           const response = await fetchNotifications(token);
-          const notifications = response.data.notifications as Notification[];
+          const notifications = response.data.notifications.map((notification: any) => ({
+            message: notification.message,
+            time: new Date(notification.created_at).toLocaleString(), 
+            created_at: notification.created_at, 
+            read_at: notification.read_at,
+          })) as Notification[];
+
+          // Filter unread notifications
           const unread = notifications.filter((notification) => !notification.read_at);
           setHasUnreadNotifications(unread.length > 0);
-          const recent = unread.slice(0, 3).map((notification) => ({
-            message: notification.message,
-            time: notification.createdAt,
-            createdAt: notification.createdAt,
-          }));
+
+          // Map recent notifications
+          const recent = notifications.slice(0, 3);
           setRecentNotifications(recent);
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
@@ -233,7 +238,7 @@ const AdminDashboardHeader: React.FC = () => {
           </button>
           <div className="flex items-center w-58 gap-x-4 z-40">
             <Dropdown
-              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "", createdAt: "" }]}
+              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "", created_at: "" }]}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
