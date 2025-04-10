@@ -171,8 +171,29 @@ function PublicNavbar() {
             })}
           </div>
           <div className="mt-6 space-y-4">
-            <Link href={cardinalConfig.routes.login} className="block w-full px-4 py-2 text-center rounded-3xl text-sm font-bold text-[#1BC2C2] border-2 border-[#1BC2C2] hover:bg-[#1BC2C2] hover:text-[#fff]" onClick={toggleMenu}>Log In</Link>
-            <Link href={cardinalConfig.routes.signup} className="block w-full px-4 py-2 text-center rounded-3xl text-sm font-bold text-[#fff] border-2 bg-[#1BC2C2] border-[#1BC2C2] hover:bg-[#fff] hover:text-[#1BC2C2]" onClick={toggleMenu}>Sign Up</Link>
+            {user ? (
+              <button 
+                onClick={handleButtonClick} 
+                className="block w-full px-8 py-2 rounded-3xl text-sm font-bold text-[#fff] border-2 bg-[#1BC2C2] border-[#1BC2C2] hover:bg-[#fff] hover:text-[#1BC2C2]"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <>
+                <Link 
+                  href="/login" 
+                  className="block w-full px-8 py-2 rounded-3xl text-sm font-bold text-[#1BC2C2] border-2 border-[#1BC2C2] hover:bg-[#1BC2C2] hover:text-[#fff]"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className="block w-full px-8 py-2 rounded-3xl text-sm font-bold text-[#fff] border-2 bg-[#1BC2C2] border-[#1BC2C2] hover:bg-[#fff] hover:text-[#1BC2C2]"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

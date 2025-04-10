@@ -168,9 +168,15 @@ export default function CourseDetailsComponent({ courseDetails }: CourseDetailsC
               />
             )}
             {activeTab === "assessments" && (
-              <AssessmentsList 
+              <AssessmentsList
                 classId={courseDetails.class.id.toString()}
-                stats={courseDetails.assignments} // Remove or update `AssessmentListProps` to include `stats`
+                stats={{
+                  total: courseDetails.assignments.total,
+                  turned_in: courseDetails.assignments.turned_in,
+                  pending: courseDetails.assignments.pending,
+                  overdue: courseDetails.assignments.overdue,
+                  percentage_turned_in: courseDetails.assignments.percentage_turned_in,
+                }}
               />
             )}
             {activeTab === "students" && (
