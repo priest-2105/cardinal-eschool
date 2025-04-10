@@ -136,7 +136,7 @@ export default function PersonalInformation() {
               value={phoneNumber}
               onChange={(phone) => setPhoneNumber(phone)}
               country="us"
-              readOnly={!isEditable}
+              // readOnly={!isEditable}
             />
           </div>
           <div className="space-y-2">
