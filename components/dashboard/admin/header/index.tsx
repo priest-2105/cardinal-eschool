@@ -13,19 +13,18 @@ import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import type { Notification as BaseNotification } from "@/lib/api/admin/notifcation/fetchnotification";
+
+// Extend the Notification interface to include the `time` property
+interface Notification extends BaseNotification {
+  time: string;
+}
 
 const profileOptions = [
   { name: "Profile", href: "/admin/admininformation" },
   { name: "Settings", href: "/admin/settings" },
   { name: "Logout", href: "#" },
 ]
-
-interface Notification {
-  message: string
-  time: string
-  created_at: string
-  read_at?: string | null
-}
 
 interface ProfileOption {
   name: string
@@ -168,12 +167,10 @@ const AdminDashboardHeader: React.FC = () => {
       if (token) {
         try {
           const response = await fetchNotifications(token);
-          const notifications = response.data.notifications.map((notification: any) => ({
-            message: notification.message,
-            time: new Date(notification.created_at).toLocaleString(), 
-            created_at: notification.created_at, 
-            read_at: notification.read_at,
-          })) as Notification[];
+          const notifications = response.data.notifications.map((notification) => ({
+            ...notification,
+            time: new Date(notification.created_at).toLocaleString(), // Add the `time` property
+          }));
 
           // Filter unread notifications
           const unread = notifications.filter((notification) => !notification.read_at);
@@ -185,6 +182,21 @@ const AdminDashboardHeader: React.FC = () => {
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
           console.error("Error fetching notifications:", errorMessage);
+
+          // Set fallback notification
+          setRecentNotifications([
+            {
+              id: 0,
+              type: "system",
+              title: "No notifications",
+              message: "You have no notifications at the moment.",
+              data: {},
+              action_url: null,
+              read_at: null,
+              created_at: new Date().toISOString(),
+              time: new Date().toLocaleString(),
+            },
+          ]);
         }
       }
     };
@@ -238,7 +250,7 @@ const AdminDashboardHeader: React.FC = () => {
           </button>
           <div className="flex items-center w-58 gap-x-4 z-40">
             <Dropdown
-              items={recentNotifications.length > 0 ? recentNotifications : [{ message: "No notifications", time: "", created_at: "" }]}
+              items={recentNotifications}
               icon={
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
