@@ -83,24 +83,28 @@ const StudentDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token)
-          const notifications = response.notifications
-          const unread = notifications.filter((notification: { isRead: boolean }) => !notification.isRead)
-          setHasUnreadNotifications(unread.length > 0)
-          const recent = unread.slice(0, 3).map((notification: { message: string; createdAt: string }) => ({
+          const response = await fetchNotifications(token, 1, 3); // Fetch the first page with 3 notifications
+          const notifications = response.data.notifications;
+  
+          // Filter unread notifications
+          const unread = notifications.filter((notification) => !notification.read_at);
+          setHasUnreadNotifications(unread.length > 0);
+  
+          // Map recent notifications to the required structure
+          const recent = notifications.map((notification) => ({
             message: notification.message,
-            time: notification.createdAt,
+            time: notification.created_at,
             href: `/student/notifications`,
-          }))
-          setRecentNotifications(recent)
+          }));
+          setRecentNotifications(recent);
         } catch (error: unknown) {
-          console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error")
+          console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error");
         }
       }
-    }
-
-    fetchRecentNotifications()
-  }, [token])
+    };
+  
+    fetchRecentNotifications();
+  }, [token]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
