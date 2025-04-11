@@ -18,7 +18,7 @@ interface ViewReportModalProps {
 export function ViewReportModal({ report, isOpen, onClose, students }: ViewReportModalProps) {
   if (!report) return null;
 
-  const student = students.find((s) => s.id === report.student_id); // Use the students prop
+  const student = students.find((s) => s.id === report.student_id);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
