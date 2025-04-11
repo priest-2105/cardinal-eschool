@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import pusher from "@/utils/pusher"
-import { fetchNotifications } from "@/lib/api/admin/api"
+import { fetchNotifications } from "@/lib/api/admin/notifcation/fetchnotification"
 import type { Notification } from "@/lib/api/admin/notifcation/fetchnotification"
 
 interface NotificationBadgeProps {
