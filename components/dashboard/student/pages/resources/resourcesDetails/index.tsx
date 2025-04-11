@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"; // Explicitly import React
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { FileText, FileImage, FileVideo, FileAudio, File, Download, ExternalLink } from "lucide-react"
@@ -30,7 +31,7 @@ export function ViewResourceModal({ isOpen, onClose, resource }: ViewResourceMod
   const getFileType = (filePath: string): {
     type: 'pdf' | 'image' | 'video' | 'audio' | 'doc' | 'other', 
     extension: string,
-    icon: JSX.Element,
+    icon: React.ReactElement, // Use React.ReactElement instead of JSX.Element
     color: string,
     name: string
   } => {
