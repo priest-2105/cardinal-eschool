@@ -9,12 +9,12 @@ import { useAppSelector } from "@/lib/hooks";
 import { getPlans } from "@/lib/api/student/profile/fetchplans";
 
 interface Plan {
+  sub_id: string
   id: number;
   title: string;
   price: string;
   duration: string;
   features: string[];
-  sub_id: string;
 }
 
 interface UserProfile {
@@ -144,7 +144,12 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
     setError(null);
 
     try {
-      const response = await validateCoupon(authState?.token, coupon, originalPrice);
+      if (!authState?.token) {
+        setError("Authentication token is missing");
+        setIsLoading(false);
+        return;
+      }
+      const response = await validateCoupon(authState.token, coupon, originalPrice);
       setDiscount(parseFloat(response.data.coupon.discount_percentage));
       setFinalPrice(response.data.coupon.final_amount);
     } catch { // removed unused 'error' parameter
@@ -157,7 +162,7 @@ const ChosenPlanDetails: React.FC<{ plan: Plan; userProfile: UserProfile | null 
   };
 
   const getCorrectSubId = () => {
-    const selectedPlan = plans.find((p) => p.name === plan.title);
+    const selectedPlan = plans.find((p) => p.title === plan.title);
     return selectedPlan ? selectedPlan.sub_id : "";
   };
 

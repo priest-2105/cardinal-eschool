@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 
 interface Plan {
+  sub_id: string;
   id: number;
   title: string;
   price: string;
@@ -13,6 +14,7 @@ interface Plan {
 const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSelect }) => {
   const pricingPlans: Plan[] = [
     {
+      sub_id: "",
       id: 1,
       title: "Basic Plan",
       price: "$60",
@@ -29,6 +31,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
       ],
     },
     {
+      sub_id: "",
       id: 2,
       title: "Standard Plan",
       price: "$90",
@@ -44,6 +47,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
       ],
     },
     {
+      sub_id: "",
       id: 3,
       title: "Premium Plan",
       price: "$120",
@@ -61,6 +65,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
     },
    
     {
+      sub_id: "",
       id: 4,
       title: "Group Sessions",
       price: "$40",
@@ -75,6 +80,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
       ],
     },
     {
+      sub_id: "",
       id: 5,
       title: "Custom Plan",
       price: "",

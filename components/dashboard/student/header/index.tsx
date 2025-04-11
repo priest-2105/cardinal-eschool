@@ -83,7 +83,7 @@ const StudentDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token, 1, 3); // Fetch the first page with 3 notifications
+          const response = await fetchNotifications(token, 1, 3);
           const notifications = response.data.notifications;
   
           // Filter unread notifications

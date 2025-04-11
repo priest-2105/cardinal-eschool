@@ -14,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 interface Plan {
+  sub_id: string
   id: number;
   title: string;
   price: string;
@@ -48,6 +49,7 @@ const StudentCardPayment = () => {
             const planData = planResponse.data.subscription_plan;
 
             setChosenPlan({
+              sub_id: planData.sub_id || "", // Ensure sub_id is included
               title: planData.name,
               price: `$${planData.price}`,
               duration: "/ Month",
@@ -99,8 +101,10 @@ const StudentCardPayment = () => {
       }
     } catch (error: unknown) {
       console.error("Failed to update assessment with new plan:", error);
-      setAlertMessage(error.message || "Failed to update assessment. Please try again.");
-      setAlertVariant("danger");
+      setAlert({
+        type: "error",
+        message: "Failed to update assessment. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -244,4 +248,5 @@ const StudentCardPayment = () => {
 }
 
 export default StudentCardPayment
+
 
