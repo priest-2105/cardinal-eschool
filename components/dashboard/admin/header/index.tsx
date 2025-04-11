@@ -8,12 +8,14 @@ import { useState, useEffect, useRef } from "react"
 import { FaAngleDown } from "react-icons/fa6"
 import Link from "next/link"
 import { useSelector, useDispatch } from "react-redux"
-import { fetchAdminProfile, fetchNotifications, logout } from "@/lib/api/admin/api"
+import { fetchAdminProfile, logout } from "@/lib/api/admin/api"
 import { RootState } from "@/lib/store"
 import { clearAuthState } from "@/lib/authSlice"
 import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import type { Notification as BaseNotification } from "@/lib/api/admin/notifcation/fetchnotification";
+import { fetchNotifications } from "@/lib/api/admin/notifcation/fetchnotification"
+
 
 // Extend the Notification interface to include the `time` property
 interface Notification extends BaseNotification {

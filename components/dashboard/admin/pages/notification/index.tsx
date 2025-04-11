@@ -29,8 +29,9 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import cardinalConfig from "@/config"
-import { fetchNotifications, type Notification, type Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
+import type { Notification, Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
 import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markallnotificationsasread"
+import { fetchNotifications } from "@/lib/api/admin/notifcation/fetchnotification"
 
 
 export function NotificationList() {
