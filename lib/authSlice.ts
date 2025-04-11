@@ -26,27 +26,26 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setAuthState(state, action: PayloadAction<{ token: string; user: AuthState['user'] }>) {
+    setAuthState(state = initialState, action: PayloadAction<{ token: string; user: AuthState['user'] }>) {
       state.token = action.payload.token;
       state.user = action.payload.user;
     },
-    clearAuthState(state) {
+    clearAuthState(state = initialState) {
       state.token = null;
       state.user = null;
     },
-    handleTokenExpiration(state) {
-      // Clear state when token expires
+    handleTokenExpiration(state = initialState) {
       state.token = null;
       state.user = null;
     },
-    setSubscriptionStatus(state, action: PayloadAction<{ plan: string; expiresAt: string }>) {
+    setSubscriptionStatus(state = initialState, action: PayloadAction<{ plan: string; expiresAt: string }>) {
       state.subscription = {
         isActive: true,
         plan: action.payload.plan,
         expiresAt: action.payload.expiresAt,
       };
     },
-    clearSubscriptionStatus(state) {
+    clearSubscriptionStatus(state = initialState) {
       state.subscription = null;
     },
   },

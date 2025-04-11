@@ -24,10 +24,9 @@ const rootReducer = combineReducers({
 
 type RootReducerState = ReturnType<typeof rootReducer>;
 
-
-const persistedReducer = persistReducer<Partial<RootReducerState>>(
+const persistedReducer = persistReducer<RootReducerState>(
   persistConfig,
-  rootReducer as any 
+  rootReducer
 );
 
 export const makeStore = () => {
