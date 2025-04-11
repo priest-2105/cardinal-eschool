@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Bell, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,64 +23,140 @@ import { Badge } from "@/components/ui/badge"
 import {
   fetchNotifications,
   markNotificationAsRead,
-  markAllNotificationsAsRead,
   deleteNotification,
-} from "@/lib/api/student/api"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
+} from "@/lib/api/admin/api"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { Pagination } from "@/src/components/ui/pagination"
+import { cn } from "@/lib/utils"
+import cardinalConfig from "@/config"
+import type { Notification, Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
+import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markallnotificationsasread"
 
-
-// Notification type definition
-interface Notification {
-  id: string
-  title: string
-  message: string
-  type: string
-  isRead: boolean
-  created: string
-}
 
 export function NotificationList() {
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedNotifications, setSelectedNotifications] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<Pagination>({
+    current_page: 1,
+    per_page: 20,
+    total: 0,
+    last_page: 1,
+    next_page_url: null,
+    prev_page_url: null,
+  });
+
+  const loadNotifications = async () => {
+    if (!token) return;
+    try {
+      setIsLoading(true);
+      const response = await fetchNotifications(token, currentPage);
+      setNotifications(response.data.notifications);
+      setPagination(response.data.pagination);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      setAlert({ type: "error", message: "Failed to load notifications." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    if (!token) return;
+    try {
+      await markNotificationAsRead(token, id);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id ? { ...notification, read_at: new Date().toISOString() } : notification
+        )
+      );
+      setAlert({ type: "success", message: "Notification marked as read." });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      setAlert({ type: "error", message: "Failed to mark notification as read." });
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!token) return;
+    try {
+      await markAllNotificationsAsRead(token);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
+      );
+      setAlert({ type: "success", message: "All notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark all notifications as read." });
+    }
+  };
+
+  const handleDeleteNotification = async (id: number) => {
+    if (!token) return;
+    try {
+      await deleteNotification(token, id);
+      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      setAlert({ type: "success", message: "Notification deleted successfully." });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      setAlert({ type: "error", message: "Failed to delete notification." });
+    }
+  };
+
+  const toggleSelectNotification = (id: number) => {
+    setSelectedNotifications((prev) => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleBulkMarkAsRead = async () => {
+    if (!token || selectedNotifications.size === 0) return;
+    try {
+      for (const id of selectedNotifications) {
+        await markNotificationAsRead(token, id);
+      }
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          selectedNotifications.has(notification.id)
+            ? { ...notification, read_at: new Date().toISOString() }
+            : notification
+        )
+      );
+      setSelectedNotifications(new Set());
+      setAlert({ type: "success", message: "Selected notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark selected notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark selected notifications as read." });
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [currentPage]);
+
+  const router = useRouter()
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
-  const [selectedNotifications, setSelectedNotifications] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest")
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [notificationsToDelete, setNotificationsToDelete] = useState<string[]>([])
+  const [notificationsToDelete, setNotificationsToDelete] = useState<number[]>([])
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(false)
-  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [perPage] = useState(10)
+  const [processingNotificationId, setProcessingNotificationId] = useState<number | null>(null)
+  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
-      }
-    }
-
-    window.addEventListener("resize", handleResize)
-    handleResize()
-
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
-
-
-  // Clear alert after 3 seconds
   useEffect(() => {
     if (alert) {
       const timer = setTimeout(() => {
@@ -88,35 +165,6 @@ export function NotificationList() {
       return () => clearTimeout(timer)
     }
   }, [alert])
-
-  // Load notifications
-  useEffect(() => {
-    const loadNotifications = async () => {
-      if (!token) return
-      try {
-        setIsLoading(true)
-        const response = await fetchNotifications(token, currentPage, perPage)
-        const notificationsWithDates = response.notifications.map((notification: unknown) => ({
-          ...notification,
-          id: notification.id.toString(),
-          title: notification.title || "Notification",
-          message: notification.message || notification.content || "",
-          type: notification.type || "system",
-          isRead: !!notification.read_at,
-          createdAt: notification.created_at,
-        }))
-        setNotifications(notificationsWithDates)
-        setTotalPages(response.pagination.last_page)
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error)
-        setAlert({ type: "error", message: "Failed to load notifications." })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadNotifications()
-  }, [token, currentPage, perPage])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -138,29 +186,27 @@ export function NotificationList() {
 
     // Apply status filter
     if (statusFilter === "read") {
-      filtered = filtered.filter((notification) => notification.isRead)
+      filtered = filtered.filter((notification) => notification.read_at !== null)
     } else if (statusFilter === "unread") {
-      filtered = filtered.filter((notification) => !notification.isRead)
-    } 
+      filtered = filtered.filter((notification) => notification.read_at === null)
+    }
 
     // Apply sorting
     filtered.sort((a, b) => {
-      if (sortOrder === "newest") {
-        return new Date(b.created).getTime() - new Date(a.created).getTime()
-      } else {
-        return new Date(a.created).getTime() - new Date(b.created).getTime()
-      }
+      const dateA = new Date(a.created_at).getTime()
+      const dateB = new Date(b.created_at).getTime()
+
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB
     })
+
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
-  // Selection handlers
-  const toggleSelectAll = () => {    if (selectedNotifications.size === filteredNotifications.length) {
-      // Deselect all
+  const toggleSelectAll = () => {
+    if (selectedNotifications.size === filteredNotifications.length) {
       setSelectedNotifications(new Set())
     } else {
-      // Select all
-      const newSelected = new Set<string>()
+      const newSelected = new Set<number>()
       filteredNotifications.forEach((notification) => {
         newSelected.add(notification.id)
       })
@@ -168,123 +214,38 @@ export function NotificationList() {
     }
   }
 
-  const toggleSelectNotification = (id: string) => {
-    const newSelected = new Set(selectedNotifications)
-    if (newSelected.has(id)) {
-      newSelected.delete(id)
-    } else {
-      newSelected.add(id)
-    }
-    setSelectedNotifications(newSelected)
-  }
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.data) return
 
-  // API Action handlers
-  const handleMarkAsRead = async (id: string) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      await markNotificationAsRead(token, Number.parseInt(id))
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === id ? { ...notification, isRead: true } : notification
-        )
-      )
-      setAlert({ type: "success", message: "Notification marked as read." })
-      // Rename the second response to avoid duplicate declaration:
-      const fetchResponse = await fetchNotifications(token, currentPage, perPage)
-      const notificationsWithDates = fetchResponse.notifications.map((notification: unknown) => ({
-        ...notification,
-        id: notification.id.toString(),
-        title: notification.title || "Notification",
-        message: notification.message || notification.content || "",
-        type: notification.type || "system",
-        isRead: !!notification.read_at,
-        createdAt: notification.created_at,
-      }))
-      setNotifications(notificationsWithDates)
-      setTotalPages(fetchResponse.pagination.last_page)
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error)
-      setAlert({ type: "error", message: "Failed to mark notification as read." })
-    } finally {
-      setProcessingNotificationId(null)
-      loadNotifications()
+    switch (notification.type) {
+      case "ticket_created":
+        router.push(cardinalConfig.routes.dashboard.admin.adminticketdetails(notification.data.ticket_id as number))
+        break
+      default:
+        break
     }
   }
 
-  const handleMarkAllAsRead = async () => {
-    if (!token) return
-    setIsMarkingAllAsRead(true)
-    try {
-      await markAllNotificationsAsRead(token)
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, isRead: true })),
-      )
-      setAlert({ type: "success", message: "All notifications marked as read." })
-      const response = await fetchNotifications(token, currentPage, perPage)
-      const notificationsWithDates = response.notifications.map((notification: unknown) => ({
-        ...notification,
-        id: notification.id.toString(),
-        title: notification.title || "Notification",
-        message: notification.message || notification.content || "",
-        type: notification.type || "system",
-        isRead: !!notification.read_at,
-        createdAt: notification.created_at,
-      }))
-      setNotifications(notificationsWithDates)
-      setTotalPages(response.pagination.last_page)
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error)
-      setAlert({ type: "error", message: "Failed to mark all notifications as read." })
-    } finally {
-      setIsMarkingAllAsRead(false)
-      loadNotifications()
+  function parseDate(created_at: string): Date {
+    // Remove ordinal suffixes (e.g., "1st", "2nd", "3rd", "4th")
+    const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1");
+
+    // Parse the cleaned date string into a Date object
+    const dateObj = new Date(cleanDateStr);
+
+    if (isNaN(dateObj.getTime())) {
+      console.error(`Invalid date format: ${created_at}`);
+      throw new Error(`Invalid date format: ${created_at}`);
     }
+
+    return dateObj;
   }
 
-  const handleDeleteNotification = async (id: string) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      await deleteNotification(token, Number.parseInt(id))
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-      setAlert({ type: "success", message: "Notification deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notification:", error)
-      setAlert({ type: "error", message: "Failed to delete notification." })
-    } finally {
-      setProcessingNotificationId(null)
-    }
-  }
-
-  // Local state action handlers
-  const markAsUnread = (ids: string[]) => {
+  const markAsUnread = (ids: number[]) => {
     setNotifications((prev) =>
       prev.map((notification) => {
         if (ids.includes(notification.id)) {
-          return { ...notification, isRead: false }
-        }
-        return notification
-      }),
-    )
-  }
-
-  const markAsDone = (ids: string[]) => {
-    setNotifications((prev) =>
-      prev.map((notification) => {
-        if (ids.includes(notification.id)) {
-          return { ...notification, isDone: true }
-        }
-        return notification
-      }),
-    )
-  }
-
-  const markAsNotDone = (ids: string[]) => {
-    setNotifications((prev) =>
-      prev.map((notification) => {
-        if (ids.includes(notification.id)) {
-          return { ...notification, isDone: false }
+          return { ...notification, read_at: null }
         }
         return notification
       }),
@@ -301,17 +262,11 @@ export function NotificationList() {
         await handleDeleteNotification(id)
       }
 
-      setSelectedNotifications((prev) => {
-        const newSelected = new Set(prev)
-        notificationsToDelete.forEach((id) => {
-          newSelected.delete(id)
-        })
-        return newSelected
-      })
+      setSelectedNotifications(new Set())
 
       setAlert({ type: "success", message: "Notifications deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notifications:", error)
+    } catch (error: unknown) {
+      console.error("Failed to delete notifications:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to delete notifications." })
     } finally {
       setIsDeleting(false)
@@ -320,7 +275,7 @@ export function NotificationList() {
     }
   }
 
-  const openDeleteDialog = (ids: string[]) => {
+  const openDeleteDialog = (ids: number[]) => {
     setNotificationsToDelete(ids)
     setIsDeleteDialogOpen(true)
   }
@@ -338,17 +293,17 @@ export function NotificationList() {
           for (const id of selectedIds) {
             // Only mark unread notifications as read
             const notification = notifications.find((n) => n.id === id)
-            if (notification && !notification.isRead) {
+            if (notification && !notification.read_at) {
               await handleMarkAsRead(id)
             }
           }
           setAlert({ type: "success", message: "Selected notifications marked as read." })
-        } catch (error) {
-          console.error("Failed to mark notifications as read:", error)
+          setSelectedNotifications(new Set())
+        } catch (error: unknown) {
+          console.error("Failed to mark notifications as read:", error instanceof Error ? error.message : "Unknown error")
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
         } finally {
           setIsMarkingAsRead(false)
-          setSelectedNotifications(new Set());
         }
         break
       case "delete":
@@ -360,19 +315,13 @@ export function NotificationList() {
   }
 
   // Individual action handlers
-  const handleSingleAction = async (action: string, id: string) => {
+  const handleSingleAction = async (action: string, id: number) => {
     switch (action) {
       case "mark-read":
         await handleMarkAsRead(id)
         break
       case "mark-unread":
         markAsUnread([id])
-        break
-      case "mark-done":
-        markAsDone([id])
-        break
-      case "mark-not-done":
-        markAsNotDone([id])
         break
       case "delete":
         openDeleteDialog([id])
@@ -465,14 +414,15 @@ export function NotificationList() {
   }
 
   // Check if there are any unread notifications
-  const hasUnreadNotifications = notifications.some((n) => !n.isRead)
+  const hasUnreadNotifications = notifications.some((n) => !n.read_at)
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage)
+
+  if(!notifications) { 
+    return <div className="text-center py-12">Loading courses...</div>
   }
 
   return (
-   <div className={`transition-all ease-in-out  rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>      
+    
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardTitle className="flex items-center">
@@ -480,7 +430,7 @@ export function NotificationList() {
           Notifications
           {!isLoading && (
             <Badge variant="secondary" className="ml-2">
-              {notifications.filter((n) => !n.isRead).length}
+              {notifications.filter((n) => !n.read_at).length}
             </Badge>
           )}
         </CardTitle>
@@ -526,7 +476,7 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                  </SelectContent>
+                    </SelectContent>
                 </Select>
               </div>
               <div className="p-2">
@@ -545,7 +495,7 @@ export function NotificationList() {
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent>
         {/* Mark All as Read button - always visible when there are unread notifications */}
         {hasUnreadNotifications && selectedNotifications.size === 0 && (
           <div className="flex items-center justify-end bg-muted/20 p-4 border-b">
@@ -616,7 +566,7 @@ export function NotificationList() {
                   isMarkingAsRead ||
                   !Array.from(selectedNotifications).some((id) => {
                     const notification = notifications.find((n) => n.id === id)
-                    return notification && !notification.isRead
+                    return notification && !notification.read_at
                   })
                 }
               >
@@ -665,7 +615,7 @@ export function NotificationList() {
         )}
 
         {/* Notifications List */}
-        <div className="divide-y">
+        <div className="p-0 max-h-[60vh] overflow-y-scroll custom-scrollbar divide-y">
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
@@ -673,9 +623,11 @@ export function NotificationList() {
               : filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`flex items-start gap-4 p-4 ${
-                      !notification.isRead ? "bg-muted/10" : ""
-                    } hover:bg-muted/20 transition-colors`}
+                    className={cn(
+                      "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
+                      notification.read_at ? "bg-white" : "bg-gray-50"
+                    )} 
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <Checkbox
                       checked={selectedNotifications.has(notification.id)}
@@ -685,21 +637,12 @@ export function NotificationList() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        {/* <div className="flex-1">
-                          <h4 className={`text-sm font-medium ${!notification.isRead ? "font-semibold" : ""}`}>
+                        <div className="flex-1">
+                          <h4 className={`text-sm font-medium ${!notification.read_at ? "font-semibold" : ""}`}>
                             {notification.title}
                           </h4>
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
-                          <span>{notification.createdAt}</span>
-                        </div> */}
-                         <div>
-                        <h3 className="font-medium">{notification.title}</h3>
-                        <p className="text-gray-600 mt-1">{notification.message}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge>{notification.type}</Badge>
-                          <span className="text-sm text-gray-500">{notification.createdAt}</span>
                         </div>
-                      </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -707,7 +650,7 @@ export function NotificationList() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="bg-white" align="end">
-                            {!notification.isRead && (
+                            {!notification.read_at && (
                               <DropdownMenuItem
                                 onClick={() => handleSingleAction("mark-read", notification.id)}
                                 disabled={processingNotificationId === notification.id}
@@ -745,7 +688,7 @@ export function NotificationList() {
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
-                              onClick={() => handleDeleteNotification(notification.id)}
+                              onClick={() => handleSingleAction("delete", notification.id)}
                               className="text-destructive"
                               disabled={processingNotificationId === notification.id}
                             >
@@ -785,7 +728,12 @@ export function NotificationList() {
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         {renderTypeBadge(notification.type)}
-                        {/* <span className="text-xs text-muted-foreground">{notification.createdAt}</span> */}
+                        <span className="text-xs text-muted-foreground">{notification.created_at}</span>
+                        {/* {notification.link && (
+                          <Button variant="link" size="sm" className="h-auto p-0 text-xs">
+                            View Details
+                          </Button>
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -839,26 +787,56 @@ export function NotificationList() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {!isLoading && notifications.length > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t">
+            <div className="text-sm text-gray-500">
+              Showing {(pagination.current_page - 1) * pagination.per_page + 1} 
+              - {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} notifications
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              
+              <select
+                className="border rounded-md px-2 py-1 text-sm"
+                value={currentPage}
+                onChange={(e) => setCurrentPage(Number(e.target.value))}
+              >
+                {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
+                  <option key={page} value={page}>
+                    Page {page} of {pagination.last_page}
+                  </option>
+                ))}
+              </select>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(pagination.last_page, prev + 1))}
+                disabled={currentPage === pagination.last_page}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
 
       {alert && (
-        <Alert variant={alert.type === "success" ? "default" : "danger"} className="fixed z-50 top-12 bg-white right-4">
+        <Alert variant={alert.type === "success" ? "default" : "danger"} className="fixed z-50 top-16 bg-white right-4">
           <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{alert.message}</AlertDescription>
         </Alert>
       )}
     </Card>
-     {/* Pagination */}
-     {!isLoading && notifications.length > 0 && (
-        <div className="flex justify-center mt-4">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
-      )}
-    </div>
   )
 }
 

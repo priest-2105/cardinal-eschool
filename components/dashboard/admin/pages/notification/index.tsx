@@ -35,13 +35,117 @@ import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markalln
 
 
 export function NotificationList() {
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedNotifications, setSelectedNotifications] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<Pagination>({
+    current_page: 1,
+    per_page: 20,
+    total: 0,
+    last_page: 1,
+    next_page_url: null,
+    prev_page_url: null,
+  });
+
+  const loadNotifications = async () => {
+    if (!token) return;
+    try {
+      setIsLoading(true);
+      const response = await fetchNotifications(token, currentPage);
+      setNotifications(response.data.notifications);
+      setPagination(response.data.pagination);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      setAlert({ type: "error", message: "Failed to load notifications." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    if (!token) return;
+    try {
+      await markNotificationAsRead(token, id);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id ? { ...notification, read_at: new Date().toISOString() } : notification
+        )
+      );
+      setAlert({ type: "success", message: "Notification marked as read." });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      setAlert({ type: "error", message: "Failed to mark notification as read." });
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!token) return;
+    try {
+      await markAllNotificationsAsRead(token);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
+      );
+      setAlert({ type: "success", message: "All notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark all notifications as read." });
+    }
+  };
+
+  const handleDeleteNotification = async (id: number) => {
+    if (!token) return;
+    try {
+      await deleteNotification(token, id);
+      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      setAlert({ type: "success", message: "Notification deleted successfully." });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      setAlert({ type: "error", message: "Failed to delete notification." });
+    }
+  };
+
+  const toggleSelectNotification = (id: number) => {
+    setSelectedNotifications((prev) => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleBulkMarkAsRead = async () => {
+    if (!token || selectedNotifications.size === 0) return;
+    try {
+      for (const id of selectedNotifications) {
+        await markNotificationAsRead(token, id);
+      }
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          selectedNotifications.has(notification.id)
+            ? { ...notification, read_at: new Date().toISOString() }
+            : notification
+        )
+      );
+      setSelectedNotifications(new Set());
+      setAlert({ type: "success", message: "Selected notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark selected notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark selected notifications as read." });
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [currentPage]);
+
   const router = useRouter()
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
-  const [selectedNotifications, setSelectedNotifications] = useState<Set<number>>(new Set())
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -51,33 +155,7 @@ export function NotificationList() {
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [processingNotificationId, setProcessingNotificationId] = useState<number | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pagination, setPagination] = useState<Pagination>({
-    current_page: 1,
-    per_page: 20,
-    total: 0,
-    last_page: 1,
-    next_page_url: null,
-    prev_page_url: null,
-  })
   const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
-
-  const handleMarkAllAsRead = async () => {
-    if (!token) return;
-    setIsMarkingAllAsRead(true);
-    try {
-      await markAllNotificationsAsRead(token);
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() })),
-      );
-      setAlert({ type: "success", message: "All notifications marked as read." });
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-      setAlert({ type: "error", message: "Failed to mark all notifications as read." });
-    } finally {
-      setIsMarkingAllAsRead(false);
-    }
-  };
 
   useEffect(() => {
     if (alert) {
@@ -87,30 +165,6 @@ export function NotificationList() {
       return () => clearTimeout(timer)
     }
   }, [alert])
-
-  // Load notifications
-  useEffect(() => {
-    const loadNotifications = async () => {
-      if (!token) return
-      try {
-        setIsLoading(true)
-        const response = await fetchNotifications(token, currentPage)
-        const notificationsWithDates: Notification[] = response.data.notifications.map((notification) => ({
-          ...notification,
-          created_at: parseDate(notification.created_at).toISOString(),
-        }))
-        setNotifications(notificationsWithDates)
-        setPagination(response.data.pagination)
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error)
-        setAlert({ type: "error", message: "Failed to load notifications." })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadNotifications()
-  }, [currentPage, token])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -157,52 +211,6 @@ export function NotificationList() {
         newSelected.add(notification.id)
       })
       setSelectedNotifications(newSelected)
-    }
-  }
-
-  const toggleSelectNotification = (id: number) => {
-    const newSelected = new Set(selectedNotifications)
-    if (newSelected.has(id)) {
-      newSelected.delete(id)
-    } else {
-      newSelected.add(id)
-    }
-    setSelectedNotifications(newSelected)
-  }
-
-  const handleMarkAsRead = async (id: number) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      const response = await markNotificationAsRead(token, id)
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === id
-            ? { ...notification, read_at: response.data.notification.read_at }
-            : notification,
-        ),
-      )
-      setAlert({ type: "success", message: "Notification marked as read." })
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error)
-      setAlert({ type: "error", message: "Failed to mark notification as read." })
-    } finally {
-      setProcessingNotificationId(null)
-    }
-  }
-
-  const handleDeleteNotification = async (id: number) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      await deleteNotification(token, id)
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-      setAlert({ type: "success", message: "Notification deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notification:", error)
-      setAlert({ type: "error", message: "Failed to delete notification." })
-    } finally {
-      setProcessingNotificationId(null)
     }
   }
 
@@ -414,6 +422,7 @@ export function NotificationList() {
   }
 
   return (
+    
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardTitle className="flex items-center">
@@ -467,7 +476,7 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                  </SelectContent>
+                    </SelectContent>
                 </Select>
               </div>
               <div className="p-2">

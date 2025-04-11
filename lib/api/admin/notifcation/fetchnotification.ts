@@ -7,7 +7,6 @@ export interface Notification {
   message: string;
   data: {
     class_id?: number;
-    report_id?: number;
     ticket_id?: number;
   };
   action_url: string | null;
@@ -38,37 +37,20 @@ export async function fetchNotifications(
   page: number = 1,
   perPage: number = 20
 ): Promise<FetchNotificationsResponse> {
-  try {
-    const response = await fetchWithAuth(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const response = await fetchWithAuth(`${apiUrl}/notifications?page=${page}&per_page=${perPage}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to fetch notifications: ${response.status} ${response.statusText} - ${errorMessage}`);
-    }
-
-    const data = await response.json();
-
-    // Validate the response structure
-    if (
-      !data ||
-      data.status !== "success" ||
-      !data.data ||
-      !Array.isArray(data.data.notifications) ||
-      !data.data.pagination
-    ) {
-      throw new Error("Invalid response structure from fetchNotifications API.");
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error in fetchNotifications:", error);
-    throw error;
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(`Failed to fetch notifications: ${response.status} ${response.statusText} - ${errorMessage}`);
   }
+
+  const data = await response.json();
+  return data;
 }

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, usePathname } from "next/navigation"
-import { Bell, CheckCheck, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Bell, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -23,53 +23,139 @@ import { Badge } from "@/components/ui/badge"
 import {
   fetchNotifications,
   markNotificationAsRead,
-  markAllNotificationsAsRead,
   deleteNotification,
-} from "@/lib/api/tutor/api"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
+} from "@/lib/api/admin/api"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import cardinalConfig from "@/config"
+import type { Notification, Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
+import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markallnotificationsasread"
 
-// Notification type definition
-interface Notification {
-  id: string
-  title: string
-  message: string
-  type: "system" | "course" | "announcement" | "message"
-  isRead: boolean
-  isDone: boolean
-  created_at: Date
-  link?: string
-}
 
 export function NotificationList() {
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedNotifications, setSelectedNotifications] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<Pagination>({
+    current_page: 1,
+    per_page: 20,
+    total: 0,
+    last_page: 1,
+    next_page_url: null,
+    prev_page_url: null,
+  });
+
+  const loadNotifications = async () => {
+    if (!token) return;
+    try {
+      setIsLoading(true);
+      const response = await fetchNotifications(token, currentPage);
+      setNotifications(response.data.notifications);
+      setPagination(response.data.pagination);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      setAlert({ type: "error", message: "Failed to load notifications." });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (id: number) => {
+    if (!token) return;
+    try {
+      await markNotificationAsRead(token, id);
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id ? { ...notification, read_at: new Date().toISOString() } : notification
+        )
+      );
+      setAlert({ type: "success", message: "Notification marked as read." });
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      setAlert({ type: "error", message: "Failed to mark notification as read." });
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!token) return;
+    try {
+      await markAllNotificationsAsRead(token);
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
+      );
+      setAlert({ type: "success", message: "All notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark all notifications as read." });
+    }
+  };
+
+  const handleDeleteNotification = async (id: number) => {
+    if (!token) return;
+    try {
+      await deleteNotification(token, id);
+      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
+      setAlert({ type: "success", message: "Notification deleted successfully." });
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      setAlert({ type: "error", message: "Failed to delete notification." });
+    }
+  };
+
+  const toggleSelectNotification = (id: number) => {
+    setSelectedNotifications((prev) => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleBulkMarkAsRead = async () => {
+    if (!token || selectedNotifications.size === 0) return;
+    try {
+      for (const id of selectedNotifications) {
+        await markNotificationAsRead(token, id);
+      }
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          selectedNotifications.has(notification.id)
+            ? { ...notification, read_at: new Date().toISOString() }
+            : notification
+        )
+      );
+      setSelectedNotifications(new Set());
+      setAlert({ type: "success", message: "Selected notifications marked as read." });
+    } catch (error) {
+      console.error("Failed to mark selected notifications as read:", error);
+      setAlert({ type: "error", message: "Failed to mark selected notifications as read." });
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [currentPage]);
+
   const router = useRouter()
-  const pathname = usePathname()
-  const token = useSelector((state: RootState) => state.auth?.token)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
-  const [selectedNotifications, setSelectedNotifications] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest")
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [notificationsToDelete, setNotificationsToDelete] = useState<string[]>([])
+  const [notificationsToDelete, setNotificationsToDelete] = useState<number[]>([])
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(false)
-  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [processingNotificationId, setProcessingNotificationId] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    per_page: 20,
-    total: 0,
-    last_page: 2,
-  })
+  const [processingNotificationId, setProcessingNotificationId] = useState<number | null>(null)
+  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
 
   useEffect(() => {
     if (alert) {
@@ -79,53 +165,6 @@ export function NotificationList() {
       return () => clearTimeout(timer)
     }
   }, [alert])
-
-  // Add prefetching when component mounts
-  useEffect(() => {
-    const commonRoutes = [
-      cardinalConfig.routes.dashboard.tutor.courseDetails(1), // Example course
-      cardinalConfig.routes.dashboard.tutor.tutorticketdetails(1), // Example ticket
-      cardinalConfig.routes.dashboard.tutor.courses,
-      cardinalConfig.routes.dashboard.tutor.tutorticketlist,
-    ]
-
-    commonRoutes.forEach((route) => {
-      if (route !== pathname) {
-        router.prefetch(route)
-      }
-    })
-  }, [router, pathname])
-
-  // Load notifications
-  useEffect(() => {
-    const loadNotifications = async () => {
-      if (!token) return
-      try {
-        setIsLoading(true)
-        const response = await fetchNotifications(token, currentPage)
-        const notificationsWithDates = response.data.notifications.map((notification: unknown) => ({
-          ...notification,
-          id: notification.id.toString(),
-          title: notification.title || "Notification",
-          message: notification.message || notification.content || "",
-          type: notification.type || "system",
-          isRead: !!notification.read_at,
-          isDone: false,
-          created_at: notification.created_at,
-          link: notification.link || undefined,
-        }))
-        setNotifications(notificationsWithDates)
-        setPagination(response.data.pagination)
-      } catch (error) {
-        console.error("Failed to fetch notifications:", error)
-        setAlert({ type: "error", message: "Failed to load notifications." })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    loadNotifications()
-  }, [token, currentPage])
 
   // Apply filters and sorting
   useEffect(() => {
@@ -147,36 +186,27 @@ export function NotificationList() {
 
     // Apply status filter
     if (statusFilter === "read") {
-      filtered = filtered.filter((notification) => notification.isRead)
+      filtered = filtered.filter((notification) => notification.read_at !== null)
     } else if (statusFilter === "unread") {
-      filtered = filtered.filter((notification) => !notification.isRead)
-    } else if (statusFilter === "done") {
-      filtered = filtered.filter((notification) => notification.isDone)
-    } else if (statusFilter === "not-done") {
-      filtered = filtered.filter((notification) => !notification.isDone)
+      filtered = filtered.filter((notification) => notification.read_at === null)
     }
 
     // Apply sorting
-      filtered.sort((a: { created_at: string }, b: { created_at: string }) => {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
-        if (sortOrder === "newest") {
-          return dateB.getTime() - dateA.getTime();
-        } else {
-          return dateA.getTime() - dateB.getTime();
-        }
-      });
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime()
+      const dateB = new Date(b.created_at).getTime()
+
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB
+    })
+
     setFilteredNotifications(filtered)
   }, [notifications, searchQuery, typeFilter, statusFilter, sortOrder])
 
-  // Selection handlers
   const toggleSelectAll = () => {
     if (selectedNotifications.size === filteredNotifications.length) {
-      // Deselect all
       setSelectedNotifications(new Set())
     } else {
-      // Select all
-      const newSelected = new Set<string>()
+      const newSelected = new Set<number>()
       filteredNotifications.forEach((notification) => {
         newSelected.add(notification.id)
       })
@@ -184,98 +214,38 @@ export function NotificationList() {
     }
   }
 
-  const toggleSelectNotification = (id: string) => {
-    const newSelected = new Set(selectedNotifications)
-    if (newSelected.has(id)) {
-      newSelected.delete(id)
-    } else {
-      newSelected.add(id)
-    }
-    setSelectedNotifications(newSelected)
-  }
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.data) return
 
-  // API Action handlers
-  const handleMarkAsRead = async (id: string) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      const response = await markNotificationAsRead(token, Number.parseInt(id))
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === id
-            ? { ...notification, isRead: true, read_at: response.data.notification.read_at }
-            : notification,
-        ),
-      )
-      setAlert({ type: "success", message: "Notification marked as read." })
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error)
-      setAlert({ type: "error", message: "Failed to mark notification as read." })
-    } finally {
-      setProcessingNotificationId(null)
+    switch (notification.type) {
+      case "ticket_created":
+        router.push(cardinalConfig.routes.dashboard.admin.adminticketdetails(notification.data.ticket_id as number))
+        break
+      default:
+        break
     }
   }
 
-  const handleMarkAllAsRead = async () => {
-    if (!token) return
-    setIsMarkingAllAsRead(true)
-    try {
-      await markAllNotificationsAsRead(token)
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, isRead: true, read_at: new Date().toISOString() })),
-      )
-      setAlert({ type: "success", message: "All notifications marked as read." })
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error)
-      setAlert({ type: "error", message: "Failed to mark all notifications as read." })
-    } finally {
-      setIsMarkingAllAsRead(false)
+  function parseDate(created_at: string): Date {
+    // Remove ordinal suffixes (e.g., "1st", "2nd", "3rd", "4th")
+    const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1");
+
+    // Parse the cleaned date string into a Date object
+    const dateObj = new Date(cleanDateStr);
+
+    if (isNaN(dateObj.getTime())) {
+      console.error(`Invalid date format: ${created_at}`);
+      throw new Error(`Invalid date format: ${created_at}`);
     }
+
+    return dateObj;
   }
 
-  const handleDeleteNotification = async (id: string) => {
-    if (!token) return
-    setProcessingNotificationId(id)
-    try {
-      await deleteNotification(token, Number.parseInt(id))
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-      setAlert({ type: "success", message: "Notification deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notification:", error)
-      setAlert({ type: "error", message: "Failed to delete notification." })
-    } finally {
-      setProcessingNotificationId(null)
-    }
-  }
-
-  // Local state action handlers
-  const markAsUnread = (ids: string[]) => {
+  const markAsUnread = (ids: number[]) => {
     setNotifications((prev) =>
       prev.map((notification) => {
         if (ids.includes(notification.id)) {
-          return { ...notification, isRead: false }
-        }
-        return notification
-      }),
-    )
-  }
-
-  const markAsDone = (ids: string[]) => {
-    setNotifications((prev) =>
-      prev.map((notification) => {
-        if (ids.includes(notification.id)) {
-          return { ...notification, isDone: true }
-        }
-        return notification
-      }),
-    )
-  }
-
-  const markAsNotDone = (ids: string[]) => {
-    setNotifications((prev) =>
-      prev.map((notification) => {
-        if (ids.includes(notification.id)) {
-          return { ...notification, isDone: false }
+          return { ...notification, read_at: null }
         }
         return notification
       }),
@@ -295,8 +265,8 @@ export function NotificationList() {
       setSelectedNotifications(new Set())
 
       setAlert({ type: "success", message: "Notifications deleted successfully." })
-    } catch (error) {
-      console.error("Failed to delete notifications:", error)
+    } catch (error: unknown) {
+      console.error("Failed to delete notifications:", error instanceof Error ? error.message : "Unknown error")
       setAlert({ type: "error", message: "Failed to delete notifications." })
     } finally {
       setIsDeleting(false)
@@ -305,7 +275,7 @@ export function NotificationList() {
     }
   }
 
-  const openDeleteDialog = (ids: string[]) => {
+  const openDeleteDialog = (ids: number[]) => {
     setNotificationsToDelete(ids)
     setIsDeleteDialogOpen(true)
   }
@@ -323,14 +293,14 @@ export function NotificationList() {
           for (const id of selectedIds) {
             // Only mark unread notifications as read
             const notification = notifications.find((n) => n.id === id)
-            if (notification && !notification.isRead) {
+            if (notification && !notification.read_at) {
               await handleMarkAsRead(id)
             }
           }
           setAlert({ type: "success", message: "Selected notifications marked as read." })
           setSelectedNotifications(new Set())
-        } catch (error) {
-          console.error("Failed to mark notifications as read:", error)
+        } catch (error: unknown) {
+          console.error("Failed to mark notifications as read:", error instanceof Error ? error.message : "Unknown error")
           setAlert({ type: "error", message: "Failed to mark some notifications as read." })
         } finally {
           setIsMarkingAsRead(false)
@@ -345,7 +315,7 @@ export function NotificationList() {
   }
 
   // Individual action handlers
-  const handleSingleAction = async (action: string, id: string) => {
+  const handleSingleAction = async (action: string, id: number) => {
     switch (action) {
       case "mark-read":
         await handleMarkAsRead(id)
@@ -353,42 +323,11 @@ export function NotificationList() {
       case "mark-unread":
         markAsUnread([id])
         break
-      case "mark-done":
-        markAsDone([id])
-        break
-      case "mark-not-done":
-        markAsNotDone([id])
-        break
       case "delete":
         openDeleteDialog([id])
         break
       default:
         break
-    }
-  }
-
-  const handleNotificationClick = (notification: unknown) => {
-    if (!notification.data) return
-
-    const route = getNotificationRoute(notification)
-    if (route) {
-      router.prefetch(route) // Prefetch before navigating
-      router.push(route)
-    }
-  }
-
-  const getNotificationRoute = (notification: unknown) => {
-    switch (notification.type) {
-        case "ticket_created":
-        case "ticket_updated":
-        return cardinalConfig.routes.dashboard.tutor.tutorticketdetails(notification.data.ticket_id)
-      case "class_created":
-      case "resources_assigned":
-        return cardinalConfig.routes.dashboard.tutor.courseDetails(notification.data.class_id)
-      // case "report_updated":
-        // return cardinalConfig.routes.dashboard.tutor.rep(notification.data.class_id)
-      default:
-        return null
     }
   }
 
@@ -475,13 +414,15 @@ export function NotificationList() {
   }
 
   // Check if there are any unread notifications
-  const hasUnreadNotifications = notifications.some((n) => !n.isRead)
+  const hasUnreadNotifications = notifications.some((n) => !n.read_at)
 
-  if (!notifications) {
+
+  if(!notifications) { 
     return <div className="text-center py-12">Loading courses...</div>
   }
 
   return (
+    
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <CardTitle className="flex items-center">
@@ -489,7 +430,7 @@ export function NotificationList() {
           Notifications
           {!isLoading && (
             <Badge variant="secondary" className="ml-2">
-              {notifications.filter((n) => !n.isRead).length}
+              {notifications.filter((n) => !n.read_at).length}
             </Badge>
           )}
         </CardTitle>
@@ -535,7 +476,7 @@ export function NotificationList() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="read">Read</SelectItem>
                     <SelectItem value="unread">Unread</SelectItem>
-                  </SelectContent>
+                    </SelectContent>
                 </Select>
               </div>
               <div className="p-2">
@@ -625,7 +566,7 @@ export function NotificationList() {
                   isMarkingAsRead ||
                   !Array.from(selectedNotifications).some((id) => {
                     const notification = notifications.find((n) => n.id === id)
-                    return notification && !notification.isRead
+                    return notification && !notification.read_at
                   })
                 }
               >
@@ -678,46 +619,83 @@ export function NotificationList() {
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
-            ? renderEmptyState()
-            : filteredNotifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={cn(
-                    "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
-                    notification.isRead ? "bg-white" : "bg-gray-50",
-                  )}
-                  onClick={() => handleNotificationClick(notification)}
-                >
-                  <Checkbox
-                    checked={selectedNotifications.has(notification.id)}
-                    onCheckedChange={() => toggleSelectNotification(notification.id)}
-                    id={`select-${notification.id}`}
-                    className="mt-1"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <h4 className={`text-sm font-medium ${!notification.isRead ? "font-semibold" : ""}`}>
-                          {notification.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white" align="end">
-                          {!notification.isRead && (
+              ? renderEmptyState()
+              : filteredNotifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={cn(
+                      "flex items-start gap-4 p-4 hover:bg-muted/20 transition-colors cursor-pointer",
+                      notification.read_at ? "bg-white" : "bg-gray-50"
+                    )} 
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    <Checkbox
+                      checked={selectedNotifications.has(notification.id)}
+                      onCheckedChange={() => toggleSelectNotification(notification.id)}
+                      id={`select-${notification.id}`}
+                      className="mt-1"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <h4 className={`text-sm font-medium ${!notification.read_at ? "font-semibold" : ""}`}>
+                            {notification.title}
+                          </h4>
+                          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-white" align="end">
+                            {!notification.read_at && (
+                              <DropdownMenuItem
+                                onClick={() => handleSingleAction("mark-read", notification.id)}
+                                disabled={processingNotificationId === notification.id}
+                              >
+                                {processingNotificationId === notification.id ? (
+                                  <span className="flex items-center">
+                                    <svg
+                                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                      ></path>
+                                    </svg>
+                                    Processing...
+                                  </span>
+                                ) : (
+                                  <>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Mark as read
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem
-                              onClick={() => handleSingleAction("mark-read", notification.id)}
+                              onClick={() => handleSingleAction("delete", notification.id)}
+                              className="text-destructive"
                               disabled={processingNotificationId === notification.id}
                             >
                               {processingNotificationId === notification.id ? (
                                 <span className="flex items-center">
                                   <svg
-                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary"
+                                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-destructive"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -736,73 +714,30 @@ export function NotificationList() {
                                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                     ></path>
                                   </svg>
-                                  Processing...
+                                  Deleting...
                                 </span>
                               ) : (
                                 <>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Mark as read
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
                                 </>
                               )}
                             </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem
-                            onClick={() => handleSingleAction("delete", notification.id)}
-                            className="text-destructive"
-                            disabled={processingNotificationId === notification.id}
-                          >
-                            {processingNotificationId === notification.id ? (
-                              <span className="flex items-center">
-                                <svg
-                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-destructive"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                  ></circle>
-                                  <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                  ></path>
-                                </svg>
-                                Deleting...
-                              </span>
-                            ) : (
-                              <>
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 mt-2">
-                      {renderTypeBadge(notification.type)}
-                      <span className="text-xs text-muted-foreground">{notification.created_at}</span>
-                      {notification.isDone && (
-                        <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                          <CheckCheck className="mr-1 h-3 w-3" />
-                          Done
-                        </Badge>
-                      )}
-                      {notification.link && (
-                        <Button variant="link" size="sm" className="h-auto p-0 text-xs">
-                          View Details
-                        </Button>
-                      )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        {renderTypeBadge(notification.type)}
+                        <span className="text-xs text-muted-foreground">{notification.created_at}</span>
+                        {/* {notification.link && (
+                          <Button variant="link" size="sm" className="h-auto p-0 text-xs">
+                            View Details
+                          </Button>
+                        )} */}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
         </div>
 
         {/* Delete Confirmation Dialog */}
@@ -853,11 +788,11 @@ export function NotificationList() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Pagination */}
         {!isLoading && notifications.length > 0 && (
           <div className="flex items-center justify-between mt-4 pt-4 border-t">
             <div className="text-sm text-gray-500">
-              Showing {notifications.length} of {pagination.total} notifications
+              Showing {(pagination.current_page - 1) * pagination.per_page + 1} 
+              - {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} notifications
             </div>
             
             <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-// "use client"
+"use client"
 
 // import { useState, useEffect } from "react"
 // import { useRouter } from "next/navigation"
@@ -362,14 +362,34 @@
 
 
 import { NotificationList } from '@/components/dashboard/student/pages/notification'
-import React from 'react'
+import { useEffect, useState } from 'react'
+
 
 export default function StudentNoticationPage() {
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false)
+      } else {
+        setIsSidebarOpen(true)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    handleResize()
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+
   return (
     <>
-    {/* <div className={`transition-all ease-in-out  rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>       */}
+    <div className={`transition-all ease-in-out  rounded-lg p-2 duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>      
       <NotificationList/>
-    {/* // </div> */}
+     </div>
     </>
   )
 }
