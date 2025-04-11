@@ -197,7 +197,7 @@ export default function ResourcesList({ classId, assignedResources = [] }: Resou
       <ViewResourceModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
-        onSubmit={handleUpdateResource}
+        // onSubmit={handleUpdateResource}
         resource={selectedResource}
       />
       <AssignResourceModal
