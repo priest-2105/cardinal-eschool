@@ -119,26 +119,26 @@ export function NotificationList() {
     });
   };
 
-  const handleBulkMarkAsRead = async () => {
-    if (!token || selectedNotifications.size === 0) return;
-    try {
-      for (const id of selectedNotifications) {
-        await markNotificationAsRead(token, id);
-      }
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          selectedNotifications.has(notification.id)
-            ? { ...notification, read_at: new Date().toISOString() }
-            : notification
-        )
-      );
-      setSelectedNotifications(new Set());
-      setAlert({ type: "success", message: "Selected notifications marked as read." });
-    } catch (error) {
-      console.error("Failed to mark selected notifications as read:", error);
-      setAlert({ type: "error", message: "Failed to mark selected notifications as read." });
-    }
-  };
+  // const handleBulkMarkAsRead = async () => {
+  //   if (!token || selectedNotifications.size === 0) return;
+  //   try {
+  //     for (const id of selectedNotifications) {
+  //       await markNotificationAsRead(token, id);
+  //     }
+  //     setNotifications((prev) =>
+  //       prev.map((notification) =>
+  //         selectedNotifications.has(notification.id)
+  //           ? { ...notification, read_at: new Date().toISOString() }
+  //           : notification
+  //       )
+  //     );
+  //     setSelectedNotifications(new Set());
+  //     setAlert({ type: "success", message: "Selected notifications marked as read." });
+  //   } catch (error) {
+  //     console.error("Failed to mark selected notifications as read:", error);
+  //     setAlert({ type: "error", message: "Failed to mark selected notifications as read." });
+  //   }
+  // };
 
   useEffect(() => {
     loadNotifications();

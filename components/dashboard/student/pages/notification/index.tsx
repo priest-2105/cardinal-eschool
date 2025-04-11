@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { Bell, Eye, Filter, MoreHorizontal, Search, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,7 +29,6 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/stud
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import cardinalConfig from "@/config"
 import type { Notification, Pagination } from "@/lib/api/student/notifcation/fetchnotification"
 import { markAllNotificationsAsRead } from "@/lib/api/student/notifcation/markallnotificationasread"
 
@@ -144,7 +143,7 @@ export function NotificationList() {
     loadNotifications();
   }, [currentPage]);
 
-  const router = useRouter()
+  // const router = useRouter()
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [typeFilter, setTypeFilter] = useState<string>("all")
