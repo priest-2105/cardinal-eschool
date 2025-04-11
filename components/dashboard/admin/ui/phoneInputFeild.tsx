@@ -10,6 +10,7 @@ interface PhoneInputFieldProps {
   country?: string
   label?: string
   id?: string
+  readOnly?: boolean 
 }
 
 const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
@@ -18,6 +19,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
   country = "us",
   label = "Phone Number",
   id = "phone",
+  readOnly,
 }) => {
   return (
     <div className="space-y-2">
@@ -31,6 +33,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
         inputProps={{
           id: id,
           name: id,
+          readOnly: readOnly || false, // Pass the readOnly prop to the input
         }}
         containerClass=""
         inputClass="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#1BC2C2] focus:border-transparent"

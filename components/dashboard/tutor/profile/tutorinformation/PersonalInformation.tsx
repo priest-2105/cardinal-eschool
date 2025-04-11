@@ -190,6 +190,7 @@ export default function PersonalInformation() {
               value={phoneNumber}
               onChange={isEditable ? (phone) => setPhoneNumber(phone) : () => {}}
               country="us"
+              readOnly={!isEditable}
             />
           </div>
           <div className="space-y-2">
