@@ -16,7 +16,7 @@ import { Alert } from "@/components/ui/alert"
 interface CreateReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (refreshList: () => void) => void; // Pass a function to refresh the list
+  onSuccess: (refreshList: () => void) => void; 
   classId: string;
   students: {
     id: string;
