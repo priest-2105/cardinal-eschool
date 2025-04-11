@@ -1,22 +1,27 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
+import Logo from "@/public/assets/img/logo.png"
+import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
 import HomeLightIcon from "@/public/assets/icons/home-01-light.png"
 import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
+import NotificationIcon from "@/public/assets/icons/notification-03.png"
+import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 import cardinalConfig from "@/config"
-import type React from "react" 
+import { fetchNotifications, fetchTicketList } from "@/lib/api/tutor/api"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import type React from "react"
 
 const navigation = [
   {
@@ -55,18 +60,30 @@ const navigation = [
       cardinalConfig.routes.dashboard.tutor.tutorcreateticket,
       cardinalConfig.routes.dashboard.tutor.tutorticketdetails,
     ],
+    dynamicPath: "/tutor/ticket/",
+  },
+  {
+    name: "Notification",
+    href: cardinalConfig.routes.dashboard.tutor.tutorNotifications,
+    icon: NotificationIcon,
+    iconLight: NotificationLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.tutor.tutorNotifications,
+    ],
+    dynamicPath: "/tutor/notifications/",
   },
 ]
 
-const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
-  isOpen,
-  setIsOpen,
-}) => {
+const TutorDashboardSideBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const token = useSelector((state: RootState) => state?.auth?.token)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [openInProgressTicketCount, setOpenInProgressTicketCount] = useState(0)
 
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      if (window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)
@@ -77,7 +94,45 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [setIsOpen])
+  }, [])
+
+  useEffect(() => {
+    const fetchNotificationsData = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter(
+            (notification: { read_at: string | null }) => !notification.read_at
+          )
+          setUnreadCount(unread.length)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchNotificationsData()
+  }, [token])
+
+  useEffect(() => {
+    const fetchOpenInProgressTicketCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchTicketList(token)
+          const tickets = response.data.tickets
+          const openInProgressCount = tickets.filter(
+            (ticket: { status: string }) => ticket.status === "open" || ticket.status === "in_progress",
+          ).length
+          setOpenInProgressTicketCount(openInProgressCount)
+        } catch (error) {
+          console.error("Error fetching tickets:", error)
+        }
+      }
+    }
+
+    fetchOpenInProgressTicketCount()
+  }, [token])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -105,10 +160,10 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
           )}
         </button>
         {isOpen ? (
-          <Image src="/assets/img/logo.png" alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
+          <Image src={Logo} alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
         ) : (
           <Image
-            src="/assets/img/favicon-logo.png"
+            src={favIconLogo}
             alt="Cardinal E-School"
             width={30}
             height={10}
@@ -120,12 +175,15 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
         {navigation.map((item) => {
           const isActive =
             item.activePaths.includes(pathname) || (item.dynamicPath && pathname.startsWith(item.dynamicPath))
+
           return (
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
+              // onMouseEnter={() => handleLinkClick(item.href)}
               className={cn(
-                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
               )}
             >
@@ -139,7 +197,21 @@ const TutorDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
                 alt={`${item.name} icon light`}
                 className="h-5 w-5 hidden group-hover:block"
               />
-              {isOpen && <span>{item.name}</span>}
+              {isOpen && (
+                <>
+                  <span>{item.name}</span>
+                  {item.name === "Notification" && unreadCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {unreadCount}
+                    </div>
+                  )}
+                  {item.name === "Admin Support" && openInProgressTicketCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openInProgressTicketCount}
+                    </div>
+                  )}
+                </>
+              )}
               {!isOpen && (
                 <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {item.name}

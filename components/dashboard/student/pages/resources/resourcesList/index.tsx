@@ -1,94 +1,178 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
+import { Search, Eye, FileText, FileImage, FileVideo, FileAudio, File } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Download, Search, Calendar } from "lucide-react"
-import { format } from "date-fns"
+import { ViewResourceModal } from "../resourcesDetails/index"
+import { Badge } from "@/components/ui/badge"
 
 interface Resource {
-  id: string
-  title: string
-  type: string
-  size: string
-  dateUploaded: Date
+  id: string;
+  name: string;
+  file_path: string;
 }
 
-const SAMPLE_RESOURCES: Resource[] = [
-  {
-    id: "1",
-    title: "Introduction to Scientific Method",
-    type: "PDF",
-    size: "2.3 MB",
-    dateUploaded: new Date(2023, 5, 15),
-  },
-  { id: "2", title: "Matter and Energy Basics", type: "PDF", size: "1.8 MB", dateUploaded: new Date(2023, 6, 1) },
-  { id: "3", title: "Living Systems Overview", type: "PDF", size: "3.1 MB", dateUploaded: new Date(2023, 6, 10) },
-  {
-    id: "4",
-    title: "Earth and Space Science Fundamentals",
-    type: "PDF",
-    size: "2.7 MB",
-    dateUploaded: new Date(2023, 6, 22),
-  },
-  { id: "5", title: "Laboratory Safety Guidelines", type: "PDF", size: "1.2 MB", dateUploaded: new Date(2023, 7, 5) },
-]
+interface ResourcesListProps {
+  resources: Resource[] | { details: Resource[] };
+}
 
-export default function ResourcesList() {
+export default function ResourcesList({ resources = [] }: ResourcesListProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [resources, setResources] = useState(SAMPLE_RESOURCES)
+  const [filteredResources, setFilteredResources] = useState<Resource[]>([])
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+
+  useEffect(() => {
+    // Handle both resource formats (direct array or object with details property)
+    const resourceArray = Array.isArray(resources) 
+      ? resources 
+      : resources?.details || [];
+    
+    setFilteredResources(resourceArray);
+  }, [resources])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value
+    const term = e.target.value.toLowerCase()
     setSearchTerm(term)
-    const filteredResources = SAMPLE_RESOURCES.filter((resource) =>
-      resource.title.toLowerCase().includes(term.toLowerCase()),
+    
+    // Handle both resource formats for filtering
+    const resourceArray = Array.isArray(resources) 
+      ? resources 
+      : resources?.details || [];
+    
+    const filtered = resourceArray.filter((resource) =>
+      resource.name.toLowerCase().includes(term)
     )
-    setResources(filteredResources)
+    setFilteredResources(filtered)
   }
 
-  const handleDownload = (resourceId: string) => {
-    console.log(`Downloading resource with ID: ${resourceId}`)
-    // Implement actual download logic here
+  const handleViewResource = (resource: Resource) => {
+    setSelectedResource(resource)
+    setIsViewModalOpen(true)
   }
+
+  // Function to determine file type based on URL
+  const getFileType = (filePath: string): {
+    type: 'pdf' | 'image' | 'video' | 'audio' | 'doc' | 'other', 
+    extension: string,
+    icon: React.ReactElement,
+    color: string
+  } => {
+    const extension = filePath.split('.').pop()?.toLowerCase() || '';
+    
+    if (extension === 'pdf') {
+      return {
+        type: 'pdf',
+        extension,
+        icon: <FileText size={16} />,
+        color: 'bg-red-100 text-red-700'
+      };
+    } else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
+      return {
+        type: 'image',
+        extension,
+        icon: <FileImage size={16} />,
+        color: 'bg-green-100 text-green-700'
+      };
+    } else if (['mp4', 'webm', 'avi', 'mov'].includes(extension)) {
+      return {
+        type: 'video',
+        extension,
+        icon: <FileVideo size={16} />,
+        color: 'bg-blue-100 text-blue-700'
+      };
+    } else if (['mp3', 'wav', 'ogg'].includes(extension)) {
+      return {
+        type: 'audio',
+        extension,
+        icon: <FileAudio size={16} />,
+        color: 'bg-purple-100 text-purple-700'
+      };
+    } else if (['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'].includes(extension)) {
+      return {
+        type: 'doc',
+        extension,
+        icon: <FileText size={16} />,
+        color: 'bg-blue-100 text-blue-700'
+      };
+    } else {
+      return {
+        type: 'other',
+        extension: extension || 'unknown',
+        icon: <File size={16} />,
+        color: 'bg-gray-100 text-gray-700'
+      };
+    }
+  };
 
   return (
     <div className="h-full flex flex-col">
-      <div className="relative mb-4">
-        <Input
-          type="text"
-          placeholder="Search resources..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="pl-10"
-        />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-      </div>
+      {/* Only show search if there are resources */}
+      {filteredResources.length > 0 && (
+        <div className="relative mb-4">
+          <Input
+            type="text"
+            placeholder="Search resources..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="pl-10"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {resources.map((resource) => (
-          <div
-            key={resource.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
-          >
-            <div className="mb-2 sm:mb-0">
-              <h3 className="font-medium">{resource.title}</h3>
-              <p className="text-sm text-gray-500">
-                {resource.type} • {resource.size}
-              </p>
-              <p className="text-xs text-gray-400 flex items-center mt-1">
-                <Calendar size={12} className="mr-1" />
-                {format(resource.dateUploaded, "MMM d, yyyy")}
-              </p>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => handleDownload(resource.id)} className="mt-2 sm:mt-0">
-              <Download size={16} className="mr-2" />
-              Download
-            </Button>
+        {filteredResources.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+            <FileText className="h-16 w-16 mb-4 text-gray-300" />
+            <p className="text-lg font-medium">No resources available</p>
+            <p className="text-sm">No resources have been assigned to this course yet.</p>
           </div>
-        ))}
+        ) : (
+          filteredResources.map((resource) => {
+            const fileInfo = getFileType(resource.file_path);
+            
+            return (
+              <div
+                key={resource.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
+              >
+                <div className="mb-2 sm:mb-0 flex items-center">
+                  <div className={`p-2 rounded ${fileInfo.color} mr-3`}>
+                    {fileInfo.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{resource.name}</h3>
+                    <Badge 
+                      variant="outline" 
+                      className={`mt-1 ${fileInfo.color} border-none text-xs`}
+                    >
+                      {fileInfo.extension.toUpperCase()}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleViewResource(resource)}
+                  >
+                    <Eye size={16} className="mr-2" />
+                    View Details
+                  </Button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
+
+      <ViewResourceModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        resource={selectedResource}
+      />
     </div>
   )
 }

@@ -10,52 +10,75 @@ import ResourcesList from "../../resources/resourcesList"
 import CourseDescription from "../courseDescription"
 import ReportsList from "../../report/reportList"
 import AssessmentsList from "../../assessment/assessmentList"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/tutor/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/dashboard/tutor/ui/avatar"
 import StudentList from "../../student/studentList"
-import { EditCourseInfoModal } from "../editCourseInfo/index"
-import { EditClassScheduleModal } from "../editClassSchedule/index"
-import { EditCourseNameModal } from "../editCourseNameModal/index"
+import type { LucideIcon } from "lucide-react" 
 
-type Tab = "description" | "resources" | "reports" | "assessments" | "students"
-
-interface Schedule {
-  day: string
-  fromTime: string
-  toTime: string
-}
-
-interface CourseInfo {
-  code: string
-  department: string
-  semester: string
+type Tab = {
+  id: "description" | "resources" | "reports" | "assessments" | "students"
+  label: string
+  icon: LucideIcon
 }
 
 interface CourseDetailsComponentProps {
-  courseName?: string
+  courseDetails: {
+    class: {
+      id: number
+      name: string
+      code: string
+      description: string
+      schedule: {
+        days: string[]
+        time: string[]
+      }
+      meeting_link: string
+      learning_outcome: string
+      prerequisite: string
+      department: string
+      semester: string
+      start_date: string | null
+      end_date: string | null
+      status: string
+      progress_percentage: number
+      days_remaining: number | null
+    }
+    tutor: {
+      id: string
+      name: string
+      email: string
+    }
+    students: {
+      id: string
+      name: string
+      email: string
+    }[]
+    assignments: {
+      total: number
+      turned_in: number
+      pending: number
+      overdue: number
+      percentage_turned_in: number
+    }
+    reports: {
+      total: number
+    }
+    resources: {
+      total: number
+      details: {
+        id: number
+        name: string
+        file_path: string
+      }[]
+    }
+  }
 }
 
-const SAMPLE_SCHEDULES: Schedule[] = [
-  { day: "Monday", fromTime: "10:00", toTime: "11:30" },
-  { day: "Wednesday", fromTime: "14:00", toTime: "15:30" },
-]
-
-export default function CourseDetailsComponent({ courseName = "Advanced Physics" }: CourseDetailsComponentProps) {
-  const [activeTab, setActiveTab] = useState<Tab>("description")
+export default function CourseDetailsComponent({ courseDetails }: CourseDetailsComponentProps) {
+  const [activeTab, setActiveTab] = useState<Tab["id"]>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [schedules, setSchedules] = useState<Schedule[]>(SAMPLE_SCHEDULES)
-  const [courseInfo, setCourseInfo] = useState<CourseInfo>({
-    code: "PHY301",
-    department: "Physics",
-    semester: "Fall 2023",
-  })
-  const [isEditCourseInfoModalOpen, setIsEditCourseInfoModalOpen] = useState(false)
-  const [isEditClassScheduleModalOpen, setIsEditClassScheduleModalOpen] = useState(false)
-  const [isEditCourseNameModalOpen, setIsEditCourseNameModalOpen] = useState(false)
-  const [currentCourseName, setCurrentCourseName] = useState(courseName)
-  const [joinClassLink, setJoinClassLink] = useState("https://example.com/join-class")
   const route = useRouter()
 
-  const tabs = [
+  const tabs: Tab[] = [
     { id: "description", label: "Description", icon: BookOpen },
     { id: "resources", label: "Resources", icon: FileText },
     { id: "reports", label: "Reports", icon: BarChart },
@@ -79,21 +102,20 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">Course Details: {currentCourseName}</h1>
-        <Button variant="ghost" size="icon" className="rounded-full ml-auto lg:hidden" onClick={toggleSidebar}>
+        <h1 className="text-lg md:text-xl font-semibold text-[#1BC2C2]">
+          Course Details: {courseDetails.class.name}
+        </h1>
+        <Button 
+          variant="outline" 
+          className="ml-auto mr-4"
+          onClick={() => route.push(`/admin/course/edit/${courseDetails.class.id}`)}
+        >
+          <Edit className="mr-2 h-5 w-5" />
+          Edit Course
+        </Button>
+        <Button variant="ghost" size="icon" className="rounded-full lg:hidden" onClick={toggleSidebar}>
           <Menu className="h-5 w-5" />
         </Button>
-      </div>
-
-      {/* Course Name and Join Class */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">{currentCourseName}</h2>
-        <div className="flex items-center gap-2">
-          {/* <Button className="bg-[#1BC2C2] hover:bg-[#1bc2c2bd] text-white">Join Class</Button>
-          <Button variant="outline" size="icon" onClick={() => setIsEditCourseNameModalOpen(true)}>
-            <Edit className="h-4 w-4" />
-          </Button> */}
-        </div>
       </div>
 
       {/* Tabs */}
@@ -102,7 +124,7 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as Tab)}
+              onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
                 activeTab === tab.id
@@ -121,11 +143,46 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
       <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
         <Card className="border-none shadow-none flex-grow order-2 lg:order-1 pb-3">
           <CardContent className="h-[calc(100vh-200px)] p-0">
-            {activeTab === "description" && <CourseDescription />}
-            {activeTab === "resources" && <ResourcesList />}
-            {activeTab === "reports" && <ReportsList />}
-            {activeTab === "assessments" && <AssessmentsList />}
-            {activeTab === "students" && <StudentList />}
+            {activeTab === "description" && (
+              <CourseDescription 
+                coursedetails={{
+                  ...courseDetails.class,
+                  students_assigned: courseDetails.students.map(student => ({
+                    id: student.id,
+                    name: student.name,
+                    dp_url: null,
+                  })),
+                  resources_assigned: courseDetails.resources.details.map(resource => resource.name),
+                }} 
+              />
+            )}
+            {activeTab === "resources" && (
+              <ResourcesList resources={courseDetails.resources} />
+            )}
+            {activeTab === "reports" && (
+              <ReportsList 
+                classId={courseDetails.class.id.toString()}
+                students={courseDetails.students} // Pass the students prop explicitly
+                courseDetails={{
+                  students: courseDetails.students,
+                }}
+              />
+            )}
+            {activeTab === "assessments" && (
+              <AssessmentsList
+                classId={courseDetails.class.id.toString()}
+                stats={{
+                  total: courseDetails.assignments.total,
+                  turned_in: courseDetails.assignments.turned_in,
+                  pending: courseDetails.assignments.pending,
+                  overdue: courseDetails.assignments.overdue,
+                  percentage_turned_in: courseDetails.assignments.percentage_turned_in,
+                }}
+              />
+            )}
+            {activeTab === "students" && (
+              <StudentList students={courseDetails.students} />
+            )}
           </CardContent>
         </Card>
 
@@ -145,21 +202,14 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {/* Course Info */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Course Information</h3>
-                <Button variant="ghost" size="sm" onClick={() => setIsEditCourseInfoModalOpen(true)}>
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
               <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12 md:h-16 md:w-16">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>{courseInfo.code}</AvatarFallback>
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback>{courseDetails.class.code}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h4 className="font-semibold">Course Code: {courseInfo.code}</h4>
-                  <p className="text-sm text-gray-500">Department: {courseInfo.department}</p>
-                  <p className="text-sm text-gray-500">Semester: {courseInfo.semester}</p>
+                  <h4 className="font-semibold">Course Code: {courseDetails.class.code}</h4>
+                  <p className="text-sm text-gray-500">Department: {courseDetails.class.department}</p>
+                  <p className="text-sm text-gray-500">Semester: {courseDetails.class.semester}</p>
                 </div>
               </div>
             </CardContent>
@@ -167,33 +217,35 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
 
           {/* Class Statistics */}
           <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Class Statistics</h3>
-                {/* <Button variant="ghost" size="sm">
-                  <Edit className="h-4 w-4" />
-                </Button> */}
-              </div>
+            <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Users className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Enrolled Students</p>
-                  <p className="font-medium">25</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.students.length}</p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <FileText className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Resources</p>
-                  <p className="font-medium">48</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.resources.total}</p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Reports</p>
-                  <p className="font-medium">34</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.reports.total}</p>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Assessments</p>
-                  <p className="font-medium">12</p>
+                  <div>
+                    <p className="font-medium">{courseDetails.assignments.total}</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -202,25 +254,17 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           {/* Class Schedule */}
           <Card className="p-4 bg-gray-50">
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">Class Schedule</h3>
-                <Button variant="ghost" size="sm" onClick={() => setIsEditClassScheduleModalOpen(true)}>
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
               <div className="space-y-2">
-                {schedules.map((schedule, index) => (
+                {courseDetails.class.schedule.days.map((day, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-[#1BC2C2]" />
-                      <span className="font-medium">{schedule.day}</span>
+                      <span className="font-medium">{day}</span>
                     </div>
-                    <span className="text-gray-600">
-                      {schedule.fromTime} - {schedule.toTime}
-                    </span>
+                    <span className="text-gray-600">{courseDetails.class.schedule.time[index]}</span>
                   </div>
                 ))}
               </div>
@@ -228,39 +272,6 @@ export default function CourseDetailsComponent({ courseName = "Advanced Physics"
           </Card>
         </div>
       </div>
-
-      {/* Edit Modals */}
-      <EditCourseInfoModal
-        isOpen={isEditCourseInfoModalOpen}
-        onClose={() => setIsEditCourseInfoModalOpen(false)}
-        courseInfo={courseInfo}
-        onSave={(newCourseInfo) => {
-          setCourseInfo(newCourseInfo)
-          setIsEditCourseInfoModalOpen(false)
-        }}
-      />
-
-      <EditClassScheduleModal
-        isOpen={isEditClassScheduleModalOpen}
-        onClose={() => setIsEditClassScheduleModalOpen(false)}
-        schedules={schedules}
-        onSave={(newSchedules) => {
-          setSchedules(newSchedules)
-          setIsEditClassScheduleModalOpen(false)
-        }}
-      />
-
-      <EditCourseNameModal
-        isOpen={isEditCourseNameModalOpen}
-        onClose={() => setIsEditCourseNameModalOpen(false)}
-        courseName={currentCourseName}
-        joinClassLink={joinClassLink}
-        onSave={(newCourseName, newJoinClassLink) => {
-          setCurrentCourseName(newCourseName)
-          setJoinClassLink(newJoinClassLink)
-          setIsEditCourseNameModalOpen(false)
-        }}
-      />
     </div>
   )
 }

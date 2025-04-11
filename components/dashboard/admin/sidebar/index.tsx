@@ -1,10 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
+import Logo from "@/public/assets/img/logo.png"
+import favIconLogo from "@/public/assets/img/favicon-logo.png"
 import HomeIcon from "@/public/assets/icons/home-01.png"
 import HomeLightIcon from "@/public/assets/icons/home-01-light.png"
 import ProfileIcon from "@/public/assets/icons/user.png"
@@ -23,8 +25,15 @@ import AnnouncementIcon from "@/public/assets/icons/volume-high3x.png"
 import AnnouncementLightIcon from "@/public/assets/icons/volume-highlight.png"
 import CouponIcon from "@/public/assets/icons/coupon-icon.png"
 import CouponLightIcon from "@/public/assets/icons/coupon-icon-light.png"
+import NotificationIcon from "@/public/assets/icons/notification-03.png"
+import NotificationLightIcon from "@/public/assets/icons/notification-0-light.png"
 import cardinalConfig from "@/config"
-import type React from "react" 
+import { fetchNotifications } from "@/lib/api/admin/notifcation/fetchnotification"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import type React from "react"
+import { getPendingReports } from "@/lib/api/admin/pendingreport/fetchpendingreport"
+import { fetchTicketList } from "@/lib/api/admin/ticket/fetchtickets"
 
 const navigation = [
   {
@@ -58,7 +67,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
     ],
     dynamicPath: null,
-  }, 
+  },
   {
     name: "Support Tickets",
     href: cardinalConfig.routes.dashboard.admin.adminticketlist,
@@ -69,7 +78,7 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminreplyticket,
       cardinalConfig.routes.dashboard.admin.adminticketdetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/ticket/",
   },
   {
     name: "Manage Courses",
@@ -79,32 +88,40 @@ const navigation = [
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminmanagecourses,
       cardinalConfig.routes.dashboard.admin.admincreatecourse,
-      cardinalConfig.routes.dashboard.admin.courseDetails,      
+      cardinalConfig.routes.dashboard.admin.courseDetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/course/",
   },
   {
     name: "Manage Students",
     href: cardinalConfig.routes.dashboard.admin.adminManageStudents,
-    icon:  ManageStudentsIcon,
+    icon: ManageStudentsIcon,
     iconLight: ManageStudentsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageStudents,
       cardinalConfig.routes.dashboard.admin.adminStudentDetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/student/",
   },
   {
     name: "Manage Tutors",
     href: cardinalConfig.routes.dashboard.admin.adminManageTutors,
-    icon:  ManageTutorsIcon,
+    icon: ManageTutorsIcon,
     iconLight: ManageTutorsLightIcon,
     activePaths: [
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminManageTutors,
       cardinalConfig.routes.dashboard.admin.adminTutorDetails,
     ],
-    dynamicPath: null,
+    dynamicPath: "/admin/tutor/",
+  },
+  {
+    name: "Pending Reports",
+    href: cardinalConfig.routes.dashboard.admin.adminPendingReports,
+    icon: ManageTutorsIcon,
+    iconLight: ManageTutorsLightIcon,
+    activePaths: [cardinalConfig.routes.dashboard.admin.adminPendingReports],
+    dynamicPath: "/admin/pendingreports/",
   },
   {
     name: "Announcements",
@@ -129,19 +146,31 @@ const navigation = [
       cardinalConfig.routes.dashboard.admin.adminEditCoupon,
       cardinalConfig.routes.dashboard.admin.adminCreateCoupon,
     ],
-    dynamicPath: null,  
+    dynamicPath: "/admin/coupon",
+  },
+  {
+    name: "Notification",
+    href: cardinalConfig.routes.dashboard.admin.adminNotifications,
+    icon: NotificationIcon,
+    iconLight: NotificationLightIcon,
+    activePaths: [
+      cardinalConfig.routes.dashboard.admin.adminNotifications,
+    ],
+    dynamicPath: "/admin/notifications/",
   },
 ]
 
-const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boolean) => void }> = ({
-  isOpen,
-  setIsOpen,
-}) => {
+const AdminDashboardSideBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [openTicketsCount, setOpenTicketsCount] = useState(0)
+  const [pendingReportsCount, setPendingReportsCount] = useState(0)
+  const token = useSelector((state: RootState) => state.auth?.token)
 
   useEffect(() => {
     const handleResize = () => {
-      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      if (window.innerWidth < 1024) {
         setIsOpen(false)
       } else {
         setIsOpen(true)
@@ -152,7 +181,56 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
     handleResize()
 
     return () => window.removeEventListener("resize", handleResize)
-  }, [setIsOpen])
+  }, [])
+
+  useEffect(() => {
+    const fetchUnreadNotificationsCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchNotifications(token)
+          const notifications = response.data.notifications
+          const unread = notifications.filter((notification: { read_at: string | null }) => !notification.read_at)
+          setUnreadCount(unread.length)
+        } catch (error) {
+          console.error("Error fetching notifications:", error)
+        }
+      }
+    }
+
+    fetchUnreadNotificationsCount()
+  }, [token])
+
+  useEffect(() => {
+    const fetchPendingReportsCount = async () => {
+      if (token) {
+        try {
+          const response = await getPendingReports(token)
+          const pendingOnly = response.data.reports.filter((report) => report.status === "pending")
+          setPendingReportsCount(pendingOnly.length)
+        } catch (error) {
+          console.error("Error fetching pending reports:", error)
+        }
+      }
+    }
+
+    fetchPendingReportsCount()
+  }, [token])
+
+  useEffect(() => {
+    const fetchOpenTicketsCount = async () => {
+      if (token) {
+        try {
+          const response = await fetchTicketList(token, 1, 100, { status: "open" })
+          const openTickets = response.data.tickets
+          setOpenTicketsCount(openTickets.length)
+        } catch (error) {
+          console.error("Error fetching open tickets:", error)
+        }
+      }
+    }
+
+    fetchOpenTicketsCount()
+  }, [token])
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)
@@ -180,10 +258,10 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
           )}
         </button>
         {isOpen ? (
-          <Image src="/assets/img/logo.png" alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
+          <Image src={Logo} alt="Cardinal E-School" width={150} height={40} className="h-12 w-auto" />
         ) : (
           <Image
-            src="/assets/img/favicon-logo.png"
+            src={favIconLogo}
             alt="Cardinal E-School"
             width={30}
             height={10}
@@ -199,8 +277,10 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
             <Link
               key={item.name}
               href={item.href}
+              prefetch={true}
+              // onMouseEnter={() => handleLinkClick(item.href)}
               className={cn(
-                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group relative",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
               )}
             >
@@ -214,11 +294,37 @@ const AdminDashboardSideBar: React.FC<{ isOpen: boolean; setIsOpen: (isOpen: boo
                 alt={`${item.name} icon light`}
                 className="h-5 w-5 hidden group-hover:block"
               />
-              {isOpen && <span>{item.name}</span>}
+              {isOpen && (
+                <>
+                  <span>{item.name}</span>
+                  {item.name === "Notification" && unreadCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {unreadCount}
+                    </div>
+                  )}
+                  {item.name === "Pending Reports" && pendingReportsCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {pendingReportsCount}
+                    </div>
+                  )}
+                  {item.name === "Support Tickets" && openTicketsCount > 0 && (
+                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
+                </>
+              )}
               {!isOpen && (
-                <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {item.name}
-                </span>
+                <>
+                  <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {item.name}
+                  </span>
+                  {item.name === "Support Tickets" && openTicketsCount > 0 && (
+                    <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {openTicketsCount}
+                    </div>
+                  )}
+                </>
               )}
             </Link>
           )

@@ -1,98 +1,202 @@
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
-import { Calendar } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Assessment } from "../types"
+"use client"
 
-export interface Student {
-  id: string
-  name: string
-  email: string
+import { useState, useEffect } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { format, parseISO } from "date-fns"
+import { Calendar, Users, Clock, Download } from "lucide-react"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { getAssignmentDetails } from "@/lib/api/tutor/courses/fetchsingleassessment"
+import { Alert } from "@/components/ui/alert"
+// import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+interface Assessment {
+  id: number;
+  title: string;
+  description: string;
+  file_url: string;
+  deadline: string;
+  tutor: {
+    name: string;
+  };
 }
 
+interface SubmissionStats {
+  total_students: number;
+  submitted_students: number;
+  pending_students: number;
+}
+
+interface Submission {
+  id: number;
+  student_name: string;
+  submitted_at: string;
+  file_url: string;
+}
+
+interface AssessmentDetails {
+  id: number;
+  title: string;
+  description: string;
+  file_url: string;
+  deadline: string;
+  submission_stats: SubmissionStats;
+  submissions: Submission[];
+}
 
 interface AssessmentModalProps {
-  assessment: Assessment | null
-  isOpen: boolean
-  onClose: () => void
-  onGrade: (id: string, grade: number) => void
-  students: Student[]
+  isOpen: boolean;
+  onClose: () => void;
+  assessment: Assessment | null;
 }
 
-export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students }: AssessmentModalProps) {
-  const [grade, setGrade] = useState<number | "">("")
+export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [details, setDetails] = useState<AssessmentDetails | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token);
 
-  if (!assessment) return null
+  useEffect(() => {
+    const fetchDetails = async () => {
+      if (!assessment?.id || !token) return;
 
-  const student = students.find((s) => assessment.studentIds.includes(s.id))
+      setLoading(true);
+      try {
+        const response = await getAssignmentDetails(token, assessment.id);
+        setDetails(response.data.assignment as AssessmentDetails);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch assessment details");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleGrade = () => {
-    if (typeof grade === "number") {
-      onGrade(assessment.id, grade)
-      onClose()
+    if (isOpen) {
+      fetchDetails();
     }
-  }
+  }, [assessment?.id, isOpen, token]);
+
+  if (!assessment) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[625px] bg-white">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{assessment.topic}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{assessment?.title}</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={
-                assessment.status === "graded" ? "success" : assessment.status === "submitted" ? "info" : "warning"
-              }
-            >
-              {assessment.status.charAt(0).toUpperCase() + assessment.status.slice(1)}
-            </Badge>
-            <span className="text-sm text-gray-500">{assessment.subject}</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-500">
-            <Calendar className="mr-2 h-4 w-4" />
-            Due: {format(assessment.dueDate, "MMM d, yyyy")}
-          </div>
-          <p className="text-sm">{assessment.description || "No description provided."}</p>
-          <div className="text-sm">
-            <strong>Student:</strong> {student ? student.name : "Unknown"}
-          </div>
-          {assessment.submittedFile && (
-            <div className="text-sm">
-              <strong>Submitted File:</strong> {assessment.submittedFile}
-            </div>
-          )}
-          {assessment.status !== "pending" && (
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="grade">Grade</Label>
-              <Input
-                id="grade"
-                type="number"
-                min="0"
-                max="100"
-                value={grade}
-                onChange={(e) => setGrade(e.target.value === "" ? "" : Number(e.target.value))}
-              />
-            </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-          {assessment.status !== "pending" && (
-            <Button onClick={handleGrade} disabled={grade === "" || assessment.status === "graded"}>
-              {assessment.status === "graded" ? "Graded" : "Submit Grade"}
-            </Button>
-          )}
-        </DialogFooter>
+
+        {error ? (
+          <Alert variant="danger">{error}</Alert>
+        ) : loading ? (
+          <div className="flex items-center justify-center py-8">Loading details...</div>
+        ) : details && (
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="submissions">Submissions</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="details" className="space-y-6 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <Calendar size={16} />
+                    <span>Due Date</span>
+                  </div>
+                  <p className="font-medium">
+                    {format(parseISO(details.deadline), "MMM d, yyyy HH:mm")}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <Users size={16} />
+                    <span>Students</span>
+                  </div>
+                  <p className="font-medium">
+                    {details.submission_stats.submitted_students} / {details.submission_stats.total_students} Submitted
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <Clock size={16} />
+                    <span>Status</span>
+                  </div>
+                  <Progress 
+                    value={(details.submission_stats.submitted_students / details.submission_stats.total_students) * 100} 
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Description</h3>
+                  <p className="text-gray-600">{details.description}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-medium">Assignment File</h3>
+                  {/* <Button variant="outline" asChild className="w-full sm:w-auto"> */}
+                    <a 
+                      href={details.file_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center gap-2 bg-[#1BC2C2] px-3 py-2 rounded-xl"
+                    >
+                      <Download size={16} />
+                      Download Assignment
+                    </a>
+                  {/* </Button> */}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="submissions" className="mt-4">
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">Submission Statistics</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Total Students</span>
+                      <span>{details.submission_stats.total_students}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Submitted</span>
+                      <span className="text-green-600">
+                        {details.submission_stats.submitted_students}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Pending</span>
+                      <span className="text-yellow-600">
+                        {details.submission_stats.pending_students}
+                      </span>
+                    </div>
+                    <Progress 
+                      value={(details.submission_stats.submitted_students / details.submission_stats.total_students) * 100}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-medium">Student Submissions</h3>
+                  {details.submissions.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No submissions yet</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {/* Add submissions list here when API provides the data */}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 

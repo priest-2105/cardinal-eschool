@@ -1,104 +1,110 @@
-import { useState } from "react"
+"use client"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
-import { Calendar } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { parseISO } from "date-fns"
+import { Calendar, Download } from "lucide-react"
 
-
-export interface Student {
-  id: string
-  name: string
-  email: string
-}
-
-export interface Assessment {
-  id: string
-  topic: string
-  subject: string
-  dueDate: Date
-  status: "pending" | "submitted" | "graded"
-  description?: string
-  submittedFile?: string
-  studentIds: string[]
-  grade?: number
+interface Assignment {
+  id: number;
+  title: string;
+  description: string;
+  deadline: string; // ISO string
+  file_path: string;
+  tutor_id: string;
+  tutor_name: string;
+  submissions: {
+    total: number;
+    turned_in: number;
+    pending: number;
+    overdue: number;
+  };
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
 }
 
 interface AssessmentModalProps {
-  assessment: Assessment | null
+  assignment: Assignment | null
   isOpen: boolean
   onClose: () => void
-  onGrade: (id: string, grade: number) => void
-  students: Student[]
 }
 
-export function AssessmentModal({ assessment, isOpen, onClose, onGrade, students }: AssessmentModalProps) {
-  const [grade, setGrade] = useState<number | "">("")
+export default function AssessmentModal({ assignment, isOpen, onClose }: AssessmentModalProps) {
+  if (!assignment) return null
 
-  if (!assessment) return null
-
-  const student = students.find((s) => assessment.studentIds.includes(s.id))
-
-  const handleGrade = () => {
-    if (typeof grade === "number") {
-      onGrade(assessment.id, grade)
-      onClose()
-    }
+  const getFileName = (path: string) => {
+    if (!path) return "Unknown File";
+    const parts = path.split("/");
+    return parts[parts.length - 1];
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[625px] bg-white">
         <DialogHeader>
-          <DialogTitle>{assessment.topic}</DialogTitle>
+          <DialogTitle>{assignment.title}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex items-center gap-2">
-            <Badge
-              variant={
-                assessment.status === "graded" ? "success" : assessment.status === "submitted" ? "info" : "warning"
-              }
-            >
-              {assessment.status.charAt(0).toUpperCase() + assessment.status.slice(1)}
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+              Assignment
             </Badge>
-            <span className="text-sm text-gray-500">{assessment.subject}</span>
+            <span className="text-sm text-gray-500">Created by: {assignment.tutor_name}</span>
           </div>
           <div className="flex items-center text-sm text-gray-500">
             <Calendar className="mr-2 h-4 w-4" />
-            Due: {format(assessment.dueDate, "MMM d, yyyy")}
+            Due: {format(parseISO(assignment.deadline), "MMM d, yyyy HH:mm")}
           </div>
-          <p className="text-sm">{assessment.description || "No description provided."}</p>
-          <div className="text-sm">
-            <strong>Student:</strong> {student ? student.name : "Unknown"}
+          <div className="mt-2">
+            <h4 className="text-sm font-medium mb-1">Description</h4>
+            <p className="text-sm text-gray-700">{assignment.description}</p>
           </div>
-          {assessment.submittedFile && (
-            <div className="text-sm">
-              <strong>Submitted File:</strong> {assessment.submittedFile}
+
+          {assignment.file_path && (
+            <div className="mt-2">
+              <h4 className="text-sm font-medium mb-1">Attachment</h4>
+              <div className="flex items-center gap-2">
+                <a
+                  href={assignment.file_path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  {getFileName(assignment.file_path)}
+                </a>
+              </div>
             </div>
           )}
-          {assessment.status !== "pending" && (
-            <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="grade">Grade</Label>
-              <Input
-                id="grade"
-                type="number"
-                min="0"
-                max="100"
-                value={grade}
-                onChange={(e) => setGrade(e.target.value === "" ? "" : Number(e.target.value))}
-              />
+
+          <div className="mt-2">
+            <h4 className="text-sm font-medium mb-1">Submission Statistics</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <span className="text-gray-500">Total:</span> {assignment.submissions.total}
+              </div>
+              <div>
+                <span className="text-gray-500">Turned In:</span> {assignment.submissions.turned_in}
+              </div>
+              <div>
+                <span className="text-gray-500">Pending:</span> {assignment.submissions.pending}
+              </div>
+              <div>
+                <span className="text-gray-500">Overdue:</span> {assignment.submissions.overdue}
+              </div>
             </div>
-          )}
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Close
           </Button>
-          {assessment.status !== "pending" && (
-            <Button onClick={handleGrade} disabled={grade === "" || assessment.status === "graded"}>
-              {assessment.status === "graded" ? "Graded" : "Submit Grade"}
+          {assignment.file_path && (
+            <Button>
+              <a href={assignment.file_path} target="_blank" rel="noopener noreferrer">
+                Download Assignment
+              </a>
             </Button>
           )}
         </DialogFooter>

@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-// import { useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { fetchTicketDetails } from "@/lib/api/student/api"
 import { Textarea } from "@/components/dashboard/student/ui/textarea"
 import { Button } from "@/components/dashboard/student/ui/button"
 import { Label } from "@/components/dashboard/student/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/dashboard/student/ui/card"
-import Popup from "@/components/dashboard/student/ui/Popup" 
-// import { TicketReply } from "./TicketReply"
+import Popup from "@/components/dashboard/student/ui/Popup"
 import type React from "react"
 
 interface Reply {
@@ -31,52 +32,51 @@ interface Ticket {
   replies: Reply[]
 }
 
-const SAMPLE_TICKET: Ticket = {
-  id: "7e19c06b-1c1f-4a91-b94c-74dd9a13aa07",
-  title: "Unable to connect to the internet",
-  description:
-    "I have been unable to connect to the internet for the past few hours. I have tried restarting my computer and modem, but nothing seems to work.",
-  priority: "High",
-  status: "Open",
-  category: "Technical",
-  department: "Technical Department",
-  createdAt: "2023-09-15T14:30:00.000Z",
-  updatedAt: "2023-09-15T14:30:00.000Z",
-  userName: "John Doe",
-  userEmail: "john.doe@example.com",
-  replies: [
-    {
-      sender: "you",
-      content: "Hi, I'm having trouble connecting to the internet. Can you help?",
-      timestamp: "2023-09-15T14:30:00.000Z",
-    },
-    {
-      sender: "admin",
-      content: "Hello John, I'm sorry to hear that. Have you tried restarting your router?",
-      timestamp: "2023-09-15T14:35:00.000Z",
-    },
-    {
-      sender: "you",
-      content: "Yes, I've tried that but it didn't work.",
-      timestamp: "2023-09-15T14:40:00.000Z",
-    },
-  ],
-}
-
-export default function TicketDetailsComponent() {
-  const [ticket, setTicket] = useState<Ticket>(SAMPLE_TICKET)
+export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: string }) {
+  const token = useSelector((state: RootState) => state.auth?.token)
+  const [ticket, setTicket] = useState<Ticket | null>(null)
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_showConfirmModal, setShowConfirmModal] = useState(false)
-  // const router = useRouter()
+  const [, setShowConfirmModal] = useState(false)
 
   useEffect(() => {
-    // Here you would typically fetch the ticket details from an API
-    // For now, we're using the sample ticket
-    // fetchTicketDetails(ticketId).then(data => setTicket(data));
-  }, [])
+    const loadTicketDetails = async () => {
+      if (!token) {
+        setPopupMessage("You must be logged in to view ticket details.")
+        setShowPopup(true)
+        return
+      }
+
+      try {
+        const response = await fetchTicketDetails(token, ticketCodec)
+        setTicket({
+          id: response.data.ticket_id,
+          title: response.data.subject,
+          description: response.data.body,
+          priority: "N/A",
+          status: response.data.status,
+          category: "N/A",
+          department: response.data.department,
+          createdAt: response.data.created_at,
+          updatedAt: response.data.updated_at,
+          userName: response.data.user_fullname,
+          userEmail: response.data.user_email,
+          replies: [],
+        })
+      } catch (error) {
+        console.error("Failed to load ticket details:", error)
+        setPopupMessage((error as Error).message || "Failed to load ticket details.")
+        setShowPopup(true)
+      }
+    }
+
+    loadTicketDetails()
+  }, [token, ticketCodec])
+
+  if (!ticket) {
+    return <div>Loading ticket details...</div>
+  }
 
   const handleReply = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -85,10 +85,13 @@ export default function TicketDetailsComponent() {
       content: reply,
       timestamp: new Date().toISOString(),
     }
-    setTicket((prevTicket) => ({
-      ...prevTicket,
-      replies: [...prevTicket.replies, newReply],
-    }))
+    setTicket((prevTicket) => {
+      if (!prevTicket) return null // Ensure prevTicket is not null
+      return {
+        ...prevTicket,
+        replies: [...prevTicket.replies, newReply],
+      }
+    })
     setReply("")
     setPopupMessage("Your reply has been sent successfully.")
     setShowPopup(true)
@@ -100,19 +103,6 @@ export default function TicketDetailsComponent() {
   const handleCloseTicket = async () => {
     setShowConfirmModal(true)
   }
-
-  // const confirmCloseTicket = async () => {
-  //   // Here you would typically send a request to close the ticket
-  //   // await closeTicket(ticket.id);
-  //   setTicket({ ...ticket, status: "Closed" })
-  //   setShowConfirmModal(false)
-  //   setPopupMessage("The ticket has been closed successfully.")
-  //   setShowPopup(true)
-  //   setTimeout(() => {
-  //     setShowPopup(false)
-  //     router.push("/admin/tickets")
-  //   }, 2000)
-  // }
 
   return (
     <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
@@ -129,14 +119,14 @@ export default function TicketDetailsComponent() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            {/* <div>
+            <div>
               <Label className="font-semibold">User Name</Label>
               <p>{ticket.userName}</p>
             </div>
             <div>
               <Label className="font-semibold">User Email</Label>
               <p>{ticket.userEmail}</p>
-            </div> */}
+            </div>
             <div>
               <Label className="font-semibold">Created At</Label>
               <p>{new Date(ticket.createdAt).toLocaleString()}</p>
@@ -148,14 +138,6 @@ export default function TicketDetailsComponent() {
             <div>
               <Label className="font-semibold">Status</Label>
               <p>{ticket.status}</p>
-            </div>
-            <div>
-              <Label className="font-semibold">Priority</Label>
-              <p>{ticket.priority}</p>
-            </div>
-            <div>
-              <Label className="font-semibold">Category</Label>
-              <p>{ticket.category}</p>
             </div>
             <div>
               <Label className="font-semibold">Department</Label>
@@ -207,12 +189,9 @@ export default function TicketDetailsComponent() {
       </Card>
 
       {showPopup && <Popup message={popupMessage} onClose={() => setShowPopup(false)} />}
- 
     </div>
   )
 }
-
-
 
 import { format } from "date-fns"
 

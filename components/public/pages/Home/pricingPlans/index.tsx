@@ -67,12 +67,7 @@ const PricingPlans: React.FC = () => {
       price: "",
       duration: "Speak to Support",
       features: [
-        "For those who need a scalable custom plan",
-        "1 group session weekly",
-        "Monthly Progress Report",
-        "In-class Activities",
-        "Regular feedback and tracking",
-        "Access to exclusive premium content and resources",
+        
       ],
     },
   ];
@@ -119,8 +114,8 @@ const PricingPlans: React.FC = () => {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => (
             <motion.div
-              drag="y"
-              dragConstraints={{ top: -10, bottom: 10 }}
+              // drag="y"
+              // dragConstraints={{ top: -10, bottom: 10 }}
               key={index}
               custom={index} // Pass the index to the variant
               variants={cardVariants}
@@ -152,8 +147,8 @@ const PricingPlans: React.FC = () => {
         <div className="flex  justify-center gap-8 max-w-7xl max-sm:block mx-auto">
           {pricingDiscounts.map((plan, index) => (
             <motion.div
-              drag="y"
-              dragConstraints={{ top: -10, bottom: 10 }}
+              // drag="y"
+              // dragConstraints={{ top: -10, bottom: 10 }}
               key={index}
               custom={index} 
               variants={cardVariants}

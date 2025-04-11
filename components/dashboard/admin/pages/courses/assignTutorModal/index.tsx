@@ -6,10 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useSelector } from "react-redux"
+import { getTutors } from "@/lib/api/admin/managetutor/fetchtutors"
+import type { RootState } from "@/lib/store"
 
 interface Tutor {
-  id: string
+  tutor_codec: string
   name: string
+  email: string
+  qualification: string | null
+  dp_url: string | null
 }
 
 interface AssignTutorModalProps {
@@ -19,21 +25,40 @@ interface AssignTutorModalProps {
   currentTutor: Tutor | null
 }
 
-const SAMPLE_TUTORS: Tutor[] = [
-  { id: "1", name: "John Doe" },
-  { id: "2", name: "Jane Smith" },
-  { id: "3", name: "Alice Johnson" },
-]
-
 export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: AssignTutorModalProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTutor, setSelectedTutor] = useState<Tutor | null>(currentTutor)
+  const [tutors, setTutors] = useState<Tutor[]>([])
+  const [loading, setLoading] = useState(false)
+  const token = useSelector((state: RootState) => state.auth?.token)
+
+  useEffect(() => {
+    const loadTutors = async () => {
+      if (!token) return
+      setLoading(true)
+      try {
+        const response = await getTutors(token)
+        setTutors(response)
+      } catch (error) {
+        console.error("Failed to load tutors:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (isOpen) {
+      loadTutors()
+    }
+  }, [isOpen, token])
 
   useEffect(() => {
     setSelectedTutor(currentTutor)
   }, [currentTutor])
 
-  const filteredTutors = SAMPLE_TUTORS.filter((tutor) => tutor.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredTutors = tutors.filter((tutor) =>
+    tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tutor.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const handleAssign = () => {
     if (selectedTutor) {
@@ -54,17 +79,20 @@ export function AssignTutorModal({ isOpen, onClose, onAssign, currentTutor }: As
               id="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name..."
+              placeholder="Search by name or email..."
             />
           </div>
           <RadioGroup
-            value={selectedTutor?.id}
-            onValueChange={(value) => setSelectedTutor(SAMPLE_TUTORS.find((t) => t.id === value) || null)}
+            value={selectedTutor?.tutor_codec}
+            onValueChange={(value) => setSelectedTutor(tutors.find((t) => t.tutor_codec === value) || null)}
           >
+            {loading && <div className="py-3"> Loading... </div>}
             {filteredTutors.map((tutor) => (
-              <div key={tutor.id} className="flex items-center space-x-2">
-                <RadioGroupItem value={tutor.id} id={`tutor-${tutor.id}`} />
-                <Label htmlFor={`tutor-${tutor.id}`}>{tutor.name}</Label>
+              <div key={tutor.tutor_codec} className="flex items-center space-x-2">
+                <RadioGroupItem value={tutor.tutor_codec} id={`tutor-${tutor.tutor_codec}`} />
+                <Label htmlFor={`tutor-${tutor.tutor_codec}`}>
+                  {tutor.name} ({tutor.email})
+                </Label>
               </div>
             ))}
           </RadioGroup>

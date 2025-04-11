@@ -1,168 +1,212 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, FileText, CheckCircle, Clock } from "lucide-react"
-import { format } from "date-fns"
+import { Search, Calendar, Eye, Download, Upload } from "lucide-react"
+import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { AssessmentModal } from "../assessmentModal"
+import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 
-interface Assessment {
-  id: string
+interface Assignment {
+  id: number
   title: string
-  subject: string
-  dueDate: Date
-  status: "done" | "pending"
-  description?: string
-  submittedFile?: string
+  description: string
+  file_path: string
+  deadline: string
+  tutor_id: string
 }
 
-const SAMPLE_ASSESSMENTS: Assessment[] = [
-  {
-    id: "1",
-    title: "Scientific Method Essay",
-    subject: "Basic Science",
-    dueDate: new Date(2023, 7, 15),
-    status: "pending",
-    description:
-      "Write a 500-word essay explaining the steps of the scientific method and provide an example of its application.",
-  },
-  {
-    id: "2",
-    title: "Energy Conservation Lab Report",
-    subject: "Physics",
-    dueDate: new Date(2023, 7, 20),
-    status: "done",
-    description: "Complete the lab report for the energy conservation experiment conducted in class.",
-    submittedFile: "energy_conservation_report.pdf",
-  },
-  {
-    id: "3",
-    title: "Ecosystem Diagram",
-    subject: "Biology",
-    dueDate: new Date(2023, 7, 25),
-    status: "pending",
-    description:
-      "Create a detailed diagram of a local ecosystem, identifying at least 10 different organisms and their interactions.",
-  },
-  {
-    id: "4",
-    title: "Solar System Quiz",
-    subject: "Astronomy",
-    dueDate: new Date(2023, 8, 1),
-    status: "pending",
-    description: "Complete the online quiz about the solar system. The quiz will cover all planets and major moons.",
-  },
-  {
-    id: "5",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
-  },
-  {
-    id: "6",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
-  },
-  {
-    id: "7",
-    title: "Chemical Reactions Worksheet",
-    subject: "Chemistry",
-    dueDate: new Date(2023, 8, 5),
-    status: "done",
-    description: "Complete the worksheet on balancing chemical equations and identifying types of reactions.",
-    submittedFile: "chemical_reactions_worksheet.pdf",
-  },
-]
+interface AssessmentListProps {
+  classId: string
+}
 
-export default function AssessmentsList() {
+export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [assessments, setAssessments] = useState(SAMPLE_ASSESSMENTS)
   const [statusFilter, setStatusFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
-  const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null)
+  const [isAssessmentModalOpen, setIsAssessmentModalOpen] = useState(false)
+  const [isTurnInModalOpen, setIsTurnInModalOpen] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [sortOrder, setSortOrder] = useState("most_recent")
+  const [submissionText, setSubmissionText] = useState("")
+  const [submissionFile, setSubmissionFile] = useState<File | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const fetchAssignments = useCallback(async () => {
+    if (!token) return
+
+    setLoading(true)
+    try {
+      const response = await getClassAssignments(token, classId)
+      setAssignments(response.data.assignments)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch assignments")
+    } finally {
+      setLoading(false)
+    }
+  }, [classId, token])
+
+  useEffect(() => {
+    fetchAssignments()
+  }, [classId, token, fetchAssignments])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const term = e.target.value
-    setSearchTerm(term)
-    filterAssessments(term, statusFilter, dateFilter)
+    setSearchTerm(e.target.value)
   }
 
-  const handleStatusFilter = (value: string) => {
-    setStatusFilter(value)
-    filterAssessments(searchTerm, value, dateFilter)
+  const handleViewAssessment = (assignment: Assignment) => {
+    setSelectedAssignment(assignment)
+    setIsAssessmentModalOpen(true)
   }
 
-  const handleDateFilter = (value: string) => {
-    setDateFilter(value)
-    filterAssessments(searchTerm, statusFilter, value)
+  const handleTurnInAssessment = (assignment: Assignment) => {
+    setSelectedAssignment(assignment)
+    setSubmissionText("")
+    setSubmissionFile(null)
+    setIsTurnInModalOpen(true)
   }
 
-  const filterAssessments = (term: string, status: string, date: string) => {
-    let filteredAssessments = SAMPLE_ASSESSMENTS.filter(
-      (assessment) =>
-        assessment.title.toLowerCase().includes(term.toLowerCase()) ||
-        assessment.subject.toLowerCase().includes(term.toLowerCase()),
-    )
+  const handleCloseAssessmentModal = () => {
+    setIsAssessmentModalOpen(false)
+    setSelectedAssignment(null)
+  }
 
-    if (status !== "all") {
-      filteredAssessments = filteredAssessments.filter((assessment) => assessment.status === status)
+  const handleCloseTurnInModal = () => {
+    setIsTurnInModalOpen(false)
+    setSelectedAssignment(null)
+    setSubmissionText("")
+    setSubmissionFile(null)
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSubmissionFile(e.target.files[0])
+    }
+  }
+
+  const handleSubmitAssignment = async () => {
+    if (!token || !selectedAssignment) return
+
+    if (!submissionText.trim() && !submissionFile) {
+      setError("Please provide either a text submission or upload a file")
+      return
     }
 
-    const now = new Date()
-    switch (date) {
-      case "week":
-        filteredAssessments = filteredAssessments.filter(
-          (assessment) => assessment.dueDate <= new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7),
-        )
-        break
-      case "month":
-        filteredAssessments = filteredAssessments.filter(
-          (assessment) => assessment.dueDate <= new Date(now.getFullYear(), now.getMonth() + 1, now.getDate()),
-        )
-        break
-      case "year":
-        filteredAssessments = filteredAssessments.filter(
-          (assessment) => assessment.dueDate <= new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()),
-        )
-        break
+    setIsSubmitting(true)
+    
+    try {
+      // const response = await submitAssignment(
+      //   token,
+      //   selectedAssignment.id.toString(),
+      //   submissionText,
+      //   submissionFile
+      // )
+      
+      setSuccessMessage("Assignment submitted successfully!")
+      handleCloseTurnInModal()
+      
+      // Refresh assignments list after submission
+      fetchAssignments()
+      
+      // Clear the success message after 5 seconds
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit assignment")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Check if an assignment is overdue
+  const isOverdue = (deadline: string) => {
+    return new Date(deadline) < new Date()
+  }
+
+  // Sort and filter the assignments
+  const filteredAndSortedAssignments = useMemo(() => {
+    // First apply search filter
+    let filtered = assignments.filter(
+      (assignment) =>
+        assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignment.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      // const now = new Date()
+      if (statusFilter === "overdue") {
+        filtered = filtered.filter(assignment => isOverdue(assignment.deadline))
+      } else if (statusFilter === "pending") {
+        filtered = filtered.filter(assignment => !isOverdue(assignment.deadline))
+      }
     }
 
-    setAssessments(filteredAssessments)
-  }
+    // Apply date filter
+    if (dateFilter !== "all") {
+      const now = new Date()
+      if (dateFilter === "today") {
+        filtered = filtered.filter(assignment => isToday(new Date(assignment.deadline)))
+      } else if (dateFilter === "this_week") {
+        const weekStart = startOfWeek(now)
+        filtered = filtered.filter(assignment => 
+          isWithinInterval(new Date(assignment.deadline), { 
+            start: weekStart, 
+            end: now 
+          })
+        )
+      } else if (dateFilter === "this_month") {
+        const monthStart = startOfMonth(now)
+        filtered = filtered.filter(assignment => 
+          isWithinInterval(new Date(assignment.deadline), { 
+            start: monthStart, 
+            end: now 
+          })
+        )
+      }
+    }
 
-  const handleViewAssessment = (assessment: Assessment) => {
-    setSelectedAssessment(assessment)
-    setIsModalOpen(true)
-  }
+    // Finally sort the results
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.deadline).getTime()
+      const dateB = new Date(b.deadline).getTime()
+      return sortOrder === "most_recent" ? dateB - dateA : dateA - dateB
+    })
+  }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder])
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedAssessment(null)
-  }
 
-  const handleSubmitAssessment = (id: string, file: File) => {
-    const updatedAssessments = assessments.map((assessment) =>
-      assessment.id === id ? { ...assessment, status: "done" as const, submittedFile: file.name } : assessment,
-    )
-    setAssessments(updatedAssessments)
-    console.log(`File "${file.name}" uploaded for assessment ID: ${id}`)
+  // Helper function to get filename from path
+  const getFileName = (path: string) => {
+    const parts = path.split("/")
+    return parts[parts.length - 1]
   }
 
   return (
     <div className="h-full flex flex-col">
+      {/* Success message */}
+      {successMessage && (
+        <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+          <AlertDescription>{successMessage}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Search and filters */}
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
@@ -174,73 +218,240 @@ export default function AssessmentsList() {
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
-        <Select onValueChange={handleStatusFilter} defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[140px]">
-            <SelectValue placeholder="Status" />
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="overdue">Overdue</SelectItem>
           </SelectContent>
         </Select>
-        <Select onValueChange={handleDateFilter} defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[140px]">
-            <SelectValue placeholder="Due Date" />
+        <Select value={dateFilter} onValueChange={setDateFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by date" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Time</SelectItem>
-            <SelectItem value="week">This Week</SelectItem>
-            <SelectItem value="month">This Month</SelectItem>
-            <SelectItem value="year">This Year</SelectItem>
+            <SelectItem value="all">All Dates</SelectItem>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="this_week">This Week</SelectItem>
+            <SelectItem value="this_month">This Month</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sortOrder} onValueChange={setSortOrder}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="most_recent">Most Recent</SelectItem>
+            <SelectItem value="oldest">Oldest</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
-        {assessments.map((assessment) => (
-          <div
-            key={assessment.id}
-            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg"
-          >
-            <div className="flex items-center space-x-4 mb-2 sm:mb-0">
-              {assessment.status === "done" ? (
-                <CheckCircle className="text-green-500" size={24} />
-              ) : (
-                <Clock className="text-yellow-500" size={24} />
-              )}
-              <div>
-                <h3 className="font-medium">{assessment.title}</h3>
-                <p className="text-sm text-gray-500">{assessment.subject}</p>
-                <p className="text-xs text-gray-400 flex items-center mt-1">
-                  <Calendar size={12} className="mr-1" />
-                  Due: {format(assessment.dueDate, "MMM d, yyyy")}
-                </p>
-                {assessment.submittedFile && (
-                  <p className="text-xs text-gray-400 flex items-center mt-1">
-                    <FileText size={12} className="mr-1" />
-                    Submitted: {assessment.submittedFile}
+
+      {/* Assignments list */}
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
+          <p>Loading assessments...</p>
+        </div>
+      ) : error ? (
+        <div className="flex-1 flex items-center justify-center text-red-500">
+          <p>{error}</p>
+        </div>
+      ) : filteredAndSortedAssignments.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center text-gray-500">
+          <p>{searchTerm || statusFilter !== "all" || dateFilter !== "all" 
+              ? "No assessments match your filters" 
+              : "No assessments found"}</p>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
+          {filteredAndSortedAssignments.map((assignment) => (
+            <div
+              key={assignment.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+              onClick={() => handleViewAssessment(assignment)}
+            >
+              <div className="flex items-center space-x-4 mb-2 sm:mb-0">
+                <div>
+                  <h3 className="font-medium">{assignment.title}</h3>
+                  <p className="text-sm text-gray-500">{assignment.description}</p>
+                  <p className={`text-xs flex items-center mt-1 ${
+                    isOverdue(assignment.deadline) ? 'text-red-500' : 'text-gray-400'
+                  }`}>
+                    <Calendar size={12} className="mr-1" />
+                    Due: {format(parseISO(assignment.deadline), "MMM d, yyyy HH:mm")}
+                    {isOverdue(assignment.deadline) && " (Overdue)"}
                   </p>
-                )}
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleViewAssessment(assignment)
+                  }}
+                >
+                  <Eye size={16} className="mr-2" />
+                  View
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleTurnInAssessment(assignment)
+                  }}
+                >
+                  <Upload size={16} className="mr-2" />
+                  Turn In
+                </Button>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-            <Badge variant={assessment.status === "done" ? "success" : "warning"}>
-            {assessment.status === "done" ? "Completed" : "Pending"}
-          </Badge>
-              <Button variant="outline" size="sm" onClick={() => handleViewAssessment(assessment)}>
-                <FileText size={16} className="mr-2" />
-                {assessment.status === "done" ? "View" : "Submit"}
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <AssessmentModal
-        assessment={selectedAssessment}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmitAssessment}
-      />
+          ))}
+        </div>
+      )}
+
+      {/* Assessment View Modal */}
+      <Dialog open={isAssessmentModalOpen} onOpenChange={handleCloseAssessmentModal}>
+        <DialogContent className="sm:max-w-[625px] bg-white">
+          {selectedAssignment && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{selectedAssignment.title}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    Assignment
+                  </Badge>
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Due: {format(parseISO(selectedAssignment.deadline), "MMM d, yyyy HH:mm")}
+                  {isOverdue(selectedAssignment.deadline) && (
+                    <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
+                      Overdue
+                    </Badge>
+                  )}
+                </div>
+                <div className="mt-2">
+                  <h4 className="text-sm font-medium mb-1">Description</h4>
+                  <p className="text-sm text-gray-700">{selectedAssignment.description}</p>
+                </div>
+
+                {selectedAssignment.file_path && (
+                  <div className="mt-2">
+                    <h4 className="text-sm font-medium mb-1">Attachment</h4>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={selectedAssignment.file_path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        {getFileName(selectedAssignment.file_path)}
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={handleCloseAssessmentModal}>
+                  Close
+                </Button>
+                <Button onClick={() => {
+                  handleCloseAssessmentModal();
+                  handleTurnInAssessment(selectedAssignment);
+                }}>
+                  Turn In Assignment
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Turn In Assignment Modal */}
+      <Dialog open={isTurnInModalOpen} onOpenChange={handleCloseTurnInModal}>
+        <DialogContent className="sm:max-w-[625px] bg-white">
+          {selectedAssignment && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Turn In Assignment: {selectedAssignment.title}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="flex items-center text-sm text-gray-500">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Due: {format(parseISO(selectedAssignment.deadline), "MMM d, yyyy HH:mm")}
+                  {isOverdue(selectedAssignment.deadline) && (
+                    <Badge variant="outline" className="ml-2 bg-red-50 text-red-700 border-red-200">
+                      Overdue
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="submissionText">Your Submission</Label>
+                  <Textarea
+                    id="submissionText"
+                    placeholder="Enter your submission text here..."
+                    value={submissionText}
+                    onChange={(e) => setSubmissionText(e.target.value)}
+                    rows={5}
+                    className="resize-none"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="submissionFile">Upload File (optional)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="submissionFile"
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      className="flex-1"
+                    />
+                  </div>
+                  {submissionFile && (
+                    <p className="text-xs text-green-600">
+                      Selected file: {submissionFile.name} ({(submissionFile.size / 1024).toFixed(1)} KB)
+                    </p>
+                  )}
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">
+                    {error}
+                  </div>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={handleCloseTurnInModal} disabled={isSubmitting}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmitAssignment} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Assignment"
+                  )}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -7,7 +7,11 @@ import { Textarea } from "@/components/dashboard/student/ui/textarea"
 import { Button } from "@/components/dashboard/student/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Label } from "@/components/dashboard/student/ui/label"
-import Popup from "@/components/dashboard/student/ui/Popup"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
+import { createTicket, fetchStudentProfile } from "@/lib/api/student/api";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+import { useEffect } from "react";
 
 interface FormData {
   name: string
@@ -19,6 +23,7 @@ interface FormData {
 }
 
 export default function CreateTicketForm() {
+  const token = useSelector((state: RootState) => state.auth?.token);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -26,23 +31,58 @@ export default function CreateTicketForm() {
     issue: "",
     subject: "",
     message: ""
-  })
-  const [showPopup, setShowPopup] = useState(false)
-  const router = useRouter()
+  });
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault() 
-    setTimeout(() => {
-      setShowPopup(true)
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (token) {
+        try {
+          const response = await fetchStudentProfile(token);
+          setFormData((prev) => ({
+            ...prev,
+            name: response.data.firstname + " " + response.data.lastname,
+            email: response.data.email,
+          }));
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+        }
+      }
+    };
+
+    loadUserProfile();
+  }, [token]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) {
+      setAlert({ type: 'error', message: "You must be logged in to create a ticket." });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await createTicket(token, {
+        subject: formData.subject,
+        department: formData.department,
+        body: formData.message,
+      });
+      setAlert({ type: 'success', message: response.message || "Ticket created successfully." });
       setTimeout(() => {
-        setShowPopup(false)
-        router.push("/student/ticketdetails")
-      }, 3000)
-    }, 1000)
-  }
+        router.push(`/student/ticketlist`);
+      }, 2000);
+    } catch (error) {
+      console.error("Ticket creation failed:", error);
+      setAlert({ type: 'error', message: (error as Error).message || "Failed to create ticket." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="max-w-4xl  p-6 bg-white rounded-lg">
+    <div className="max-w-4xl p-6 bg-white rounded-lg">
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name */}
@@ -51,7 +91,7 @@ export default function CreateTicketForm() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              readOnly
               required
             />
           </div>
@@ -63,7 +103,7 @@ export default function CreateTicketForm() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              readOnly
               required
             />
           </div>
@@ -73,7 +113,6 @@ export default function CreateTicketForm() {
         <div className="space-y-2">
           <Label htmlFor="department">Department</Label>
           <Select
-            // id="department"
             value={formData.department}
             onValueChange={(value) => setFormData({ ...formData, department: value })}
             required
@@ -102,7 +141,6 @@ export default function CreateTicketForm() {
           />
         </div>
 
-
         {/* Subject */}
         <div className="space-y-2">
           <Label htmlFor="subject">Subject</Label>
@@ -126,11 +164,17 @@ export default function CreateTicketForm() {
           />
         </div>
 
-        <Button type="submit" size="lg">
-          Submit Ticket
+        <Button type="submit" size="lg" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit Ticket"}
         </Button>
       </form>
-      {showPopup && <Popup message="Your ticket has been successfully submitted." onClose={() => setShowPopup(false)} />}
+
+      {alert && (
+        <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mt-4 bg-white fixed top-14 right-4">
+          <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
-  )
+  );
 }

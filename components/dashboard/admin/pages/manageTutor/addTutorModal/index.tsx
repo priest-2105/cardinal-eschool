@@ -1,51 +1,63 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { createTutor } from "@/lib/api/admin/api"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+
+// Define a TutorData interface if not defined already
+interface TutorData {
+  tutor_codec: string;
+  name: string;
+  email: string;
+  dp_url: string;
+  qualification: string;
+}
 
 interface AddTutorModalProps {
   isOpen: boolean
   onClose: () => void
-  onAddTutor: (tutor: Omit<Tutor, "id">) => void
-}
-
-interface Tutor {
-  id: string
-  name: string
-  email: string
-  subject: string
-  dateJoined: string
-  status: "Active" | "Suspended" | "Inactive"
+  onAddTutor: (tutor: TutorData) => void
 }
 
 export function AddTutorModal({ isOpen, onClose, onAddTutor }: AddTutorModalProps) {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [subject, setSubject] = useState("")
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    phone_number: "",
+    gender: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const newTutor: Omit<Tutor, "id"> = {
-      name,
-      email,
-      subject,
-      dateJoined: new Date().toISOString().split("T")[0],
-      status: "Active",
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setAlert(null);
+    try {
+      if (token) {
+        const response = await createTutor(token, formData);
+        setAlert({ type: 'success', message: 'Tutor created successfully! An email with login credentials has been sent.' });
+        onAddTutor(response.data.tutor);
+        onClose();
+      }
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : "Unknown error";
+      console.error("Tutor creation failed", errMsg);
+      setAlert({ type: "error", message: errMsg });
+    } finally {
+      setIsSubmitting(false);
     }
-    onAddTutor(newTutor)
-    resetForm()
-  }
-
-  const resetForm = () => {
-    setName("")
-    setEmail("")
-    setSubject("")
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -53,37 +65,74 @@ export function AddTutorModal({ isOpen, onClose, onAddTutor }: AddTutorModalProp
         <DialogHeader>
           <DialogTitle>Add New Tutor</DialogTitle>
         </DialogHeader>
+        {alert && (
+          <Alert variant={alert.type === 'success' ? 'default' : 'danger'} className="mb-4">
+            <AlertTitle>{alert.type === 'success' ? 'Success' : 'Error'}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-6" />
-              
+            <div className="grid items-center gap-4">
+              <Label htmlFor="firstname">First Name</Label>
+              <Input
+                id="firstname"
+                value={formData.firstname}
+                onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
+              />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
+            <div className="grid items-center gap-4">
+              <Label htmlFor="lastname">Last Name</Label>
+              <Input
+                id="lastname"
+                value={formData.lastname}
+                onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+              />
+            </div>
+            <div className="grid items-center gap-4">
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="col-span-6"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
+            </div>
+            <div className="grid items-center gap-4">
+              <Label htmlFor="phone_number">Phone Number</Label>
+              <Input
+                id="phone_number"
+                value={formData.phone_number}
+                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+              />
+            </div>
+            <div className="grid items-center gap-4">
+              <Label htmlFor="gender">Gender</Label>
+              <Select
+                value={formData.gender}
+                onValueChange={(value) => setFormData({ ...formData, gender: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Add Tutor</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding...' : 'Add Tutor'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 

@@ -9,7 +9,10 @@ interface MultiSelectProps {
   className?: string
 }
 
-export function MultiSelect({ options, onChange, value, className }: MultiSelectProps) {
+export function MultiSelect({ options, onChange, value = [], className }: MultiSelectProps) {
+  // Ensure value is always an array
+  const safeValue = Array.isArray(value) ? value : []
+
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
       {options.map((option) => (
@@ -18,7 +21,7 @@ export function MultiSelect({ options, onChange, value, className }: MultiSelect
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer transition-colors",
             "border-2",
-            value.includes(option.value)
+            safeValue.includes(option.value)
               ? "border-[#1BC2C2] bg-[#1BC2C2]/10 text-[#1BC2C2]"
               : "border-gray-200 hover:border-[#1BC2C2] hover:bg-[#1BC2C2]/5"
           )}
@@ -27,11 +30,11 @@ export function MultiSelect({ options, onChange, value, className }: MultiSelect
             type="checkbox"
             className="hidden"
             value={option.value}
-            checked={value.includes(option.value)}
+            checked={safeValue.includes(option.value)}
             onChange={(e) => {
               const newValue = e.target.checked
-                ? [...value, option.value]
-                : value.filter((v) => v !== option.value)
+                ? [...safeValue, option.value]
+                : safeValue.filter((v) => v !== option.value)
               onChange(newValue)
             }}
           />

@@ -1,194 +1,122 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import Image from 'next/image';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { getSubjects } from "@/lib/api/public/fetchsubjects"; // Import the API function
+import { useSelector } from "react-redux";
+import type { RootState } from "@/lib/store";
 
 interface Course {
   id: number;
-  title: string;
+  name: string;
   description: string;
-  instructor: string;
-  students: number;
-  plan: 'Basic Plan' | 'Standard Plan' | 'Premium Plan' | 'Group Sessions';
-  image: string;
 }
-
-const courses: Course[] = [
-  {
-    id: 1,
-    title: "Mathematics",
-    description: "Master fundamental mathematical concepts and problem-solving skills",
-    instructor: "Dr. Emily Mathews",
-    students: 150,
-    plan: "Basic Plan",
-    image: "/assets/img/pages/courses/Rectangle 1471.png"
-  },
-  {
-    id: 2,
-    title: "English Literature",
-    description: "Explore classic and contemporary literature while improving writing skills",
-    instructor: "Prof. William Wordsworth",
-    students: 120,
-    plan: "Standard Plan",
-    image: "/assets/img/pages/courses/Rectangle 1472.png"
-  },
-  {
-    id: 3,
-    title: "Biology",
-    description: "Discover the wonders of life sciences and ecological systems",
-    instructor: "Dr. Sarah Darwin",
-    students: 200,
-    plan: "Premium Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 4,
-    title: "Physics",
-    description: "Understand the fundamental laws governing the universe",
-    instructor: "Prof. Albert Einstein Jr.",
-    students: 100,
-    plan: "Basic Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 5,
-    title: "Chemistry",
-    description: "Explore the composition, structure, and properties of matter",
-    instructor: "Dr. Marie Curie II",
-    students: 80,
-    plan: "Standard Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 6,
-    title: "World History",
-    description: "Journey through time and understand global historical events",
-    instructor: "Prof. Howard Zinn",
-    students: 180,
-    plan: "Premium Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 7,
-    title: "Geography",
-    description: "Explore the Earth's landscapes, peoples, places, and environments",
-    instructor: "Dr. Jane Goodall",
-    students: 90,
-    plan: "Group Sessions",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 8,
-    title: "Computer Science",
-    description: "Learn programming, algorithms, and computational thinking",
-    instructor: "Prof. Ada Lovelace",
-    students: 130,
-    plan: "Premium Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 9,
-    title: "Art History",
-    description: "Discover the world's great artworks and artistic movements",
-    instructor: "Dr. Vincent van Gogh III",
-    students: 160,
-    plan: "Standard Plan",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  },
-  {
-    id: 10,
-    title: "Music Theory",
-    description: "Understand the language of music and improve composition skills",
-    instructor: "Maestro Wolfgang Mozart",
-    students: 70,
-    plan: "Group Sessions",
-    image: "/assets/img/pages/courses/Rectangle 1470.png"
-  }
-];
 
 const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
   return (
     <motion.div
       variants={{
         hidden: { opacity: 0, y: 50 },
-        visible: { opacity: 1, y: 0 }
+        visible: { opacity: 1, y: 0 },
       }}
       transition={{ duration: 0.5 }}
-      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 p-6"
     >
-      <Image
-        className="h-48 w-full object-cover"
-        src={course.image}
-        alt={course.title}
-        width={300}
-        height={200}
-      />
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          {course.title}
-        </h3>
-        <p className="text-gray-600 text-sm mb-4">
-          {course.description}
-        </p>
-        <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
-          {/* <span><b>Instructor:</b> {course.instructor}</span> */}
-          {/* <span>{course.students} students</span> */}
-        </div>
-        <div className="text-right text-sm font-semibold text-[#1BC2C2]">
-          Available in: {course.plan}
-        </div>
-      </div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.name}</h3>
+      <p className="text-gray-600 text-sm">{course.description || "No description available"}</p>
     </motion.div>
   );
 };
 
 const CourseList: React.FC = () => {
- const sectionRef = useRef(null);
-  const [triggerOnce, setTriggerOnce] = useState(false);
-  const isInView = useInView(sectionRef, { margin: "-100px" });
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [visibleCourses, setVisibleCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [offset, setOffset] = useState(0);
+  const token = useSelector((state: RootState) => state.auth?.token);
+
+  const COURSES_PER_LOAD = 5;
 
   useEffect(() => {
-    if (isInView && !triggerOnce) {
-      setTriggerOnce(true);  
-    }
-  }, [isInView, triggerOnce]);
+    const fetchCourses = async () => {
+      if (!token) return;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
+      setLoading(true);
+      try {
+        const response = await getSubjects(token);
+        const fetchedCourses = response.map((subject: { id: number; name: string }) => ({
+          id: subject.id,
+          name: subject.name,
+          description: `Learn more about ${subject.name}`,
+        }));
+        setCourses(fetchedCourses);
+        setVisibleCourses(fetchedCourses.slice(0, 9)); 
+      } catch (err) {
+        setError("Failed to fetch courses. Please try again later.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [token]);
+
+  const loadMoreCourses = () => {
+    const nextOffset = offset + COURSES_PER_LOAD;
+    setVisibleCourses(courses.slice(0, nextOffset + 8)); 
+    setOffset(nextOffset);
   };
 
+  if (loading) {
+    return <div className="text-center py-12">Loading courses...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-12 text-red-500">{error}</div>;
+  }
+
   return (
-    <div ref={sectionRef} className="bg-[#C9F4F4] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#C9F4F4] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.h2
           className="text-4xl font-extrabold text-gray-900 text-center mb-8"
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={{
-            hidden: { opacity: 0, y: -20 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
-          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
           Our Courses
         </motion.h2>
         <motion.div
           className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
-          variants={containerVariants}
           initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.2,
+                delayChildren: 0.3,
+              },
+            },
+          }}
         >
-          {courses.map((course) => (
+          {visibleCourses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </motion.div>
+        {visibleCourses.length < courses.length && (
+          <div className="text-center mt-8">
+            <button
+              onClick={loadMoreCourses}
+              className="bg-[#1BC2C2] text-white px-6 py-2 rounded-md hover:bg-[#139797] transition"
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

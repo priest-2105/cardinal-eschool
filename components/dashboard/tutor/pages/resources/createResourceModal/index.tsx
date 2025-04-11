@@ -5,88 +5,79 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label" 
-
-
-export interface Student {
-    id: string
-    name: string
-    email: string
-  }
-  
-  
-  export interface Resource {
-    id: string
-    title: string
-    type: string
-    size: string
-    dateUploaded: Date
-    fileUrl: string
-  }
-  
-  
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { createResource } from "@/lib/api/tutor/courses/createresources"
+import { Alert } from "@/components/ui/alert"
 
 interface CreateResourceModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (resource: Omit<Resource, "id">) => void
+  onSuccess: () => void
 }
 
-export function CreateResourceModal({ isOpen, onClose, onSubmit }: CreateResourceModalProps) {
-  const [title, setTitle] = useState("")
-  const [type, setType] = useState("")
-  const [file, setFile] = useState<File | null>(null)
+export function CreateResourceModal({ isOpen, onClose, onSuccess }: CreateResourceModalProps) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (file) {
-      const newResource: Omit<Resource, "id"> = {
-        title,
-        type,
-        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-        dateUploaded: new Date(),
-        fileUrl: URL.createObjectURL(file),
-      }
-      onSubmit(newResource)
-      resetForm()
-    }
-  }
+    if (!token) return
 
-  const resetForm = () => {
-    setTitle("")
-    setType("")
-    setFile(null)
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      await createResource(token, formData)
+      onSuccess()
+      onClose()
+      form.reset()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create resource")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-white">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Upload New Resource</DialogTitle>
         </DialogHeader>
+
+        {error && (
+          <Alert variant="danger" className="z-50 bg-white top-5 right-4">
+            {error}
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            <Label htmlFor="name">Resource Name</Label>
+            <Input id="name" name="name" required />
           </div>
           <div>
-            <Label htmlFor="type">Type</Label>
-            <Input id="type" value={type} onChange={(e) => setType(e.target.value)} required />
+            <Label htmlFor="comment">Comment</Label>
+            <Textarea id="comment" name="comment" />
           </div>
           <div>
             <Label htmlFor="file">File</Label>
-            <Input
-              id="file"
-              type="file"
-              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-              required
-            />
+            <Input id="file" name="file" type="file" required />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">Upload Resource</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Uploading..." : "Upload Resource"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

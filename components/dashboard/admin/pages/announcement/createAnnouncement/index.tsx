@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -15,17 +14,10 @@ import { format } from "date-fns"
 import { CalendarIcon, ArrowLeft } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-
-interface Announcement {
-  id: string
-  title: string
-  content: string
-  recipients: "students" | "tutors" | "both"
-  status: "active" | "inactive" | "draft"
-  expirationDate?: Date
-  createdAt: Date
-  updatedAt: Date
-}
+import { createAnnouncement } from "@/lib/api/admin/api"
+import { useSelector } from "react-redux";
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert";
+import { RootState } from "@/lib/store"
 
 export function CreateAnnouncement() {
   const [title, setTitle] = useState("")
@@ -33,30 +25,49 @@ export function CreateAnnouncement() {
   const [recipients, setRecipients] = useState<"students" | "tutors" | "both">("both")
   const [status, setStatus] = useState<"active" | "inactive" | "draft">("draft")
   const [expirationDate, setExpirationDate] = useState<Date>()
+  const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null);
+  const token = useSelector((state: RootState) => state.auth?.token);
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const announcement: Omit<Announcement, "id" | "createdAt" | "updatedAt"> = {
+    const announcementPayload = {
       title,
-      content,
-      recipients,
-      status,
-      expirationDate,
+      message: content,
+      target_role: recipients,
+    };
+
+    setLoading(true);
+    setAlert(null);
+    try {
+      if (!token) {
+        throw new Error("Authentication token is missing");
+      }
+      await createAnnouncement(announcementPayload, token);
+      setAlert({ type: "success", message: "Announcement created successfully!" });
+      setTimeout(() => router.push("/admin/announcements"), 2000);
+    } catch (error: unknown) {
+      console.error("Failed to create announcement:", error instanceof Error ? error.message : "An unknown error occurred");
+      setAlert({ type: "danger", message: error instanceof Error ? error.message : "An unknown error occurred" });
+    } finally {
+      setLoading(false);
     }
-
-    // Here you would typically send the announcement to your backend
-    console.log("Creating announcement:", announcement)
-
-    // Navigate back to the announcements list
-    router.push("/admin/announcements")
-  }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="relative max-w-4xl p-6">
+      {alert && (
+        <div className="fixed top-5 right-5 z-50 bg-white">
+          <Alert variant={alert.type} onClose={() => setAlert(null)}>
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       <div className="flex items-center mb-6">
-        <Button variant="ghost" onClick={() => router.back()} className="mr-4">
+        <Button variant="ghost" onClick={() => router.back()} className="mr-4" disabled={loading}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -77,12 +88,17 @@ export function CreateAnnouncement() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter announcement title"
                 required
+                disabled={loading}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={status} onValueChange={(value: "active" | "inactive" | "draft") => setStatus(value)}>
+              <Select
+                value={status}
+                onValueChange={(value: "active" | "inactive" | "draft") => setStatus(value)}
+                disabled={loading}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -103,6 +119,7 @@ export function CreateAnnouncement() {
               <Select
                 value={recipients}
                 onValueChange={(value: "students" | "tutors" | "both") => setRecipients(value)}
+                disabled={loading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select recipients" />
@@ -125,6 +142,7 @@ export function CreateAnnouncement() {
                       "w-full justify-start text-left font-normal",
                       !expirationDate && "text-muted-foreground",
                     )}
+                    disabled={loading}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {expirationDate ? format(expirationDate, "PPP") : "Select expiration date"}
@@ -148,14 +166,17 @@ export function CreateAnnouncement() {
                 placeholder="Type your announcement here..."
                 className="min-h-[200px]"
                 required
+                disabled={loading}
               />
             </div>
 
             <div className="flex justify-end space-x-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button type="button" variant="outline" onClick={() => router.back()} disabled={loading}>
                 Cancel
               </Button>
-              <Button type="submit">Create Announcement</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Creating..." : "Create Announcement"}
+              </Button>
             </div>
           </form>
         </CardContent>

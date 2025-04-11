@@ -1,17 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getAnnouncementDetails, EditAnnouncement, deleteAnnouncement } from "@/lib/api/admin/api";
+import { Alert } from "@/components/dashboard/admin/ui/alert";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calender"
-import { format } from "date-fns"
-import { ArrowLeft, CalendarIcon, Edit, Trash2 } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+import { ArrowLeft, Edit, Trash2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -24,39 +22,54 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
+// import { formatDate } from "@/utils/dateformat";
 
 interface Announcement {
-  id: string
-  title: string
-  content: string
-  recipients: "students" | "tutors" | "both"
-  status: "active" | "inactive" | "draft"
-  expirationDate?: Date
-  createdAt: Date
-  updatedAt: Date
+  id: string;
+  title: string;
+  message: string;
+  target_role: "students" | "tutors" | "both";
+  status: "active" | "inactive" | "draft";
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
 }
 
-const SAMPLE_ANNOUNCEMENT: Announcement = {
-  id: "1",
-  title: "End of Semester Examination Schedule",
-  content: "The end of semester examinations will begin on December 15th...",
-  recipients: "both",
-  status: "active",
-  expirationDate: new Date(2024, 11, 20),
-  createdAt: new Date(2024, 2, 1),
-  updatedAt: new Date(2024, 2, 1),
+interface AlertMessage {
+  type: "success" | "danger";
+  message: string;
 }
 
-export function AnnouncementDetails() {
-  const [announcement, setAnnouncement] = useState<Announcement>(SAMPLE_ANNOUNCEMENT)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedTitle, setEditedTitle] = useState(announcement.title)
-  const [editedContent, setEditedContent] = useState(announcement.content)
-  const [editedRecipients, setEditedRecipients] = useState(announcement.recipients)
-  const [editedStatus, setEditedStatus] = useState(announcement.status)
-  const [editedExpirationDate, setEditedExpirationDate] = useState<Date | undefined>(announcement.expirationDate)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const router = useRouter()
+export function AnnouncementDetails({ announcementId }: { announcementId: string }) {
+  const router = useRouter();
+  const token = useSelector((state: RootState) => state.auth?.token);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedContent, setEditedContent] = useState("");
+  const [editedRecipients, setEditedRecipients] = useState("");
+  const [alertMessage, setAlertMessage] = useState<AlertMessage | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchAnnouncement = async () => {
+      try {
+        if (!token) {
+          throw new Error("Token is required to fetch announcement details.");
+        }
+        const data: Announcement = await getAnnouncementDetails(token, Number(announcementId));
+        setAnnouncement(data);
+        setEditedTitle(data.title);
+        setEditedContent(data.message);
+        setEditedRecipients(data.target_role);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        setAlertMessage({ type: "danger", message: errorMessage });
+      }
+    };
+    fetchAnnouncement();
+  }, [announcementId, token]);
 
   const handleBack = () => {
     router.push("/admin/announcements")
@@ -68,51 +81,43 @@ export function AnnouncementDetails() {
 
   const handleCancel = () => {
     setIsEditing(false)
-    setEditedTitle(announcement.title)
-    setEditedContent(announcement.content)
-    setEditedRecipients(announcement.recipients)
-    setEditedStatus(announcement.status)
-    setEditedExpirationDate(announcement.expirationDate)
+    setEditedTitle(announcement?.title || "")
+    setEditedContent(announcement?.message || "")
+    setEditedRecipients(announcement?.target_role || "")
   }
 
   const handleSave = async () => {
-    const updatedAnnouncement: Announcement = {
-      ...announcement,
-      title: editedTitle,
-      content: editedContent,
-      recipients: editedRecipients,
-      status: editedStatus,
-      expirationDate: editedExpirationDate,
-      updatedAt: new Date(),
+    try {
+      if (!token) throw new Error("Token is required to edit the announcement.");
+      const updatedData: Announcement = await EditAnnouncement(
+        { title: editedTitle, message: editedContent, target_role: editedRecipients },
+        token,
+        Number(announcementId)
+      );
+      setAnnouncement(updatedData);
+      setIsEditing(false);
+      setAlertMessage({ type: "success", message: "Announcement updated successfully" });
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlertMessage({ type: "danger", message: errorMessage });
     }
-
-    // Here you would typically send the update to your backend
-    setAnnouncement(updatedAnnouncement)
-    setIsEditing(false)
-  }
+  };
 
   const handleDelete = () => {
     setIsDeleteDialogOpen(true)
   }
 
-  const confirmDelete = () => {
-    // Here you would typically send a delete request to your backend
-    router.push("/admin/announcements")
-  }
-
-  const handleStatusChange = (status: "active" | "inactive" | "draft") => {
-    if (!isEditing) {
-      const updatedAnnouncement: Announcement = {
-        ...announcement,
-        status,
-        updatedAt: new Date(),
-      }
-      // Here you would typically send the update to your backend
-      setAnnouncement(updatedAnnouncement)
-    } else {
-      setEditedStatus(status)
+  const confirmDelete = async () => {
+    try {
+      if (!token) throw new Error("Token is required to delete the announcement.");
+      await deleteAnnouncement(token, Number(announcementId));
+      setAlertMessage({ type: "success", message: "Announcement deleted successfully" });
+      router.push("/admin/announcements");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setAlertMessage({ type: "danger", message: errorMessage });
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -127,8 +132,11 @@ export function AnnouncementDetails() {
     }
   }
 
+  if (!announcement) return <p>Loading...</p>;
+
   return (
     <div className="max-w-4xl p-6">
+      {alertMessage && <div className="bg-white top-8 right-4"><Alert variant={alertMessage.type} onClose={() => setAlertMessage(null)}>{alertMessage.message}</Alert></div>}
       <div className="flex items-center justify-between mb-6">
         <Button variant="ghost" onClick={handleBack}>
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -152,7 +160,7 @@ export function AnnouncementDetails() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>{isEditing ? "Edit Announcement" : "Announcement Details"}</CardTitle>
-            {!isEditing && getStatusBadge(announcement.status)}
+            {!isEditing && getStatusBadge(announcement?.status)}
           </div>
         </CardHeader>
         <CardContent>
@@ -162,53 +170,7 @@ export function AnnouncementDetails() {
               {isEditing ? (
                 <Input id="title" value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} required />
               ) : (
-                <p className="text-lg font-medium">{announcement.title}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              {isEditing ? (
-                <Select
-                  value={editedStatus}
-                  onValueChange={(value: "active" | "inactive" | "draft") => setEditedStatus(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="flex gap-2 mt-1">
-                  <Button
-                    variant={announcement.status === "active" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("active")}
-                    className={announcement.status === "active" ? "bg-green-600 hover:bg-green-700" : ""}
-                  >
-                    Active
-                  </Button>
-                  <Button
-                    variant={announcement.status === "inactive" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("inactive")}
-                    className={announcement.status === "inactive" ? "bg-gray-600 hover:bg-gray-700" : ""}
-                  >
-                    Inactive
-                  </Button>
-                  <Button
-                    variant={announcement.status === "draft" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("draft")}
-                    className={announcement.status === "draft" ? "bg-blue-600 hover:bg-blue-700" : ""}
-                  >
-                    Draft
-                  </Button>
-                </div>
+                <p className="text-lg font-medium">{announcement?.title}</p>
               )}
             </div>
 
@@ -223,47 +185,13 @@ export function AnnouncementDetails() {
                     <SelectValue placeholder="Select recipients" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="students">Students</SelectItem>
-                    <SelectItem value="tutors">Tutors</SelectItem>
+                    <SelectItem value="student">Students</SelectItem>
+                    <SelectItem value="tutor">Tutors</SelectItem>
                     <SelectItem value="both">Both</SelectItem>
                   </SelectContent>
                 </Select>
               ) : (
-                <p>{announcement.recipients.charAt(0).toUpperCase() + announcement.recipients.slice(1)}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>Expiration Date (Optional)</Label>
-              {isEditing ? (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !editedExpirationDate && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {editedExpirationDate ? format(editedExpirationDate, "PPP") : "Select expiration date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={editedExpirationDate}
-                      onSelect={setEditedExpirationDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              ) : (
-                <p>
-                  {announcement.expirationDate
-                    ? format(announcement.expirationDate, "MMMM d, yyyy")
-                    : "No expiration date"}
-                </p>
+                <p>{announcement?.target_role}</p>
               )}
             </div>
 
@@ -278,13 +206,13 @@ export function AnnouncementDetails() {
                   required
                 />
               ) : (
-                <p className="whitespace-pre-wrap">{announcement.content}</p>
+                <p className="whitespace-pre-wrap">{announcement?.message}</p>
               )}
             </div>
 
             <div className="text-sm text-gray-500">
-              <p>Created: {format(announcement.createdAt, "MMMM d, yyyy")}</p>
-              <p>Last updated: {format(announcement.updatedAt, "MMMM d, yyyy")}</p>
+              <p><b>Created:</b>: {(new Date(announcement.created_at)).toLocaleDateString()}</p>
+              <p><b>Last updated:</b> : {(new Date(announcement.updated_at)).toLocaleDateString()}</p>
             </div>
 
             {isEditing && (
@@ -300,7 +228,7 @@ export function AnnouncementDetails() {
       </Card>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
             <AlertDialogDescription>

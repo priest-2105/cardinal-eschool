@@ -1,60 +1,62 @@
 "use client"
 
-import type { Course } from "../types"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
-import { Button } from "@/components/dashboard/student/ui/button"
-import { TableCell, TableRow } from "@/components/dashboard/student/ui/table"
-import { MoreVertical } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { TableCell, TableRow } from "@/components/ui/table"
 import { useRouter } from "next/navigation"
-import cardinalConfig from "@/config"
+import Image from "next/image"
+
+interface Course {
+  id: number
+  name: string
+  code: string
+  progress_percentage: string
+  no_of_students: number
+  schedule: {
+    days: string[]
+    time: string[]
+  }
+  tutor: {
+    name: string
+    dp_url: string
+  }
+}
 
 interface CourseTableRowProps {
   course: Course
 }
 
 export function CourseTableRow({ course }: CourseTableRowProps) {
-  const route = useRouter()
+
+  const router = useRouter()
 
   const handleCourseDetails = () => {
-    route.push(cardinalConfig.routes.dashboard.student.courseDetails("123"))
+    router.push(`/student/course/${course.id}`)
   }
 
+  // Use the schedule object directly
+  const schedule = course.schedule;
+
   return (
-    <TableRow className="hover:bg-slate-100 cursor-pointer text-sm md:text-base" onClick={handleCourseDetails}>
-      <TableCell className="w-[25%] font-medium">{course.name}</TableCell>
-      <TableCell className="w-[25%] hidden md:table-cell">
-        <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6 md:h-8 md:w-8">
-            <AvatarImage src={course.tutor.avatar} />
-            <AvatarFallback>{course.tutor.name[0]}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="text-xs md:text-sm font-medium">{course.tutor.name}</span>
-            <span className="text-xs text-muted-foreground hidden lg:inline">{course.tutor.email}</span>
+    <TableRow className="hover:bg-gray-50 cursor-pointer" onClick={handleCourseDetails}>
+      <TableCell className="flex items-center space-x-2">
+        <Image
+          src={course.tutor.dp_url}
+          alt={course.tutor.name}
+          className="w-8 h-8 rounded-full"
+          width={32}
+          height={32}
+        />
+        <span>{course.tutor.name}</span>
+      </TableCell>
+      <TableCell>{course.name}</TableCell>
+      <TableCell>{course.code}</TableCell>
+      <TableCell>{course.progress_percentage}%</TableCell>
+      <TableCell>
+        {schedule.days.map((day, index) => (
+          <div key={`${course.id}-${day}`}>
+            {`${day} at ${schedule.time[index]}`}
           </div>
-        </div>
-      </TableCell>
-      <TableCell className="w-[20%] hidden lg:table-cell">{course.schedule}</TableCell>
-      <TableCell className="w-[15%]">
-        <span
-          className={cn(
-            "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-            course.status === "Upcoming" && "bg-yellow-100 text-yellow-800",
-            course.status === "Active" && "bg-green-100 text-green-800",
-            course.status === "Completed" && "bg-gray-100 text-gray-800",
-          )}
-        >
-          {course.status}
-        </span>
-      </TableCell>
-      <TableCell className="w-[10%] hidden xl:table-cell">{course.dateAdded}</TableCell>
-      <TableCell className="w-[5%]">
-        <Button variant="ghost" size="icon" className="h-6 w-6 md:h-8 md:w-8" onClick={(e) => e.stopPropagation()}>
-          <MoreVertical className="h-4 w-4" />
-        </Button>
+        ))}
       </TableCell>
     </TableRow>
   )
 }
-

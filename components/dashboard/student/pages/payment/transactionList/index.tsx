@@ -1,145 +1,48 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import type React from "react"
+
+import { useState, useMemo, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
-import { X, Search } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { fetchTransactionHistory } from "@/lib/api/student/payment/fetchTransactionHistory"
+import { useAppSelector } from "@/lib/hooks"
+import { Search, X, MoreHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown"
+import { requeryPayment } from "@/lib/api/student/payment/requerypayment"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-}
 
 interface Transaction {
-  id: string
-  date: string
-  status: "Success" | "Pending" | "Failed"
-  package: string
-  amount: string
-  student: Student
-  paymentMethod: string
+  id: number
+  transaction_ref: string
+  created_at: string
+  subscription_plan_name: string
+  amount: number
+  status: string
+  quantity: number
 }
 
-const SAMPLE_TRANSACTIONS: Transaction[] = [
-  {
-    id: "TRX-123456",
-    date: "11/23/2025",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU001",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123457",
-    date: "10/15/2025",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU002",
-      name: "Bob Smith",
-      email: "bob@example.com",
-      avatar: "https://i.pravatar.cc/150?img=2",
-    },
-    paymentMethod: "PayPal",
-  },
-  {
-    id: "TRX-123458",
-    date: "09/10/2025",
-    status: "Failed",
-    package: "Standard Plan",
-    amount: "$90",
-    student: {
-      id: "STU003",
-      name: "Charlie Brown",
-      email: "charlie@example.com",
-      avatar: "https://i.pravatar.cc/150?img=3",
-    },
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "TRX-123459",
-    date: "08/05/2025",
-    status: "Success",
-    package: "Group Sessions",
-    amount: "$40",
-    student: {
-      id: "STU004",
-      name: "Diana Ross",
-      email: "diana@example.com",
-      avatar: "https://i.pravatar.cc/150?img=4",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123460",
-    date: "12/01/2024",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU001",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    },
-    paymentMethod: "Credit Card",
-  },
-  {
-    id: "TRX-123461",
-    date: "11/20/2024",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU005",
-      name: "Ethan Hunt",
-      email: "ethan@example.com",
-      avatar: "https://i.pravatar.cc/150?img=5",
-    },
-    paymentMethod: "PayPal",
-  },
-  {
-    id: "TRX-123462",
-    date: "01/20/2024",
-    status: "Pending",
-    package: "Basic Plan",
-    amount: "$60",
-    student: {
-      id: "STU006",
-      name: "Fiona Gallagher",
-      email: "fiona@example.com",
-      avatar: "https://i.pravatar.cc/150?img=6",
-    },
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    id: "TRX-123463",
-    date: "05/20/2024",
-    status: "Success",
-    package: "Premium Plan",
-    amount: "$120",
-    student: {
-      id: "STU007",
-      name: "George Miller",
-      email: "george@example.com",
-      avatar: "https://i.pravatar.cc/150?img=7",
-    },
-    paymentMethod: "Credit Card",
-  },
-]
+interface ApiTransaction {
+  id: number;
+  transaction_ref: string;
+  created_at: string;
+  subscription_plan_name: string;
+  amount: string; 
+  status: string;
+  quantity: number;
+}
 
 const MONTHS = [
   "January",
@@ -156,50 +59,144 @@ const MONTHS = [
   "December",
 ]
 
-const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
+function parseTransactionDate(dateString: string) {
+  const monthIndex = MONTHS.findIndex((month) => dateString.startsWith(month))
+  const year = Number.parseInt(dateString.match(/\d{4}/)?.[0] || "0")
+  return { month: monthIndex, year }
+}
 
 export default function TransactionList() {
+  const router = useRouter()
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
-  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [isRequeryModalOpen, setIsRequeryModalOpen] = useState(false)
+  const [selectedTransactionRef, setSelectedTransactionRef] = useState<string>("")
+  const authState = useAppSelector((state) => state.auth)
+  const [isRequeryingPayment, setIsRequeryingPayment] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
-  const clearMonths = () => {
-    setSelectedMonths("all")
-  }
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!authState?.token) return
 
-  const clearYear = () => {
-    setSelectedYear("all")
-  }
+      try {
+        const response = await fetchTransactionHistory(authState.token)
+        setTransactions(
+          response.data.data.map((transaction: ApiTransaction) => ({
+            ...transaction,
+            amount: parseFloat(transaction.amount),
+          }))
+        )
+      } catch (error) {
+        console.error("Failed to fetch transactions:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTransactions()
+  }, [authState?.token])
+
+  const availableYears = useMemo(() => {
+    const years = new Set(transactions.map((t) => parseTransactionDate(t.created_at).year))
+    return Array.from(years).sort((a, b) => b - a)
+  }, [transactions])
 
   const filteredTransactions = useMemo(() => {
-    return SAMPLE_TRANSACTIONS.filter((transaction) => {
-      // Date filters
-      const transactionDate = new Date(transaction.date)
-      const monthMatch =
-        selectedMonths.includes("all") || selectedMonths.includes(transactionDate.getMonth().toString())
-      const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
-      const statusMatch = selectedStatus === "all" || transaction.status === selectedStatus
+    return transactions.filter((transaction) => {
+      const { month, year } = parseTransactionDate(transaction.created_at)
 
-      // Student search
+      const monthMatch = selectedMonths === "all" || month.toString() === selectedMonths
+
+      const yearMatch = selectedYear === "all" || year.toString() === selectedYear
+
+      const statusMatch = selectedStatus === "all" || transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+
       const searchLower = searchQuery.toLowerCase()
-      const studentMatch =
+      const searchMatch =
         searchQuery === "" ||
-        transaction.student.name.toLowerCase().includes(searchLower) ||
-        transaction.student.email.toLowerCase().includes(searchLower) ||
-        transaction.student.id.toLowerCase().includes(searchLower)
+        transaction.subscription_plan_name.toLowerCase().includes(searchLower) ||
+        transaction.transaction_ref.toLowerCase().includes(searchLower)
 
-      return monthMatch && yearMatch && statusMatch && studentMatch
+      return monthMatch && yearMatch && statusMatch && searchMatch
     })
-  }, [selectedMonths, selectedYear, selectedStatus, searchQuery])
+  }, [transactions, selectedMonths, selectedYear, selectedStatus, searchQuery])
 
-  const handleTransactionClick = (transactionId: string) => {
-    router.push(`/admin/transactiondetails/${transactionId}`)
+  const clearMonths = () => setSelectedMonths("all")
+  const clearYear = () => setSelectedYear("all")
+
+  const handleTransactionClick = (transactionRef: string) => {
+    router.push(`/student/transaction/${transactionRef}`)
+  }
+
+  const handleRequeryPayment = async (transactionId: string) => {
+    setIsRequeryingPayment(true)
+    try {
+      if (!authState?.token) {
+        throw new Error("Authentication token is missing");
+      }
+      const response = await requeryPayment(authState.token, transactionId)
+      setTransactions(prevTransactions =>
+        prevTransactions.map(transaction =>
+          transaction.id === Number(transactionId)
+            ? { ...transaction, status: response.data.status }
+            : transaction
+        )
+      )
+      
+      setAlert({
+        type: "success",
+        message: "Payment status updated successfully"
+      })
+      
+      setIsRequeryModalOpen(false)
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to requery payment"
+      })
+    } finally {
+      setIsRequeryingPayment(false)
+    }
+  }
+
+  const openRequeryModal = (transactionRef: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSelectedTransactionRef(transactionRef)
+    setIsRequeryModalOpen(true)
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">Loading</p>
+      </div>
+    )
+  }
+
+  if (!transactions) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">No Transactions</p>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-4">
+      {alert && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+            alert.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
+        >
+          {alert.message}
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
         <h2 className="text-xl sm:text-2xl font-semibold">Transaction History</h2>
         <p className="text-sm text-muted-foreground">View and filter your transaction history</p>
@@ -239,7 +236,7 @@ export default function TransactionList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Years</SelectItem>
-              {YEARS.map((year) => (
+              {availableYears.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
                 </SelectItem>
@@ -280,68 +277,127 @@ export default function TransactionList() {
       </div>
 
       <div className="rounded-md border">
-        <div className="overflow-hidden">
-          <Table>
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-[15%] font-semibold">Transaction ID</TableHead>
-                <TableHead className="w-[15%] font-semibold">Date</TableHead>
-                <TableHead className="w-[25%] font-semibold">Student</TableHead>
-                <TableHead className="w-[15%] font-semibold">Status</TableHead>
-                <TableHead className="w-[15%] font-semibold">Package</TableHead>
-                <TableHead className="w-[15%] font-semibold">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
-          <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
-            <Table>
-              <TableBody>
-                {filteredTransactions.map((transaction) => (
-                  <TableRow
-                    key={transaction.id}
-                    className="hover:bg-slate-100 cursor-pointer"
-                    onClick={() => handleTransactionClick(transaction.id)}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Transaction Ref</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Plan</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Options</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredTransactions.map((transaction) => (
+              <TableRow
+                key={transaction.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => handleTransactionClick(transaction.transaction_ref)}
+              >
+                <TableCell>{transaction.transaction_ref}</TableCell>
+                <TableCell>{transaction.created_at}</TableCell>
+                <TableCell>{transaction.subscription_plan_name}</TableCell>
+                <TableCell>${transaction.amount}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`
+                    ${transaction.status.toLowerCase() === "success" && "bg-[#1BC2C2] text-[#1BC2C2]-300 hover:bg-[#1BC2C2]-800"}
+                    ${transaction.status.toLowerCase() === "pending" && "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"} 
+                    ${transaction.status.toLowerCase() === "failed" && "bg-red-100 text-red-800 hover:bg-red-100"}
+                    `}
                   >
-                    <TableCell className="w-[15%] font-medium">{transaction.id}</TableCell>
-                    <TableCell className="w-[15%]">{transaction.date}</TableCell>
-                    <TableCell className="w-[25%]">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={transaction.student.avatar} alt={transaction.student.name} />
-                          <AvatarFallback>{transaction.student.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{transaction.student.name}</div>
-                          <div className="text-xs text-muted-foreground flex items-center space-x-1">
-                            <span>{transaction.student.id}</span>
-                            <span>•</span>
-                            <span>{transaction.student.email}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="w-[15%]">
-                      <Badge
-                        className={`${
-                          transaction.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                            : transaction.status === "Success"
-                              ? "bg-green-100 text-green-800 hover:bg-green-100"
-                              : "bg-red-100 text-red-800 hover:bg-red-100"
-                        }`}
+                    {transaction.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>{transaction.quantity}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white">
+                      {/* Only show Requery Payment for pending status, not for failed */}
+                      {transaction.status.toLowerCase() === "pending" && (
+                        <DropdownMenuItem onClick={(e) => openRequeryModal(transaction.transaction_ref, e)}>
+                          Requery Payment
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleTransactionClick(transaction.transaction_ref)
+                        }}
                       >
-                        {transaction.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="w-[15%]">{transaction.package}</TableCell>
-                    <TableCell className="w-[15%] font-medium">{transaction.amount}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+                        View Details
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
+      <Dialog 
+        open={isRequeryModalOpen} 
+        onOpenChange={(open) => {
+          if (!isRequeryingPayment) {
+            setIsRequeryModalOpen(open)
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Requery Payment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to requery this payment? This will check the current status of your payment.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => !isRequeryingPayment && setIsRequeryModalOpen(false)}
+              disabled={isRequeryingPayment}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => selectedTransactionRef && handleRequeryPayment(selectedTransactionRef)}
+              disabled={isRequeryingPayment}
+            >
+              {isRequeryingPayment ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Checking Payment...
+                </span>
+              ) : (
+                "Confirm Requery"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

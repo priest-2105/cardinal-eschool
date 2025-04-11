@@ -1,146 +1,118 @@
 "use client"
 
-import { useState } from "react"
-import type { Ticket } from "../types"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { fetchTicketList } from "@/lib/api/student/ticket/fetchtickets"
 import { Input } from "@/components/dashboard/student/ui/input"
 import { Button } from "@/components/dashboard/student/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/student/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
-import { FilterModal } from "../ticketfilter/index"
 import { Search } from "lucide-react"
-import { useRouter } from "next/navigation"
 
-const SAMPLE_TICKETS: Ticket[] = [
-  {
-    id: "#htr-325-87756",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    department: "Admin Department",
-    issue: "Login Issue",
-    subject: "Login Details",
-    message: "Unable to login with provided credentials.",
-    lastUpdated: "2025/11/23 19:16",
-    status: "Open",
-  },
-  {
-    id: "#htr-329-37756",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    department: "Admin Department",
-    issue: "Login Issue",
-    subject: "Login Details",
-    message: "Unable to login with provided credentials.",
-    lastUpdated: "2025/11/23 19:16",
-    status: "Open",
-  },
-  {
-    id: "#htr-325-88756",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    department: "Admin Department",
-    issue: "Login Issue",
-    subject: "Login Details",
-    message: "Unable to login with provided credentials.",
-    lastUpdated: "2025/11/23 19:16",
-    status: "Open",
-  },
-  {
-    id: "#jtr-325-87756",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    department: "Admin Department",
-    issue: "Login Issue",
-    subject: "Login Details",
-    message: "Unable to login with provided credentials.",
-    lastUpdated: "2025/11/23 19:16",
-    status: "Open",
-  },
-  {
-    id: "#htr-399-87756",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    department: "Admin Department",
-    issue: "Login Issue",
-    subject: "Login Details",
-    message: "Unable to login with provided credentials.",
-    lastUpdated: "2025/11/23 19:16",
-    status: "Open",
-  },
-  {
-    id: "#htr-325-87757",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    department: "Support Department",
-    issue: "Payment Issue",
-    subject: "Payment Failed",
-    message: "Payment failed during checkout.",
-    lastUpdated: "2025/11/22 18:00",
-    status: "Closed",
-  },
-  {
-    id: "#htr-325-87758",
-    name: "Alice Johnson",
-    email: "alice.johnson@example.com",
-    department: "Technical Department",
-    issue: "Bug Report",
-    subject: "App Crash",
-    message: "The app crashes when I try to open it.",
-    lastUpdated: "2025/11/21 17:30",
-    status: "In Progress",
-  },
-  {
-    id: "#htr-325-87759",
-    name: "Bob Brown",
-    email: "bob.brown@example.com",
-    department: "Sales Department",
-    issue: "Inquiry",
-    subject: "Product Inquiry",
-    message: "I have a question about your product.",
-    lastUpdated: "2025/11/20 16:45",
-    status: "Open",
-  },
-]
+interface Ticket {
+  codec: string
+  ticket_id: string
+  subject: string
+  status: string
+  department: string
+  last_response: string | null
+  responded_by: string | null
+  created_at: string
+}
 
-interface FilterValues {
-  departments?: string[]
-  dateRange?: { from: Date | undefined; to: Date | undefined }
-  status?: string[]
+interface Pagination {
+  current_page: number
+  per_page: number
+  total_pages: number
+  total_items: number
 }
 
 export function TicketList() {
+  const token = useSelector((state: RootState) => state.auth?.token)
+  const [tickets, setTickets] = useState<Ticket[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("latest")
+  const [loading, setLoading] = useState(true)
+  const [isSearching, setIsSearching] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [pagination, setPagination] = useState<Pagination>({
+    current_page: 1,
+    per_page: 15,
+    total_pages: 1,
+    total_items: 0
+  })
   const router = useRouter()
 
-  const sortedTickets = [...SAMPLE_TICKETS].sort((a, b) => {
-    if (sortBy === "latest") {
-      return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+  useEffect(() => {
+    const loadTickets = async () => {
+      if (!token) return
+      
+      setLoading(true)
+      try {
+        const filters: {status?: string, search?: string} = {};
+        
+        if (statusFilter !== "all") {
+          filters.status = statusFilter;
+        }
+        
+        if (searchQuery) {
+          filters.search = searchQuery;
+        }
+        
+        const response = await fetchTicketList(
+          token, 
+          pagination.current_page, 
+          pagination.per_page,
+          filters
+        )
+        
+        setTickets(response.data.tickets)
+        setPagination({
+          current_page: response.data.current_page,
+          per_page: response.data.per_page,
+          total_pages: response.data.total_pages,
+          total_items: response.data.total_items
+        })
+      } catch (error) {
+        console.error("Failed to fetch tickets:", error)
+      } finally {
+        setLoading(false)
+        setIsSearching(false)
+      }
     }
-    return new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime()
-  })
 
-  const filteredTickets = sortedTickets.filter(
-    (ticket) =>
-      ticket.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ticket.department.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+    loadTickets()
+  }, [token, pagination.current_page, pagination.per_page, searchQuery, statusFilter])
 
-  const handleFilterChange = (filters: FilterValues) => {
-    // Implement filter logic here
-    console.log("Filters applied:", filters)
+  const handlePageChange = (page: string) => {
+    setPagination(prev => ({ ...prev, current_page: parseInt(page) }))
+  }
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setIsSearching(true);
   }
 
-  
-  const handleRowClick = () => {
-    router.push(`/student/ticketdetails`)
+  // Sort tickets after they're retrieved from API
+  const sortedTickets = [...tickets].sort((a, b) => {
+    if (sortBy === "latest") {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    }
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  })
+
+  const handleRowClick = (codec: string) => {
+    router.push(`/student/ticket/${codec}`)
   }
 
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-4 p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-xl sm:text-2xl font-semibold">My tickets</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">My Tickets</h2>
           <p className="text-sm text-muted-foreground">View and update tickets</p>
         </div>
 
@@ -155,14 +127,26 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
-            <FilterModal tickets={SAMPLE_TICKETS} onFilterChange={handleFilterChange} />
+            
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by Ticket ID, Department, Body..."
+              placeholder="Search by Ticket ID, Department, Subject..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               className="pl-8 w-full"
             />
           </div>
@@ -170,41 +154,73 @@ export function TicketList() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full align-middle">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[20%]">Ticket ID</TableHead>
-                  <TableHead className="w-[20%]">Description</TableHead>
-                  <TableHead className="w-[20%]">Department</TableHead>
-                  <TableHead className="w-[20%]">Last Updated</TableHead>
-                  <TableHead className="w-[20%]">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTickets.map((ticket) => (
-                  <TableRow
-                    key={ticket.id}
-                    onClick={() => handleRowClick()}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    <TableCell className="font-medium">{ticket.id}</TableCell>
-                    <TableCell>{ticket.subject}</TableCell>
-                    <TableCell>{ticket.department}</TableCell>
-                    <TableCell>{ticket.lastUpdated}</TableCell>
-                    <TableCell>
-                    <Button variant={ticket.status === "Open" ? "default" : "danger"} size="sm">
-                          {ticket.status}
-                        </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        {loading || isSearching ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
+            {searchQuery ? "Searching tickets..." : "Loading tickets..."}
           </div>
-        </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[20%]">Ticket ID</TableHead>
+                    <TableHead className="w-[20%]">Subject</TableHead>
+                    <TableHead className="w-[20%]">Department</TableHead>
+                    <TableHead className="w-[20%]">Created At</TableHead>
+                    <TableHead className="w-[20%]">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedTickets.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center h-24">
+                        {searchQuery ? `No results found for "${searchQuery}"` : "No ticket has been created"}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    sortedTickets.map((ticket) => (
+                      <TableRow
+                        key={ticket.codec}
+                        onClick={() => handleRowClick(ticket.codec)}
+                        className="cursor-pointer hover:bg-gray-100"
+                      >
+                        <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
+                        <TableCell>{ticket.subject}</TableCell>
+                        <TableCell>{ticket.department}</TableCell>
+                        <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                            {ticket.status}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
       </div>
+
+      {!loading && !isSearching && pagination.total_pages > 1 && (
+        <div className="flex justify-end p-4">
+          <Select value={pagination.current_page.toString()} onValueChange={handlePageChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={`Page ${pagination.current_page} of ${pagination.total_pages}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: pagination.total_pages }, (_, i) => i + 1).map((page) => (
+                <SelectItem key={page} value={page.toString()}>
+                  Page {page} of {pagination.total_pages}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   )
 }

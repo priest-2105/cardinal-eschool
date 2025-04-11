@@ -1,61 +1,89 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
+import { RootState } from "@/lib/store"
+import { getStudentList } from "@/lib/api/admin/managestudent/getstudentlist"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
 import { Search } from "lucide-react"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+import { Badge } from "@/components/ui/badge"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  grade: number
-  course: string
-  dateJoined: string
-  status: "Active" | "Suspended" | "Inactive"
+// interface Student {
+//   id: string
+//   name: string
+//   email: string
+//   grade: number
+//   student_codec: string
+//   course: string
+//   dateJoined: string
+//   status: "Active" | "Suspended" | "Inactive"
+//   has_subscription: boolean
+//   edu_level: string | null
+//   subscription_plan: string | null
+// }
+
+interface Subscription {
+  name: string | null;
 }
 
-const SAMPLE_STUDENTS: Student[] = [
-  {
-    id: "STU001",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    grade: 1,
-    course: "Mathematics",
-    dateJoined: "2023-09-01",
-    status: "Active",
-  },
-  {
-    id: "STU002",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    grade: 12,
-    course: "Physics",
-    dateJoined: "2023-08-15",
-    status: "Active",
-  },
-  {
-    id: "STU003",
-    name: "Alice Johnson",
-    email: "alice.johnson@example.com",
-    grade: 3,
-    course: "Chemistry",
-    dateJoined: "2023-09-10",
-    status: "Suspended",
-  }, 
-]
+interface StudentRecord {
+  id: string;
+  name: string;
+  email: string;
+  has_subscription: boolean;
+  student_codec: string;
+  education_level: string; // Fixed typo from `education_leve`
+  grade: string;
+  course: string;
+  subscription: Subscription | null; // Added subscription object
+  joined_at: string
+}
 
 export function StudentList() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [students, _setStudents] = useState<Student[]>(SAMPLE_STUDENTS)
+  const [students, setStudents] = useState<StudentRecord[]>([]); // Updated type
   const [searchQuery, setSearchQuery] = useState("")
-  const [gradeFilter, setGradeFilter] = useState("1")
+  const [gradeFilter, setGradeFilter] = useState("0")
   const [courseFilter, setCourseFilter] = useState("all")
   const [dateFilter, setDateFilter] = useState("all")
+  const [subscriptionFilter, setSubscriptionFilter] = useState<"all" | "subscribed" | "unsubscribed">("all")
+  const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "danger"; message: string } | null>(null)
+  const token = useSelector((state: RootState) => state.auth?.token)
   const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      setLoading(true)
+      try {
+        if (!token) throw new Error("Authentication token is missing")
+
+        const hasSubscription =
+          subscriptionFilter === "subscribed" ? true : subscriptionFilter === "unsubscribed" ? false : undefined
+
+        const data = await getStudentList(token, hasSubscription, currentPage);
+        setStudents(data.students); // Ensure API returns `StudentRecord[]`
+        setTotalPages(data.pagination.last_page);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Failed to fetch students:", error.message)
+          setAlert({ type: "danger", message: error.message })
+        } else {
+          console.error("Failed to fetch students:", error)
+          setAlert({ type: "danger", message: "An unknown error occurred" })
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStudents()
+  }, [token, subscriptionFilter, currentPage])
 
   const filterStudents = () => {
     return students.filter((student) => {
@@ -64,12 +92,12 @@ export function StudentList() {
         student.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.id.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesGrade = gradeFilter === "0" || student.grade === parseInt(gradeFilter)
+      const matchesGrade = gradeFilter === "0" || parseInt(student.grade) === parseInt(gradeFilter)
       const matchesCourse = courseFilter === "all" || student.course === courseFilter
 
       let matchesDate = true
       if (dateFilter !== "all") {
-        const joinDate = new Date(student.dateJoined)
+        const joinDate = new Date(student.joined_at)
         const now = new Date()
         const diffTime = Math.abs(now.getTime() - joinDate.getTime())
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -87,14 +115,18 @@ export function StudentList() {
     })
   }
 
-  const handleRowClick = () => {
-    router.push(`/admin/student`)
-  }
-
   const filteredStudents = filterStudents()
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col max-h-[75vh]">
+      {alert && (
+        <div className="fixed top-5 right-5 z-50">
+          <Alert variant={alert.type} onClose={() => setAlert(null)}>
+            <AlertTitle>{alert.type === "success" ? "Success" : "Error"}</AlertTitle>
+            <AlertDescription>{alert.message}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       <div className="space-y-4 p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl sm:text-2xl font-semibold">Manage Students</h2>
@@ -144,6 +176,16 @@ export function StudentList() {
                 <SelectItem value="last365">Last 365 Days</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={subscriptionFilter} onValueChange={(value) => setSubscriptionFilter(value as "all" | "subscribed" | "unsubscribed")}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Subscription Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Students</SelectItem>
+                <SelectItem value="subscribed">Subscribed</SelectItem>
+                <SelectItem value="unsubscribed">Unsubscribed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="relative flex-1 w-full sm:max-w-sm">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -158,46 +200,61 @@ export function StudentList() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="inline-block min-w-full align-middle">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[15%]">Student ID</TableHead>
-                  <TableHead className="w-[20%]">Name</TableHead>
-                  <TableHead className="w-[20%]">Email</TableHead>
-                  <TableHead className="w-[10%]">Grade</TableHead>
-                  <TableHead className="w-[15%]">Course</TableHead>
-                  <TableHead className="w-[10%]">Date Joined</TableHead>
-                  <TableHead className="w-[10%]">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredStudents.map((student) => (
-                  <TableRow
-                    key={student.id}
-                    onClick={() => handleRowClick()}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    <TableCell className="font-medium">{student.id}</TableCell>
-                    <TableCell>{student.name}</TableCell>
-                    <TableCell>{student.email}</TableCell>
-                    <TableCell>{student.grade}</TableCell>
-                    <TableCell>{student.course}</TableCell>
-                    <TableCell>{student.dateJoined}</TableCell>
-                    <TableCell>
-                      <Button variant={student.status === "Active" ? "default" : "danger"} size="sm">
-                        {student.status}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+        {loading ? (
+          <div className="text-center py-12 border rounded-lg">
+          <p className="text-gray-500">Loading</p>
         </div>
+        ) : filteredStudents.length === 0 ? (
+          <div className="text-center py-12 border rounded-lg">
+              <p className="text-gray-500">No Students Found</p>
+            </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[20%]">Name</TableHead>
+                    <TableHead className="w-[20%]">Email</TableHead>
+                    <TableHead className="w-[15%]">Grade</TableHead>
+                    <TableHead className="w-[15%]">Plan</TableHead>
+                    <TableHead className="w-[10%]">Subscription</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStudents.map((student: StudentRecord) => (
+                    <TableRow key={student.id} className="cursor-pointer hover:bg-gray-100" onClick={() => router.push(`/admin/student/${student.student_codec}`)}>
+                      <TableCell>{student.name}</TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell className="font-medium">{student.education_level || "N/A"}</TableCell>
+                      <TableCell className="font-medium">{student.subscription?.name || "N/A"}</TableCell>
+                      <TableCell> 
+                      <Badge variant={student.has_subscription ? "default" : "warning"}>
+                      {student.has_subscription ? "Subscribed" : "Unsubscribed"}
+                         </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
+      </div>
+       <div className="flex justify-end items-center gap-4 py-4">
+        <Select value={String(currentPage)} onValueChange={(value) => setCurrentPage(parseInt(value))}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <SelectItem key={page} value={String(page)}>
+                Page {page}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )
 }
-

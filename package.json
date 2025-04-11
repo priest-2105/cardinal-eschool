@@ -21,6 +21,7 @@
     "@radix-ui/react-switch": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@reduxjs/toolkit": "^2.6.1",
+    "axios": "^1.8.4",
     "cardinal-eschool": "file:",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -29,6 +30,7 @@
     "lucide-react": "^0.465.0",
     "next": "15.1.4",
     "next-auth": "^4.24.11",
+    "pusher-js": "^8.4.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.1.0",
     "react-day-picker": "^9.5.0",
@@ -38,6 +40,8 @@
     "react-phone-input-2": "^2.15.1",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
+    "redux-persist": "^6.0.0",
+    "redux-persist-transform-encrypt": "^5.1.1",
     "redux-thunk": "^3.1.0",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.2"
@@ -45,7 +49,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
-    "@types/react": "^19",
+    "@types/react": "^19.1.0",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",

@@ -30,9 +30,18 @@
   background: #f1f1f1;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
 
-
-
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
 
 .custom-transparent-scrollbar {
   scrollbar-width: thin;
@@ -61,7 +70,6 @@
 .custom-transparent-scrollbar::-webkit-scrollbar-corner {
   background: transparent;
 }
-
 
 .react-tel-input .form-control {
   width: 100% !important;  

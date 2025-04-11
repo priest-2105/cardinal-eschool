@@ -1,211 +1,244 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import { useAppSelector } from "@/lib/hooks"
+import { getTransactionDetails } from "@/lib/api/admin/payment/transactiondetails"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Download, Mail, Phone } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
-interface Student {
-  id: string
-  name: string
-  email: string
-  phone: string
-  avatar?: string
+interface PaymentDetails {
+  flutterwave_transaction_id: string;
+  is_subscription_active: boolean;
+  subscription_expires_at: string;
 }
 
-interface TransactionDetails {
-  id: string
-  date: string
-  amount: string
-  status: "Success" | "Pending" | "Failed"
-  paymentMethod: string
-  cardDetails?: string
-  subtotal: string
-  tax: string
-  total: string
-  package: string
-  student: Student
+interface TransactionDetail {
+  id: number;
+  subscription_plan_id: number;
+  subscription_plan_name: string;
+  amount: string;
+  quantity: number;
+  discount: string;
+  transaction_ref: string;
+  status: string;
+  coupon_code: string | null;
+  created_at: string;
+  updated_at: string;
+  payment_details: PaymentDetails;
 }
 
-// Sample transaction data
-const TRANSACTION: TransactionDetails = {
-  id: "TRX-123456",
-  date: "May 15, 2023",
-  amount: "$120.00",
-  status: "Success",
-  paymentMethod: "Credit Card",
-  cardDetails: "Visa ending in 4242",
-  subtotal: "$100.00",
-  tax: "$20.00",
-  total: "$120.00",
-  package: "Premium Plan",
-  student: {
-    id: "STU001",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    phone: "+1 (555) 123-4567",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-}
+export default function AdminTransactionDetailsPage() {
+  const searchParams = useSearchParams()
+  const token = useAppSelector((state) => state?.auth?.token)
+  const [transaction, setTransaction] = useState<TransactionDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-export default function TransactionDetailsPage() {
-  const router = useRouter()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [transaction, _setTransaction] = useState<TransactionDetails>(TRANSACTION);
+  // Add logging for URL parameters
+  useEffect(() => {
+    const transactionRef = searchParams.get('transaction_ref')
+    console.log('URL Parameters:', {
+      fullUrl: window.location.href,
+      searchParams: Object.fromEntries(searchParams.entries()),
+      transactionRef: transactionRef,
+      hasToken: !!token
+    })
+  }, [searchParams, token])
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsSidebarOpen(false)
-      } else {
-        setIsSidebarOpen(true)
+    const fetchTransactionDetails = async () => {
+      const transactionRef = searchParams.get('transaction_ref')
+      console.log('Transaction Ref:', transactionRef) // Log transaction ref
+      console.log('Token available:', !!token) // Log if token exists
+
+      if (!token || !transactionRef) {
+        console.log('Missing required data:', { token: !!token, transactionRef }) // Log missing data
+        setError("Transaction reference not found")
+        setLoading(false)
+        return
+      }
+
+      try {
+        setLoading(true)
+        console.log('Fetching transaction details for:', transactionRef) // Log fetch attempt
+        
+        const response = await getTransactionDetails(token, transactionRef)
+        console.log('API Response:', {
+          status: response.status,
+          message: response.message,
+          data: response.data
+        }) // Log full response
+
+        if (response.data) {
+          console.log('Transaction Data:', {
+            id: response.data.id,
+            ref: response.data.transaction_ref,
+            status: response.data.status,
+            amount: response.data.amount
+          }) // Log key transaction details
+          setTransaction(response.data)
+        } else {
+          console.log('No transaction data in response') // Log if data is missing
+          setError("No transaction data found")
+        }
+      } catch (error) {
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          error: error
+        }) // Log detailed error information
+        setError(error instanceof Error ? error.message : "Failed to fetch transaction details")
+      } finally {
+        setLoading(false)
       }
     }
 
-    window.addEventListener("resize", handleResize)
-    handleResize()
+    fetchTransactionDetails()
+  }, [token, searchParams])
 
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  // Also log when component state changes
+  useEffect(() => {
+    console.log('Current component state:', {
+      loading,
+      hasError: !!error,
+      hasTransaction: !!transaction,
+      errorMessage: error
+    })
+  }, [loading, error, transaction])
 
-  const handleBack = () => {
-    router.back()
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-[200px]" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-[150px]" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-red-500">{error}</p>
+      </div>
+    )
+  }
+
+  if (!transaction) {
+    return (
+      <div className="text-center py-12 border rounded-lg">
+        <p className="text-gray-500">No transaction details found</p>
+      </div>
+    )
   }
 
   return (
-    <div
-      className={`transition-all ease-in-out bg-white border border-gray-200 rounded-lg p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}
-    >
-      <div className="container mx-auto p-4">
-        <div className="mb-6 flex items-center">
-          <Button variant="ghost" size="icon" onClick={handleBack} className="mr-2">
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-          <h1 className="text-2xl font-bold">Transaction Details</h1>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="md:col-span-2">
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Payment Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Transaction ID</p>
-                    <p className="font-medium">{transaction.id}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Date</p>
-                    <p className="font-medium">{transaction.date}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Amount</p>
-                    <p className="font-medium">{transaction.amount}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Status</p>
-                    <Badge
-                      className={`${
-                        transaction.status === "Pending"
-                          ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                          : transaction.status === "Success"
-                            ? "bg-green-100 text-green-800 hover:bg-green-100"
-                            : "bg-red-100 text-red-800 hover:bg-red-100"
-                      }`}
-                    >
-                      {transaction.status}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Package</p>
-                    <p className="font-medium">{transaction.package}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Payment Method</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="font-medium">{transaction.paymentMethod}</p>
-                {transaction.cardDetails && <p className="text-sm text-gray-500">{transaction.cardDetails}</p>}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Transaction Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <p className="text-sm text-gray-500">Subtotal</p>
-                    <p className="font-medium">{transaction.subtotal}</p>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="text-sm text-gray-500">Tax</p>
-                    <p className="font-medium">{transaction.tax}</p>
-                  </div>
-                  <div className="flex justify-between border-t pt-2">
-                    <p className="text-sm font-bold">Total</p>
-                    <p className="font-bold">{transaction.total}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="md:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Student Information</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col items-center mb-4">
-                  <Avatar className="h-20 w-20 mb-4">
-                    <AvatarImage src={transaction.student.avatar} alt={transaction.student.name} />
-                    <AvatarFallback>{transaction.student.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <h3 className="text-lg font-semibold">{transaction.student.name}</h3>
-                  <p className="text-sm text-gray-500">{transaction.student.id}</p>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-gray-500" />
-                    <p className="text-sm">{transaction.student.email}</p>
-                  </div>
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                    <p className="text-sm">{transaction.student.phone}</p>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <Button variant="outline" className="w-full">
-                    View Student Profile
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div className="mt-6 flex justify-center">
-          <Button variant="outline" className="flex items-center">
-            <Download className="mr-2 h-4 w-4" />
-            Download Receipt
-          </Button>
-        </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Transaction Details</h1>
+        <Badge
+          className={`
+            ${transaction.status.toLowerCase() === "successful" && "bg-green-100 text-green-800"}
+            ${transaction.status.toLowerCase() === "pending" && "bg-yellow-100 text-yellow-800"} 
+            ${transaction.status.toLowerCase() === "failed" && "bg-red-100 text-red-800"}
+          `}
+        >
+          {transaction.status}
+        </Badge>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Transaction ID</p>
+              <p className="font-medium">#{transaction.id}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Transaction Reference</p>
+              <p className="font-medium">{transaction.transaction_ref}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Amount</p>
+              <p className="font-medium">${transaction.amount}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Subscription Plan</p>
+              <p className="font-medium">{transaction.subscription_plan_name}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Plan ID</p>
+              <p className="font-medium">#{transaction.subscription_plan_id}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Quantity</p>
+              <p className="font-medium">{transaction.quantity}</p>
+            </div>
+            {transaction.discount !== "0.00" && (
+              <div>
+                <p className="text-sm text-gray-500">Discount</p>
+                <p className="font-medium">${transaction.discount}</p>
+              </div>
+            )}
+            {transaction.coupon_code && (
+              <div>
+                <p className="text-sm text-gray-500">Coupon Code</p>
+                <p className="font-medium">{transaction.coupon_code}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t pt-4 mt-4">
+            <h3 className="font-medium mb-2">Payment Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Flutterwave Transaction ID</p>
+                <p className="font-medium">{transaction.payment_details.flutterwave_transaction_id}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Subscription Status</p>
+                <Badge 
+                  className={`
+                    ${transaction.payment_details.is_subscription_active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                  `}
+                >
+                  {transaction.payment_details.is_subscription_active ? "Active" : "Inactive"}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Subscription Expires</p>
+                <p className="font-medium">{transaction.payment_details.subscription_expires_at}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4 mt-4">
+            <h3 className="font-medium mb-2">Timestamps</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500">Created At</p>
+                <p className="font-medium">{transaction.created_at}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Last Updated</p>
+                <p className="font-medium">{transaction.updated_at}</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

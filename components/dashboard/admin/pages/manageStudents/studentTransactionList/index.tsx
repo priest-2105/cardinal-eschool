@@ -8,22 +8,21 @@ import { useRouter } from "next/navigation"
 import { X } from "lucide-react"
 
 interface Transaction {
-  date: string
-  status: "Success" | "Pending" | "Failed"
-  package: string
+  id: number
   amount: string
+  status: string
+  quantity: number
+  transaction_ref: string
+  tx_date: string
+  subscription_plan: string
+  flutterwave_txn_id: string | null
+  coupon: string | null
+  coupon_discount: string | null
 }
 
-const SAMPLE_TRANSACTIONS: Transaction[] = [
-  { date: "11/23/2025", status: "Success", package: "Premium Plan", amount: "$120" },
-  { date: "10/15/2025", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "09/10/2025", status: "Failed", package: "Standard Plan", amount: "$90" },
-  { date: "08/05/2025", status: "Success", package: "Group Sessions", amount: "$40" },
-  { date: "12/01/2024", status: "Success", package: "Premium Plan", amount: "$120" },
-  { date: "11/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "01/20/2024", status: "Pending", package: "Basic Plan", amount: "$60" },
-  { date: "51/20/204", status: "Pending", package: "Basic Plan", amount: "$60" },
-]
+interface Props {
+  transactions?: Transaction[]
+}
 
 const MONTHS = [
   "January",
@@ -40,9 +39,7 @@ const MONTHS = [
   "December",
 ]
 
-const YEARS = Array.from(new Set(SAMPLE_TRANSACTIONS.map((t) => new Date(t.date).getFullYear()))).sort((a, b) => b - a)
-
-export default function TransactionList() {
+export default function TransactionList({ transactions = [] }: Props) {
   const [selectedMonths, setSelectedMonths] = useState<string>("all")
   const [selectedYear, setSelectedYear] = useState<string>("all")
   const [selectedStatus, setSelectedStatus] = useState<string>("all")
@@ -57,15 +54,23 @@ export default function TransactionList() {
   }
 
   const filteredTransactions = useMemo(() => {
-    return SAMPLE_TRANSACTIONS.filter((transaction) => {
-      const transactionDate = new Date(transaction.date)
+    return transactions.filter((transaction) => {
+      const transactionDate = new Date(transaction.tx_date)
       const monthMatch =
-        selectedMonths.includes("all") || selectedMonths.includes(transactionDate.getMonth().toString())
-      const yearMatch = selectedYear === "all" || transactionDate.getFullYear().toString() === selectedYear
-      const statusMatch = selectedStatus === "all" || transaction.status === selectedStatus
+        selectedMonths.includes("all") ||
+        transactionDate.getMonth().toString() === selectedMonths
+
+      const yearMatch =
+        selectedYear === "all" ||
+        transactionDate.getFullYear().toString() === selectedYear
+
+      const statusMatch =
+        selectedStatus === "all" ||
+        transaction.status.toLowerCase() === selectedStatus.toLowerCase()
+
       return monthMatch && yearMatch && statusMatch
     })
-  }, [selectedMonths, selectedYear, selectedStatus])
+  }, [transactions, selectedMonths, selectedYear, selectedStatus])
 
   const handleTransactionClick = () => {
     router.push("/admin/transactiondetails")
@@ -112,7 +117,7 @@ export default function TransactionList() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Years</SelectItem>
-              {YEARS.map((year) => (
+              {Array.from(new Set(transactions.map((t) => new Date(t.tx_date).getFullYear()))).sort((a, b) => b - a).map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
                 </SelectItem>
@@ -135,7 +140,7 @@ export default function TransactionList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="Success">Success</SelectItem>
+            <SelectItem value="Successful">Successful</SelectItem>
             <SelectItem value="Pending">Pending</SelectItem>
             <SelectItem value="Failed">Failed</SelectItem>
           </SelectContent>
@@ -160,20 +165,20 @@ export default function TransactionList() {
             <div className="overflow-y-auto max-h-[calc(85vh-300px)] custom-scrollbar">
               <Table>
                 <TableBody>
-                  {filteredTransactions.map((transaction, index) => (
+                  {filteredTransactions.map((transaction) => (
                     <TableRow
-                      key={index}
+                      key={transaction.id}
                       className="hover:bg-slate-100 cursor-pointer"
                       onClick={handleTransactionClick}
                     >
-                      <TableCell className="font-medium">{transaction.date}</TableCell>
+                      <TableCell className="font-medium">{transaction.tx_date}</TableCell>
                       <TableCell>
                         <Button
                           size="sm"
                           className={`${
-                            transaction.status === "Pending"
+                            transaction.status.toLowerCase() === "pending"
                               ? "bg-yellow-200 hover:bg-yellow-300"
-                              : transaction.status === "Success"
+                              : transaction.status.toLowerCase() === "successful"
                                 ? "bg-[#0FFF0378] hover:bg-[#0FFF0399]"
                                 : "bg-red-300 hover:bg-red-400"
                           } text-gray-700`}
@@ -181,8 +186,8 @@ export default function TransactionList() {
                           {transaction.status}
                         </Button>
                       </TableCell>
-                      <TableCell>{transaction.package}</TableCell>
-                      <TableCell>{transaction.amount}</TableCell>
+                      <TableCell>{transaction.subscription_plan}</TableCell>
+                      <TableCell>${transaction.amount}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
