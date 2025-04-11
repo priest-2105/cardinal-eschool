@@ -34,6 +34,16 @@ interface Transaction {
   quantity: number
 }
 
+interface ApiTransaction {
+  id: number;
+  transaction_ref: string;
+  created_at: string;
+  subscription_plan_name: string;
+  amount: string; 
+  status: string;
+  quantity: number;
+}
+
 const MONTHS = [
   "January",
   "February",
@@ -76,9 +86,9 @@ export default function TransactionList() {
       try {
         const response = await fetchTransactionHistory(authState.token)
         setTransactions(
-          response.data.data.map((transaction: any) => ({
+          response.data.data.map((transaction: ApiTransaction) => ({
             ...transaction,
-            amount: parseFloat(transaction.amount),
+            amount: parseFloat(transaction.amount), // Convert amount to a number
           }))
         )
       } catch (error) {
