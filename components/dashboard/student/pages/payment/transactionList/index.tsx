@@ -67,6 +67,7 @@ export default function TransactionList() {
   const [selectedTransactionRef, setSelectedTransactionRef] = useState<string>("")
   const authState = useAppSelector((state) => state.auth)
   const [isRequeryingPayment, setIsRequeryingPayment] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -74,7 +75,12 @@ export default function TransactionList() {
 
       try {
         const response = await fetchTransactionHistory(authState.token)
-        setTransactions(response.data.data)
+        setTransactions(
+          response.data.data.map((transaction: any) => ({
+            ...transaction,
+            amount: parseFloat(transaction.amount),
+          }))
+        )
       } catch (error) {
         console.error("Failed to fetch transactions:", error)
       } finally {
@@ -120,10 +126,13 @@ export default function TransactionList() {
   const handleRequeryPayment = async (transactionId: string) => {
     setIsRequeryingPayment(true)
     try {
+      if (!authState?.token) {
+        throw new Error("Authentication token is missing");
+      }
       const response = await requeryPayment(authState.token, transactionId)
       setTransactions(prevTransactions =>
         prevTransactions.map(transaction =>
-          transaction.id === transactionId
+          transaction.id === Number(transactionId)
             ? { ...transaction, status: response.data.status }
             : transaction
         )
@@ -169,6 +178,15 @@ export default function TransactionList() {
 
   return (
     <div className="space-y-4">
+      {alert && (
+        <div
+          className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+            alert.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
+        >
+          {alert.message}
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
         <h2 className="text-xl sm:text-2xl font-semibold">Transaction History</h2>
         <p className="text-sm text-muted-foreground">View and filter your transaction history</p>

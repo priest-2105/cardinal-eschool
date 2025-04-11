@@ -4,7 +4,7 @@ import { useAppSelector } from "@/lib/hooks"
 import { CheckCircle2 } from "lucide-react"
 
 const StudentCardPayment = () => {
-  const subscription = useAppSelector((state) => state.auth.subscription)
+  const subscription = useAppSelector((state) => state?.auth?.subscription)
 
   if (subscription?.isActive) {
     return (
