@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import {
-  fetchNotifications,
   markNotificationAsRead,
   deleteNotification,
 } from "@/lib/api/admin/api"
@@ -30,7 +29,7 @@ import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import cardinalConfig from "@/config"
-import type { Notification, Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
+import { fetchNotifications, type Notification, type Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
 import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markallnotificationsasread"
 
 

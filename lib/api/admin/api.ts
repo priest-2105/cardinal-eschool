@@ -61,7 +61,7 @@ export * from "./announcement/deleteannouncement"
 
 
 // Admin Notification API EXPORT
-export * from "./notifcation/fetchnotification";
+// export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
 export * from "./notifcation/markallnotificationsasread";
 export * from "./notifcation/deletenotification";
