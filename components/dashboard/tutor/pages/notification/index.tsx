@@ -154,8 +154,8 @@ export function NotificationList() {
   const [notificationsToDelete, setNotificationsToDelete] = useState<number[]>([])
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [processingNotificationId, setProcessingNotificationId] = useState<number | null>(null)
-  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
+  const [processingNotificationId,] = useState<number | null>(null)
+  const [isMarkingAllAsRead,] = useState(false);
 
   useEffect(() => {
     if (alert) {
@@ -226,20 +226,20 @@ export function NotificationList() {
     }
   }
 
-  function parseDate(created_at: string): Date {
-    // Remove ordinal suffixes (e.g., "1st", "2nd", "3rd", "4th")
-    const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1");
+  // function parseDate(created_at: string): Date {
+  //   // Remove ordinal suffixes (e.g., "1st", "2nd", "3rd", "4th")
+  //   const cleanDateStr = created_at.replace(/(\d+)(st|nd|rd|th)/, "$1");
 
-    // Parse the cleaned date string into a Date object
-    const dateObj = new Date(cleanDateStr);
+  //   // Parse the cleaned date string into a Date object
+  //   const dateObj = new Date(cleanDateStr);
 
-    if (isNaN(dateObj.getTime())) {
-      console.error(`Invalid date format: ${created_at}`);
-      throw new Error(`Invalid date format: ${created_at}`);
-    }
+  //   if (isNaN(dateObj.getTime())) {
+  //     console.error(`Invalid date format: ${created_at}`);
+  //     throw new Error(`Invalid date format: ${created_at}`);
+  //   }
 
-    return dateObj;
-  }
+  //   return dateObj;
+  // }
 
   const markAsUnread = (ids: number[]) => {
     setNotifications((prev) =>
