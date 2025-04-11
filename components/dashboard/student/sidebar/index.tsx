@@ -115,18 +115,30 @@ const StudentDashboardSideBar: React.FC = () => {
     const fetchUnreadNotificationsCount = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token)
-          const notifications = response.notifications
-          const unread = notifications.filter((notification: unknown) => !notification.isRead)
-          setUnreadCount(unread.length)
+          let totalUnreadCount = 0;
+          let currentPage = 1;
+          let lastPage = 1;
+
+          do {
+            const response = await fetchNotifications(token, currentPage, 20);
+            const notifications = response.data.notifications;
+            const unread = notifications.filter((notification) => !notification.read_at);
+            totalUnreadCount += unread.length;
+
+            // Update pagination details
+            currentPage = response.data.pagination.current_page + 1;
+            lastPage = response.data.pagination.last_page;
+          } while (currentPage <= lastPage);
+
+          setUnreadCount(totalUnreadCount);
         } catch (error) {
-          console.error("Error fetching notifications:", error)
+          console.error("Error fetching notifications:", error);
         }
       }
-    }
+    };
 
-    fetchUnreadNotificationsCount()
-  }, [token])
+    fetchUnreadNotificationsCount();
+  }, [token]);
 
   useEffect(() => {
     const fetchOpenTicketsCount = async () => {
