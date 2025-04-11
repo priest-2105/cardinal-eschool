@@ -38,6 +38,7 @@ export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: s
   const [reply, setReply] = useState("")
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
+  const [, setShowConfirmModal] = useState(false)
 
   useEffect(() => {
     const loadTicketDetails = async () => {
@@ -84,10 +85,13 @@ export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: s
       content: reply,
       timestamp: new Date().toISOString(),
     }
-    setTicket((prevTicket) => ({
-      ...prevTicket,
-      replies: [...prevTicket.replies, newReply],
-    }))
+    setTicket((prevTicket) => {
+      if (!prevTicket) return prevTicket 
+      return {
+        ...prevTicket,
+        replies: [...prevTicket.replies, newReply],
+      }
+    })
     setReply("")
     setPopupMessage("Your reply has been sent successfully.")
     setShowPopup(true)
