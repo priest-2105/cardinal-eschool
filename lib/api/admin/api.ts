@@ -39,7 +39,7 @@ export * from "./managecourses/createcourse"
 export * from "./managecourses/courselist"
 export * from "./managecourses/fetchsinglecourse"
 export * from "./managecourses/fetchasessments"
-export * from "./managecourses/fetchreport"
+// export * from "./managecourses/fetchreport"
 export * from "./managecourses/fetchresources"
 
 
@@ -61,7 +61,7 @@ export * from "./announcement/deleteannouncement"
 
 
 // Admin Notification API EXPORT
-export * from "./notifcation/fetchnotification";
+// export * from "./notifcation/fetchnotification";
 export * from "./notifcation/marknotificationasread";
 export * from "./notifcation/markallnotificationsasread";
 export * from "./notifcation/deletenotification";
