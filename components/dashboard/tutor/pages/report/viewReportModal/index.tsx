@@ -1,33 +1,24 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { format, parseISO } from "date-fns"
-import { Badge } from "@/components/ui/badge"
-
-interface Report {
-  id: number;
-  student_id: string;
-  report: string;
-  status: "pending" | "completed";
-  month: string;
-  created_at: string;
-  updated_at: string;
-}
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { format, parseISO } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import type { Report } from "@/lib/types/report"; // Import the updated Report type
 
 interface ViewReportModalProps {
-  report: Report | null;
+  report: Report | null; // Use the updated Report type
   isOpen: boolean;
   onClose: () => void;
   students: {
     id: string;
     name: string;
     dp_url: string | null;
-  }[];
+  }[]; // Add the students prop
 }
 
 export function ViewReportModal({ report, isOpen, onClose, students }: ViewReportModalProps) {
   if (!report) return null;
 
-  const student = students.find((s) => s.id === report.student_id);
+  const student = students.find((s) => s.id === report.student_id); // Use the students prop
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -79,6 +70,6 @@ export function ViewReportModal({ report, isOpen, onClose, students }: ViewRepor
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 

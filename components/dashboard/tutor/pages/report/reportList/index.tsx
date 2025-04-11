@@ -13,21 +13,12 @@ import { Badge } from "@/components/ui/badge"
 import { getClassReports } from "@/lib/api/tutor/courses/fetchreport"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+import type { Report } from "@/lib/types/report"; // Import the shared Report type
 
 export interface Student {
   id: string
   name: string
   email: string
-}
-
-export interface Report {
-  id: number
-  student_id: string
-  report: string
-  status: "pending" | "completed"
-  month: string
-  created_at: string
-  updated_at: string
 }
 
 interface ReportListProps {
@@ -119,11 +110,10 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     setFilteredReports(result)
   }
 
-  const handleCreateReport = (newReport: Omit<Report, "id">) => {
-    const id = reports.length + 1
-    setReports([...reports, { ...newReport, id }])
-    setIsCreateModalOpen(false)
-  }
+  const handleCreateReport = (refreshList: () => void) => {
+    setIsCreateModalOpen(false);
+    refreshList(); // Refresh the list after creation
+  };
 
   const handleViewReport = (report: Report) => {
     setSelectedReport(report)
@@ -252,12 +242,12 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
       <CreateReportModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={handleCreateReport}
+        onSuccess={handleCreateReport} 
         classId={classId}
         students={courseDetails.students_assigned}
       />
       <ViewReportModal
-        report={selectedReport}
+        report={selectedReport} 
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
         students={courseDetails.students_assigned}

@@ -3,8 +3,9 @@ import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 interface Report {
   id: number;
   student_id: string;
+  student_name: string; // Add student_name to match the response
   report: string;
-  status: "pending" | "completed";
+  status: string; // Change to string to match the response
   month: string;
   created_at: string;
   updated_at: string;

@@ -8,6 +8,7 @@ interface ReportResponse {
       id: number;
       class_id: number;
       student_id: string;
+      student_name: string; // Add student_name to match the response
       report: string;
       status: string;
       month: string;

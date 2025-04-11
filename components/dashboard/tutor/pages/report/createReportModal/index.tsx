@@ -11,17 +11,18 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert } from "@/components/ui/alert"
+import type { Report } from "@/lib/types/report"; // Import the shared Report type
 
 interface CreateReportModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess: () => void
-  classId: string
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: (refreshList: () => void) => void; // Pass a function to refresh the list
+  classId: string;
   students: {
-    id: string
-    name: string
-    dp_url: string | null
-  }[]
+    id: string;
+    name: string;
+    dp_url: string | null;
+  }[];
 }
 
 export function CreateReportModal({ isOpen, onClose, onSuccess, classId, students }: CreateReportModalProps) {
@@ -44,9 +45,8 @@ export function CreateReportModal({ isOpen, onClose, onSuccess, classId, student
         student_id: selectedStudent,
         month,
         report: reportContent,
-      })
-      onSuccess()
-      resetForm()
+      });
+      onSuccess(() => resetForm()); // Call onSuccess and pass a function to reset the form
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create report")
     } finally {
