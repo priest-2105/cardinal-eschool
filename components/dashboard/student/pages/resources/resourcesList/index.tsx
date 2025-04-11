@@ -56,7 +56,7 @@ export default function ResourcesList({ resources = [] }: ResourcesListProps) {
   const getFileType = (filePath: string): {
     type: 'pdf' | 'image' | 'video' | 'audio' | 'doc' | 'other', 
     extension: string,
-    icon: JSX.Element,
+    icon: React.ReactElement,
     color: string
   } => {
     const extension = filePath.split('.').pop()?.toLowerCase() || '';
