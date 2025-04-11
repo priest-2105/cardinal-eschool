@@ -88,7 +88,7 @@ export default function TransactionList() {
         setTransactions(
           response.data.data.map((transaction: ApiTransaction) => ({
             ...transaction,
-            amount: parseFloat(transaction.amount), // Convert amount to a number
+            amount: parseFloat(transaction.amount),
           }))
         )
       } catch (error) {

@@ -166,16 +166,34 @@ const TutorDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token);
-          const notifications: Notification[] = response.data.notifications;
-          const unread = notifications.filter((notification) => !notification.read_at);
-          setHasUnreadNotifications(unread.length > 0);
-          const recent = unread.slice(0, 3).map((notification) => ({
-            message: notification.message,
-            time: notification.createdAt,
-            createdAt: notification.createdAt,
-          }));
-          setRecentNotifications(recent);
+          let totalUnreadCount = 0;
+          let currentPage = 1;
+          let lastPage = 1;
+
+          const recent: Notification[] = [];
+
+          do {
+            const response = await fetchNotifications(token, currentPage, 20); // Fetch notifications page by page
+            const notifications = response.data.notifications;
+            const unread = notifications.filter((notification) => !notification.read_at);
+            totalUnreadCount += unread.length;
+
+            // Add unread notifications to the recent list
+            recent.push(
+              ...unread.slice(0, 3).map((notification) => ({
+                message: notification.message,
+                time: notification.created_at,
+                createdAt: notification.created_at,
+              }))
+            );
+
+            // Update pagination details
+            currentPage = response.data.pagination.current_page + 1;
+            lastPage = response.data.pagination.last_page;
+          } while (currentPage <= lastPage);
+
+          setHasUnreadNotifications(totalUnreadCount > 0);
+          setRecentNotifications(recent.slice(0, 3)); // Limit to the first 3 notifications
         } catch (error) {
           console.error("Error fetching notifications:", error);
         }
