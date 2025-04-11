@@ -14,7 +14,7 @@ export interface Notification {
   created_at: string;
 }
 
-export interface Pagination {
+ interface Pagination {
   current_page: number;
   per_page: number;
   total: number;
