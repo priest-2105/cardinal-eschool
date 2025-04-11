@@ -1,12 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-// import { Reducer } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { encryptTransform } from 'redux-persist-transform-encrypt';  
+import { encryptTransform } from 'redux-persist-transform-encrypt';
 import authReducer from "./authSlice";
 
 const encryptor = encryptTransform({
-  secretKey: 'my-super-secret-key',  
+  secretKey: 'my-super-secret-key',
   onError: function (error) {
     console.error('Encryption error:', error);
   },
@@ -15,21 +14,21 @@ const encryptor = encryptTransform({
 const persistConfig = {
   key: 'root',
   storage,
-  transforms: [encryptor],  
+  transforms: [encryptor],
 };
 
-// interface AuthState {
-//   isAuthenticated: boolean;
-//   user: {
-//     id: string;
-//   } | null;
-// }
-
+// Explicitly handle undefined values in the persisted state
 const rootReducer = combineReducers({
   auth: authReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+type RootReducerState = ReturnType<typeof rootReducer>;
+
+
+const persistedReducer = persistReducer<Partial<RootReducerState>>(
+  persistConfig,
+  rootReducer as any 
+);
 
 export const makeStore = () => {
   return configureStore({
@@ -39,9 +38,6 @@ export const makeStore = () => {
 
 export const store = makeStore();
 export const persistor = persistStore(store);
-
-// Export store for use in fetchWithAuth
-// (Removed redundant export to avoid conflicts)
 
 // Infer the type of makeStore
 export type AppStore = ReturnType<typeof makeStore>;
