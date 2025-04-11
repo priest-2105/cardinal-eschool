@@ -5,14 +5,32 @@ export interface StudentClassResponse {
   message: string;
   data: {
     classes: {
-      class_id: number;
+      id: number;
       name: string;
       code: string;
-      no_of_students: number;
+      description: string;
       schedule: {
         days: string[];
         time: string[];
       };
+      meeting_link: string;
+      status: string;
+      progress_percentage: number;
+      days_remaining: number | null;
+      start_date: string | null;
+      end_date: string | null;
+      department: string;
+      semester: string;
+      tutor: {
+        id: string;
+        name: string;
+        dp_url: string | null;
+      };
+      resources: {
+        id: string;
+        name: string;
+        file_path: string;
+      }[];
     }[];
     current_page: number;
     total_pages: number;

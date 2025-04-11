@@ -10,6 +10,36 @@ import type { RootState } from '@/lib/store'
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 import { Button } from "@/components/ui/button"
 
+// Define the API response type for a course
+interface ApiCourse {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  schedule: {
+    days: string[];
+    time: string[];
+  };
+  meeting_link: string;
+  status: string;
+  progress_percentage: number;
+  days_remaining: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  department: string;
+  semester: string;
+  tutor: {
+    id: string;
+    name: string;
+    dp_url: string | null;
+  };
+  resources: {
+    id: string;
+    name: string;
+    file_path: string;
+  }[];
+}
+
 interface Course {
   id: number; // Changed from class_id to id
   name: string;
@@ -41,41 +71,42 @@ export function CourseList() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      if (!token) return
-      setLoading(true)
+      if (!token) return;
+      setLoading(true);
       try {
-        const response = await getStudentClasses(token)
+        const response = await getStudentClasses(token);
         if (response.status === "success") {
           setCourses(
-            response.data.classes.map((course: any) => ({
-              id: course.class_id, // Map class_id to id
+            response.data.classes.map((course: ApiCourse) => ({
+              id: course.id,
               name: course.name,
               code: course.code,
-              progress_percentage: course.progress_percentage,
-              no_of_students: course.no_of_students, // Map no_of_students
+              progress_percentage: course.progress_percentage.toString(), // Convert to string
+              no_of_students: course.resources.length, // Use resources length as a placeholder
               schedule: course.schedule,
               tutor: {
-                name: course.tutor_name || "Unknown Tutor",
-                dp_url: course.tutor_dp_url || "/placeholder.svg", // Map tutor details
+                name: course.tutor.name || "Unknown Tutor",
+                dp_url: course.tutor.dp_url || "/placeholder.svg",
               },
             }))
           );
           setTotalPages(response.data.total_pages);
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
-        if (errorMessage.includes('401')) {
-          setError('Session expired. Please login again.')
+        const errorMessage =
+          err instanceof Error ? err.message : "An unexpected error occurred";
+        if (errorMessage.includes("401")) {
+          setError("Session expired. Please login again.");
         } else {
-          setError('No courses available at this time. Please contact support.')
+          setError("No courses available at this time. Please contact support.");
         }
-        console.error("Error fetching courses:", err)
+        console.error("Error fetching courses:", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchCourses()
+    fetchCourses();
   }, [token, currentPage])
 
   const filteredCourses = courses.filter((course) => {
