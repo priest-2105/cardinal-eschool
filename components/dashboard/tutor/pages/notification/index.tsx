@@ -24,14 +24,14 @@ import {
   fetchNotifications,
   markNotificationAsRead,
   deleteNotification,
-} from "@/lib/api/admin/api"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/admin/ui/alert"
+} from "@/lib/api/tutor/api"
+import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/tutor/ui/alert"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import cardinalConfig from "@/config"
-import type { Notification, Pagination } from "@/lib/api/admin/notifcation/fetchnotification"
-import { markAllNotificationsAsRead } from "@/lib/api/admin/notifcation/markallnotificationsasread"
+import type { Notification, Pagination } from "@/lib/api/tutor/notifcation/fetchnotification"
+import { markAllNotificationsAsRead } from "@/lib/api/tutor/notifcation/markallnotificationasread"
 
 
 export function NotificationList() {
@@ -219,7 +219,7 @@ export function NotificationList() {
 
     switch (notification.type) {
       case "ticket_created":
-        router.push(cardinalConfig.routes.dashboard.admin.adminticketdetails(notification.data.ticket_id as number))
+        router.push(cardinalConfig.routes.dashboard.tutor.tutorticketdetails(notification.data.ticket_id as number))
         break
       default:
         break
