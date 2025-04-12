@@ -5,22 +5,8 @@ interface SubmissionResponse {
   message: string;
   data: {
     submission: {
-      assignment_id: string;
-      student_id: string;
       submission: string;
-      file_path: string;
-      status: string;
-      submitted_at: string;
-      updated_at: string;
-      created_at: string;
-      id: number;
-      file_path_url: string;
-      student: {
-        id: number;
-        firstname: string;
-        lastname: string;
-        email: string;
-      };
+      file: string;
     };
   };
 }
@@ -33,12 +19,19 @@ export async function submitAssignment(
 ): Promise<SubmissionResponse> {
   const formData = new FormData();
   formData.append("submission", submissionText);
-  
+
   if (file) {
     formData.append("file", file);
   }
 
-  const response = await fetchWithAuth(`${apiUrl}/student/classes/assignments/${assignmentId}`, {
+  console.log("Submitting assignment with:", {
+    url: `${apiUrl}/student/assignments/submit/${assignmentId}`,
+    token,
+    submissionText,
+    file,
+  });
+
+  const response = await fetchWithAuth(`${apiUrl}/student/assignments/submit/${assignmentId}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
