@@ -32,7 +32,7 @@ export default function StudentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
      
         <div className="">
-         <StudentEventCalendar/>
+         {/* <StudentEventCalendar/> */}
         <UpcomingClasses/>
       </div>
 
