@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { fetchStudentsAssessment } from "@/lib/api/student/profile/fetchStudentAssessment"
 import { fetchNotifications } from "@/lib/api/student/notifcation/fetchnotification"
+import pusher from "@/utils/pusher"
+import type { Notification } from "@/lib/api/student/notifcation/fetchnotification"
 
 const profileOptions = [
   { name: "Profile", href: "/student/studentinformation" },
@@ -31,18 +33,13 @@ const StudentDashboardHeader: React.FC = () => {
   const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const router = useRouter()
-  type Notification = {
-    message: string;
-    time: string;
-    href: string;
-  };
   
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false)
   const notificationDropdownRef = useRef<HTMLDivElement>(null)
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false) // Profile dropdown state
-  const profileDropdownRef = useRef<HTMLDivElement>(null) // Profile dropdown ref
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false) 
+  const profileDropdownRef = useRef<HTMLDivElement>(null) 
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,19 +80,27 @@ const StudentDashboardHeader: React.FC = () => {
     const fetchRecentNotifications = async () => {
       if (token) {
         try {
-          const response = await fetchNotifications(token, 1, 3);
+          const response = await fetchNotifications(token, 1, 20); 
           const notifications = response.data.notifications;
   
           // Filter unread notifications
           const unread = notifications.filter((notification) => !notification.read_at);
+  
+          // Update state for unread notifications and red dot
           setHasUnreadNotifications(unread.length > 0);
   
-          // Map recent notifications to the required structure
-          const recent = notifications.map((notification) => ({
+          // Take the three most recent unread notifications
+          const recent = unread.slice(0, 3).map((notification) => ({
+            id: notification.id,
+            type: notification.type,
+            title: notification.title || "Notification",
             message: notification.message,
-            time: notification.created_at,
-            href: `/student/notifications`,
+            data: notification.data || {}, 
+            action_url: `/student/notifications`,
+            read_at: notification.read_at,
+            created_at: notification.created_at,
           }));
+  
           setRecentNotifications(recent);
         } catch (error: unknown) {
           console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error");
@@ -104,6 +109,36 @@ const StudentDashboardHeader: React.FC = () => {
     };
   
     fetchRecentNotifications();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const channel = pusher.subscribe("notifications");
+
+    channel.bind("new-notification", (data: Notification) => {
+      setRecentNotifications((prev) => [
+        {
+          id: data.id,
+          type: data.type,
+          title: data.title,
+          message: data.message,
+          data: data.data,
+          action_url: data.action_url,
+          read_at: data.read_at,
+          created_at: data.created_at,
+        },
+        ...prev.slice(0, 2),
+      ]);
+
+      if (!data.read_at) {
+        setHasUnreadNotifications(true);
+      }
+    });
+
+    return () => {
+      pusher.unsubscribe("notifications");
+    };
   }, [token]);
 
   useEffect(() => {
@@ -205,7 +240,7 @@ const StudentDashboardHeader: React.FC = () => {
   }
 
   return (
-    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-90 shadow-md">
+    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-[1050] shadow-md">
       <div className="border-b">
         <div className="flex h-16 items-center max-lg:justify-between justify-end gap-x-4 px-6">
           <button onClick={toggleSidebar} className="ml-26 mr-2 mb-0 lg:hidden">
@@ -225,7 +260,7 @@ const StudentDashboardHeader: React.FC = () => {
             )}
           </button>
           <div className="flex items-center gap-x-4 z-40">
-            <div className="relative" ref={notificationDropdownRef}>
+            <div className="relative z-[1100]" ref={notificationDropdownRef}>
               <Button variant="ghost" size="icon" className="relative" onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}>
                 <Bell className="h-5 w-5" />
                 {hasUnreadNotifications && (
@@ -233,16 +268,20 @@ const StudentDashboardHeader: React.FC = () => {
                 )}
               </Button>
               {notificationDropdownOpen && (
-                <div className="absolute right-0 mt-2 z-50 w-56 bg-white border border-gray-200 rounded-lg shadow-lg">
-                  <ul className="">
-                    {recentNotifications.map((item, index) => (
-                      <li key={index} className="px-4 py-2 hover:bg-gray-100">
-                        <Link href="/student/notifications">
-                          <p className="font-small text-[12px]">{item.message}</p>
-                          <p className="text-sm text-gray-500">{item.time}</p>
-                        </Link>
-                      </li>
-                    ))}
+                <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-[1150]">
+                  <ul>
+                    {recentNotifications.length > 0 ? (
+                      recentNotifications.map((item, index) => (
+                        <li key={index} className="px-4 py-2 hover:bg-gray-100">
+                          <Link href='/student/notification'>
+                            <p className="font-small text-[12px]">{item.message}</p>
+                            <p className="text-sm text-gray-500">{item.created_at}</p>
+                          </Link>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="px-4 py-2 text-gray-500 text-sm">No notifications</li>
+                    )}
                     <li className="px-4 text-[12px] py-2 border border-[#1BC2C2] hover:bg-gray-100">
                       <Link className="w-full" href="/student/notifications">See All</Link>
                     </li>
@@ -250,7 +289,7 @@ const StudentDashboardHeader: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="relative" ref={profileDropdownRef}>
+            <div className="relative z-[1100]" ref={profileDropdownRef}>
               <Button variant="ghost" className="relative w-fit flex items-center gap-2" onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
@@ -266,7 +305,7 @@ const StudentDashboardHeader: React.FC = () => {
                 <FaAngleDown />
               </Button>
               {profileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-[1150]">
                   <ul className="py-1">
                     {profileOptions.map((option) => (
                       <li key={option.name} className="px-4 py-2 hover:bg-gray-100" onClick={option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined}>

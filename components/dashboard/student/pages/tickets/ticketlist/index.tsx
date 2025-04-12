@@ -141,7 +141,7 @@ export function TicketList() {
               </SelectContent>
             </Select>
           </div>
-          <div className="relative flex-1 w-full sm:max-w-sm">
+          <div className="relative flex-1 w-full sm:max-w-sm z-[1]">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by Ticket ID, Department, Subject..."
@@ -153,7 +153,7 @@ export function TicketList() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden z-[1]">
         {loading || isSearching ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
