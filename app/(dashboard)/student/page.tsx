@@ -24,7 +24,7 @@ interface DashboardData {
     title: string;
     description: string;
     deadline: string;
-    class: { name: string };
+    class: { name: string; id: string; };
   }[];
 }
 

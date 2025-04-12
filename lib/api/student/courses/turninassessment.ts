@@ -20,7 +20,6 @@ interface SubmissionResponse {
         firstname: string;
         lastname: string;
         email: string;
-        // ...other student fields
       };
     };
   };
