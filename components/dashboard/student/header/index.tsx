@@ -240,7 +240,7 @@ const StudentDashboardHeader: React.FC = () => {
   }
 
   return (
-    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-[1050] shadow-md">
+    <div className="fixed top-0 left-64 max-lg:-left-2 right-0 bg-white z-90 shadow-md">
       <div className="border-b">
         <div className="flex h-16 items-center max-lg:justify-between justify-end gap-x-4 px-6">
           <button onClick={toggleSidebar} className="ml-26 mr-2 mb-0 lg:hidden">
@@ -260,7 +260,7 @@ const StudentDashboardHeader: React.FC = () => {
             )}
           </button>
           <div className="flex items-center gap-x-4 z-40">
-            <div className="relative z-[1100]" ref={notificationDropdownRef}>
+            <div className="relative" ref={notificationDropdownRef}>
               <Button variant="ghost" size="icon" className="relative" onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}>
                 <Bell className="h-5 w-5" />
                 {hasUnreadNotifications && (
@@ -268,7 +268,7 @@ const StudentDashboardHeader: React.FC = () => {
                 )}
               </Button>
               {notificationDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-[1150]">
+                <div className="absolute right-0 max-md:left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999]">
                   <ul>
                     {recentNotifications.length > 0 ? (
                       recentNotifications.map((item, index) => (
@@ -289,7 +289,7 @@ const StudentDashboardHeader: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="relative z-[1100]" ref={profileDropdownRef}>
+            <div className="relative" ref={profileDropdownRef}>
               <Button variant="ghost" className="relative w-fit flex items-center gap-2" onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
@@ -305,7 +305,7 @@ const StudentDashboardHeader: React.FC = () => {
                 <FaAngleDown />
               </Button>
               {profileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-[1150]">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999]">
                   <ul className="py-1">
                     {profileOptions.map((option) => (
                       <li key={option.name} className="px-4 py-2 hover:bg-gray-100" onClick={option.name === "Logout" ? () => setShowLogoutDialog(true) : undefined}>
