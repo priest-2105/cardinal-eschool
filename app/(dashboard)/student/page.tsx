@@ -8,6 +8,7 @@ import UpcomingClasses from "@/components/dashboard/student/pages/home/upcomingC
 import { AnnouncementMarquee } from "@/components/dashboard/student/announcementMarquee";
 import { DashboardStats } from "@/components/dashboard/student/pages/home/dashboardstat";
 import { RootState } from "@/lib/store";
+import { DashboardSkeleton } from "@/components/dashboard/student/pages/skeletons/dashboardSkeleton";
 
 interface DashboardData {
   announcements: { id: number; title: string; content: string; created_at: string }[];
@@ -65,7 +66,7 @@ export default function StudentDashboard() {
   }, [token]);
 
   if (!dashboardData) {
-    return <div className="text-center py-4">Loading dashboard...</div>;
+    return  <div className={`transition-all ease-in-out max-xs:w-[74%] p-4 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}><DashboardSkeleton/> </div>;
   }
 
   return (
