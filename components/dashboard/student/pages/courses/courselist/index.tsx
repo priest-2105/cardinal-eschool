@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 import { Button } from "@/components/ui/button"
+import { CourseListSkeleton } from "../skeleton";
 
 // Define the API response type for a course
 interface ApiCourse {
@@ -54,6 +55,7 @@ interface Course {
     name: string;
     dp_url: string;
   }; // Added this property
+  semester: string; // Added this property
 }
 
 export function CourseList() {
@@ -62,13 +64,15 @@ export function CourseList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedGrade, setSelectedGrade] = useState("all")
-  const [selectedDateRange, setSelectedDateRange] = useState("all")
+  const [selectedDay, setSelectedDay] = useState("all"); // Changed from selectedDateRange to selectedDay
   const [selectedStatus, setSelectedStatus] = useState("all")
+  const [selectedCode, setSelectedCode] = useState("all");
+  const [selectedSemester, setSelectedSemester] = useState("all");
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const token = useSelector((state: RootState) => state.auth?.token)
-  // const perPage = 10
 
+  
   useEffect(() => {
     const fetchCourses = async () => {
       if (!token) return;
@@ -81,13 +85,14 @@ export function CourseList() {
               id: course.id,
               name: course.name,
               code: course.code,
-              progress_percentage: course.progress_percentage.toString(), // Convert to string
-              no_of_students: course.resources.length, // Use resources length as a placeholder
+              progress_percentage: course.progress_percentage.toString(),
+              no_of_students: course.resources.length, 
               schedule: course.schedule,
               tutor: {
                 name: course.tutor.name || "Unknown Tutor",
                 dp_url: course.tutor.dp_url || "/placeholder.svg",
               },
+              semester: course.semester, // Added semester
             }))
           );
           setTotalPages(response.data.total_pages);
@@ -117,18 +122,17 @@ export function CourseList() {
     
     const matchesGrade = selectedGrade === "all"
     const matchesStatus = selectedStatus === "all" 
-    const matchesDate = selectedDateRange === "all"
-    
-    return matchesSearch && matchesGrade && matchesStatus && matchesDate
+    const matchesDay =
+      selectedDay === "all" || course.schedule.days.includes(selectedDay);
+    const matchesCode = selectedCode === "all" || course.code === selectedCode;
+    const matchesSemester =
+      selectedSemester === "all" || course.semester === selectedSemester;
+
+    return matchesSearch && matchesGrade && matchesStatus && matchesDay && matchesCode && matchesSemester
   })
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
-        <p>Loading courses...</p>
-      </div>
-    )
+    return <CourseListSkeleton />;
   }
 
   if (error) {
@@ -168,17 +172,35 @@ export function CourseList() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+        <Select value={selectedCode} onValueChange={setSelectedCode}>
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Grade" />
+            <SelectValue placeholder="Course Code" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Grades</SelectItem>
-            {[...Array(12)].map((_, i) => (
-              <SelectItem key={i} value={`${i + 1}`}>
-                Grade {i + 1}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">All Codes</SelectItem>
+            {Array.from(new Set(courses.map((course) => course.code))).map(
+              (code) => (
+                <SelectItem key={code} value={code}>
+                  {code}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Semester" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Semesters</SelectItem>
+            {Array.from(new Set(courses.map((course) => course.semester))).map(
+              (semester) => (
+                <SelectItem key={semester} value={semester}>
+                  {semester}
+                </SelectItem>
+              )
+            )}
           </SelectContent>
         </Select>
 
@@ -194,16 +216,19 @@ export function CourseList() {
           </SelectContent>
         </Select>
 
-        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
+        <Select value={selectedDay} onValueChange={setSelectedDay}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Date Added" />
+            <SelectValue placeholder="Day of Week" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Time</SelectItem>
-            <SelectItem value="today">Today</SelectItem>
-            <SelectItem value="last7days">Last 7 Days</SelectItem>
-            <SelectItem value="last30days">Last 30 Days</SelectItem>
-            <SelectItem value="last90days">Last 90 Days</SelectItem>
+            <SelectItem value="all">All Days</SelectItem>
+            <SelectItem value="Monday">Monday</SelectItem>
+            <SelectItem value="Tuesday">Tuesday</SelectItem>
+            <SelectItem value="Wednesday">Wednesday</SelectItem>
+            <SelectItem value="Thursday">Thursday</SelectItem>
+            <SelectItem value="Friday">Friday</SelectItem>
+            <SelectItem value="Saturday">Saturday</SelectItem>
+            <SelectItem value="Sunday">Sunday</SelectItem>
           </SelectContent>
         </Select>
 
@@ -218,10 +243,18 @@ export function CourseList() {
         </div>
       </div>
 
-      <CourseTable courses={filteredCourses} />
+      {filteredCourses.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <BookOpen className="h-16 w-16 text-gray-300" />
+          <p className="text-lg font-medium text-gray-600">No courses match the selected filters</p>
+          <p className="text-sm text-gray-500">Try adjusting your filters to see more results</p>
+        </div>
+      ) : (
+        <CourseTable courses={filteredCourses} />
+      )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {/* {totalPages > 1 && (
         <div className="flex justify-end mt-4">
           <Select value={currentPage.toString()} onValueChange={(value) => setCurrentPage(parseInt(value))}>
             <SelectTrigger className="w-[180px]">
@@ -236,7 +269,7 @@ export function CourseList() {
             </SelectContent>
           </Select>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
