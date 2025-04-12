@@ -100,8 +100,8 @@ export default function GuardianInformation() {
             id="guardian_email"
             type="email"
             value={profile.guardian_email}
-            onChange={(e) => setProfile({ ...profile, guardian_email: e.target.value })}
-            readOnly={!isEditable}
+            // onChange={(e) => setProfile({ ...profile, guardian_email: e.target.value })}
+            readOnly={true}
           />
         </div>
         <div>
