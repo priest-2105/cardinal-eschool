@@ -565,13 +565,21 @@ export default function TransactionList() {
             <p>{selectedTransaction?.quantity}</p>
           </div>
           <DialogFooter>
-            <div  className="flex justify-between">
-            <Button className="w-40" onClick={() => handleRequeryPayment(selectedTransaction?.id.toString() || "")}>
-              Requery Payment
-            </Button>
-            <Button className="w-40"  onClick={() => router.push(`/student/transaction/${selectedTransaction?.transaction_ref}`)}>
-              View Details
-            </Button>
+            <div className="flex justify-between">
+              {selectedTransaction?.status.toLowerCase() === "pending" && (
+                <Button
+                  className="w-40"
+                  onClick={() => handleRequeryPayment(selectedTransaction?.id.toString() || "")}
+                >
+                  Requery Payment
+                </Button>
+              )}
+              <Button
+                className="w-40"
+                onClick={() => router.push(`/student/transaction/${selectedTransaction?.transaction_ref}`)}
+              >
+                View Details
+              </Button>
             </div>
           </DialogFooter>
         </DialogContent>
