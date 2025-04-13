@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, Eye, Download, Upload } from "lucide-react"
+import { Search, Calendar, Download, Upload } from "lucide-react"
 import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useSelector } from "react-redux"
@@ -113,7 +113,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     setIsSubmitting(true)
     
     try {
-      const response = await submitAssignment(
+      await submitAssignment(
         token,
         selectedAssignment.id.toString(),
         submissionText,
