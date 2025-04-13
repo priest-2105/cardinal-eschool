@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import AssessmentListSkeleton from "../../courses/skeleton/assessmentlistskeleton"
 
 interface Assignment {
   id: number
@@ -252,9 +253,8 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
       {/* Assignments list */}
       {loading ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
-          <p>Loading assessments...</p>
+        <div className="flex-1">
+          <AssessmentListSkeleton />
         </div>
       ) : error ? (
         <div className="flex-1 flex items-center justify-center text-red-500">
