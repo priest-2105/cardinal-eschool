@@ -149,50 +149,50 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
       (assignment) =>
         assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         assignment.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    );
 
     // Apply status filter
     if (statusFilter !== "all") {
-      // const now = new Date()
       if (statusFilter === "overdue") {
-        filtered = filtered.filter(assignment => isOverdue(assignment.deadline))
+        filtered = filtered.filter((assignment) => isOverdue(assignment.deadline));
       } else if (statusFilter === "pending") {
-        filtered = filtered.filter(assignment => !isOverdue(assignment.deadline))
+        filtered = filtered.filter(
+          (assignment) => !isOverdue(assignment.deadline) && !assignment.submission_status
+        );
       }
     }
 
     // Apply date filter
     if (dateFilter !== "all") {
-      const now = new Date()
+      const now = new Date();
       if (dateFilter === "today") {
-        filtered = filtered.filter(assignment => isToday(new Date(assignment.deadline)))
+        filtered = filtered.filter((assignment) => isToday(new Date(assignment.deadline)));
       } else if (dateFilter === "this_week") {
-        const weekStart = startOfWeek(now)
-        filtered = filtered.filter(assignment => 
-          isWithinInterval(new Date(assignment.deadline), { 
-            start: weekStart, 
-            end: now 
+        const weekStart = startOfWeek(now);
+        filtered = filtered.filter((assignment) =>
+          isWithinInterval(new Date(assignment.deadline), {
+            start: weekStart,
+            end: now,
           })
-        )
+        );
       } else if (dateFilter === "this_month") {
-        const monthStart = startOfMonth(now)
-        filtered = filtered.filter(assignment => 
-          isWithinInterval(new Date(assignment.deadline), { 
-            start: monthStart, 
-            end: now 
+        const monthStart = startOfMonth(now);
+        filtered = filtered.filter((assignment) =>
+          isWithinInterval(new Date(assignment.deadline), {
+            start: monthStart,
+            end: now,
           })
-        )
+        );
       }
     }
 
     // Finally sort the results
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.deadline).getTime()
-      const dateB = new Date(b.deadline).getTime()
-      return sortOrder === "most_recent" ? dateB - dateA : dateA - dateB
-    })
-  }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder])
-
+      const dateA = new Date(a.deadline).getTime();
+      const dateB = new Date(b.deadline).getTime();
+      return sortOrder === "most_recent" ? dateB - dateA : dateA - dateB;
+    });
+  }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder]);
 
   // Helper function to get filename from path
   const getFileName = (path: string) => {
@@ -229,7 +229,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="overdue">Overdue</SelectItem>
-          </SelectContent>
+            </SelectContent>
         </Select>
         <Select value={dateFilter} onValueChange={setDateFilter}>
           <SelectTrigger className="w-[180px]">
@@ -290,7 +290,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                {assignment.submission_status.status === "turned_in" ? (
+                {assignment.submission_status?.status === "turned_in" ? (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                     Turned In
                   </Badge>
@@ -363,12 +363,14 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                 <Button variant="outline" onClick={handleCloseAssessmentModal}>
                   Close
                 </Button>
-                <Button onClick={() => {
-                  handleCloseAssessmentModal();
-                  handleTurnInAssessment(selectedAssignment);
-                }}>
-                  Turn In Assignment
-                </Button>
+                {!selectedAssignment.submission_status?.status && (
+                  <Button onClick={() => {
+                    handleCloseAssessmentModal();
+                    handleTurnInAssessment(selectedAssignment);
+                  }}>
+                    Turn In Assignment
+                  </Button>
+                )}
               </DialogFooter>
             </>
           )}
