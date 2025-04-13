@@ -18,6 +18,8 @@ import AssessmentsList from "../../assessment/assessmentList"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/dashboard/student/ui/avatar"
 import { FileText } from "lucide-react"
 import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
+import { getStudentReports } from "@/lib/api/student/courses/fetchreport"
+import { Report } from "@/lib/api/student/courses/fetchreport"
 
 type Tab = "description" | "resources" | "reports" | "assessments" | "students"
 
@@ -38,6 +40,7 @@ export default function CourseDetailsComponent() {
   const [error, setError] = useState<string | null>(null)
   const token = useSelector((state: RootState) => state.auth?.token)
   const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [reports, setReports] = useState<Report[]>([])
   const [activeTab, setActiveTab] = useState<Tab>("description")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const route = useRouter()
@@ -60,9 +63,25 @@ export default function CourseDetailsComponent() {
     }
   }, [courseDetails, token])
 
+  const fetchReports = useCallback(async () => {
+    if (!token) return
+    try {
+      const response = await getStudentReports(token)
+      setReports(response.data.reports.filter((report) => report.class_id === courseDetails?.id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch reports")
+    }
+  }, [token, courseDetails?.id])
+
   useEffect(() => {
     fetchAssignments()
   }, [fetchAssignments])
+
+  useEffect(() => {
+    if (courseDetails) {
+      fetchReports()
+    }
+  }, [courseDetails, fetchReports])
 
   const handleback = () => {
     route.back()
@@ -92,7 +111,45 @@ export default function CourseDetailsComponent() {
   }, [courseId, token])
 
   if (loading) {
-    return <div className="text-center py-12">Loading course details...</div>
+    return (
+      <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
+        <div className="flex items-center gap-2 mb-4 md:mb-6">
+          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+          <div className="w-1/2 h-6 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+          <div className="flex space-x-4 md:space-x-8 pb-2">
+            {Array(4)
+              .fill(null)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="w-20 h-6 bg-gray-200 rounded animate-pulse"
+                ></div>
+              ))}
+          </div>
+        </div>
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
+          <div className="flex-grow order-2 lg:order-1 pb-3">
+            <div className="h-[calc(100vh-200px)] bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2">
+            <div className="p-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="p-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="space-y-4">
+              {Array(3)
+                .fill(null)
+                .map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-200 rounded-lg animate-pulse"
+                  ></div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (error) {
@@ -108,8 +165,10 @@ export default function CourseDetailsComponent() {
     return <div className="text-center py-12">No course details found</div>
   }
 
+  const filteredReports = reports.filter((report) => report.class_id === courseDetails?.id);
+
   return (
-    <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
+    <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 h-[82vh] relative">
       {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
@@ -161,10 +220,7 @@ export default function CourseDetailsComponent() {
               />
             )}
             {activeTab === "reports" && (
-              <ReportsList
-                // classId={Number(courseDetails.id)}
-                // courseDetails={courseDetails}/
-              />
+              <ReportsList reports={filteredReports} />
             )}
             {activeTab === "assessments" && <AssessmentsList classId={String(courseDetails.id)} />}
             {/* {activeTab === "students" && <StudentList students={courseDetails.students_assigned} />} */}
@@ -185,8 +241,8 @@ export default function CourseDetailsComponent() {
           </Button>
 
           {/* Course Info */}
-          <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
+          <Card className=" p-4 bg-gray-50">
+            <CardContent className="">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src={courseDetails?.tutor.dp_url || "/placeholder.svg"} />
@@ -196,6 +252,7 @@ export default function CourseDetailsComponent() {
                   <h4 className="font-semibold">Course Code: {courseDetails.code}</h4>
                   <p className="text-sm text-gray-500">Department: {courseDetails?.department}</p>
                   <p className="text-sm text-gray-500">Semester: {courseDetails?.semester}</p>
+                  <h4 className="font-semibold">Tutor {courseDetails.tutor.name}</h4>
                 </div>
               </div>
             </CardContent>
@@ -219,7 +276,7 @@ export default function CourseDetailsComponent() {
                 <div className="space-y-2">
                   <BarChart className="h-5 w-5 text-[#1BC2C2]" />
                   <p className="text-sm text-gray-500">Reports</p>
-                  <p className="font-medium">78</p>
+                  <p className="font-medium">{filteredReports.length}</p>
                 </div>
                 <div className="space-y-2">
                   <BookOpen className="h-5 w-5 text-[#1BC2C2]" />
