@@ -65,16 +65,16 @@ export function CourseList() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedGrade, setSelectedGrade] = useState("all")
+  const [selectedGrade, ] = useState("all")
   const [selectedDay, setSelectedDay] = useState("all"); // Changed from selectedDateRange to selectedDay
   const [selectedStatus, setSelectedStatus] = useState("all")
   const [selectedCode, setSelectedCode] = useState("all");
   const [selectedSemester, setSelectedSemester] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [currentPage,] = useState(1)
+  const [, setTotalPages] = useState(1)
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null) // For modal
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false) // For mobile filter modal
-  const [applyFilters, setApplyFilters] = useState(false) // To trigger filter application
+  const [applyFilters,] = useState(false) // To trigger filter application
   const token = useSelector((state: RootState) => state.auth?.token)
   const router = useRouter()
 
