@@ -644,7 +644,7 @@ export function NotificationList() {
         )}
 
         {/* Notifications List */}
-        <div className="p-0 max-h-[60vh] overflow-y-scroll custom-scrollbar divide-y">
+        <div className="p-0 max-h-[60vh] max-md:h-[50vh] overflow-y-scroll custom-scrollbar divide-y">
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
