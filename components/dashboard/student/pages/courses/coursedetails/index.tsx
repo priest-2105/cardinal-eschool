@@ -230,11 +230,14 @@ export default function CourseDetailsComponent() {
             "w-full lg:w-1/3 space-y-2 md:space-y-4 order-1 lg:order-2",
             "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
             "lg:relative lg:inset-auto lg:transform-none lg:transition-none max-md:min-w-[350px] overflow-y-auto custom-scrollbar h-[70vh]",
-            isSidebarOpen ? "translate-x-0  w-[87vw] h-[100vh] px-5 pt-5" : "translate-x-full lg:translate-x-0",
+            isSidebarOpen ? "translate-x-0  w-[80vw] h-[100vh] px-5 pt-5" : "translate-x-full lg:translate-x-0",
           )}
         >
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
-            <X className="h-10 w-10" />
+          <Button variant="ghost" size="icon" className="absolute z-50 top-4 right-4 lg:hidden" onClick={toggleSidebar}
+           style={{
+            marginTop: isSidebarOpen ? "80px" : "0px",
+          }}>
+          <X className="h-10 w-10" />
           </Button>
 
           {/* Course Info */}

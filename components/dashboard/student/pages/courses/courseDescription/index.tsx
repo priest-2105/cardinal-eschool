@@ -53,7 +53,7 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
           </div>
         </div>
         <a
-          className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto"
+          className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-fit sm:w-auto"
           href={coursdetails.meeting_link}
           target="_blank"
           rel="noopener noreferrer"
