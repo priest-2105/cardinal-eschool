@@ -16,15 +16,17 @@ import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import AssessmentListSkeleton from "../../courses/skeleton/assessmentlistskeleton"
+import { Assignment } from "@/lib/api/student/courses/fetchasessments";
+import { submitAssignment } from "@/lib/api/student/courses/turninassessment";
 
-interface Assignment {
-  id: number
-  title: string
-  description: string
-  file_path: string
-  deadline: string
-  tutor_id: string
-}
+// interface Assignment {
+//   id: number
+//   title: string
+//   description: string
+//   file_path: string
+//   deadline: string
+//   tutor_id: string
+// }
 
 interface AssessmentListProps {
   classId: string
@@ -111,12 +113,12 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     setIsSubmitting(true)
     
     try {
-      // const response = await submitAssignment(
-      //   token,
-      //   selectedAssignment.id.toString(),
-      //   submissionText,
-      //   submissionFile
-      // )
+      const response = await submitAssignment(
+        token,
+        selectedAssignment.id.toString(),
+        submissionText,
+        submissionFile
+      )
       
       setSuccessMessage("Assignment submitted successfully!")
       handleCloseTurnInModal()
@@ -288,28 +290,23 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleViewAssessment(assignment)
-                  }}
-                >
-                  <Eye size={16} className="mr-2" />
-                  View
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleTurnInAssessment(assignment)
-                  }}
-                >
-                  <Upload size={16} className="mr-2" />
-                  Turn In
-                </Button>
+                {assignment.submission_status.status === "turned_in" ? (
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Turned In
+                  </Badge>
+                ) : (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTurnInAssessment(assignment);
+                    }}
+                  >
+                    <Upload size={16} className="mr-2" />
+                    Turn In
+                  </Button>
+                )}
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 export function CourseListSkeleton() {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 h-[50vh]">
         {/* Title Skeleton */}
         <div className="space-y-2">
           <div className="h-6 bg-gray-300 rounded w-1/4"></div>

@@ -112,7 +112,7 @@ export default function CourseDetailsComponent() {
 
   if (loading) {
     return (
-      <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
+      <div className="w-full max-sm:w-[90%] h-[80vh] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
         <div className="flex items-center gap-2 mb-4 md:mb-6">
           <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
           <div className="w-1/2 h-6 bg-gray-200 rounded animate-pulse"></div>

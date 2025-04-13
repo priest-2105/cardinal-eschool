@@ -8,6 +8,7 @@ import { Search, Calendar, FileText } from "lucide-react"
 import { format } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Report } from "@/lib/api/student/courses/fetchreport";
+import ViewReportModal from "./viewReportModal";
 
 interface ReportsListProps {
   reports: Report[];
@@ -17,6 +18,8 @@ export default function ReportsList({ reports }: ReportsListProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [dateFilter, setDateFilter] = useState("all")
   const [filteredReports, setFilteredReports] = useState(reports)
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -57,6 +60,12 @@ export default function ReportsList({ reports }: ReportsListProps) {
 
     setFilteredReports(filtered)
   }
+
+  const handleViewReport = (report: Report) => {
+    console.log("View Report Clicked:", report); // Debugging log
+    setSelectedReport(report);
+    setIsViewModalOpen(true);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -99,13 +108,24 @@ export default function ReportsList({ reports }: ReportsListProps) {
                 {format(new Date(report.created_at), "MMM d, yyyy")}
               </p>
             </div>
-            <Button variant="outline" size="sm" className="mt-2 sm:mt-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2 sm:mt-0"
+              onClick={() => handleViewReport(report)}
+            >
               <FileText size={16} className="mr-2" />
               View Report
             </Button>
           </div>
         ))}
       </div>
+
+      <ViewReportModal
+        isOpen={isViewModalOpen} // Ensure this state is passed correctly
+        onClose={() => setIsViewModalOpen(false)} // Ensure this function closes the modal
+        report={selectedReport} // Pass the selected report
+      />
     </div>
   )
 }
