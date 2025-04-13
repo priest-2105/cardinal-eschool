@@ -5,13 +5,14 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select as UiSelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { MultiSelect } from "@/components/ui/multi-select"
 import { Loader2 } from "lucide-react"
 import { getSubjects } from "@/lib/api/public/fetchsubjects"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
+import Select, { MultiValue, StylesConfig } from "react-select"; // Update import
 // import Image from "next/image"
 
 const testOptions = ["SAT", "IELTS", "TOEFL", "GRE", "CELPIP", "PTE", "GMAT", "LSAT", "PSAT", "ACT"]
@@ -51,6 +52,9 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           subjects_interested_in: parsed.subjects_interested_in || [],
           tests_interested_in: parsed.tests_interested_in || [],
           other_subjects: parsed.other_subjects || ["", ""],
+          learning_expectations: parsed.learning_expectations || "", // Ensure string initialization
+          learning_difficulty_description: parsed.learning_difficulty_description || "", // Ensure string initialization
+          specific_goals: parsed.specific_goals || "", // Ensure string initialization
         }
       } catch (e) {
         console.error("Error parsing saved form data:", e)
@@ -64,10 +68,10 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         education_level: "",
         subjects_interested_in: [],
         tests_interested_in: [],
-        learning_expectations: "",
+        learning_expectations: "", // Ensure string initialization
         learning_difficulties: false,
-        learning_difficulty_description: "",
-        specific_goals: "",
+        learning_difficulty_description: "", // Ensure string initialization
+        specific_goals: "", // Ensure string initialization
         other_subjects: ["", ""],
       }
     )
@@ -169,6 +173,30 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
     </div>
   )
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 0:
+        return formData.plan_id !== 0; 
+      case 1:
+        return formData.education_level !== ""; 
+      case 2:
+        return formData.subjects_interested_in.length === 2;
+      case 3:
+        return formData.tests_interested_in.length > 0;
+      case 4:
+        return (formData.learning_expectations || "").trim() !== ""; // Add fallback for null/undefined
+      case 5:
+        if (formData.learning_difficulties) {
+          return (formData.learning_difficulty_description || "").trim() !== ""; // Add fallback for null/undefined
+        }
+        return true;
+      case 6:
+        return (formData.specific_goals || "").trim() !== ""; // Add fallback for null/undefined
+      default:
+        return true;
+    }
+  };
+
   // Render each step's part of the form
   const renderStepContent = () => {
     switch (currentStep) {
@@ -178,7 +206,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           <>
             <div>
               <Label htmlFor="plan_id">Subscription Plan</Label>
-              <Select
+              <UiSelect
                 name="plan_id"
                 value={formData.plan_id ? formData.plan_id.toString() : ""}
                 onValueChange={(value) => {
@@ -200,7 +228,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                   <SelectItem value="3">Premium Plan - $120</SelectItem>
                   <SelectItem value="4">Group Sessions - $40</SelectItem>
                 </SelectContent>
-              </Select>
+              </UiSelect>
               {!formData.plan_id && <p className="text-red-500 text-sm mt-1">Please select a plan</p>}
             </div>
           </>
@@ -211,7 +239,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           <>
             <div>
               <Label htmlFor="education_level">Education Level</Label>
-              <Select
+              <UiSelect
                 name="education_level"
                 value={formData.education_level || ""}
                 onValueChange={(value) => {
@@ -237,7 +265,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                   <SelectItem value="twelve">Grade Twelve</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
-              </Select>
+              </UiSelect>
               {!formData.education_level && (
                 <p className="text-red-500 text-sm mt-1">Please select an education level</p>
               )}
@@ -245,30 +273,69 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           </>
         )
       case 2:
+        // Define custom styles for react-select
+        const customStyles: StylesConfig<{ value: number; label: string } | null, true> = {
+          multiValue: (base) => ({
+            ...base,
+            backgroundColor: "#1BC2C2",
+            color: "white",
+          }),
+          multiValueLabel: (base) => ({
+            ...base,
+            color: "white",
+          }),
+          multiValueRemove: (base) => ({
+            ...base,
+            color: "white",
+            ":hover": {
+              backgroundColor: "#19b0b0",
+              color: "white",
+            },
+          }),
+          menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+        };
+
         return (
           <>
             <div>
-              <Label>Subjects Interested In (Maximum 2)</Label>
-              <MultiSelect
-                options={subjects.map((subject) => ({ value: subject.id.toString(), label: subject.name }))}
-                value={formData.subjects_interested_in.map((id) => id.toString())}
-                onChange={(selected) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    subjects_interested_in: selected.map((id) => parseInt(id)),
-                  }))
-                }
+              <Label>Subjects Interested In (Exactly 2)</Label>
+              <Select
+                isMulti
+                options={subjects.map((subject) => ({
+                  value: subject.id,
+                  label: subject.name,
+                }))}
+                value={formData.subjects_interested_in.map((id) => {
+                  const subject = subjects.find((s) => s.id === id);
+                  return subject ? { value: subject.id, label: subject.name } : null;
+                }).filter(Boolean)}
+                onChange={(selectedOptions: MultiValue<{ value: number; label: string } | null>) => {
+                  if (selectedOptions.length <= 2) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      subjects_interested_in: selectedOptions.map((option) => option?.value).filter((value) => value !== undefined),
+                    }));
+                  }
+                }}
+                placeholder="Select exactly 2 subjects"
                 className="mt-1"
+                styles={customStyles}
               />
               {formData.subjects_interested_in.length === 0 && (
-                <p className="text-gray-500 text-sm mt-1">Select up to 2 subjects</p>
-              )}
-              {formData.subjects_interested_in?.length === 0 && (
                 <p className="text-red-500 text-sm mt-1">Please select at least one subject</p>
+              )}
+              {formData.subjects_interested_in.length > 2 && (
+                <p className="text-red-500 text-sm mt-1">You can only select a maximum of 2 subjects</p>
+              )}
+              {formData.subjects_interested_in.length < 2 && formData.subjects_interested_in.length > 0 && (
+                <p className="text-red-500 text-sm mt-1">You must select exactly 2 subjects</p>
               )}
             </div>
           </>
-        )
+        );
       case 3:
         return (
           <>
@@ -281,8 +348,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                   setFormData((prev) => ({
                   ...prev,
                   tests_interested_in: selected
-                  }))
-                }
+                  }))}
                 className="mt-1"
                 />
               {formData.tests_interested_in.length === 0 && (
@@ -385,21 +451,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Add validation for current step
-    if (currentStep === 0 && !formData.plan_id) {
-      alert("Please select a plan before proceeding")
-      return
-    }
-
-    if (currentStep === 1 && !formData.education_level) {
-      alert("Please select an education level before proceeding")
-      return
-    }
-
-    if (currentStep === 2 && (!formData.subjects_interested_in || formData.subjects_interested_in.length === 0)) {
-      alert("Please select at least one subject before proceeding")
-      return
-    }
+    if (!isStepValid()) return; // Prevent submission if the current step is invalid
 
     if (isFinalStep) {
       try {
@@ -418,6 +470,8 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
 
         console.log("Final form data being submitted:", finalFormData)
         await onSubmit(finalFormData)
+
+        // Clear assessment data from local storage
         localStorage.removeItem(STORAGE_KEY)
       } catch (error) {
         console.error("Submit failed:", error)
@@ -428,7 +482,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   }
 
   return (
-    <form onSubmit={handleSubmit} className="overflow-hidden relative w-full">
+    <form onSubmit={handleSubmit} className=" relative w-full">
       {renderProgressLines()}
 
       <div className={`${transitionClass} flex`} style={{ transform: `translateX(-${currentStep * 100}%)` }}>
@@ -451,8 +505,10 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         </Button>
         <Button
           type="submit"
-          className="bg-[#1BC2C2] text-white px-4 py-2 rounded hover:bg-[#19b0b0]"
-          disabled={isSubmitting}
+          className={`bg-[#1BC2C2] text-white px-4 py-2 rounded hover:bg-[#19b0b0] ${
+            !isStepValid() ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={!isStepValid() || isSubmitting}
         >
           {isSubmitting ? (
             <>
