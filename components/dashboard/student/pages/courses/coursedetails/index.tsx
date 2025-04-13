@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
+// import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert"
 import { getCourseDetails, type CourseDetails } from "@/lib/api/student/courses/fetchsinglecourse"
 import { Card, CardContent } from "@/components/dashboard/student/ui/card"
 import { ArrowLeft, Clock, Users, BookOpen, Menu, X, BarChart } from "lucide-react"
@@ -154,10 +154,7 @@ export default function CourseDetailsComponent() {
 
   if (error) {
     return (
-      <Alert variant="danger">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <div className="text-center py-12">No course details found</div>
     )
   }
 
@@ -230,19 +227,26 @@ export default function CourseDetailsComponent() {
         {/* Sidebar */}
         <div
           className={cn(
-            "w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2",
+            "w-full lg:w-1/3 space-y-2 md:space-y-4 order-1 lg:order-2",
             "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
-            "lg:relative lg:inset-auto lg:transform-none lg:transition-none",
-            isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
+            "lg:relative lg:inset-auto lg:transform-none lg:transition-none max-md:min-w-[350px] overflow-y-auto custom-scrollbar h-[70vh]",
+            isSidebarOpen ? "translate-x-0  w-[87vw] h-[100vh] px-5 pt-5" : "translate-x-full lg:translate-x-0",
           )}
         >
           <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
-            <X className="h-5 w-5" />
+            <X className="h-10 w-10" />
           </Button>
 
           {/* Course Info */}
-          <Card className=" p-4 bg-gray-50">
-            <CardContent className="">
+          <Card
+            style={{
+              marginTop: isSidebarOpen ? "150px" : "0px",
+            }}
+            className={`p-4 bg-gray-50 transition-all duration-300 ${
+              isSidebarOpen ? "mt-10 lg:mt-5" : "mt-5"
+            }`}
+          >
+            <CardContent>
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src={courseDetails?.tutor.dp_url || "/placeholder.svg"} />

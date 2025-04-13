@@ -23,9 +23,9 @@ export default function CourseDetails() {
   }, [])
 
   return (
-    <div className={`transition-all w-[85%] ease-in-out max-sm:h-fit overflow-hidden py-4 bg-white border border-gray-200 rounded-lg px-4
-    
-    
+  
+    // <div className={`transition-all w-[80%] ease-in-out max-sm:h-fit overflow-hidden py-4 bg-white border border-gray-200 rounded-lg px-4
+    <div className={`transition-all ease-in-out max-xs:w-[74%] p-4  bg-white border border-gray-200 rounded-lg px-4
     duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
     <CourseDetailsComponent/>
     </div>
