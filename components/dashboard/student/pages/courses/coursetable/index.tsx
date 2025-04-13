@@ -17,28 +17,29 @@ interface Course {
     name: string;
     dp_url: string;
   };
+  semester: string; // Added semester property
 }
 
 interface CourseTableProps {
   courses: Course[]
+  onRowClick: (course: Course) => void
 }
 
-export function CourseTable({ courses }: CourseTableProps) {
+export function CourseTable({ courses, onRowClick }: CourseTableProps) {
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <div className="relative overflow-x-auto sm:rounded-lg h-[62vh]">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Tutor</TableHead>
-            <TableHead>Course Name</TableHead>
-            <TableHead>Course Code</TableHead>
-            <TableHead>Completion</TableHead>
-            <TableHead>Schedule</TableHead>
+            <TableHead className="hidden sm:table-cell">Course Name</TableHead>
+            <TableHead className="hidden sm:table-cell">Schedule</TableHead>
+            <TableHead className="">Course Code</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {courses.map((course) => (
-            <CourseTableRow key={course.id} course={course} />
+            <CourseTableRow key={course.id} course={course} onClick={() => onRowClick(course)} />
           ))}
         </TableBody>
       </Table>

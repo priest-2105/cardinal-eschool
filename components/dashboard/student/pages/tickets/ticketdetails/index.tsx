@@ -108,9 +108,11 @@ export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: s
     <div className="max-w-4xl p-6 bg-white rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Ticket #{ticket.id}</h2>
-        <Button onClick={handleCloseTicket} variant="default">
-          Reopen Ticket
-        </Button>
+        {ticket.status.toLowerCase() !== "open" && (
+          <Button onClick={handleCloseTicket} variant="default">
+            Reopen Ticket
+          </Button>
+        )}
       </div>
 
       <Card className="mb-6">

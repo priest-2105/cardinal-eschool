@@ -10,6 +10,13 @@ import { Button } from "@/components/dashboard/student/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/dashboard/student/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard/student/ui/select"
 import { Search } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/dashboard/student/ui/dialog"
 
 interface Ticket {
   codec: string
@@ -43,6 +50,9 @@ export function TicketList() {
     total_pages: 1,
     total_items: 0
   })
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -104,8 +114,13 @@ export function TicketList() {
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   })
 
-  const handleRowClick = (codec: string) => {
-    router.push(`/student/ticket/${codec}`)
+  const handleRowClick = (ticket: Ticket) => {
+    if (window.innerWidth >= 1024) {
+      router.push(`/student/ticket/${ticket.codec}`)
+    } else {
+      setSelectedTicket(ticket)
+      setIsTicketModalOpen(true)
+    }
   }
 
   return (
@@ -117,7 +132,8 @@ export function TicketList() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+          {/* Desktop Filters */}
+          <div className="hidden lg:flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <Select defaultValue={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Sort by" />
@@ -127,7 +143,7 @@ export function TicketList() {
                 <SelectItem value="oldest">Oldest First</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Status" />
@@ -141,7 +157,18 @@ export function TicketList() {
               </SelectContent>
             </Select>
           </div>
-          <div className="relative flex-1 w-full sm:max-w-sm">
+
+          {/* Filter Button for Mobile/Tablet */}
+          {window.innerWidth < 1024 && (
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => setIsFilterModalOpen(true)}
+            >
+              Filters
+            </Button>
+          )}
+
+          <div className="relative flex-1 w-full sm:max-w-sm z-[1]">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by Ticket ID, Department, Subject..."
@@ -153,7 +180,7 @@ export function TicketList() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden z-[1]">
         {loading || isSearching ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
@@ -165,11 +192,29 @@ export function TicketList() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[20%]">Ticket ID</TableHead>
-                    <TableHead className="w-[20%]">Subject</TableHead>
-                    <TableHead className="w-[20%]">Department</TableHead>
-                    <TableHead className="w-[20%]">Created At</TableHead>
-                    <TableHead className="w-[20%]">Status</TableHead>
+                    {window.innerWidth >= 1024 && (
+                      <>
+                        <TableHead className="w-[20%]">Ticket ID</TableHead>
+                        <TableHead className="w-[20%]">Subject</TableHead>
+                        <TableHead className="w-[20%]">Department</TableHead>
+                        <TableHead className="w-[20%]">Created At</TableHead>
+                        <TableHead className="w-[20%]">Status</TableHead>
+                      </>
+                    )}
+                    {window.innerWidth >= 768 && window.innerWidth < 1024 && (
+                      <>
+                        <TableHead className="w-[25%]">Ticket ID</TableHead>
+                        <TableHead className="w-[25%]">Subject</TableHead>
+                        <TableHead className="w-[25%]">Created At</TableHead>
+                        <TableHead className="w-[25%]">Status</TableHead>
+                      </>
+                    )}
+                    {window.innerWidth < 768 && (
+                      <>
+                        <TableHead className="w-[50%]">Subject</TableHead>
+                        <TableHead className="w-[50%]">Status</TableHead>
+                      </>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -183,18 +228,44 @@ export function TicketList() {
                     sortedTickets.map((ticket) => (
                       <TableRow
                         key={ticket.codec}
-                        onClick={() => handleRowClick(ticket.codec)}
+                        onClick={() => handleRowClick(ticket)}
                         className="cursor-pointer hover:bg-gray-100"
                       >
-                        <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
-                        <TableCell>{ticket.subject}</TableCell>
-                        <TableCell>{ticket.department}</TableCell>
-                        <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
-                        <TableCell>
-                          <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
-                            {ticket.status}
-                          </Button>
-                        </TableCell>
+                        {window.innerWidth >= 1024 && (
+                          <>
+                            <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
+                            <TableCell>{ticket.subject}</TableCell>
+                            <TableCell>{ticket.department}</TableCell>
+                            <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
+                            <TableCell>
+                              <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                                {ticket.status}
+                              </Button>
+                            </TableCell>
+                          </>
+                        )}
+                        {window.innerWidth >= 768 && window.innerWidth < 1024 && (
+                          <>
+                            <TableCell className="font-medium">{ticket.ticket_id}</TableCell>
+                            <TableCell>{ticket.subject}</TableCell>
+                            <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
+                            <TableCell>
+                              <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                                {ticket.status}
+                              </Button>
+                            </TableCell>
+                          </>
+                        )}
+                        {window.innerWidth < 768 && (
+                          <>
+                            <TableCell>{ticket.subject}</TableCell>
+                            <TableCell>
+                              <Button variant={ticket.status === "open" ? "default" : "warning"} size="sm">
+                                {ticket.status}
+                              </Button>
+                            </TableCell>
+                          </>
+                        )}
                       </TableRow>
                     ))
                   )}
@@ -204,6 +275,80 @@ export function TicketList() {
           </div>
         )}
       </div>
+
+      {/* Filter Modal */}
+      <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+        <DialogContent className="bg-white max-w-[400px] w-[99%] rounded-md"> 
+          <DialogHeader>
+            <DialogTitle>Filters</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Select defaultValue={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button
+              className="w-full"
+              onClick={() => setIsFilterModalOpen(false)}
+            >
+              Apply Filters
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ticket Details Modal */}
+      <Dialog open={isTicketModalOpen} onOpenChange={setIsTicketModalOpen}>
+        <DialogContent className="bg-white max-w-[400px] w-[99%] rounded-md">
+          <DialogHeader>
+            <DialogTitle>Ticket Details</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <p className="font-medium">Ticket ID:</p>
+            <p>{selectedTicket?.ticket_id}</p>
+            <p className="font-medium">Subject:</p>
+            <p>{selectedTicket?.subject}</p>
+            <p className="font-medium">Department:</p>
+            <p>{selectedTicket?.department}</p>
+            <p className="font-medium">Created At:</p>
+            <p>{selectedTicket?.created_at}</p>
+            <p className="font-medium">Status:</p>
+            <p>{selectedTicket?.status}</p>
+            <p className="font-medium">Last Response:</p>
+            <p>{selectedTicket?.last_response || "N/A"}</p>
+          </div>
+          <DialogFooter>
+            <Button
+              className="w-full"
+              onClick={() =>
+                router.push(`/student/ticket/${selectedTicket?.codec}`)
+              }
+            >
+              View Full Details
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {!loading && !isSearching && pagination.total_pages > 1 && (
         <div className="flex justify-end p-4">

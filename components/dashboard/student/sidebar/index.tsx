@@ -195,13 +195,13 @@ const StudentDashboardSideBar: React.FC = () => {
       <div className="flex flex-1 flex-col px-4 py-4 space-y-1">
         {navigation.map((item) => {
           const isActive =
-            item.activePaths.includes(pathname) || (item.dynamicPath && pathname.startsWith(item.dynamicPath))
+            item.activePaths.includes(pathname) || (item.dynamicPath && pathname.startsWith(item.dynamicPath));
           return (
             <Link
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
+                "relative flex items-center gap-x-3 rounded-lg mb-2 px-3 py-3 text-sm font-medium group",
                 isActive ? "bg-[#1BC2C2] text-white" : "text-gray-700 font-bold hover:bg-[#1BC2C2] hover:text-white",
               )}
             >
@@ -219,12 +219,12 @@ const StudentDashboardSideBar: React.FC = () => {
                 <>
                   <span>{item.name}</span>
                   {item.name === "Notification" && unreadCount > 0 && (
-                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                    <div className="absolute sm:top-3 sm:right-2 top-0 right-0 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       {unreadCount}
                     </div>
                   )}
                   {item.name === "Admin Support" && openTicketsCount > 0 && (
-                    <div className="ml-auto w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                    <div className="absolute sm:top-3 sm:right-2 top-0 right-0 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       {openTicketsCount}
                     </div>
                   )}
@@ -235,15 +235,20 @@ const StudentDashboardSideBar: React.FC = () => {
                   <span className="absolute left-20 bg-gray-700 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {item.name}
                   </span>
+                  {item.name === "Notification" && unreadCount > 0 && (
+                    <div className="absolute sm:top-0 sm:right-0 top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                      {unreadCount}
+                    </div>
+                  )}
                   {item.name === "Admin Support" && openTicketsCount > 0 && (
-                    <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                    <div className="absolute sm:top-0 sm:right-0 top-0 right-0 w-4 h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       {openTicketsCount}
                     </div>
                   )}
                 </>
               )}
             </Link>
-          )
+          );
         })}
       </div>
     </div>

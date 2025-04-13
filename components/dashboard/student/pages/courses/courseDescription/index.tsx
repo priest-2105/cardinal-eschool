@@ -21,6 +21,7 @@ interface CourseDescriptionProps {
       dp_url: string | null;
     }[];
     resources_assigned: unknown[]; // changed from any[]
+    progress_percentage: number;
   }
 }
 
@@ -33,7 +34,11 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
     return text.slice(0, maxLength) + "..."
   }
 
-  
+  const getProgressBarColor = (progress: number) => {
+    if (progress < 25) return "bg-orange-500"
+    if (progress < 75) return "bg-blue-500"
+    return "bg-[#1BC2C2]"
+  }
 
   return (
     <div className="space-y-6">
@@ -47,10 +52,26 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
             </Badge>
           </div>
         </div>
-        
-          <a  className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto" href={coursdetails.meeting_link} target="_blank" rel="noopener noreferrer">
-            Join Class
-          </a>
+        <a
+          className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-fit sm:w-auto"
+          href={coursdetails.meeting_link}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Join Class
+        </a>
+      </div>
+
+      {/* Class Completion Progress */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Class Completion</label>
+        <div className="w-full bg-gray-200 rounded-full h-4">
+          <div
+            className={`h-4 rounded-full ${getProgressBarColor(coursdetails.progress_percentage)}`}
+            style={{ width: `${coursdetails.progress_percentage}%` }}
+          ></div>
+        </div>
+        <p className="text-sm text-gray-500">{coursdetails.progress_percentage}% completed</p>
       </div>
 
       {/* Course Description */}
@@ -68,14 +89,13 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
         </div>
       </div>
 
- 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Prerequisites</label>
-          <div className="bg-gray-50 border-gray-200 rounded-md p-4">
-            <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
-          </div>
+      {/* Prerequisites */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Prerequisites</label>
+        <div className="bg-gray-50 border-gray-200 rounded-md p-4">
+          <p className="text-sm text-gray-700">Completion of Grade 5 Science or equivalent</p>
         </div>
-
+      </div>
 
       {/* Course Description Modal */}
       <CourseDescriptionModal

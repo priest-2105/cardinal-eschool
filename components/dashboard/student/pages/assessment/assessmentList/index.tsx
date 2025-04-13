@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Calendar, Eye, Download, Upload } from "lucide-react"
+import { Search, Calendar, Download, Upload } from "lucide-react"
 import { format, parseISO, isToday, startOfWeek, startOfMonth, isWithinInterval } from "date-fns"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useSelector } from "react-redux"
@@ -15,15 +15,18 @@ import { Badge } from "@/components/ui/badge"
 import { getClassAssignments } from "@/lib/api/student/courses/fetchasessments"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import AssessmentListSkeleton from "../../courses/skeleton/assessmentlistskeleton"
+import { Assignment } from "@/lib/api/student/courses/fetchasessments";
+import { submitAssignment } from "@/lib/api/student/courses/turninassessment";
 
-interface Assignment {
-  id: number
-  title: string
-  description: string
-  file_path: string
-  deadline: string
-  tutor_id: string
-}
+// interface Assignment {
+//   id: number
+//   title: string
+//   description: string
+//   file_path: string
+//   deadline: string
+//   tutor_id: string
+// }
 
 interface AssessmentListProps {
   classId: string
@@ -110,12 +113,12 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
     setIsSubmitting(true)
     
     try {
-      // const response = await submitAssignment(
-      //   token,
-      //   selectedAssignment.id.toString(),
-      //   submissionText,
-      //   submissionFile
-      // )
+      await submitAssignment(
+        token,
+        selectedAssignment.id.toString(),
+        submissionText,
+        submissionFile
+      )
       
       setSuccessMessage("Assignment submitted successfully!")
       handleCloseTurnInModal()
@@ -146,50 +149,50 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
       (assignment) =>
         assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         assignment.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    );
 
     // Apply status filter
     if (statusFilter !== "all") {
-      // const now = new Date()
       if (statusFilter === "overdue") {
-        filtered = filtered.filter(assignment => isOverdue(assignment.deadline))
+        filtered = filtered.filter((assignment) => isOverdue(assignment.deadline));
       } else if (statusFilter === "pending") {
-        filtered = filtered.filter(assignment => !isOverdue(assignment.deadline))
+        filtered = filtered.filter(
+          (assignment) => !isOverdue(assignment.deadline) && !assignment.submission_status
+        );
       }
     }
 
     // Apply date filter
     if (dateFilter !== "all") {
-      const now = new Date()
+      const now = new Date();
       if (dateFilter === "today") {
-        filtered = filtered.filter(assignment => isToday(new Date(assignment.deadline)))
+        filtered = filtered.filter((assignment) => isToday(new Date(assignment.deadline)));
       } else if (dateFilter === "this_week") {
-        const weekStart = startOfWeek(now)
-        filtered = filtered.filter(assignment => 
-          isWithinInterval(new Date(assignment.deadline), { 
-            start: weekStart, 
-            end: now 
+        const weekStart = startOfWeek(now);
+        filtered = filtered.filter((assignment) =>
+          isWithinInterval(new Date(assignment.deadline), {
+            start: weekStart,
+            end: now,
           })
-        )
+        );
       } else if (dateFilter === "this_month") {
-        const monthStart = startOfMonth(now)
-        filtered = filtered.filter(assignment => 
-          isWithinInterval(new Date(assignment.deadline), { 
-            start: monthStart, 
-            end: now 
+        const monthStart = startOfMonth(now);
+        filtered = filtered.filter((assignment) =>
+          isWithinInterval(new Date(assignment.deadline), {
+            start: monthStart,
+            end: now,
           })
-        )
+        );
       }
     }
 
     // Finally sort the results
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.deadline).getTime()
-      const dateB = new Date(b.deadline).getTime()
-      return sortOrder === "most_recent" ? dateB - dateA : dateA - dateB
-    })
-  }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder])
-
+      const dateA = new Date(a.deadline).getTime();
+      const dateB = new Date(b.deadline).getTime();
+      return sortOrder === "most_recent" ? dateB - dateA : dateA - dateB;
+    });
+  }, [assignments, searchTerm, statusFilter, dateFilter, sortOrder]);
 
   // Helper function to get filename from path
   const getFileName = (path: string) => {
@@ -208,18 +211,18 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
       {/* Search and filters */}
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-        <div className="relative flex-grow">
+        <div className="relative w-full">
           <Input
             type="text"
             placeholder="Search assessments..."
             value={searchTerm}
             onChange={handleSearch}
-            className="pl-10"
+            className="pl-10 w-full"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
@@ -229,7 +232,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
           </SelectContent>
         </Select>
         <Select value={dateFilter} onValueChange={setDateFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by date" />
           </SelectTrigger>
           <SelectContent>
@@ -240,7 +243,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
           </SelectContent>
         </Select>
         <Select value={sortOrder} onValueChange={setSortOrder}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -252,9 +255,8 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
       {/* Assignments list */}
       {loading ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
-          <p>Loading assessments...</p>
+        <div className="flex-1">
+          <AssessmentListSkeleton />
         </div>
       ) : error ? (
         <div className="flex-1 flex items-center justify-center text-red-500">
@@ -288,28 +290,23 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleViewAssessment(assignment)
-                  }}
-                >
-                  <Eye size={16} className="mr-2" />
-                  View
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleTurnInAssessment(assignment)
-                  }}
-                >
-                  <Upload size={16} className="mr-2" />
-                  Turn In
-                </Button>
+                {assignment.submission_status?.status === "turned_in" ? (
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    Turned In
+                  </Badge>
+                ) : (
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTurnInAssessment(assignment);
+                    }}
+                  >
+                    <Upload size={16} className="mr-2" />
+                    Turn In
+                  </Button>
+                )}
               </div>
             </div>
           ))}
@@ -366,12 +363,14 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
                 <Button variant="outline" onClick={handleCloseAssessmentModal}>
                   Close
                 </Button>
-                <Button onClick={() => {
-                  handleCloseAssessmentModal();
-                  handleTurnInAssessment(selectedAssignment);
-                }}>
-                  Turn In Assignment
-                </Button>
+                {!selectedAssignment.submission_status?.status && (
+                  <Button onClick={() => {
+                    handleCloseAssessmentModal();
+                    handleTurnInAssessment(selectedAssignment);
+                  }}>
+                    Turn In Assignment
+                  </Button>
+                )}
               </DialogFooter>
             </>
           )}

@@ -12,6 +12,16 @@ const SelectGroup = SelectPrimitive.Group
 
 const SelectValue = SelectPrimitive.Value
 
+const SelectWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, children, ...props }, ref) => (
+  <div ref={ref} className={cn("relative", className)} {...props}>
+    {children}
+  </div>
+))
+SelectWrapper.displayName = "SelectWrapper"
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -113,6 +123,7 @@ export {
   Select,
   SelectGroup,
   SelectValue,
+  SelectWrapper,
   SelectTrigger,
   SelectContent,
   SelectLabel,

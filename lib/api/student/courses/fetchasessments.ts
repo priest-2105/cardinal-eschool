@@ -1,15 +1,21 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
-interface Assignment {
+export interface Assignment {
   id: number;
   title: string;
   description: string;
   file_path: string;
   deadline: string;
   tutor_id: string;
+  submission_status: {
+    status: "turned_in" | "not_turned_in";
+    submitted_at: string | null;
+    file_path: string | null;
+    submission_text: string | null;
+  };
 }
 
-interface AssignmentsResponse {
+export interface AssignmentsResponse {
   status: string;
   message: string;
   data: {

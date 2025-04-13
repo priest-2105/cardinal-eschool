@@ -2,15 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
-import { Search, BookOpen } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Search, BookOpen, Filter } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectWrapper } from "@/components/ui/select"
 import { CourseTable } from '../coursetable/index'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 import { Button } from "@/components/ui/button"
+import { CourseListSkeleton } from "../skeleton"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/dashboard/student/ui/dialog"
+import { useRouter } from "next/navigation"
 
-// Define the API response type for a course
+
 interface ApiCourse {
   id: number;
   name: string;
@@ -54,6 +57,7 @@ interface Course {
     name: string;
     dp_url: string;
   }; // Added this property
+  semester: string; // Added this property
 }
 
 export function CourseList() {
@@ -61,14 +65,20 @@ export function CourseList() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedGrade, setSelectedGrade] = useState("all")
-  const [selectedDateRange, setSelectedDateRange] = useState("all")
+  const [selectedGrade, ] = useState("all")
+  const [selectedDay, setSelectedDay] = useState("all"); // Changed from selectedDateRange to selectedDay
   const [selectedStatus, setSelectedStatus] = useState("all")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [selectedCode, setSelectedCode] = useState("all");
+  const [selectedSemester, setSelectedSemester] = useState("all");
+  const [currentPage,] = useState(1)
+  const [, setTotalPages] = useState(1)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null) // For modal
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false) // For mobile filter modal
+  const [applyFilters,] = useState(false) // To trigger filter application
   const token = useSelector((state: RootState) => state.auth?.token)
-  // const perPage = 10
+  const router = useRouter()
 
+  
   useEffect(() => {
     const fetchCourses = async () => {
       if (!token) return;
@@ -81,13 +91,14 @@ export function CourseList() {
               id: course.id,
               name: course.name,
               code: course.code,
-              progress_percentage: course.progress_percentage.toString(), // Convert to string
-              no_of_students: course.resources.length, // Use resources length as a placeholder
+              progress_percentage: course.progress_percentage.toString(),
+              no_of_students: course.resources.length, 
               schedule: course.schedule,
               tutor: {
                 name: course.tutor.name || "Unknown Tutor",
                 dp_url: course.tutor.dp_url || "/placeholder.svg",
               },
+              semester: course.semester, // Added semester
             }))
           );
           setTotalPages(response.data.total_pages);
@@ -107,7 +118,7 @@ export function CourseList() {
     };
 
     fetchCourses();
-  }, [token, currentPage])
+  }, [token, currentPage, applyFilters]) // Trigger fetch when filters are applied
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = 
@@ -117,26 +128,25 @@ export function CourseList() {
     
     const matchesGrade = selectedGrade === "all"
     const matchesStatus = selectedStatus === "all" 
-    const matchesDate = selectedDateRange === "all"
-    
-    return matchesSearch && matchesGrade && matchesStatus && matchesDate
+    const matchesDay =
+      selectedDay === "all" || course.schedule.days.includes(selectedDay);
+    const matchesCode = selectedCode === "all" || course.code === selectedCode;
+    const matchesSemester =
+      selectedSemester === "all" || course.semester === selectedSemester;
+
+    return matchesSearch && matchesGrade && matchesStatus && matchesDay && matchesCode && matchesSemester
   })
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#1BC2C2] mr-3"></div>
-        <p>Loading courses...</p>
-      </div>
-    )
+    return <CourseListSkeleton />
   }
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <div className="text-red-500 text-lg font-medium">{error}</div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => window.location.reload()}
           className="mt-4"
         >
@@ -165,25 +175,136 @@ export function CourseList() {
             View and manage your enrolled courses
           </p>
         </div>
+        <div className="sm:hidden">
+          <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="flex items-center space-x-2">
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-white rounded-md max-w-[600px] w-[90%]">
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                <Select value={selectedCode} onValueChange={setSelectedCode}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Course Code" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Codes</SelectItem>
+                    {Array.from(new Set(courses.map((course) => course.code))).map(
+                      (code) => (
+                        <SelectItem key={code} value={code}>
+                          {code}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Semesters</SelectItem>
+                    {Array.from(new Set(courses.map((course) => course.semester))).map(
+                      (semester) => (
+                        <SelectItem key={semester} value={semester}>
+                          {semester}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="upcoming">Upcoming</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedDay} onValueChange={setSelectedDay}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Day of Week" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Days</SelectItem>
+                    <SelectItem value="Monday">Monday</SelectItem>
+                    <SelectItem value="Tuesday">Tuesday</SelectItem>
+                    <SelectItem value="Wednesday">Wednesday</SelectItem>
+                    <SelectItem value="Thursday">Thursday</SelectItem>
+                    <SelectItem value="Friday">Friday</SelectItem>
+                    <SelectItem value="Saturday">Saturday</SelectItem>
+                    <SelectItem value="Sunday">Sunday</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  placeholder="Search courses..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                />
+                <Button
+                  variant="default"
+                  className="w-full mt-4"
+                  onClick={() => setIsFilterModalOpen(false)}
+                >
+                  Apply
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Grade" />
+      <div className="hidden sm:flex flex-row gap-4 mb-6">
+        <SelectWrapper>
+        <Select value={selectedCode} onValueChange={setSelectedCode}>
+          <SelectTrigger  className="w-[200px]">
+            <SelectValue placeholder="Course Code" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Grades</SelectItem>
-            {[...Array(12)].map((_, i) => (
-              <SelectItem key={i} value={`${i + 1}`}>
-                Grade {i + 1}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">All Codes</SelectItem>
+            {Array.from(new Set(courses.map((course) => course.code))).map(
+              (code) => (
+                <SelectItem key={code} value={code}>
+                  {code}
+                </SelectItem>
+              )
+            )}
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
+        <SelectWrapper>
+        <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+          <SelectTrigger  className="w-[200px]">
+            <SelectValue placeholder="Semester" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Semesters</SelectItem>
+            {Array.from(new Set(courses.map((course) => course.semester))).map(
+              (semester) => (
+                <SelectItem key={semester} value={semester}>
+                  {semester}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
+        </SelectWrapper>
+
+        <SelectWrapper>
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger  className="w-[200px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -193,19 +314,25 @@ export function CourseList() {
             <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
-        <Select value={selectedDateRange} onValueChange={setSelectedDateRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Date Added" />
+       <SelectWrapper>
+        <Select value={selectedDay} onValueChange={setSelectedDay}>
+          <SelectTrigger  className="w-[200px]">
+            <SelectValue placeholder="Day of Week" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Time</SelectItem>
-            <SelectItem value="today">Today</SelectItem>
-            <SelectItem value="last7days">Last 7 Days</SelectItem>
-            <SelectItem value="last30days">Last 30 Days</SelectItem>
-            <SelectItem value="last90days">Last 90 Days</SelectItem>
+            <SelectItem value="all">All Days</SelectItem>
+            <SelectItem value="Monday">Monday</SelectItem>
+            <SelectItem value="Tuesday">Tuesday</SelectItem>
+            <SelectItem value="Wednesday">Wednesday</SelectItem>
+            <SelectItem value="Thursday">Thursday</SelectItem>
+            <SelectItem value="Friday">Friday</SelectItem>
+            <SelectItem value="Saturday">Saturday</SelectItem>
+            <SelectItem value="Sunday">Sunday</SelectItem>
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
         <div className="relative flex-1">
           <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -213,30 +340,62 @@ export function CourseList() {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 w-full"
+            className="pl-8 w-full" 
           />
         </div>
       </div>
 
-      <CourseTable courses={filteredCourses} />
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-end mt-4">
-          <Select value={currentPage.toString()} onValueChange={(value) => setCurrentPage(parseInt(value))}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
-            </SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <SelectItem key={page} value={page.toString()}>
-                  Page {page} of {totalPages}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {filteredCourses.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <BookOpen className="h-16 w-16 text-gray-300" />
+          <p className="text-lg font-medium text-gray-600">No results found</p>
+          <p className="text-sm text-gray-500">Try adjusting your filters to see more results</p>
         </div>
+      ) : (
+        <CourseTable
+          courses={filteredCourses}
+          onRowClick={(course) =>
+            setSelectedCourse({
+              ...course, 
+            })
+          }
+        />
       )}
+
+      <Dialog open={!!selectedCourse} onOpenChange={() => setSelectedCourse(null)}>
+        <DialogContent className="bg-white rounded-md max-w-[600px] w-[90%]">
+          {selectedCourse && (
+            <div className="p-4 space-y-4">
+              <DialogTitle>Course Details</DialogTitle>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="font-medium">Tutor</div>
+                <div>{selectedCourse.tutor.name}</div>
+                <div className="font-medium">Course Name</div>
+                <div>{selectedCourse.name}</div>
+                <div className="font-medium">Course Code</div>
+                <div>{selectedCourse.code}</div>
+                <div className="font-medium">Progress</div>
+                <div>{selectedCourse.progress_percentage}%</div>
+                <div className="font-medium">Schedule</div>
+                <div>
+                  {selectedCourse.schedule.days.map((day, index) => (
+                    <div key={`${selectedCourse.id}-${day}`}>
+                      {`${day} at ${selectedCourse.schedule.time[index]}`}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Button
+                variant="default"
+                className="w-full mt-4"
+                onClick={() => router.push(`/student/course/${selectedCourse.id}`)}
+              >
+                View Class
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

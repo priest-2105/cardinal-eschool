@@ -31,7 +31,7 @@ import type { RootState } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import type { Notification, Pagination } from "@/lib/api/student/notifcation/fetchnotification"
 import { markAllNotificationsAsRead } from "@/lib/api/student/notifcation/markallnotificationasread"
-
+import pusher from "@/utils/pusher";
 
 export function NotificationList() {
   const token = useSelector((state: RootState) => state.auth?.token);
@@ -142,6 +142,36 @@ export function NotificationList() {
   useEffect(() => {
     loadNotifications();
   }, [currentPage]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const channel = pusher.subscribe("notifications");
+
+    channel.bind("new-notification", (data: Notification) => {
+      setNotifications((prev) => [
+        {
+          id: data.id,
+          type: data.type,
+          title: data.title,
+          message: data.message,
+          data: data.data,
+          action_url: data.action_url,
+          read_at: data.read_at,
+          created_at: data.created_at,
+        },
+        ...prev,
+      ]);
+      setPagination((prev) => ({
+        ...prev,
+        total: prev.total + 1,
+      }));
+    });
+
+    return () => {
+      pusher.unsubscribe("notifications");
+    };
+  }, [token]);
 
   // const router = useRouter()
   const [filteredNotifications, setFilteredNotifications] = useState<Notification[]>([])
@@ -614,7 +644,7 @@ export function NotificationList() {
         )}
 
         {/* Notifications List */}
-        <div className="p-0 max-h-[60vh] overflow-y-scroll custom-scrollbar divide-y">
+        <div className="p-0 h-[60vh] max-md:h-[50vh] overflow-y-scroll custom-scrollbar divide-y">
           {isLoading
             ? renderSkeleton()
             : filteredNotifications.length === 0
