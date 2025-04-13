@@ -211,28 +211,28 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
 
       {/* Search and filters */}
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-        <div className="relative flex-grow">
+        <div className="relative w-full">
           <Input
             type="text"
             placeholder="Search assessments..."
             value={searchTerm}
             onChange={handleSearch}
-            className="pl-10"
+            className="pl-10 w-full"
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
             <SelectItem value="overdue">Overdue</SelectItem>
-            </SelectContent>
+          </SelectContent>
         </Select>
         <Select value={dateFilter} onValueChange={setDateFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by date" />
           </SelectTrigger>
           <SelectContent>
@@ -243,7 +243,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
           </SelectContent>
         </Select>
         <Select value={sortOrder} onValueChange={setSortOrder}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
