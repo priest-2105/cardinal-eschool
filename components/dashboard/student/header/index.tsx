@@ -275,7 +275,7 @@ const StudentDashboardHeader: React.FC = () => {
                         <li key={index} className="px-4 py-2 hover:bg-gray-100">
                           <Link href='/student/notification'>
                             <p className="font-small text-[12px]">{item.message}</p>
-                            <p className="text-sm text-gray-500">{item.created_at}</p>
+                            <p className="text-[12px] text-gray-500">{item.created_at}</p>
                           </Link>
                         </li>
                       ))
