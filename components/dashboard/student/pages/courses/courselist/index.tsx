@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
-import { Search, BookOpen } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Search, BookOpen, Filter } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectWrapper } from "@/components/ui/select"
 import { CourseTable } from '../coursetable/index'
 import { useSelector } from 'react-redux'
 import type { RootState } from '@/lib/store'
 import { getStudentClasses } from '@/lib/api/student/courses/courselist'
 import { Button } from "@/components/ui/button"
-import { CourseListSkeleton } from "../skeleton";
+import { CourseListSkeleton } from "../skeleton"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/dashboard/student/ui/dialog"
+import { useRouter } from "next/navigation"
 
-// Define the API response type for a course
+
 interface ApiCourse {
   id: number;
   name: string;
@@ -70,7 +72,11 @@ export function CourseList() {
   const [selectedSemester, setSelectedSemester] = useState("all");
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null) // For modal
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false) // For mobile filter modal
+  const [applyFilters, setApplyFilters] = useState(false) // To trigger filter application
   const token = useSelector((state: RootState) => state.auth?.token)
+  const router = useRouter()
 
   
   useEffect(() => {
@@ -112,7 +118,7 @@ export function CourseList() {
     };
 
     fetchCourses();
-  }, [token, currentPage])
+  }, [token, currentPage, applyFilters]) // Trigger fetch when filters are applied
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = 
@@ -132,15 +138,15 @@ export function CourseList() {
   })
 
   if (loading) {
-    return <CourseListSkeleton />;
+    return <CourseListSkeleton />
   }
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <div className="text-red-500 text-lg font-medium">{error}</div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => window.location.reload()}
           className="mt-4"
         >
@@ -169,11 +175,100 @@ export function CourseList() {
             View and manage your enrolled courses
           </p>
         </div>
+        <div className="sm:hidden">
+          <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="flex items-center space-x-2">
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-white rounded-md max-w-[600px] w-[90%]">
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Filters</h2>
+                <Select value={selectedCode} onValueChange={setSelectedCode}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Course Code" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Codes</SelectItem>
+                    {Array.from(new Set(courses.map((course) => course.code))).map(
+                      (code) => (
+                        <SelectItem key={code} value={code}>
+                          {code}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Semesters</SelectItem>
+                    {Array.from(new Set(courses.map((course) => course.semester))).map(
+                      (semester) => (
+                        <SelectItem key={semester} value={semester}>
+                          {semester}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="upcoming">Upcoming</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={selectedDay} onValueChange={setSelectedDay}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Day of Week" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Days</SelectItem>
+                    <SelectItem value="Monday">Monday</SelectItem>
+                    <SelectItem value="Tuesday">Tuesday</SelectItem>
+                    <SelectItem value="Wednesday">Wednesday</SelectItem>
+                    <SelectItem value="Thursday">Thursday</SelectItem>
+                    <SelectItem value="Friday">Friday</SelectItem>
+                    <SelectItem value="Saturday">Saturday</SelectItem>
+                    <SelectItem value="Sunday">Sunday</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  placeholder="Search courses..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                />
+                <Button
+                  variant="default"
+                  className="w-full mt-4"
+                  onClick={() => setIsFilterModalOpen(false)}
+                >
+                  Apply
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="hidden sm:flex flex-row gap-4 mb-6">
+        <SelectWrapper>
         <Select value={selectedCode} onValueChange={setSelectedCode}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger  className="w-[200px]">
             <SelectValue placeholder="Course Code" />
           </SelectTrigger>
           <SelectContent>
@@ -187,9 +282,11 @@ export function CourseList() {
             )}
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
+        <SelectWrapper>
         <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger  className="w-[200px]">
             <SelectValue placeholder="Semester" />
           </SelectTrigger>
           <SelectContent>
@@ -203,9 +300,11 @@ export function CourseList() {
             )}
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
+        <SelectWrapper>
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger  className="w-[200px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -215,9 +314,11 @@ export function CourseList() {
             <SelectItem value="completed">Completed</SelectItem>
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
+       <SelectWrapper>
         <Select value={selectedDay} onValueChange={setSelectedDay}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger  className="w-[200px]">
             <SelectValue placeholder="Day of Week" />
           </SelectTrigger>
           <SelectContent>
@@ -231,6 +332,7 @@ export function CourseList() {
             <SelectItem value="Sunday">Sunday</SelectItem>
           </SelectContent>
         </Select>
+        </SelectWrapper>
 
         <div className="relative flex-1">
           <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -238,7 +340,7 @@ export function CourseList() {
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 w-full"
+            className="pl-8 w-full" 
           />
         </div>
       </div>
@@ -246,30 +348,54 @@ export function CourseList() {
       {filteredCourses.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 space-y-4">
           <BookOpen className="h-16 w-16 text-gray-300" />
-          <p className="text-lg font-medium text-gray-600">No courses match the selected filters</p>
+          <p className="text-lg font-medium text-gray-600">No results found</p>
           <p className="text-sm text-gray-500">Try adjusting your filters to see more results</p>
         </div>
       ) : (
-        <CourseTable courses={filteredCourses} />
+        <CourseTable
+          courses={filteredCourses}
+          onRowClick={(course) =>
+            setSelectedCourse({
+              ...course, 
+            })
+          }
+        />
       )}
 
-      {/* Pagination */}
-      {/* {totalPages > 1 && (
-        <div className="flex justify-end mt-4">
-          <Select value={currentPage.toString()} onValueChange={(value) => setCurrentPage(parseInt(value))}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={`Page ${currentPage} of ${totalPages}`} />
-            </SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <SelectItem key={page} value={page.toString()}>
-                  Page {page} of {totalPages}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )} */}
+      <Dialog open={!!selectedCourse} onOpenChange={() => setSelectedCourse(null)}>
+        <DialogContent className="bg-white rounded-md max-w-[600px] w-[90%]">
+          {selectedCourse && (
+            <div className="p-4 space-y-4">
+              <DialogTitle>Course Details</DialogTitle>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="font-medium">Tutor</div>
+                <div>{selectedCourse.tutor.name}</div>
+                <div className="font-medium">Course Name</div>
+                <div>{selectedCourse.name}</div>
+                <div className="font-medium">Course Code</div>
+                <div>{selectedCourse.code}</div>
+                <div className="font-medium">Progress</div>
+                <div>{selectedCourse.progress_percentage}%</div>
+                <div className="font-medium">Schedule</div>
+                <div>
+                  {selectedCourse.schedule.days.map((day, index) => (
+                    <div key={`${selectedCourse.id}-${day}`}>
+                      {`${day} at ${selectedCourse.schedule.time[index]}`}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Button
+                variant="default"
+                className="w-full mt-4"
+                onClick={() => router.push(`/student/course/${selectedCourse.id}`)}
+              >
+                View Class
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

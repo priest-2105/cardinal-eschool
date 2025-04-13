@@ -1,8 +1,8 @@
 "use client"
 
 import { TableCell, TableRow } from "@/components/ui/table"
-import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 interface Course {
   id: number
@@ -18,25 +18,27 @@ interface Course {
     name: string
     dp_url: string
   }
+  semester: string // Added semester property
 }
 
 interface CourseTableRowProps {
   course: Course
+  onClick: () => void
 }
 
-export function CourseTableRow({ course }: CourseTableRowProps) {
-
+export function CourseTableRow({ course, onClick }: CourseTableRowProps) {
   const router = useRouter()
+  const schedule = course.schedule
 
-  const handleCourseDetails = () => {
+  const handleDesktopClick = () => {
     router.push(`/student/course/${course.id}`)
   }
 
-  // Use the schedule object directly
-  const schedule = course.schedule;
-
   return (
-    <TableRow className="hover:bg-gray-50 cursor-pointer" onClick={handleCourseDetails}>
+    <TableRow
+      className="hover:bg-gray-50 cursor-pointer"
+      onClick={window.innerWidth >= 1024 ? handleDesktopClick : onClick}
+    >
       <TableCell className="flex items-center space-x-2">
         <Image
           src={course.tutor.dp_url}
@@ -47,16 +49,15 @@ export function CourseTableRow({ course }: CourseTableRowProps) {
         />
         <span>{course.tutor.name}</span>
       </TableCell>
-      <TableCell>{course.name}</TableCell>
-      <TableCell>{course.code}</TableCell>
-      <TableCell>{course.progress_percentage}%</TableCell>
-      <TableCell>
+      <TableCell className="hidden sm:table-cell">{course.name}</TableCell>
+      <TableCell className="hidden sm:table-cell">
         {schedule.days.map((day, index) => (
           <div key={`${course.id}-${day}`}>
             {`${day} at ${schedule.time[index]}`}
           </div>
         ))}
       </TableCell>
+      <TableCell>{course.code}</TableCell>
     </TableRow>
   )
 }
