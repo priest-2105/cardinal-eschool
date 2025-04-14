@@ -39,7 +39,7 @@ export default function Assessments({ assignments }: AssessmentsProps) {
   const remainingCount = Math.max(0, assignments.length - 3)
 
   return (
-    <Card className="min-h-[355px]">
+    <Card className="min-h-[355px] w-full max-md:mt-5 xl:max-w-[1300px] xl:mx-auto">
       <CardHeader>
         <CardTitle>
           Active Assessment
@@ -65,8 +65,8 @@ export default function Assessments({ assignments }: AssessmentsProps) {
                 </div>
               </div>
               <Button variant="outline" size="sm" className="text-blue-500 -mb-5 hover:text-blue-600">
-                  View
-                </Button>
+                View
+              </Button>
             </div>
             <div className="space-y-4">
               <p className={`text-sm font-medium ${getDeadlineColor(assessment.deadline)}`}>
@@ -77,6 +77,6 @@ export default function Assessments({ assignments }: AssessmentsProps) {
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }
 

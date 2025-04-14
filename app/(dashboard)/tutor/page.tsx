@@ -165,8 +165,8 @@ export default function TutorDashboard() {
       <div className="space-y-6 p-6 bg-white rounded-lg border">
         {dashboardData?.overview && <DashboardStats overview={dashboardData.overview} />}
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="md:col-span-2">
+        <div className="gap-6 max-md:block lg:grid md:grid-cols-2 lg:grid-cols-2">
+          <div className="md:col-span-1">
             {(dashboardData?.upcoming_classes ?? []).length > 0 && (
               <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
             )}
