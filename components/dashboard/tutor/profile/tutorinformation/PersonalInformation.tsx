@@ -154,8 +154,8 @@ export default function PersonalInformation() {
         )}
 
         <div className="sm:grid sm:grid-cols-2 gap-6 max-sm:block">
-          <div className="space-y-2">
-            <Label htmlFor="firstname">First Name</Label>
+          <div className="space-y-4">
+            <Label htmlFor="firstname" className="block mb-1">First Name</Label>
             <Input
               id="firstname"
               value={profile.firstname}
@@ -163,8 +163,8 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastname">Last Name</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="lastname" className="block mb-1">Last Name</Label>
             <Input
               id="lastname"
               value={profile.lastname}
@@ -172,8 +172,8 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="qualification">Qualification</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="qualification" className="block mb-1">Qualification</Label>
             <Input
               id="qualification"
               value={profile.qualification}
@@ -181,11 +181,11 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email Address</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="email" className="block mb-1">Email Address</Label>
             <Input readOnly id="email" type="email" value={profile.email} />
           </div>
-          <div className="space-y-2">
+          <div className="mb-4 mt-4 spaced-input-field">
             <PhoneInputField
               value={phoneNumber}
               onChange={isEditable ? (phone) => setPhoneNumber(phone) : () => {}}
@@ -193,8 +193,8 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="home_address">Home Address</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="home_address" className="block mb-1">Home Address</Label>
             <Input
               id="home_address"
               value={profile.home_address}
@@ -202,8 +202,8 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="country_of_residence">Country of Residence</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="country_of_residence" className="block mb-1">Country of Residence</Label>
             <Input
               id="country_of_residence"
               value={profile.country_of_residence}
@@ -211,8 +211,8 @@ export default function PersonalInformation() {
               readOnly={!isEditable}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="state_of_residence">State of Residence</Label>
+          <div className="space-y-4 mt-4 sm:mt-0">
+            <Label htmlFor="state_of_residence" className="block mb-1">State of Residence</Label>
             <Input
               id="state_of_residence"
               value={profile.state_of_residence}
@@ -222,7 +222,7 @@ export default function PersonalInformation() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 mt-6">
           {isEditable ? (
             <>
               <Button variant="outline" onClick={() => setIsEditable(false)}>Cancel</Button>
