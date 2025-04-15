@@ -14,7 +14,7 @@ export interface StudentClassResponse {
         time: string[];
       };
       meeting_link: string;
-      status: "active" | "completed" | "upcoming" | "scheduled"; // Updated to include "scheduled"
+      status: "active" | "completed" | "upcoming" | "scheduled"; 
       progress_percentage: number;
       days_remaining: number | null;
       start_date: string | null;
