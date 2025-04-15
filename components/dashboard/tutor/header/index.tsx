@@ -74,7 +74,7 @@ const Dropdown: React.FC<{
         {icon}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute right-0 max-md:left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999]">
           <ul className="py-1">
             {items.map((item, index) => (
               <li
@@ -173,7 +173,7 @@ const TutorDashboardHeader: React.FC = () => {
           const recent: Notification[] = [];
 
           do {
-            const response = await fetchNotifications(token, currentPage, 20); // Fetch notifications page by page
+            const response = await fetchNotifications(token, currentPage, 20);
             const notifications = response.data.notifications;
             const unread = notifications.filter((notification) => !notification.read_at);
             totalUnreadCount += unread.length;
