@@ -12,6 +12,7 @@ import { Pagination } from "@/src/components/ui/pagination"
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogFooter } from "@/components/dashboard/student/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { CourseListSkeleton } from "../skeleton"
+import { useRouter } from 'next/navigation';
 
 interface ApiCourse {
   class_id: number;
@@ -38,6 +39,7 @@ interface Course extends ApiCourse {
 }
 
 export function CourseList() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('')
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -304,7 +306,7 @@ export function CourseList() {
                 <Button
                   variant="default"
                   className="w-full mt-4"
-                  onClick={() => console.log("View Class")}
+                  onClick={() => router.push(`/tutor/course/${selectedCourse.id}`)}
                 >
                   View Class
                 </Button>
