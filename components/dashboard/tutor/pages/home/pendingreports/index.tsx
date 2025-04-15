@@ -23,10 +23,9 @@ interface PendingReportsProps {
   reports: Report[]
 }
 
-export default function PendingReportsList({ reports = [] }: PendingReportsProps) {
-  const router = useRouter()
-  const displayReports = reports.slice(0, 2)
-  const remainingCount = Math.max(0, reports.length - 2)
+export default function PendingReportsList({ reports = [], remainingCount }: PendingReportsProps & { remainingCount: number }) {
+  const router = useRouter();
+  const displayReports = reports.slice(0, 2);
 
   if (reports.length === 0) {
     return (
@@ -45,10 +44,12 @@ export default function PendingReportsList({ reports = [] }: PendingReportsProps
   return (
     <div className="h-fit flex flex-col bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 xl:max-w-[1300px] xl:mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <CardTitle>Pending Reports</CardTitle>
-        {remainingCount > 0 && (
-          <span className="text-sm text-gray-500">+{remainingCount} more</span>
-        )}
+        <CardTitle>
+          Pending Reports
+          {remainingCount > 0 && (
+            <span className="text-sm text-gray-500 ml-2">+{remainingCount} more</span>
+          )}
+        </CardTitle>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">
         {displayReports.map((report) => (
@@ -81,5 +82,5 @@ export default function PendingReportsList({ reports = [] }: PendingReportsProps
         ))}
       </div>
     </div>
-  )
+  );
 }

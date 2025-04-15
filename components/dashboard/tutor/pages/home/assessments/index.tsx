@@ -21,7 +21,7 @@ interface AssessmentsProps {
   assignments: Assessment[]
 }
 
-export default function Assessments({ assignments = [] }: AssessmentsProps) {
+export default function Assessments({ assignments = [], remainingCount }: AssessmentsProps & { remainingCount: number }) {
   const getRemainingDays = (deadline: string) => {
     const today = new Date()
     const deadlineDate = new Date(deadline)
@@ -50,7 +50,6 @@ export default function Assessments({ assignments = [] }: AssessmentsProps) {
   }
 
   const displayAssignments = assignments.slice(0, 3)
-  const remainingCount = Math.max(0, assignments.length - 3)
 
   return (
     <Card className="min-h-[355px] w-full max-md:mt-5 xl:max-w-[1300px] xl:mx-auto">

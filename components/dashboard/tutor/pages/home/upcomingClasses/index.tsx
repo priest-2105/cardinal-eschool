@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { AlertCircle } from "lucide-react"; // Import AlertCircle for fallback icon
+import { AlertCircle } from "lucide-react"; 
 
 interface UpcomingClassprop {
   upcomingClasses: {
@@ -26,10 +26,9 @@ interface UpcomingClassprop {
   }[];
 }
 
-export default function UpcomingClasses({ upcomingClasses = [] }: UpcomingClassprop) {
+export default function UpcomingClasses({ upcomingClasses = [], remainingCount }: UpcomingClassprop & { remainingCount: number }) {
   const router = useRouter();
   const displayClasses = upcomingClasses.slice(0, 2);
-  const remainingCount = Math.max(0, upcomingClasses.length - 2);
 
   if (upcomingClasses.length === 0) {
     return (

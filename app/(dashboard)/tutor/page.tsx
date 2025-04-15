@@ -165,11 +165,20 @@ export default function TutorDashboard() {
 
         <div className="gap-6 max-md:block lg:grid md:grid-cols-2 lg:grid-cols-2">
           <div className="md:col-span-1">
-            <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
-            <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
+            <UpcomingClasses
+              upcomingClasses={dashboardData?.upcoming_classes ?? []}
+              remainingCount={Math.max(0, (dashboardData?.upcoming_classes?.length ?? 0) - 2)}
+            />
+            <PendingReportsList
+              reports={dashboardData?.pending_reports ?? []}
+              remainingCount={Math.max(0, (dashboardData?.pending_reports?.length ?? 0) - 2)}
+            />
           </div>
           <div className="space-y-6">
-            <Assessments assignments={dashboardData?.active_assignments ?? []} />
+            <Assessments
+              assignments={dashboardData?.active_assignments ?? []}
+              remainingCount={Math.max(0, (dashboardData?.active_assignments?.length ?? 0) - 3)}
+            />
           </div>
         </div>
       </div>
