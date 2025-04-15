@@ -54,26 +54,30 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   ]
 
   const fetchReports = useCallback(async () => {
-    if (!token) return
+    if (!token) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await getClassReports(token, classId)
-      setReports(response.data.reports)
+      const response = await getClassReports(token, classId);
+      setReports(response.data.reports);
+      setFilteredReports(response.data.reports);
+      setError(null); // Clear any previous errors
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch reports")
+      if (err instanceof Error && err.message.includes("404")) {
+        setError("No reports available");
+        setReports([]);
+        setFilteredReports([]);
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to fetch reports");
+      }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [token, classId])
+  }, [token, classId]);
 
   useEffect(() => {
-    fetchReports()
-  }, [fetchReports])
-
-  useEffect(() => {
-    setFilteredReports(reports)
-  }, [reports])
+    fetchReports();
+  }, [fetchReports]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -112,9 +116,9 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
     setFilteredReports(result)
   }
 
-  const handleCreateReport = (refreshList: () => void) => {
+  const handleCreateReport = () => {
     setIsCreateModalOpen(false);
-    refreshList(); // Refresh the list after creation
+    fetchReports(); // Refresh the report list after creating a report
   };
 
   const handleViewReport = (report: Report) => {
@@ -265,7 +269,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           <p>Loading reports...</p>
         </div>
       ) : error ? (
-        <div className="flex-1 flex items-center justify-center text-red-500">
+        <div className="flex-1 flex items-center justify-center text-gray-500">
           <p>{error}</p>
         </div>
       ) : (
@@ -278,7 +282,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
               <div className="mb-2 sm:mb-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium">
-                    {courseDetails.students_assigned.find(s => s.id === report.student_id)?.name || "Unknown Student"}
+                    {report.student_name}
                   </h3>
                   <Badge variant={report.status === "pending" ? "warning" : "success"}>
                     {report.status}
