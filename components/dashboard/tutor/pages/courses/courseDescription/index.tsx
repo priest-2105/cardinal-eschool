@@ -23,6 +23,7 @@ interface CourseDescriptionProps {
       dp_url: string | null;
     }[];
     resources_assigned: unknown[];
+    progress_percentage: number;
   }
 }
 
@@ -35,12 +36,17 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
     return text.slice(0, maxLength) + "..."
   }
 
+  const getProgressBarColor = (progress: number) => {
+    if (progress < 25) return "bg-orange-500"
+    if (progress < 75) return "bg-blue-500"
+    return "bg-[#1BC2C2]"
+  }
   
 
   return (
     <div className="space-y-6">
       {/* Course Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="flex  sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-2">
           <h2 className="text-xl sm:text-2xl font-semibold">{coursdetails.name}</h2>
           <div className="flex flex-wrap items-center gap-2">
@@ -50,9 +56,21 @@ export default function CourseDescription({ coursdetails }: CourseDescriptionPro
           </div>
         </div>
         
-          <a  className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] text-white w-full sm:w-auto" href={coursdetails.meeting_link} target="_blank" rel="noopener noreferrer">
+          <a  className="bg-[#1BC2C2] py-2 px-4 rounded-full hover:bg-[#1bc2c2bd] ms-auto text-white h-fit w-fit
+           sm:w-auto" href={coursdetails.meeting_link} target="_blank" rel="noopener noreferrer">
             Join Class
           </a>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Class Completion</label>
+        <div className="w-full bg-gray-200 rounded-full h-4">
+          <div
+            className={`h-4 rounded-full ${getProgressBarColor(coursdetails.progress_percentage)}`}
+            style={{ width: `${coursdetails.progress_percentage}%` }}
+          ></div>
+        </div>
+        <p className="text-sm text-gray-500">{coursdetails.progress_percentage}% completed</p>
       </div>
 
       {/* Course Description */}

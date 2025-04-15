@@ -20,8 +20,13 @@ interface CourseDescriptionProps {
       name: string;
       dp_url: string | null;
     }[];
-    resources_assigned: unknown[]; // changed from any[]
+    resources_assigned: unknown[];
     progress_percentage: number;
+    status: string; // New field
+    start_date: string | null; // New field
+    end_date: string | null; // New field
+    learning_outcome: string; // New field
+    prerequisite: string; // New field
   }
 }
 

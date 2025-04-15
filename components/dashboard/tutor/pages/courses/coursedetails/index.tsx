@@ -88,26 +88,61 @@ export default function CourseDetailsComponent() {
     fetchCourseDetails()
   }, [courseId, token])
 
+
   if (loading) {
-    return <div className="text-center py-12">Loading course details...</div>
+    return (
+      <div className="w-full max-sm:w-[99%] h-[80vh] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
+        <div className="flex items-center gap-2 mb-4 md:mb-6">
+          <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+          <div className="w-1/2 h-6 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="border-b mb-4 md:mb-6 overflow-x-auto">
+          <div className="flex space-x-4 md:space-x-8 pb-2">
+            {Array(4)
+              .fill(null)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="w-20 h-6 bg-gray-200 rounded animate-pulse"
+                ></div>
+              ))}
+          </div>
+        </div>
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
+          <div className="flex-grow order-2 lg:order-1 pb-3">
+            <div className="h-[calc(100vh-200px)] bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2">
+            <div className="p-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="p-4 bg-gray-200 rounded animate-pulse"></div>
+            <div className="space-y-4">
+              {Array(3)
+                .fill(null)
+                .map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-200 rounded-lg animate-pulse"
+                  ></div>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <Alert variant="danger">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <div className="text-center py-12">No course details found</div>
     )
   }
 
   if (!courseDetails) {
     return <div className="text-center py-12">No course details found</div>
   }
-
   return (
-    <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 min-h-full relative">
-      {/* Back Button and Title */}
+    <div className="w-full max-sm:w-[90%] overflow-hidden max-sm:py-5 pb-5 h-[82vh] relative">
+     {/* Back Button and Title */}
       <div className="flex items-center gap-2 mb-4 md:mb-6">
         <Button variant="ghost" size="icon" className="rounded-full" onClick={handleback}>
           <ArrowLeft className="h-5 w-5" />
@@ -126,7 +161,7 @@ export default function CourseDetailsComponent() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as Tab)}
               className={cn(
-                "pb-2 text-sm font-medium transition-colors relative whitespace-nowrap flex items-center gap-2",
+                "pb-2 text-sm font-medium outline-none transition-colors relative whitespace-nowrap flex items-center gap-2",
                 activeTab === tab.id
                   ? "text-[#1BC2C2] border-b-2 border-[#1BC2C2]"
                   : "text-gray-500 hover:text-gray-700",
@@ -159,19 +194,29 @@ export default function CourseDetailsComponent() {
         {/* Sidebar */}
         <div
           className={cn(
-            "w-full lg:w-1/3 space-y-4 md:space-y-8 order-1 lg:order-2",
+            "w-full lg:w-1/3 space-y-2 md:space-y-4 order-1 lg:order-2",
             "fixed inset-y-0 right-0 z-50 bg-white p-4 overflow-y-auto transition-transform duration-300 ease-in-out transform",
-            "lg:relative lg:inset-auto lg:transform-none lg:transition-none",
-            isSidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0",
+            "lg:relative lg:inset-auto lg:transform-none lg:transition-none max-md:min-w-[350px] overflow-y-auto custom-scrollbar h-[70vh]",
+            isSidebarOpen ? "translate-x-0  w-[80vw] h-[100vh] px-5 pt-5" : "translate-x-full lg:translate-x-0",
           )}
         >
-          <Button variant="ghost" size="icon" className="absolute top-4 right-4 lg:hidden" onClick={toggleSidebar}>
-            <X className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="absolute z-50 top-4 right-4 lg:hidden" onClick={toggleSidebar}
+           style={{
+            marginTop: isSidebarOpen ? "80px" : "0px",
+          }}>
+          <X className="h-10 w-10" />
           </Button>
 
           {/* Course Info */}
-          <Card className="p-4 bg-gray-50">
-            <CardContent className="space-y-4">
+          <Card
+            style={{
+              marginTop: isSidebarOpen ? "150px" : "0px",
+            }}
+            className={`p-4 bg-gray-50 transition-all duration-300 ${
+              isSidebarOpen ? "mt-10 lg:mt-5" : "mt-5"
+            }`}
+          >
+             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12 md:h-16 md:w-16">
                   <AvatarImage src="/placeholder.svg" />
@@ -181,6 +226,13 @@ export default function CourseDetailsComponent() {
                   <h4 className="font-semibold">Course Code: {courseDetails.code}</h4>
                   <p className="text-sm text-gray-500">Department: {courseDetails?.department}</p>
                   <p className="text-sm text-gray-500">Semester: {courseDetails?.semester}</p>
+                  <p className="text-sm text-gray-500">Status: {courseDetails?.status}</p>
+                  <p className="text-sm text-gray-500">
+                    Start Date: {courseDetails?.start_date || "Not Available"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    End Date: {courseDetails?.end_date || "Not Available"}
+                  </p>
                 </div>
               </div>
             </CardContent>

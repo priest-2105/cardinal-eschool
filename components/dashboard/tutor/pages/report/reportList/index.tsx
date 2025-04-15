@@ -13,7 +13,8 @@ import { Badge } from "@/components/ui/badge"
 import { getClassReports } from "@/lib/api/tutor/courses/fetchreport"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
-import type { Report } from "@/lib/types/report"; // Import the shared Report type
+import type { Report } from "@/lib/types/report";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 export interface Student {
   id: string
@@ -44,6 +45,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
 
   const months = [
@@ -131,13 +133,83 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
         <h2 className="text-2xl font-bold">Student Reports</h2>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Create Report
         </Button>
       </div>
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+
+      {/* Filters for Mobile */}
+      <div className="sm:hidden mb-4">
+        <Dialog open={isFilterModalOpen} onOpenChange={setIsFilterModalOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="w-full">
+              Filters
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-white rounded-md max-w-[600px] w-[90%]">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              <Input
+                type="text"
+                placeholder="Search reports..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full"
+              />
+              <Select onValueChange={handleMonthFilter} defaultValue="all">
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter by month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All months</SelectItem>
+                  {months.map((month) => (
+                    <SelectItem key={month} value={month}>
+                      {month}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {courseDetails.students_assigned.length > 1 && (
+                <Select onValueChange={handleStudentFilter} defaultValue="all">
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Filter by student" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All students</SelectItem>
+                    {courseDetails.students_assigned.map((student) => (
+                      <SelectItem key={student.id} value={student.id}>
+                        {student.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <Select onValueChange={handleStatusFilter} defaultValue="all">
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="default"
+                className="w-full mt-4"
+                onClick={() => setIsFilterModalOpen(false)}
+              >
+                Apply
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Filters for Desktop */}
+      <div className="hidden sm:flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <Input
             type="text"
@@ -148,7 +220,6 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
-
         <Select onValueChange={handleMonthFilter} defaultValue="all">
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by month" />
@@ -162,7 +233,6 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
             ))}
           </SelectContent>
         </Select>
-
         {courseDetails.students_assigned.length > 1 && (
           <Select onValueChange={handleStudentFilter} defaultValue="all">
             <SelectTrigger className="w-full sm:w-[180px]">
@@ -178,7 +248,6 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
             </SelectContent>
           </Select>
         )}
-
         <Select onValueChange={handleStatusFilter} defaultValue="all">
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Filter by status" />
@@ -190,6 +259,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
           </SelectContent>
         </Select>
       </div>
+
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
           <p>Loading reports...</p>
@@ -225,8 +295,8 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
-                <Button variant="outline" size="sm" onClick={() => handleViewReport(report)}>
+              <div className="flex flex-wrap sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2 mt-2 sm:mt-0">
+                <Button className="mr-2" variant="outline" size="sm" onClick={() => handleViewReport(report)}>
                   <FileText size={16} className="mr-2" />
                   View
                 </Button>
