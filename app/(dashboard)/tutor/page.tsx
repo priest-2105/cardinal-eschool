@@ -48,10 +48,10 @@ interface TutorDashboardData {
     department: string;
     semester: string;
     status: string;
-    progress_percentage: number;
+    progress_percentage: number; 
     days_remaining: number | null;
-    start_date: string | null;
-    end_date: string | null;
+    start_date: string | null; 
+    end_date: string | null; 
   }[];
   active_assignments: {
     id: number;
@@ -101,19 +101,19 @@ export default function TutorDashboard() {
       try {
         const response = await getTutorDashboard(token);
         const data = response.data;
-        
+
         const transformedData = {
           ...data,
-          upcoming_classes: data.upcoming_classes.map(cls => ({
+          upcoming_classes: Object.values(data.upcoming_classes).map(cls => ({
             ...cls,
-            status: 'active',
-            progress_percentage: 0,
-            days_remaining: null,
-            start_date: null,
-            end_date: null
+            status: cls.status || 'active',
+            progress_percentage: cls.progress_percentage || 0,
+            days_remaining: cls.days_remaining || null,
+            start_date: cls.start_date || null,
+            end_date: cls.end_date || null
           }))
         };
-        
+
         setDashboardData(transformedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");

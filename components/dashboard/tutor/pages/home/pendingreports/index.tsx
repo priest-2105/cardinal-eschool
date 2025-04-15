@@ -7,23 +7,23 @@ import { CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 
 interface Report {
-  id: number
-  report_text: string
-  report_month: string
-  report_status: string
-  created_at: string
-  class: {
-    id: number
-    name: string
-    code: string
-  }
+  id: number;
+    report_text: string;
+    report_month: string;
+    report_status: string;
+    created_at: string;
+    class: {
+      id: number;
+      name: string;
+      code: string;
+    };
 }
 
 interface PendingReportsProps {
   reports: Report[]
 }
 
-export default function PendingReportsList({ reports }: PendingReportsProps) {
+export default function PendingReportsList({ reports = [] }: PendingReportsProps) {
   const router = useRouter()
   const displayReports = reports.slice(0, 2)
   const remainingCount = Math.max(0, reports.length - 2)

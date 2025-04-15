@@ -38,6 +38,11 @@ interface DashboardResponse {
       student_count: number;
       department: string;
       semester: string;
+      status: string; // Added
+      progress_percentage: number; // Added
+      days_remaining: number | null; // Added
+      start_date: string | null; // Added
+      end_date: string | null; // Added
     }>;
     active_assignments: Array<{
       id: number;

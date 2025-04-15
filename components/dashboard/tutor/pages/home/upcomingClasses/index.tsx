@@ -17,15 +17,15 @@ interface UpcomingClassprop {
     student_count: number;
     department: string;
     semester: string;
-    status: string;
+    status: string; 
     progress_percentage: number;
-    days_remaining: number | null;
-    start_date: string | null;
-    end_date: string | null;
+    days_remaining: number | null; 
+    start_date: string | null; 
+    end_date: string | null; 
   }[];
 }
 
-export default function UpcomingClasses({ upcomingClasses }: UpcomingClassprop) {
+export default function UpcomingClasses({ upcomingClasses = [] }: UpcomingClassprop) {
   const router = useRouter();
   const displayClasses = upcomingClasses.slice(0, 2);
   const remainingCount = Math.max(0, upcomingClasses.length - 2);

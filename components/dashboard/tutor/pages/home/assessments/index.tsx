@@ -5,23 +5,23 @@ import { Button } from "@/components/ui/button"
 import { FileText } from "lucide-react"
 
 interface Assessment {
-  id: number
-  title: string
-  description: string
-  deadline: string
+  id: number;
+  title: string;
+  description: string;
+  deadline: string;
   class: {
-    id: number
-    name: string
-    code: string
-  }
-  file_url: string
+    id: number;
+    name: string;
+    code: string;
+  };
+  file_url: string;
 }
 
 interface AssessmentsProps {
   assignments: Assessment[]
 }
 
-export default function Assessments({ assignments }: AssessmentsProps) {
+export default function Assessments({ assignments = [] }: AssessmentsProps) {
   const getRemainingDays = (deadline: string) => {
     const today = new Date()
     const deadlineDate = new Date(deadline)
