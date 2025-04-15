@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
-import { Search, Filter } from 'lucide-react'
+import { Search, Filter, BookOpen } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectWrapper } from "@/components/ui/select"
 import { CourseTable } from '../coursetable/index'
 import { getTutorClasses } from '@/lib/api/tutor/courses/courselist'
@@ -106,15 +106,30 @@ export function CourseList() {
   if (loading) {
     return <CourseListSkeleton />
   }
-
   if (error) {
-    return <div className="text-center py-12 text-red-500">{error}</div>
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <div className="text-red-500 text-lg font-medium">{error}</div>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+          className="mt-4"
+        >
+          Try Again
+        </Button>
+      </div>
+    )
   }
 
-  if (courses.length === 0) {
-    return <div className="text-center py-12">No courses available</div>
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4">
+        <BookOpen className="h-16 w-16 text-gray-300" />
+        <p className="text-lg font-medium text-gray-600">No courses available</p>
+        <p className="text-sm text-gray-500">Please contact support for assistance</p>
+      </div>
+    )
   }
-
   return (
     <div className="space-y-4">
       <div className="sm:flex max-sm:block max-sm:pb-3 items-center justify-between">
