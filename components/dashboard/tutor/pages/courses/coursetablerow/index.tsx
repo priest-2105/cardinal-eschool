@@ -23,7 +23,7 @@ interface ApiCourse {
 }
 
 interface Course extends ApiCourse {
-  id: number; 
+  id: number;
 }
 
 interface CourseTableRowProps {
@@ -43,14 +43,24 @@ export function CourseTableRow({ course, onRowClick }: CourseTableRowProps) {
       <TableCell>{course.name}</TableCell>
       <TableCell>{course.code}</TableCell>
       <TableCell>{course.no_of_students}</TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         {course.schedule.days.map((day, index) => (
           <div key={`${course.id}-${day}`}>
             {`${day} at ${course.schedule.time[index]}`}
           </div>
         ))}
       </TableCell>
+      <TableCell className="hidden lg:table-cell">{course.status}</TableCell>
+      <TableCell className="hidden lg:table-cell">
+        <div className="w-full bg-gray-200 rounded-full h-4">
+          <div
+            className="h-4 rounded-full bg-[#1BC2C2]"
+            style={{ width: `${course.progress_percentage}%` }}
+          ></div>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">{course.progress_percentage}%</p>
+      </TableCell>
     </TableRow>
-  )
+  );
 }
 
