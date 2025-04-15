@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { AlertCircle } from "lucide-react"; // Import AlertCircle for fallback icon
 
 interface UpcomingClassprop {
   upcomingClasses: {
@@ -29,6 +30,20 @@ export default function UpcomingClasses({ upcomingClasses = [] }: UpcomingClassp
   const router = useRouter();
   const displayClasses = upcomingClasses.slice(0, 2);
   const remainingCount = Math.max(0, upcomingClasses.length - 2);
+
+  if (upcomingClasses.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>Upcoming Classes</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center h-full">
+          <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
+          <p className="text-gray-500">No upcoming classes available.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full">

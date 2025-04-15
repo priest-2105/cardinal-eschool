@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Calendar, FileText } from "lucide-react"
+import { Calendar, FileText, AlertCircle } from "lucide-react"
 import { format } from "date-fns"
 import { CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
@@ -27,6 +27,20 @@ export default function PendingReportsList({ reports = [] }: PendingReportsProps
   const router = useRouter()
   const displayReports = reports.slice(0, 2)
   const remainingCount = Math.max(0, reports.length - 2)
+
+  if (reports.length === 0) {
+    return (
+      <div className="h-fit flex flex-col bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 xl:max-w-[1300px] xl:mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <CardTitle>Pending Reports</CardTitle>
+        </div>
+        <div className="flex flex-col items-center justify-center h-full">
+          <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
+          <p className="text-gray-500">No pending reports available.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-fit flex flex-col bg-white rounded-xl border shadow-sm transition-shadow p-4 mt-5 xl:max-w-[1300px] xl:mx-auto">

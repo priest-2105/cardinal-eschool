@@ -158,26 +158,18 @@ export default function TutorDashboard() {
 
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      {(dashboardData?.announcements ?? []).length > 0 && (
-        <AnnouncementMarquee announcements={dashboardData?.announcements ?? []} />
-      )}
+      <AnnouncementMarquee announcements={dashboardData?.announcements ?? []} />
 
       <div className="space-y-6 p-6 bg-white rounded-lg border">
         {dashboardData?.overview && <DashboardStats overview={dashboardData.overview} />}
 
         <div className="gap-6 max-md:block lg:grid md:grid-cols-2 lg:grid-cols-2">
           <div className="md:col-span-1">
-            {(dashboardData?.upcoming_classes ?? []).length > 0 && (
-              <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
-            )}
-            {(dashboardData?.pending_reports ?? []).length > 0 && (
-              <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
-            )}
+            <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
+            <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
           </div>
           <div className="space-y-6">
-            {(dashboardData?.active_assignments ?? []).length > 0 && (
-              <Assessments assignments={dashboardData?.active_assignments ?? []} />
-            )}
+            <Assessments assignments={dashboardData?.active_assignments ?? []} />
           </div>
         </div>
       </div>

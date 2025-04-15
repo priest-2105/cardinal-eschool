@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/dashboard/tutor/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText } from "lucide-react"
+import { FileText, AlertCircle } from "lucide-react"
 
 interface Assessment {
   id: number;
@@ -33,6 +33,20 @@ export default function Assessments({ assignments = [] }: AssessmentsProps) {
   const getDeadlineColor = (deadline: string) => {
     const remainingDays = getRemainingDays(deadline)
     return remainingDays > 4 ? "text-green-500" : "text-red-500"
+  }
+
+  if (assignments.length === 0) {
+    return (
+      <Card className="min-h-[355px] w-full max-md:mt-5 xl:max-w-[1300px] xl:mx-auto">
+        <CardHeader>
+          <CardTitle>Active Assessment</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center h-full">
+          <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
+          <p className="text-gray-500">No active assessments available.</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   const displayAssignments = assignments.slice(0, 3)
