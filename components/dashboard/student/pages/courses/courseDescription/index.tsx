@@ -20,7 +20,7 @@ interface CourseDescriptionProps {
       name: string;
       dp_url: string | null;
     }[];
-    resources_assigned: unknown[]; // changed from any[]
+    resources_assigned: unknown[];
     progress_percentage: number;
   }
 }

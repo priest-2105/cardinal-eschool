@@ -35,7 +35,7 @@ export function AnnouncementMarquee({ announcements }: AnnouncementMarqueeProps)
       onMouseLeave={() => setIsPaused(false)}
     >
       <div className="flex items-center">
-        <div className="flex items-center gap-2 min-w-[200px]">
+        <div className="flex items-center gap-2 min-w-[200px] max-sm:min-w-fit">
           <BellRing className="h-4 w-4" />
           <span className="font-medium">Announcements</span>
         </div>

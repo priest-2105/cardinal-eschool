@@ -120,30 +120,30 @@ export default function TicketDetailsComponent({ ticketCodec }: { ticketCodec: s
           <CardTitle>Ticket Information</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 max-sm:grid-cols-1">
+            <div className="max-sm:block">
               <Label className="font-semibold">User Name</Label>
-              <p>{ticket.userName}</p>
+              <p className="break-words">{ticket.userName}</p>
             </div>
-            <div>
+            <div className="max-sm:block">
               <Label className="font-semibold">User Email</Label>
-              <p>{ticket.userEmail}</p>
+              <p className="break-words">{ticket.userEmail}</p>
             </div>
-            <div>
+            <div className="max-sm:block">
               <Label className="font-semibold">Created At</Label>
-              <p>{new Date(ticket.createdAt).toLocaleString()}</p>
+              <p className="break-words">{new Date(ticket.createdAt).toLocaleString()}</p>
             </div>
-            <div>
+            <div className="max-sm:block">
               <Label className="font-semibold">Last Updated</Label>
-              <p>{new Date(ticket.updatedAt).toLocaleString()}</p>
+              <p className="break-words">{new Date(ticket.updatedAt).toLocaleString()}</p>
             </div>
-            <div>
+            <div className="max-sm:block">
               <Label className="font-semibold">Status</Label>
-              <p>{ticket.status}</p>
+              <p className="break-words">{ticket.status}</p>
             </div>
-            <div>
+            <div className="max-sm:block">
               <Label className="font-semibold">Department</Label>
-              <p>{ticket.department}</p>
+              <p className="break-words">{ticket.department}</p>
             </div>
           </div>
         </CardContent>
@@ -205,12 +205,12 @@ interface TicketReplyProps {
 
 export function TicketReply({ sender, content, timestamp }: TicketReplyProps) {
   return (
-    <div className="border-b border-gray-200 py-4">
-      <div className="flex justify-between items-center mb-2">
+    <div className="border-b border-gray-200 py-4 max-sm:block">
+      <div className="flex justify-between items-center mb-2 max-sm:flex-col max-sm:items-start">
         <span className="font-semibold">{sender === "admin" ? "Support Staff" : "User"}</span>
-        <span className="text-sm text-gray-500">{format(new Date(timestamp), "MMM d, yyyy HH:mm")}</span>
+        <span className="text-sm text-gray-500 max-sm:mt-1">{format(new Date(timestamp), "MMM d, yyyy HH:mm")}</span>
       </div>
-      <p className="text-gray-700 whitespace-pre-wrap">{content}</p>
+      <p className="text-gray-700 whitespace-pre-wrap break-words">{content}</p>
     </div>
   )
 }

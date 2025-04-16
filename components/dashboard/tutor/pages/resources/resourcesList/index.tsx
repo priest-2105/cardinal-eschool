@@ -128,17 +128,18 @@ export default function ResourcesList({ classId, assignedResources = [] }: Resou
         </Alert>
       )}
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
         <h2 className="text-2xl font-bold">Resources</h2>
-        <div>
-          <Button className="mx-1" onClick={() => setIsAssignModalOpen(true)}>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button className="w-full sm:w-auto" onClick={() => setIsAssignModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Assign Resource
           </Button>
-          <Button className="mx-1" onClick={() => setIsCreateModalOpen(true)}>
+          <Button className="w-full sm:w-auto" onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Upload Resource
           </Button>
         </div>
       </div>
+
       <div className="relative mb-4">
         <Input
           type="text"

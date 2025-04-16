@@ -40,3 +40,36 @@ export async function getClassAssignments(token: string, classId: string): Promi
   console.log("Assignments fetched successfully:", data); // Debugging log
   return data;
 }
+
+interface SubmissionDetailsResponse {
+  status: string;
+  message: string;
+  data: {
+    submission: {
+      id: number;
+      assignment_id: number;
+      student_id: string;
+      student_name: string;
+      submission: string;
+      file_url: string;
+      status: string;
+      submitted_at: string;
+    };
+  };
+}
+
+export async function getSubmissionDetails(token: string, submissionId: number): Promise<SubmissionDetailsResponse> {
+  const endpoint = `${apiUrl}/tutor/submissions/${submissionId}`;
+  const response = await fetchWithAuth(endpoint, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch submission details");
+  }
+
+  return response.json();
+}

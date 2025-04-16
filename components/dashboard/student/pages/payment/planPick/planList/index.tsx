@@ -69,7 +69,7 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
       id: 4,
       title: "Group Sessions",
       price: "$40",
-      duration: "/ Session",
+      duration: "/ Month",
       features: [
         "For interactive and collaborative learning",
         "1 group session weekly",

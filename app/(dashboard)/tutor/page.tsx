@@ -48,10 +48,10 @@ interface TutorDashboardData {
     department: string;
     semester: string;
     status: string;
-    progress_percentage: number;
+    progress_percentage: number; 
     days_remaining: number | null;
-    start_date: string | null;
-    end_date: string | null;
+    start_date: string | null; 
+    end_date: string | null; 
   }[];
   active_assignments: {
     id: number;
@@ -101,19 +101,19 @@ export default function TutorDashboard() {
       try {
         const response = await getTutorDashboard(token);
         const data = response.data;
-        
+
         const transformedData = {
           ...data,
-          upcoming_classes: data.upcoming_classes.map(cls => ({
+          upcoming_classes: Object.values(data.upcoming_classes).map(cls => ({
             ...cls,
-            status: 'active',
-            progress_percentage: 0,
-            days_remaining: null,
-            start_date: null,
-            end_date: null
+            status: cls.status || 'active',
+            progress_percentage: cls.progress_percentage || 0,
+            days_remaining: cls.days_remaining || null,
+            start_date: cls.start_date || null,
+            end_date: cls.end_date || null
           }))
         };
-        
+
         setDashboardData(transformedData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch dashboard data");
@@ -158,26 +158,27 @@ export default function TutorDashboard() {
 
   return (
     <div className={`transition-all ease-in-out p-2 duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"}`}>
-      {(dashboardData?.announcements ?? []).length > 0 && (
-        <AnnouncementMarquee announcements={dashboardData?.announcements ?? []} />
-      )}
+      <AnnouncementMarquee announcements={dashboardData?.announcements ?? []} />
 
       <div className="space-y-6 p-6 bg-white rounded-lg border">
         {dashboardData?.overview && <DashboardStats overview={dashboardData.overview} />}
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="md:col-span-2">
-            {(dashboardData?.upcoming_classes ?? []).length > 0 && (
-              <UpcomingClasses upcomingClasses={dashboardData?.upcoming_classes ?? []} />
-            )}
-            {(dashboardData?.pending_reports ?? []).length > 0 && (
-              <PendingReportsList reports={dashboardData?.pending_reports ?? []} />
-            )}
+        <div className="gap-6 max-md:block lg:grid md:grid-cols-2 lg:grid-cols-2">
+          <div className="md:col-span-1">
+            <UpcomingClasses
+              upcomingClasses={dashboardData?.upcoming_classes ?? []}
+              remainingCount={Math.max(0, (dashboardData?.upcoming_classes?.length ?? 0) - 2)}
+            />
+            <PendingReportsList
+              reports={dashboardData?.pending_reports ?? []}
+              remainingCount={Math.max(0, (dashboardData?.pending_reports?.length ?? 0) - 2)}
+            />
           </div>
           <div className="space-y-6">
-            {(dashboardData?.active_assignments ?? []).length > 0 && (
-              <Assessments assignments={dashboardData?.active_assignments ?? []} />
-            )}
+            <Assessments
+              assignments={dashboardData?.active_assignments ?? []}
+              remainingCount={Math.max(0, (dashboardData?.active_assignments?.length ?? 0) - 3)}
+            />
           </div>
         </div>
       </div>

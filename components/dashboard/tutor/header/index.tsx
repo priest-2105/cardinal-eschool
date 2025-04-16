@@ -74,7 +74,7 @@ const Dropdown: React.FC<{
         {icon}
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute right-0 max-md:left-0 mt-2 w-60 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999]">
           <ul className="py-1">
             {items.map((item, index) => (
               <li
@@ -118,7 +118,7 @@ const Dropdown: React.FC<{
 
 const TutorDashboardHeader: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "" })
+  const [profile, setProfile] = useState({ firstname: "", lastname: "", email: "", profile_picture: "" })
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const token = useSelector((state: RootState) => state.auth?.token)
   const dispatch = useDispatch()
@@ -146,6 +146,7 @@ const TutorDashboardHeader: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
+  const [profilePicture,] = useState("/assets/img/dashboard/tutor/Ellipse 2034.png");
 
   useEffect(() => {
     const getProfile = async () => {
@@ -153,6 +154,8 @@ const TutorDashboardHeader: React.FC = () => {
         if (token) {
           const response = await fetchTutorProfile(token);
           setProfile(response.data);
+          console.log(response);
+          
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -173,7 +176,7 @@ const TutorDashboardHeader: React.FC = () => {
           const recent: Notification[] = [];
 
           do {
-            const response = await fetchNotifications(token, currentPage, 20); // Fetch notifications page by page
+            const response = await fetchNotifications(token, currentPage, 20);
             const notifications = response.data.notifications;
             const unread = notifications.filter((notification) => !notification.read_at);
             totalUnreadCount += unread.length;
@@ -265,7 +268,8 @@ const TutorDashboardHeader: React.FC = () => {
               icon={
                 <Button variant="ghost" className="relative w-fit flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/assets/img/dashboard/tutor/Ellipse 2034.png" alt="User" />
+                 <AvatarImage src={profile.profile_picture || profilePicture} alt={profile.firstname} />
+                   
                     <AvatarFallback>{profile.firstname[0]} {profile.lastname[0]}</AvatarFallback>
                   </Avatar>
                   <div>
