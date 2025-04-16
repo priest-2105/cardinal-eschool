@@ -97,14 +97,20 @@ export function AssessmentModal({ isOpen, onClose, assessment }: AssessmentModal
                 <TabsTrigger
                   value="details"
                   className="pb-2 border-b-2"
-                  style={{ borderColor: "var(--color-primary)" }}
+                  style={{
+                    borderColor: "var(--color-primary)",
+                    color: "var(--color-primary)",
+                  }}
                 >
                   Details
                 </TabsTrigger>
                 <TabsTrigger
                   value="submissions"
                   className="pb-2 border-b-2"
-                  style={{ borderColor: "var(--color-primary)" }}
+                  style={{
+                    borderColor: "var(--color-primary)",
+                    color: "var(--color-primary)",
+                  }}
                 >
                   Submissions
                 </TabsTrigger>
