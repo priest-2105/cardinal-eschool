@@ -146,7 +146,7 @@ const TutorDashboardHeader: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [recentNotifications, setRecentNotifications] = useState<Notification[]>([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
-  const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/tutor/Ellipse 2034.png");
+  const [profilePicture,] = useState("/assets/img/dashboard/tutor/Ellipse 2034.png");
 
   useEffect(() => {
     const getProfile = async () => {
