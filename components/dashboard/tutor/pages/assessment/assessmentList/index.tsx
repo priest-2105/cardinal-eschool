@@ -53,27 +53,24 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [showDeleteAlert, setShowDeleteAlert] = useState(false)
 
-  const fetchAssessments = async () => {
+  const fetchAssessments = useCallback(async () => {
     if (!token) return
 
     setLoading(true)
     try {
       const response = await getClassAssignments(token, classId)
       setAssessments(response.data.assignments)
+      setError(null); // Clear any previous errors
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch assignments")
     } finally {
-      setLoading(false)
+      setLoading(false); // Ensure loading is set to false
     }
-  }
-
-  const fetchAssessmentsStable = useCallback(() => {
-    fetchAssessments() // existing fetchAssessments call
-  }, [fetchAssessments])
+  }, [token, classId])
 
   useEffect(() => {
-    fetchAssessmentsStable()
-  }, [fetchAssessmentsStable])
+    fetchAssessments()
+  }, [fetchAssessments])
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
@@ -183,7 +180,7 @@ export default function AssessmentsList({ classId }: AssessmentListProps) {
        </div>
       ) : error ? (
         <div className="flex-1 flex items-center justify-center">
-          <p>Assessments not available</p>
+          <p>{error}</p>
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-4">

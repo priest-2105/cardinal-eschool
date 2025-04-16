@@ -1,5 +1,15 @@
 import { fetchWithAuth, apiUrl } from "../fetchWithAuth";
 
+interface Submission {
+  id: number;
+  student_id: string;
+  student_name: string;
+  submission: string;
+  file_url: string;
+  status: string;
+  submitted_at: string;
+}
+
 interface AssignmentDetails {
   id: number;
   title: string;
@@ -14,7 +24,7 @@ interface AssignmentDetails {
     submitted_students: number;
     pending_students: number;
   };
-  submissions: unknown[]; // changed from any[] to unknown[]
+  submissions: Submission[]; // Updated structure
 }
 
 interface AssignmentResponse {
