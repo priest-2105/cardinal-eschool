@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 import { getSubmissionDetails } from "@/lib/api/tutor/courses/fetchsinglesubmisson";
 import { Alert } from "@/components/ui/alert";
-import { ExternalLink } from "lucide-react";
+// import { ExternalLink } from "lucide-react";
 
 interface SubmissionDetails {
   id: number;
