@@ -212,6 +212,19 @@ const TutorDashboardHeader: React.FC = () => {
     }
   }, [showLogoutDialog, router])
 
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ dp_url: string }>;
+      setProfile((prev) => ({ ...prev, profile_picture: customEvent.detail.dp_url }));
+    };
+
+    window.addEventListener("tutorProfilePictureUpdated", handleProfilePictureUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener("tutorProfilePictureUpdated", handleProfilePictureUpdate as EventListener);
+    };
+  }, []);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {

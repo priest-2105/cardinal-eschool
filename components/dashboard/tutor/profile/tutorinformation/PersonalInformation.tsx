@@ -94,6 +94,10 @@ export default function PersonalInformation() {
           const response = await updateTutorProfilePicture(token, file);
           setProfilePicture(response.data.dp_url);
           setAlert({ type: 'success', message: 'Profile picture updated successfully' });
+
+          // Trigger custom event to update header image
+          const event = new CustomEvent("tutorProfilePictureUpdated", { detail: { dp_url: response.data.dp_url } });
+          window.dispatchEvent(event);
         }
       } catch (error) {
         console.error("Profile picture update failed", error);
