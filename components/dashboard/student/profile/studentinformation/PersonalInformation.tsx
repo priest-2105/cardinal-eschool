@@ -13,7 +13,7 @@ import { fetchStudentProfile, updateStudentProfile, updateStudentProfilePicture 
 import { setUser } from "@/store/userSlice";
 import { Alert, AlertTitle, AlertDescription } from "@/components/dashboard/student/ui/alert";
 // import Image from 'next/image';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function PersonalInformation() {
   const token = useSelector((state: RootState) => state.auth?.token);
