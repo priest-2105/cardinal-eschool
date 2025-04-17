@@ -127,21 +127,11 @@ export default function PersonalInformation() {
       <div className="space-y-8">
         <div className="sm:flex max-sm:block items-center gap-8">
           <div className="relative w-fit">
-            {/* <Image
+            <img
               src={profile.profile_picture || profilePicture}
               alt="Profile"
-              width={96}
-              height={96}
               className="w-24 h-24 rounded-full"
-            /> */}
-                <Avatar className="w-24 h-24">
-                  <AvatarImage 
-                  src={profile.profile_picture || profilePicture}
-                  alt="User" />
-                  <AvatarFallback>
-                    {profile.firstname[0]} {profile.lastname[0]}
-                  </AvatarFallback>
-                </Avatar>
+            />
             <label htmlFor="profile-picture-upload" className="absolute bottom-0 right-0 rounded-full bg-white cursor-pointer">
               <PencilIcon className="h-4 w-4" />
             </label>
