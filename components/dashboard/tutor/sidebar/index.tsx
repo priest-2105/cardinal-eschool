@@ -113,6 +113,16 @@ const TutorDashboardSideBar: React.FC = () => {
     }
 
     fetchNotificationsData()
+
+    const handleNotificationsUpdated = () => {
+      fetchNotificationsData()
+    }
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated)
+
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated)
+    }
   }, [token])
 
   useEffect(() => {

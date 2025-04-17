@@ -204,6 +204,16 @@ const TutorDashboardHeader: React.FC = () => {
     };
 
     fetchRecentNotifications();
+
+    const handleNotificationsUpdated = () => {
+      fetchRecentNotifications(); // Refresh notifications when updated
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
   }, [token]);
 
   useEffect(() => {
