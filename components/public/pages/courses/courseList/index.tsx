@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { getSubjects } from "@/lib/api/public/fetchsubjects"; // Import the API function
+import { getSubjects } from "@/lib/api/public/fetchsubjects"; 
 import { useSelector } from "react-redux";
 import type { RootState } from "@/lib/store";
 
@@ -25,6 +25,15 @@ const CourseCard: React.FC<{ course: Course }> = ({ course }) => {
       <h3 className="text-lg font-semibold text-gray-900 mb-2">{course.name}</h3>
       <p className="text-gray-600 text-sm">{course.description || "No description available"}</p>
     </motion.div>
+  );
+};
+
+const SkeletonCard: React.FC = () => {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6 animate-pulse">
+      <div className="h-6 bg-gray-300 rounded mb-4"></div>
+      <div className="h-4 bg-gray-300 rounded"></div>
+    </div>
   );
 };
 
@@ -70,7 +79,14 @@ const CourseList: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading courses...</div>;
+    return(
+    <div className="bg-[#C9F4F4] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 9 }).map((_, index) => (
+        <SkeletonCard key={index} />
+      ))}
+    </div>
+  </div>);
   }
 
   if (error) {
