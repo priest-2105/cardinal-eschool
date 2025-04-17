@@ -109,13 +109,15 @@ export function CourseList() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
-        <div className="text-red-500 text-lg font-medium">{error}</div>
+        <BookOpen className="h-16 w-16 text-gray-300" />
+        <p className="text-lg font-medium text-gray-600">No courses available</p>
+        <p className="text-sm text-gray-500">Please contact support for assistance</p>
         <Button
           variant="outline"
           onClick={() => window.location.reload()}
           className="mt-4"
         >
-          Try Again
+          Refresh
         </Button>
       </div>
     )
