@@ -40,6 +40,7 @@ const StudentDashboardHeader: React.FC = () => {
   const notificationDropdownRef = useRef<HTMLDivElement>(null)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false) 
   const profileDropdownRef = useRef<HTMLDivElement>(null) 
+  const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/student/Ellipse 2034.png");
 
   useEffect(() => {
     const handleResize = () => {
@@ -66,6 +67,7 @@ const StudentDashboardHeader: React.FC = () => {
         if (token) {
           const response = await fetchStudentProfile(token)
           setProfile(response.data)
+          setProfilePicture(response.data.profile_picture || "/assets/img/dashboard/student/Ellipse 2034.png");
           console.log("user data", response.data)
         }
       } catch (error: unknown) {
@@ -166,6 +168,19 @@ const StudentDashboardHeader: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutsideProfile)
     }
   }, [profileDropdownOpen])
+
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ dp_url: string }>;
+      setProfilePicture(customEvent.detail.dp_url);
+    };
+
+    window.addEventListener("profilePictureUpdated", handleProfilePictureUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener("profilePictureUpdated", handleProfilePictureUpdate as EventListener);
+    };
+  }, []);
 
   type Assessment = {
     education_level: string | null;
@@ -292,7 +307,7 @@ const StudentDashboardHeader: React.FC = () => {
             <div className="relative" ref={profileDropdownRef}>
               <Button variant="ghost" className="relative w-fit flex items-center gap-2" onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}>
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/assets/img/dashboard/student/Ellipse 2034.png" alt="User" />
+                  <AvatarImage src={profilePicture} alt="User" />
                   <AvatarFallback>
                     {profile.firstname[0]} {profile.lastname[0]}
                   </AvatarFallback>

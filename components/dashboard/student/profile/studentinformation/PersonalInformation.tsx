@@ -36,6 +36,7 @@ export default function PersonalInformation() {
   const [profilePicture, setProfilePicture] = useState("/assets/img/dashboard/student/Ellipse 2034.png");
   const [tempProfilePicture, setTempProfilePicture] = useState<string | null>(null);
   const [isPictureEditing, setIsPictureEditing] = useState(false);
+  const [isPictureUploading, setIsPictureUploading] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -91,6 +92,7 @@ export default function PersonalInformation() {
 
   const handleSaveProfilePicture = async () => {
     if (tempProfilePicture && token) {
+      setIsPictureUploading(true);
       try {
         const fileInput = document.getElementById("profile-picture-upload") as HTMLInputElement;
         const file = fileInput?.files?.[0];
@@ -98,12 +100,17 @@ export default function PersonalInformation() {
           const response = await updateStudentProfilePicture(token, file);
           setProfilePicture(response.data.dp_url);
           setAlert({ type: 'success', message: 'Profile picture updated successfully' });
+
+          // Trigger custom event to update header image
+          const event = new CustomEvent("profilePictureUpdated", { detail: { dp_url: response.data.dp_url } });
+          window.dispatchEvent(event);
         }
       } catch (error) {
         console.error("Profile picture update failed", error);
         setAlert({ type: 'error', message: (error as Error).message });
       } finally {
         setTempProfilePicture(null);
+        setIsPictureUploading(false);
         setIsPictureEditing(false);
       }
     }
@@ -148,7 +155,9 @@ export default function PersonalInformation() {
         {isPictureEditing && (
           <div className="flex gap-4 mt-4">
             <Button variant="outline" onClick={handleCancelProfilePicture}>Cancel</Button>
-            <Button variant="default" onClick={handleSaveProfilePicture}>Save</Button>
+            <Button variant="default" onClick={handleSaveProfilePicture} disabled={isPictureUploading}>
+              {isPictureUploading ? "Uploading..." : "Save"}
+            </Button>
           </div>
         )}
 
