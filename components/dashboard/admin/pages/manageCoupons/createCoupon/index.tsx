@@ -38,7 +38,7 @@ export default function CreateCouponPage() {
 
     try {
       if (token) {
-        const response = await CreateCoupon(token, { discount_percentage: discountPercentage });
+        // const response = await CreateCoupon(token, { discount_percentage: discountPercentage });
         // console.log("CreateCoupon API Response:", response);
         setAlertMessage("Coupon created successfully!");
         setAlertVariant("default");

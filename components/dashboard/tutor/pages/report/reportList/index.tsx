@@ -132,7 +132,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
   }
 
   const handleAssessmentSuccess = (message: string) => {
-    // console.log(message)
+    console.log(message)
   }
 
   return (

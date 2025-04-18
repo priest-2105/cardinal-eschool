@@ -69,7 +69,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
           // console.error("Token or Ticket ID is missing.", token, decodedTicketId);
         }
       } catch (error) {
-        // console.error("Error fetching ticket details:", error);
+        console.error("Error fetching ticket details:", error);
       }
     };
 
