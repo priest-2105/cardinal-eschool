@@ -59,8 +59,8 @@ export default function CouponsList() {
     setAlertMessage(null);
 
     try {
-      // const response = await deactivateCoupon(token, couponToDeactivate.coupon_codec);
-      // console.log("Deactivate API Response:", response); 
+      const response = await deactivateCoupon(token, couponToDeactivate.coupon_codec);
+      console.log("Deactivate API Response"); 
       setCoupons((prevCoupons) =>
         prevCoupons.map((coupon) =>
           coupon.coupon_codec === couponToDeactivate.coupon_codec

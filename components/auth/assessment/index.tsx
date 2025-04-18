@@ -48,7 +48,7 @@ export default function AssessmentPageComponent() {
 
       // console.log("Sending payload:", payload);
       const response = await updateAssessment(token, payload);
-      // console.log("Update successful:", response);
+      console.log("Update successful:", response);
 
       setAlertMessage("Assessment updated successfully!");
       setAlertVariant("default");
