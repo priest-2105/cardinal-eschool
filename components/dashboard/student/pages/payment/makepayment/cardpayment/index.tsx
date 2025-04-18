@@ -50,7 +50,7 @@ const StudentCardPayment = () => {
             const planData = planResponse.data.subscription_plan;
 
             setChosenPlan({
-              sub_id: planData.sub_id || "", // Ensure sub_id is included
+              sub_id: planData.sub_id || "", 
               title: planData.name,
               price: `$${planData.price}`,
               duration: "/ Month",
@@ -154,10 +154,10 @@ const StudentCardPayment = () => {
               </div>
             </>
           ) : (
-            <div className="flex flex-col lg:flex-row bg-white justify-between rounded-lg p-4 sm:p-6 space-y-6 lg:space-y-0 lg:space-x-6">
-              <div className="flex-1 p-4 sm:p-6 w-full lg:w-1/2 max-w-screen-sm">
+            <div className="flex flex-col lg:flex-row bg-white justify-between rounded-lg sm:p-6 space-y-6 lg:space-y-0 lg:space-x-6">
+              <div className="flex-1 sm:p-6 w-full lg:w-1/2 max-w-screen-sm">
                 <h2 className="text-xl sm:text-2xl font-bold mb-4">Active Subscription</h2>
-                <div className="bg-[#E6FFFC] p-6 rounded-lg">
+                <div className="bg-[#E6FFFC] sm:p-6 p-4 rounded-lg">
                   <div className="flex items-center mb-4">
                     <CheckCircle2 className="h-6 w-6 text-[#1BC2C2] mr-2" />
                     <h3 className="text-lg font-semibold">
@@ -186,7 +186,7 @@ const StudentCardPayment = () => {
               </div>
 
               {/* Right Section - Payment Details */}
-              <div className="space-y-4 bg-gray-100 p-4 sm:p-6 w-full lg:w-1/2 max-w-screen-sm">
+              <div className="space-y-4 bg-gray-100 sm:p-6 w-full lg:w-1/2 max-w-screen-sm">
                 {/* YouTube Video Section */}
                 <div className="relative group">
                   <img
@@ -207,19 +207,19 @@ const StudentCardPayment = () => {
                 </div>
 
                 {/* Plan Details */}
-                <div className="bg-transparent w-full px-4 sm:px-10 flex items-center p-4">
-                  <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full px-4 sm:px-10 max-sm:block sm:flex items-center p-4 rounded-lg shadow-md">
+                <div className="bg-transparent w-full sm:px-10 flex items-center p-4">
+                  <div className="bg-[#E6FFFC] -mt-16 sm:-mt-28 z-10 w-full  sm:px-10 max-sm:block sm:flex items-center p-4 rounded-lg shadow-md">
                     {/* <img
                       src="/assets/img/dashboard/student/studentdashboardmakepayment/Rectangle 1550.png"
                       alt="Payment Instruction"
                       className="w-24 sm:w-32 h-auto rounded-lg shadow-md"
                     /> */}
-                    <div className="px-3">
+                    <div className="smpx-3">
                       <h3 className="text-base sm:text-lg font-semibold">
                         {subscription.plan[0].toUpperCase()}
                         {subscription.plan.slice(1)} Plan
                       </h3>
-                      <p className="text-xl sm:text-2xl font-bold text-teal-600">$60/month</p>
+                      {/* <p className="text-xl sm:text-2xl font-bold text-teal-600">$60/month</p> */}
                     </div>
                   </div>
                 </div>

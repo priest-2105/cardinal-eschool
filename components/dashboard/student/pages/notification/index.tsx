@@ -33,6 +33,11 @@ import type { Notification, Pagination } from "@/lib/api/student/notifcation/fet
 import { markAllNotificationsAsRead } from "@/lib/api/student/notifcation/markallnotificationasread"
 import pusher from "@/utils/pusher";
 
+const triggerNotificationsUpdatedEvent = () => {
+  const event = new CustomEvent("notificationsUpdated");
+  window.dispatchEvent(event);
+};
+
 export function NotificationList() {
   const token = useSelector((state: RootState) => state.auth?.token);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -74,6 +79,7 @@ export function NotificationList() {
         )
       );
       setAlert({ type: "success", message: "Notification marked as read." });
+      triggerNotificationsUpdatedEvent(); // Trigger event
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
       setAlert({ type: "error", message: "Failed to mark notification as read." });
@@ -88,6 +94,7 @@ export function NotificationList() {
         prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
       );
       setAlert({ type: "success", message: "All notifications marked as read." });
+      triggerNotificationsUpdatedEvent(); // Trigger event
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
       setAlert({ type: "error", message: "Failed to mark all notifications as read." });
@@ -100,6 +107,7 @@ export function NotificationList() {
       await deleteNotification(token, id);
       setNotifications((prev) => prev.filter((notification) => notification.id !== id));
       setAlert({ type: "success", message: "Notification deleted successfully." });
+      triggerNotificationsUpdatedEvent(); // Trigger event
     } catch (error) {
       console.error("Failed to delete notification:", error);
       setAlert({ type: "error", message: "Failed to delete notification." });

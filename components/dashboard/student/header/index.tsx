@@ -78,38 +78,38 @@ const StudentDashboardHeader: React.FC = () => {
     getProfile()
   }, [token])
 
-  useEffect(() => {
-    const fetchRecentNotifications = async () => {
-      if (token) {
-        try {
-          const response = await fetchNotifications(token, 1, 20); 
-          const notifications = response.data.notifications;
-  
-          // Filter unread notifications
-          const unread = notifications.filter((notification) => !notification.read_at);
-  
-          // Update state for unread notifications and red dot
-          setHasUnreadNotifications(unread.length > 0);
-  
-          // Take the three most recent unread notifications
-          const recent = unread.slice(0, 3).map((notification) => ({
-            id: notification.id,
-            type: notification.type,
-            title: notification.title || "Notification",
-            message: notification.message,
-            data: notification.data || {}, 
-            action_url: `/student/notifications`,
-            read_at: notification.read_at,
-            created_at: notification.created_at,
-          }));
-  
-          setRecentNotifications(recent);
-        } catch (error: unknown) {
-          console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error");
-        }
+  const fetchRecentNotifications = async () => {
+    if (token) {
+      try {
+        const response = await fetchNotifications(token, 1, 20); 
+        const notifications = response.data.notifications;
+
+        // Filter unread notifications
+        const unread = notifications.filter((notification) => !notification.read_at);
+
+        // Update state for unread notifications and red dot
+        setHasUnreadNotifications(unread.length > 0);
+
+        // Take the three most recent unread notifications
+        const recent = unread.slice(0, 3).map((notification) => ({
+          id: notification.id,
+          type: notification.type,
+          title: notification.title || "Notification",
+          message: notification.message,
+          data: notification.data || {}, 
+          action_url: `/student/notifications`,
+          read_at: notification.read_at,
+          created_at: notification.created_at,
+        }));
+
+        setRecentNotifications(recent);
+      } catch (error: unknown) {
+        console.error("Error fetching notifications:", error instanceof Error ? error.message : "Unknown error");
       }
-    };
-  
+    }
+  };
+
+  useEffect(() => {
     fetchRecentNotifications();
   }, [token]);
 
@@ -181,6 +181,17 @@ const StudentDashboardHeader: React.FC = () => {
       window.removeEventListener("profilePictureUpdated", handleProfilePictureUpdate as EventListener);
     };
   }, []);
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchRecentNotifications(); // Refetch notifications
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
+  }, []); // Ensure the listener is always active
 
   type Assessment = {
     education_level: string | null;
