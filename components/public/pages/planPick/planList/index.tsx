@@ -134,8 +134,8 @@ const PlanList: React.FC<{ onPlanSelect: (plan: Plan) => void }> = ({ onPlanSele
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => (
             <motion.div
-              drag="y"
-              dragConstraints={{ top: -10, bottom: 10 }}
+              // drag="y"
+              // dragConstraints={{ top: -10, bottom: 10 }}
               key={index}
               custom={index} // Pass the index to the variant
               variants={cardVariants}
