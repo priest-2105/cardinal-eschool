@@ -121,8 +121,8 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
     setIsSubmitting(true);
     try {
       if (token && decodedTicketId) {
-        // const response = await DeleteTicket(token, decodedTicketId);
-        // console.log("DeleteTicket API Response:", response); 
+        const response = await DeleteTicket(token, decodedTicketId);
+        console.log("DeleteTicket API Response:", response); 
         setAlertState({ showAlert: true, message: "Ticket deleted successfully.", variant: "default" });
         setTimeout(() => {
           router.push("/admin/ticketlist"); 
