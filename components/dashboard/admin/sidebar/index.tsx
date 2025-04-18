@@ -13,8 +13,8 @@ import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
+// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
+// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import ManageTutorsIcon from "@/public/assets/icons/user-multiple3x.png"
@@ -56,18 +56,18 @@ const navigation = [
     ],
     dynamicPath: null,
   },
-  {
-    name: "Payments",
-    href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
-    icon: PaymentIcon,
-    iconLight: PaymentLightIcon,
-    activePaths: [
-      cardinalConfig.routes.dashboard.admin.adminMakePayment,
-      cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
-      cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
-    ],
-    dynamicPath: null,
-  },
+  // {
+  //   name: "Payments",
+  //   href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
+  //   icon: PaymentIcon,
+  //   iconLight: PaymentLightIcon,
+  //   activePaths: [
+  //     cardinalConfig.routes.dashboard.admin.adminMakePayment,
+  //     cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+  //     cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
+  //   ],
+  //   dynamicPath: null,
+  // },
   {
     name: "Support Tickets",
     href: cardinalConfig.routes.dashboard.admin.adminticketlist,

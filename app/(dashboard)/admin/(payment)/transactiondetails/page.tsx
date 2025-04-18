@@ -37,24 +37,24 @@ export default function AdminTransactionDetailsPage() {
   const [error, setError] = useState<string | null>(null)
 
   // Add logging for URL parameters
-  useEffect(() => {
-    const transactionRef = searchParams.get('transaction_ref')
-    console.log('URL Parameters:', {
-      fullUrl: window.location.href,
-      searchParams: Object.fromEntries(searchParams.entries()),
-      transactionRef: transactionRef,
-      hasToken: !!token
-    })
-  }, [searchParams, token])
+  // useEffect(() => {
+    // const transactionRef = searchParams.get('transaction_ref')
+    // console.log('URL Parameters:', {
+    //   fullUrl: window.location.href,
+    //   searchParams: Object.fromEntries(searchParams.entries()),
+    //   transactionRef: transactionRef,
+    //   hasToken: !!token
+    // })
+  // }, [searchParams, token])
 
   useEffect(() => {
     const fetchTransactionDetails = async () => {
       const transactionRef = searchParams.get('transaction_ref')
-      console.log('Transaction Ref:', transactionRef) // Log transaction ref
-      console.log('Token available:', !!token) // Log if token exists
+      // console.log('Transaction Ref:', transactionRef) // Log transaction ref
+      // console.log('Token available:', !!token) // Log if token exists
 
       if (!token || !transactionRef) {
-        console.log('Missing required data:', { token: !!token, transactionRef }) // Log missing data
+        // console.log('Missing required data:', { token: !!token, transactionRef }) // Log missing data
         setError("Transaction reference not found")
         setLoading(false)
         return
@@ -62,14 +62,14 @@ export default function AdminTransactionDetailsPage() {
 
       try {
         setLoading(true)
-        console.log('Fetching transaction details for:', transactionRef) // Log fetch attempt
+        // console.log('Fetching transaction details for:', transactionRef) // Log fetch attempt
         
         const response = await getTransactionDetails(token, transactionRef)
-        console.log('API Response:', {
-          status: response.status,
-          message: response.message,
-          data: response.data
-        }) // Log full response
+        // console.log('API Response:', {
+        //   status: response.status,
+        //   message: response.message,
+        //   data: response.data
+        // }) // Log full response
 
         if (response.data) {
           console.log('Transaction Data:', {
@@ -80,14 +80,14 @@ export default function AdminTransactionDetailsPage() {
           }) // Log key transaction details
           setTransaction(response.data)
         } else {
-          console.log('No transaction data in response') // Log if data is missing
+          // console.log('No transaction data in response') // Log if data is missing
           setError("No transaction data found")
         }
       } catch (error) {
-        console.error('Error details:', {
-          message: error instanceof Error ? error.message : 'Unknown error',
-          error: error
-        }) // Log detailed error information
+        // console.error('Error details:', {
+          // message: error instanceof Error ? error.message : 'Unknown error',
+          // error: error
+        // }) // Log detailed error information
         setError(error instanceof Error ? error.message : "Failed to fetch transaction details")
       } finally {
         setLoading(false)
@@ -98,14 +98,14 @@ export default function AdminTransactionDetailsPage() {
   }, [token, searchParams])
 
   // Also log when component state changes
-  useEffect(() => {
-    console.log('Current component state:', {
-      loading,
-      hasError: !!error,
-      hasTransaction: !!transaction,
-      errorMessage: error
-    })
-  }, [loading, error, transaction])
+  // useEffect(() => {
+  //   console.log('Current component state:', {
+  //     loading,
+  //     hasError: !!error,
+  //     hasTransaction: !!transaction,
+  //     errorMessage: error
+  //   })
+  // }, [loading, error, transaction])
 
   if (loading) {
     return (

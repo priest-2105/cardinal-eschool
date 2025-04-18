@@ -6,7 +6,7 @@ interface TransactionDetailResponse {
   data: {
     status: string;
     message: string;
-    data: unknown; // changed from any to unknown
+    data: unknown; 
   };
 }
 
