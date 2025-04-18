@@ -60,35 +60,35 @@ export default function AdminTransactionDetailsPage() {
 
   
   // Add logging for URL parameters
-  useEffect(() => {
-    if (!params?.id) {
-      console.log('No transaction ID found in URL')
-      return
-    }
+  // useEffect(() => {
+  //   if (!params?.id) {
+  //     console.log('No transaction ID found in URL')
+  //     return
+  //   }
     
-    const transactionId = params.id
-    console.log('URL Parameters:', {
-      fullUrl: window.location.href,
-      transactionId: transactionId,
-      hasToken: !!token
-    })
-  }, [params, token])
+  //   const transactionId = params.id
+  //   console.log('URL Parameters:', {
+  //     fullUrl: window.location.href,
+  //     transactionId: transactionId,
+  //     hasToken: !!token
+  //   })
+  // }, [params, token])
 
   useEffect(() => {
     const fetchTransactionDetails = async () => {
       if (!params?.id) {
-        console.log('No transaction ID found in URL')
+        // console.log('No transaction ID found in URL')
         setError("Transaction ID not found")
         setLoading(false)
         return
       }
 
       const transactionId = params.id
-      console.log('Transaction ID:', transactionId) 
-      console.log('Token available:', !!token) 
+      // console.log('Transaction ID:', transactionId) 
+      // console.log('Token available:', !!token) 
 
       if (!token || !transactionId) {
-        console.log('Missing required data:', { token: !!token, transactionId }) 
+        // console.log('Missing required data:', { token: !!token, transactionId }) 
         setError("Transaction ID not found")
         setLoading(false)
         return
@@ -96,32 +96,32 @@ export default function AdminTransactionDetailsPage() {
 
       try {
         setLoading(true)
-        console.log('Fetching transaction details for:', transactionId) 
+        // console.log('Fetching transaction details for:', transactionId) 
         
         const response = await getTransactionDetails(token, transactionId)
-        console.log('API Response:', {
-          status: response.status,
-          message: response.message,
-          data: response.data
-        }) 
+        // console.log('API Response:', {
+          // status: response.status,
+          // message: response.message,
+          // data: response.data
+        // }) 
 
         if (response.data) {
-          console.log('Transaction Data:', {
-            id: response.data.id,
-            ref: response.data.transaction_ref,
-            status: response.data.status,
-            amount: response.data.amount
-          }) 
+          // console.log('Transaction Data:', {
+          //   id: response.data.id,
+          //   ref: response.data.transaction_ref,
+          //   status: response.data.status,
+          //   amount: response.data.amount
+          // }) 
           setTransaction(response.data)
         } else {
-          console.log('No transaction data in response')  
+          // console.log('No transaction data in response')  
           setError("No transaction data found")
         }
       } catch (error) {
-        console.error('Error details:', {
-          message: error instanceof Error ? error.message : 'Unknown error',
-          error: error
-        }) 
+        // console.error('Error details:', {
+        //   message: error instanceof Error ? error.message : 'Unknown error',
+        //   error: error
+        // }) 
         setError(error instanceof Error ? error.message : "Failed to fetch transaction details")
       } finally {
         setLoading(false)
@@ -130,16 +130,7 @@ export default function AdminTransactionDetailsPage() {
 
     fetchTransactionDetails()
   }, [token, params])
-
-  // Also log when component state changes
-  useEffect(() => {
-    console.log('Current component state:', {
-      loading,
-      hasError: !!error,
-      hasTransaction: !!transaction,
-      errorMessage: error
-    })
-  }, [loading, error, transaction])
+  
 
   const handleRequeryPayment = async () => {
     if (!token || !transaction) return;

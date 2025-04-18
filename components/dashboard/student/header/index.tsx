@@ -68,7 +68,7 @@ const StudentDashboardHeader: React.FC = () => {
           const response = await fetchStudentProfile(token)
           setProfile(response.data)
           setProfilePicture(response.data.profile_picture || "/assets/img/dashboard/student/Ellipse 2034.png");
-          console.log("user data", response.data)
+          // console.log("user data", response.data)
         }
       } catch (error: unknown) {
         console.error("Failed to fetch profile:", error instanceof Error ? error.message : "Unknown error")

@@ -62,7 +62,7 @@ export default function ReportsList({ reports }: ReportsListProps) {
   }
 
   const handleViewReport = (report: Report) => {
-    console.log("View Report Clicked:", report); // Debugging log
+    // console.log("View Report Clicked:", report); // Debugging log
     setSelectedReport(report);
     setIsViewModalOpen(true);
   };

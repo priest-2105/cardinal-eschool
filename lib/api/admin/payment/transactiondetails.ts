@@ -29,7 +29,7 @@ interface TransactionDetailResponse {
 
 export async function getTransactionDetails(token: string, transactionRef: string): Promise<TransactionDetailResponse> {
   const url = `${apiUrl}/admin/payments/view?transaction_ref=${transactionRef}`
-  console.log('Making API request to:', url) // Log the URL
+  // console.log('Making API request to:', url) // Log the URL
 
   try {
     const response = await fetchWithAuth(url, {
@@ -40,7 +40,7 @@ export async function getTransactionDetails(token: string, transactionRef: strin
       },
     });
 
-    console.log('Response status:', response.status) // Log response status
+    // console.log('Response status:', response.status) // Log response status
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -53,7 +53,7 @@ export async function getTransactionDetails(token: string, transactionRef: strin
     }
 
     const data = await response.json()
-    console.log('API Response data:', data) // Log parsed response data
+    // console.log('API Response data:', data) // Log parsed response data
     return data;
   } catch (error) {
     console.error('API Call Error:', error) // Log any fetch errors

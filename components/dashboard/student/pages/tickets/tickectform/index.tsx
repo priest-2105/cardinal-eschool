@@ -30,7 +30,7 @@ export function ComplaintForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Handle form submission
-    console.log(formData)
+    // console.log(formData)
   }
 
   return (

@@ -14,7 +14,7 @@ export async function updateAssessment(token: string, payload: unknown) {
   });
 
   const responseData = await response.json();
-  console.log("Update Assessment Response:", responseData);
+  // console.log("Update Assessment Response:", responseData);
 
   if (!response.ok) {
     throw new Error(

@@ -21,7 +21,7 @@ interface AssignmentsResponse {
 
 export async function getClassAssignments(token: string, classId: string): Promise<AssignmentsResponse> {
   const endpoint = `${apiUrl}/tutor/class/assignments/${classId}`;
-  console.log("Fetching assignments from:", endpoint);
+  // console.log("Fetching assignments from:", endpoint);
 
   const response = await fetchWithAuth(endpoint, {
     method: "GET",
@@ -32,11 +32,11 @@ export async function getClassAssignments(token: string, classId: string): Promi
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Failed to fetch assignments:", errorText); // Log the error response
+    // console.error("Failed to fetch assignments:", errorText); // Log the error response
     throw new Error(`Failed to fetch assignments: ${response.statusText}`);
   }
 
   const data = await response.json();
-  console.log("Assignments fetched successfully:", data); // Debugging log
+  // console.log("Assignments fetched successfully:", data); // Debugging log
   return data;
 }

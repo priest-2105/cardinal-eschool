@@ -21,7 +21,7 @@ export async function updateStudentProfile(token: string, profileData: {
   });
 
   const responseData = await response.json();
-  console.log("Update Student Profile Response:", responseData);
+  // console.log("Update Student Profile Response:", responseData);
 
   if (!response.ok) {
     throw new Error(`Profile update failed: ${response.status} ${response.statusText} - ${responseData.message}`);

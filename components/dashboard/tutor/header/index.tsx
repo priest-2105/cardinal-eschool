@@ -154,7 +154,7 @@ const TutorDashboardHeader: React.FC = () => {
         if (token) {
           const response = await fetchTutorProfile(token);
           setProfile(response.data);
-          console.log(response);
+          // console.log(response);
           
         }
       } catch (error) {

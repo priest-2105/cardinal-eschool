@@ -78,7 +78,7 @@ const StudentCardPayment = () => {
         const assessmentData = assessmentResponse.data.Assessment;
 
         // Log the assessment data to inspect its structure
-        console.log("Existing assessment data:", assessmentData);
+        // console.log("Existing assessment data:", assessmentData);
 
         // Update the assessment data with the new plan ID and preserve other fields
         const updatedAssessment = {
@@ -94,7 +94,7 @@ const StudentCardPayment = () => {
         };
 
         // Log the updated assessment data before sending it
-        console.log("Updated assessment data:", updatedAssessment);
+        // console.log("Updated assessment data:", updatedAssessment);
 
         // Update assessment with new plan ID
         await updateAssessment(authState.token, updatedAssessment);

@@ -24,12 +24,12 @@ export async function submitAssignment(
     formData.append("file", file);
   }
 
-  console.log("Submitting assignment with:", {
-    url: `${apiUrl}/student/assignments/submit/${assignmentId}`,
-    token,
-    submissionText,
-    file,
-  });
+  // console.log("Submitting assignment with:", {
+  //   url: `${apiUrl}/student/assignments/submit/${assignmentId}`,
+  //   token,
+  //   submissionText,
+  //   file,
+  // });
 
   await fetchWithAuth(`${apiUrl}/student/assignments/submit/${assignmentId}`, {
     method: "POST",

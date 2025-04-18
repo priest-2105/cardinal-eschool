@@ -43,8 +43,8 @@ interface CreateClassResponse {
 }
 
 export async function createClass(token: string, classData: CreateClassRequest): Promise<CreateClassResponse> {
-  console.log("API URL:", `${apiUrl}/admin/classes`);
-  console.log("Request Body:", JSON.stringify(classData, null, 2));
+  // console.log("API URL:", `${apiUrl}/admin/classes`);
+  // console.log("Request Body:", JSON.stringify(classData, null, 2));
   
   try {
     const response = await fetchWithAuth(`${apiUrl}/admin/classes`, {
@@ -57,7 +57,7 @@ export async function createClass(token: string, classData: CreateClassRequest):
     });
 
     const responseText = await response.text();
-    console.log("Raw API Response:", responseText);
+    // console.log("Raw API Response:", responseText);
 
     if (!response.ok) {
       try {
@@ -70,7 +70,7 @@ export async function createClass(token: string, classData: CreateClassRequest):
 
     try {
       const jsonResponse = JSON.parse(responseText);
-      console.log("Parsed API Response:", jsonResponse);
+      // console.log("Parsed API Response:", jsonResponse);
       return jsonResponse;
     } catch { 
       throw new Error('Invalid JSON response from server');
