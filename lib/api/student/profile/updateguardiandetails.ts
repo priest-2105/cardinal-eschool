@@ -20,7 +20,7 @@ export async function updateGuardianProfile(token: string, profileData: {
   });
 
   const responseData = await response.json();
-  console.log("Update Guardian Profile Response:", responseData);
+  // console.log("Update Guardian Profile Response:", responseData);
 
   if (!response.ok) {
     throw new Error(`Failed to update guardian profile: ${response.status} ${response.statusText} - ${responseData.message}`);

@@ -66,7 +66,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
           setTicket(response.data);
           setResponseMessage(response.data.ticket_response || "");  
         } else {
-          console.error("Token or Ticket ID is missing.", token, decodedTicketId);
+          // console.error("Token or Ticket ID is missing.", token, decodedTicketId);
         }
       } catch (error) {
         console.error("Error fetching ticket details:", error);
@@ -94,7 +94,7 @@ export default function TicketDetailsComponent({ ticketId }: TicketDetailsCompon
           ticket_response: responseMessage,
           status: responseStatus,
         });
-        console.log("ReplyTicket API Response:", response);  
+        // console.log("ReplyTicket API Response:", response);  
         setTicket(response.data); 
         setAlertState({ showAlert: true, message: "Response added successfully.", variant: "default" });
         setResponseMessage(response.data.ticket_response || ""); 

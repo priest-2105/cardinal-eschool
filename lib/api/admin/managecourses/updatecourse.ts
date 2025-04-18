@@ -53,8 +53,8 @@ export async function updateCourse(
   courseId: string,
   courseData: UpdateCourseRequest
 ): Promise<UpdateCourseResponse> {
-  console.log("Updating course:", courseId);
-  console.log("With data:", JSON.stringify(courseData, null, 2));
+  // console.log("Updating course:", courseId);
+  // console.log("With data:", JSON.stringify(courseData, null, 2));
   
   try {
     const response = await fetchWithAuth(`${apiUrl}/admin/classes/${courseId}`, {
@@ -67,7 +67,7 @@ export async function updateCourse(
     });
 
     const responseText = await response.text();
-    console.log("Raw API Response:", responseText);
+    // console.log("Raw API Response:", responseText);
 
     if (!response.ok) {
       try {
@@ -80,7 +80,7 @@ export async function updateCourse(
 
     try {
       const jsonResponse = JSON.parse(responseText);
-      console.log("Parsed API Response:", jsonResponse);
+      // console.log("Parsed API Response:", jsonResponse);
       return jsonResponse;
     } catch {  // removed parameter
       throw new Error('Invalid JSON response from server');

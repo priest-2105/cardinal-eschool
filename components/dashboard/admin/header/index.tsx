@@ -98,7 +98,7 @@ const Dropdown: React.FC<{
                 ) : (
                   <div>
                     <p className="font-medium text-[13px]">{(item as Notification).message}</p>
-                    <p className="text-sm text-gray-500 text-[11px]">{(item as Notification).time}</p>
+                    <p className="text-sm text-gray-500 text-[11px]">{(item as Notification).created_at}</p>
                   </div>
                 )}
               </li>
@@ -164,47 +164,59 @@ const AdminDashboardHeader: React.FC = () => {
     getProfile();
   }, [token]);
 
-  useEffect(() => {
-    const fetchRecentNotifications = async () => {
-      if (token) {
-        try {
-          const response = await fetchNotifications(token);
-          const notifications = response.data.notifications.map((notification) => ({
-            ...notification,
-            time: new Date(notification.created_at).toLocaleString(), // Add the `time` property
-          }));
+  const fetchRecentNotifications = async () => {
+    if (token) {
+      try {
+        const response = await fetchNotifications(token);
+        const notifications = response.data.notifications;
 
-          // Filter unread notifications
-          const unread = notifications.filter((notification) => !notification.read_at);
-          setHasUnreadNotifications(unread.length > 0);
+        // Filter unread notifications
+        const unreadNotifications = notifications.filter((notification) => !notification.read_at);
 
-          // Map recent notifications
-          const recent = notifications.slice(0, 3);
-          setRecentNotifications(recent);
-        } catch (error: unknown) {
-          const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-          console.error("Error fetching notifications:", errorMessage);
+        // Map recent unread notifications (limit to 3)
+        const recentUnread = unreadNotifications.slice(0, 3).map((notification) => ({
+          ...notification,
+          time: new Date(notification.created_at).toLocaleString(), // Format the `created_at` property
+        }));
 
-          // Set fallback notification
-          setRecentNotifications([
-            {
-              id: 0,
-              type: "system",
-              title: "No notifications",
-              message: "You have no notifications at the moment.",
-              data: {},
-              action_url: null,
-              read_at: null,
-              created_at: new Date().toISOString(),
-              time: new Date().toLocaleString(),
-            },
-          ]);
-        }
+        setHasUnreadNotifications(unreadNotifications.length > 0);
+        setRecentNotifications(recentUnread);
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+        console.error("Error fetching notifications:", errorMessage);
+
+        // Set fallback notification
+        setRecentNotifications([
+          {
+            id: 0,
+            type: "system",
+            title: "No notifications",
+            message: "You have no unread notifications at the moment.",
+            data: {},
+            action_url: null,
+            read_at: null,
+            created_at: new Date().toISOString(),
+            time: new Date().toLocaleString(),
+          },
+        ]);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchRecentNotifications();
   }, [token]);
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchRecentNotifications();
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
+  }, []); // Removed `token` dependency to ensure the listener is always active
 
   useEffect(() => {
     if (showLogoutDialog) {

@@ -39,7 +39,7 @@ export default function LoginPageComponent() {
         token: response.data.token,
         user: response.data.user,
       }));
-      console.log('Login successful');
+      // console.log('Login successful');
       setAlert({ type: 'success', message: 'Login successful' });
       router.push('/tutor');
     } catch (error: unknown) {

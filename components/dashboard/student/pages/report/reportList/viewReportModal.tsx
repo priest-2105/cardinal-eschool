@@ -13,7 +13,7 @@ interface ViewReportModalProps {
 }
 
 export default function ViewReportModal({ isOpen, onClose, report }: ViewReportModalProps) {
-  console.log("Modal Open State:", isOpen); // Debugging log
+  // console.log("Modal Open State:", isOpen); // Debugging log
   if (!report) return null;
 
   return (

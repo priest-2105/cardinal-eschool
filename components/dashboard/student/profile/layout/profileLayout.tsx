@@ -59,7 +59,7 @@ export default function ProfileLayout({
         if (token) {
           const response = await fetchStudentProfile(token)
           setProfile(response.data)
-          console.log("user data", response.data)
+          // console.log("user data", response.data)
         }
       } catch (error) {
         console.error("Failed to fetch profile:", error)

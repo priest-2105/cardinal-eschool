@@ -111,6 +111,31 @@ const StudentDashboardSideBar: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  const fetchUnreadNotificationsCount = async () => {
+    if (token) {
+      try {
+        let totalUnreadCount = 0;
+        let currentPage = 1;
+        let lastPage = 1;
+  
+        do {
+          const response = await fetchNotifications(token, currentPage, 20);
+          const notifications = response.data.notifications;
+          const unread = notifications.filter((notification) => !notification.read_at);
+          totalUnreadCount += unread.length;
+  
+          // Update pagination details
+          currentPage = response.data.pagination.current_page + 1;
+          lastPage = response.data.pagination.last_page;
+        } while (currentPage <= lastPage);
+  
+        setUnreadCount(totalUnreadCount);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {
       if (token) {
@@ -154,6 +179,17 @@ const StudentDashboardSideBar: React.FC = () => {
 
     fetchOpenTicketsCount();
   }, [token]);
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchUnreadNotificationsCount();
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
+  }, []); // Ensure the listener is always active
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen)

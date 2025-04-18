@@ -55,12 +55,12 @@ export default function AdminLoginComponent() {
     setAlert(null)
     try {
       const response = await login(formData.email, formData.password)
-      console.log('Response:', response)  
+      // console.log('Response:', response)  
       dispatch(setAuthState({
         token: response.data.token,
         user: response.data.user,
       }))
-      console.log('Login successful')
+      // console.log('Login successful')
       setAlert({ type: 'success', message: 'Login successful' })
       router.push('/admin')
     } catch (error: unknown) { // replaced explicit any with unknown

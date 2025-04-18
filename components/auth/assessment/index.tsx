@@ -22,7 +22,7 @@ export default function AssessmentPageComponent() {
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
-    console.log("FormData received from AssessmentForm:", formData);
+    // console.log("FormData received from AssessmentForm:", formData);
     
     if (!token) {
       setAlertMessage("No authentication token found");
@@ -33,7 +33,7 @@ export default function AssessmentPageComponent() {
 
     try {
       // Log the plan_id to verify it's being passed correctly
-      console.log("Plan ID being submitted:", formData.plan_id);
+      // console.log("Plan ID being submitted:", formData.plan_id);
       
       const payload = {
         subscription_plan_id: formData.plan_id,
@@ -46,7 +46,7 @@ export default function AssessmentPageComponent() {
         specific_goals: formData.specific_goals,
       };
 
-      console.log("Sending payload:", payload);
+      // console.log("Sending payload:", payload);
       const response = await updateAssessment(token, payload);
       console.log("Update successful:", response);
 

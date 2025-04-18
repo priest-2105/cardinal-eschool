@@ -118,7 +118,7 @@ export default function ReportsList({ classId, courseDetails }: ReportListProps)
 
   const handleCreateReport = () => {
     setIsCreateModalOpen(false);
-    fetchReports(); // Refresh the report list after creating a report
+    fetchReports();
   };
 
   const handleViewReport = (report: Report) => {

@@ -13,8 +13,8 @@ import ProfileIcon from "@/public/assets/icons/user.png"
 import ProfileLightIcon from "@/public/assets/icons/user-light.png"
 import CoursesIcon from "@/public/assets/icons/course.png"
 import CoursesLightIcon from "@/public/assets/icons/course-light.png"
-import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
-import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
+// import PaymentIcon from "@/public/assets/icons/credit-card-validation.png"
+// import PaymentLightIcon from "@/public/assets/icons/credit-card-validation-light.png"
 import AdminSupportIcon from "@/public/assets/icons/message-01.png"
 import AdminSupportLightIcon from "@/public/assets/icons/message-01-light.png"
 import ManageTutorsIcon from "@/public/assets/icons/user-multiple3x.png"
@@ -56,18 +56,18 @@ const navigation = [
     ],
     dynamicPath: null,
   },
-  {
-    name: "Payments",
-    href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
-    icon: PaymentIcon,
-    iconLight: PaymentLightIcon,
-    activePaths: [
-      cardinalConfig.routes.dashboard.admin.adminMakePayment,
-      cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
-      cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
-    ],
-    dynamicPath: null,
-  },
+  // {
+  //   name: "Payments",
+  //   href: cardinalConfig.routes.dashboard.admin.adminMakePayment,
+  //   icon: PaymentIcon,
+  //   iconLight: PaymentLightIcon,
+  //   activePaths: [
+  //     cardinalConfig.routes.dashboard.admin.adminMakePayment,
+  //     cardinalConfig.routes.dashboard.admin.adminPaymentHistory,
+  //     cardinalConfig.routes.dashboard.admin.adminTransactionDetails,
+  //   ],
+  //   dynamicPath: null,
+  // },
   {
     name: "Support Tickets",
     href: cardinalConfig.routes.dashboard.admin.adminticketlist,
@@ -183,6 +183,19 @@ const AdminDashboardSideBar: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  const fetchUnreadNotificationsCount = async () => {
+    if (token) {
+      try {
+        const response = await fetchNotifications(token);
+        const notifications = response.data.notifications;
+        const unread = notifications.filter((notification: { read_at: string | null }) => !notification.read_at);
+        setUnreadCount(unread.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {
       if (token) {
@@ -199,6 +212,17 @@ const AdminDashboardSideBar: React.FC = () => {
 
     fetchUnreadNotificationsCount()
   }, [token])
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchUnreadNotificationsCount(); 
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
+  }, [token]);
 
   useEffect(() => {
     const fetchPendingReportsCount = async () => {

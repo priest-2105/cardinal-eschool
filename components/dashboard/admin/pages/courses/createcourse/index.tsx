@@ -93,8 +93,8 @@ export default function CreateCoursePage() {
 
         if (Array.isArray(tutorsRes) && Array.isArray(studentsRes)) {
           // The data is now available to pass to the modals
-          console.log("Tutors:", tutorsRes)
-          console.log("Students:", studentsRes)
+          // console.log("Tutors:", tutorsRes)
+          // console.log("Students:", studentsRes)
         }
       } catch (error) {
         console.error("Failed to load tutors and students:", error)

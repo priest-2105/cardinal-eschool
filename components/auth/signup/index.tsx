@@ -122,7 +122,7 @@ export default function SignupPageComponent() {
           <AlertDescription>{alertMessage}</AlertDescription>
         </Alert>
       )}
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen ">
         {/* Left Column - Hidden on mobile and tablet */}
         <div className="hidden min-h-screen lg:flex lg:w-1/2 bg-[#E9FFFF] flex-col items-center justify-center p-8">
           <div className="max-w-md">
@@ -194,7 +194,7 @@ export default function SignupPageComponent() {
         </div>
 
         {/* Right Column */}
-        <div className="w-full lg:w-1/2 px-4 sm:px-6 lg:px-1 py-12">
+        <div className="w-full overflow-y-scroll max-sm:h-100vh lg:w-1/2 px-4 sm:px-6 lg:px-1 py-12">
           <div className="text-right mb-8">
             <span className="text-sm text-gray-600 mr-4 z-10 top-10 right-10 h-max">
               Already a Cardinal?{" "}

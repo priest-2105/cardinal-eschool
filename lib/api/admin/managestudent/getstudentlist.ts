@@ -23,6 +23,6 @@ export async function getStudentList(token: string, hasSubscription?: boolean, p
   }
 
   const result = await response.json();
-  console.log("API Response:", result);
+  // console.log("API Response:", result);
   return result.data;
 }

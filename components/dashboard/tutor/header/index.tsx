@@ -154,7 +154,7 @@ const TutorDashboardHeader: React.FC = () => {
         if (token) {
           const response = await fetchTutorProfile(token);
           setProfile(response.data);
-          console.log(response);
+          // console.log(response);
           
         }
       } catch (error) {
@@ -204,6 +204,16 @@ const TutorDashboardHeader: React.FC = () => {
     };
 
     fetchRecentNotifications();
+
+    const handleNotificationsUpdated = () => {
+      fetchRecentNotifications(); // Refresh notifications when updated
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
   }, [token]);
 
   useEffect(() => {
@@ -211,6 +221,19 @@ const TutorDashboardHeader: React.FC = () => {
       router.prefetch("/tutor/login")
     }
   }, [showLogoutDialog, router])
+
+  useEffect(() => {
+    const handleProfilePictureUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent<{ dp_url: string }>;
+      setProfile((prev) => ({ ...prev, profile_picture: customEvent.detail.dp_url }));
+    };
+
+    window.addEventListener("tutorProfilePictureUpdated", handleProfilePictureUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener("tutorProfilePictureUpdated", handleProfilePictureUpdate as EventListener);
+    };
+  }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);

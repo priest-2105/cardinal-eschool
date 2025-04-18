@@ -75,6 +75,10 @@ export function NotificationList() {
         )
       );
       setAlert({ type: "success", message: "Notification marked as read." });
+
+      // Trigger custom event to update sidebar and header
+      const event = new CustomEvent("notificationsUpdated");
+      window.dispatchEvent(event);
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
       setAlert({ type: "error", message: "Failed to mark notification as read." });
@@ -89,6 +93,10 @@ export function NotificationList() {
         prev.map((notification) => ({ ...notification, read_at: new Date().toISOString() }))
       );
       setAlert({ type: "success", message: "All notifications marked as read." });
+
+      // Trigger custom event to update sidebar and header
+      const event = new CustomEvent("notificationsUpdated");
+      window.dispatchEvent(event);
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
       setAlert({ type: "error", message: "Failed to mark all notifications as read." });
@@ -101,6 +109,10 @@ export function NotificationList() {
       await deleteNotification(token, id);
       setNotifications((prev) => prev.filter((notification) => notification.id !== id));
       setAlert({ type: "success", message: "Notification deleted successfully." });
+
+      // Trigger custom event to update sidebar and header
+      const event = new CustomEvent("notificationsUpdated");
+      window.dispatchEvent(event);
     } catch (error) {
       console.error("Failed to delete notification:", error);
       setAlert({ type: "error", message: "Failed to delete notification." });

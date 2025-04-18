@@ -141,7 +141,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
 
   // Navigation handlers with validation
   const nextStep = () => {
-    console.log("Moving to next step, current form data:", formData)
+    // console.log("Moving to next step, current form data:", formData)
 
     // Validate current step
     if (currentStep === 0 && !formData.plan_id) {
@@ -160,7 +160,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   }
 
   const prevStep = () => {
-    console.log("Moving to previous step, current form data:", formData)
+    // console.log("Moving to previous step, current form data:", formData)
     setCurrentStep((prev) => Math.max(prev - 1, 0))
   }
 
@@ -201,7 +201,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        console.log("Rendering step 0 with plan_id:", formData.plan_id)
+        // console.log("Rendering step 0 with plan_id:", formData.plan_id)
         return (
           <>
             <div>
@@ -210,7 +210,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                 name="plan_id"
                 value={formData.plan_id ? formData.plan_id.toString() : ""}
                 onValueChange={(value) => {
-                  console.log("Selected plan ID:", value)
+                  // console.log("Selected plan ID:", value)
                   handleSelectChange("plan_id", value)
                 }}
               >
@@ -234,7 +234,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
           </>
         )
       case 1:
-        console.log("Rendering step 1 with education_level:", formData.education_level)
+        // console.log("Rendering step 1 with education_level:", formData.education_level)
         return (
           <>
             <div>
@@ -243,7 +243,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
                 name="education_level"
                 value={formData.education_level || ""}
                 onValueChange={(value) => {
-                  console.log("Selected education level:", value)
+                  // console.log("Selected education level:", value)
                   handleSelectChange("education_level", value)
                 }}
               >
@@ -437,7 +437,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
   }
 
   const handleSelectChange = (name: string, value: string | boolean) => {
-    console.log(`Selecting ${name}:`, value)
+    // console.log(`Selecting ${name}:`, value)
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: name === "plan_id" ? Number(value) : value }
       return updatedData
@@ -468,7 +468,7 @@ export default function AssessmentForm({ onSubmit, initialData, isSubmitting = f
         finalFormData.learning_difficulty_description = finalFormData.learning_difficulty_description || ""
         finalFormData.specific_goals = finalFormData.specific_goals || ""
 
-        console.log("Final form data being submitted:", finalFormData)
+        // console.log("Final form data being submitted:", finalFormData)
         await onSubmit(finalFormData)
 
         // Clear assessment data from local storage

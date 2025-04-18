@@ -60,13 +60,13 @@ export function AssignStudentsModal({ isOpen, onClose, onAssign, currentStudents
   useEffect(() => {
     if (isOpen && students.length > 0 && currentStudents?.length > 0) {
       const currentStudentIds = currentStudents.map(s => s.id)
-      console.log("Current student IDs:", currentStudentIds)
+      // console.log("Current student IDs:", currentStudentIds)
       
       const initialSelectedStudents = students.filter(student => 
         currentStudentIds.includes(student.student_codec)
       )
       
-      console.log("Initial selected students:", initialSelectedStudents)
+      // console.log("Initial selected students:", initialSelectedStudents)
       setSelectedStudents(initialSelectedStudents)
     } else if (isOpen && students.length > 0) {
       // Reset selection when modal opens with no current students
