@@ -183,6 +183,19 @@ const AdminDashboardSideBar: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  const fetchUnreadNotificationsCount = async () => {
+    if (token) {
+      try {
+        const response = await fetchNotifications(token);
+        const notifications = response.data.notifications;
+        const unread = notifications.filter((notification: { read_at: string | null }) => !notification.read_at);
+        setUnreadCount(unread.length);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchUnreadNotificationsCount = async () => {
       if (token) {
@@ -199,6 +212,17 @@ const AdminDashboardSideBar: React.FC = () => {
 
     fetchUnreadNotificationsCount()
   }, [token])
+
+  useEffect(() => {
+    const handleNotificationsUpdated = () => {
+      fetchUnreadNotificationsCount(); 
+    };
+
+    window.addEventListener("notificationsUpdated", handleNotificationsUpdated);
+    return () => {
+      window.removeEventListener("notificationsUpdated", handleNotificationsUpdated);
+    };
+  }, [token]);
 
   useEffect(() => {
     const fetchPendingReportsCount = async () => {
