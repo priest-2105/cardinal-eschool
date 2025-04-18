@@ -31,7 +31,7 @@ export async function getClassAssignments(token: string, classId: string): Promi
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
+    // const errorText = await response.text();
     // console.error("Failed to fetch assignments:", errorText); // Log the error response
     throw new Error(`Failed to fetch assignments: ${response.statusText}`);
   }
